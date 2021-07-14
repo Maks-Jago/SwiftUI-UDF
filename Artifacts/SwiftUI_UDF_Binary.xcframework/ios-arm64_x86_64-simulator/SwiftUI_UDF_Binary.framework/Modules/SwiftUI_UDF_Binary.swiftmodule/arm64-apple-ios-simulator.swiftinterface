@@ -1,0 +1,539 @@
+// swift-interface-format-version: 1.0
+// swift-compiler-version: Apple Swift version 5.4.2 (swiftlang-1205.0.28.2 clang-1205.0.19.57)
+// swift-module-flags: -target arm64-apple-ios14.5-simulator -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -O -module-name SwiftUI_UDF_Binary
+import Combine
+import Foundation
+import Swift
+import SwiftUI
+public enum AlertBuilder {
+  public struct AlertStatus : Swift.Equatable {
+    public static var dismissed: SwiftUI_UDF_Binary.AlertBuilder.AlertStatus {
+      get
+    }
+    public static func == (lhs: SwiftUI_UDF_Binary.AlertBuilder.AlertStatus, rhs: SwiftUI_UDF_Binary.AlertBuilder.AlertStatus) -> Swift.Bool
+    public var id: Swift.Int
+    public var status: SwiftUI_UDF_Binary.AlertBuilder.AlertStatus.Status
+    public enum Status : Swift.Equatable {
+      case presented(SwiftUI_UDF_Binary.AlertBuilder.AlertStyle)
+      case dismissed
+      public static func == (lhs: SwiftUI_UDF_Binary.AlertBuilder.AlertStatus.Status, rhs: SwiftUI_UDF_Binary.AlertBuilder.AlertStatus.Status) -> Swift.Bool
+    }
+    public init(error: Swift.String?)
+    public init(message: Swift.String?)
+    public init(title: Swift.String, message: Swift.String?)
+    public init()
+    public init(style: SwiftUI_UDF_Binary.AlertBuilder.AlertStyle)
+  }
+  public struct AlertStyle : Swift.Equatable {
+    public static func == (lhs: SwiftUI_UDF_Binary.AlertBuilder.AlertStyle, rhs: SwiftUI_UDF_Binary.AlertBuilder.AlertStyle) -> Swift.Bool
+    public var id: Swift.Int
+    public init(validationError text: Swift.String)
+    public init(failure text: Swift.String)
+    public init(success text: Swift.String)
+    public init(message text: Swift.String)
+    public init(title: Swift.String, message: Swift.String)
+    public init(title: Swift.String, text: Swift.String, primaryButton: SwiftUI.Alert.Button, secondaryButton: SwiftUI.Alert.Button)
+    public init(title: Swift.String, text: Swift.String, dismissButton: SwiftUI.Alert.Button)
+  }
+  public static func buildAlert(for style: SwiftUI_UDF_Binary.AlertBuilder.AlertStyle) -> SwiftUI.Alert
+}
+extension AlertBuilder.AlertStatus : Swift.Identifiable {
+  public typealias ID = Swift.Int
+}
+public struct AnyAction {
+  public let value: SwiftUI_UDF_Binary.Actionable
+  public init<T>(_ value: T, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) where T : Swift.Equatable, T : SwiftUI_UDF_Binary.Actionable
+}
+extension AnyAction : Swift.Equatable {
+  public static func == (lhs: SwiftUI_UDF_Binary.AnyAction, rhs: SwiftUI_UDF_Binary.AnyAction) -> Swift.Bool
+}
+extension AnyAction : Swift.CustomDebugStringConvertible {
+  public var debugDescription: Swift.String {
+    get
+  }
+}
+public protocol IdentifiableFlow : SwiftUI_UDF_Binary.Flow {
+  associatedtype FlowId
+  static var id: Self.FlowId { get }
+}
+extension IdentifiableFlow where Self.FlowId == SwiftUI_UDF_Binary.Flows.Id {
+  public static var id: SwiftUI_UDF_Binary.Flows.Id {
+    get
+  }
+}
+public protocol Component : SwiftUI.View {
+  associatedtype Props
+  var props: Self.Props { get }
+  init(props: Self.Props)
+}
+@propertyWrapper final public class Cached<T> where T : Swift.Decodable, T : Swift.Encodable {
+  final public var key: Swift.String
+  final public var defaultValue: T
+  final public var intervalToSync: Foundation.TimeInterval
+  public init(key: Swift.String, defaultValue: T, intervalToSync: Foundation.TimeInterval = 2, storage: SwiftUI_UDF_Binary.CacheSource)
+  convenience public init(key: Swift.String, defaultValue: T, intervalToSync: Foundation.TimeInterval = 2)
+  public init(key: Swift.String, defaultValue: T = .init(), intervalToSync: Foundation.TimeInterval = 2, storage: SwiftUI_UDF_Binary.CacheSource) where T : SwiftUI_UDF_Binary.Initable
+  convenience public init(key: Swift.String, defaultValue: T = .init(), intervalToSync: Foundation.TimeInterval = 2) where T : SwiftUI_UDF_Binary.Initable
+  final public var wrappedValue: T {
+    get
+    set
+  }
+  @objc deinit
+}
+extension View {
+  public func alert(status: SwiftUI.Binding<SwiftUI_UDF_Binary.AlertBuilder.AlertStatus>) -> some SwiftUI.View
+  
+}
+public protocol Mergeable {
+  mutating func merge(_ newValue: Self)
+}
+extension Dictionary where Value : SwiftUI_UDF_Binary.Mergeable {
+  public subscript(key: Key) -> Value {
+    get
+    set
+  }
+}
+public protocol Actionable {
+}
+extension Actionable where Self : Swift.Equatable {
+  public func eraseToAnyAction(fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) -> SwiftUI_UDF_Binary.AnyAction
+}
+extension Effects {
+  public struct Delay : SwiftUI_UDF_Binary.Effectable {
+    public var upstream: Combine.AnyPublisher<SwiftUI_UDF_Binary.AnyAction, Swift.Never>
+    public init<E>(_ effect: E, _ duration: Foundation.TimeInterval, queue: Dispatch.DispatchQueue) where E : SwiftUI_UDF_Binary.Effectable
+    public typealias Failure = Swift.Never
+    public typealias Output = SwiftUI_UDF_Binary.AnyAction
+  }
+}
+final public class Store<State> {
+  public typealias Reducer = (inout State, SwiftUI_UDF_Binary.AnyAction) -> ()
+  public init(initial state: State, reducer: @escaping SwiftUI_UDF_Binary.Store<State>.Reducer)
+  public init(initial state: State) where State : SwiftUI_UDF_Binary.Reducible
+  final public let reducer: SwiftUI_UDF_Binary.Store<State>.Reducer
+  final public var state: State {
+    get
+  }
+  final public func dispatch<Action>(action: Action, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) where Action : Swift.Equatable, Action : SwiftUI_UDF_Binary.Actionable
+  final public func dispatch(action: SwiftUI_UDF_Binary.AnyAction)
+  final public func subscribe(observer: SwiftUI_UDF_Binary.Observer<State>)
+  final public func subscribe<M>(middleware: M) where State == M.State, M : SwiftUI_UDF_Binary.Middlewareable
+  @objc deinit
+}
+public struct RenderContainer<V> : SwiftUI_UDF_Binary.Container where V : SwiftUI.View {
+  public typealias ContainerComponent = SwiftUI_UDF_Binary.RenderComponent<V>
+  public var viewToRender: V
+  public init(viewToRender: V)
+  public func map(state: Swift.Void, store: SwiftUI_UDF_Binary.EnvironmentStore<Swift.Void>) -> SwiftUI_UDF_Binary.RenderContainer<V>.ContainerComponent.Props
+  public var body: some SwiftUI.View {
+    get
+  }
+  public typealias Body = @_opaqueReturnTypeOf("$s18SwiftUI_UDF_Binary15RenderContainerV4bodyQrvp", 0) 🦸<V>
+  public typealias ContainerState = Swift.Void
+}
+public struct RenderComponent<V> : SwiftUI_UDF_Binary.Component where V : SwiftUI.View {
+  public struct Props {
+  }
+  public var props: SwiftUI_UDF_Binary.RenderComponent<V>.Props
+  public init(props: SwiftUI_UDF_Binary.RenderComponent<V>.Props)
+  public var body: some SwiftUI.View {
+    get
+  }
+  public typealias Body = @_opaqueReturnTypeOf("$s18SwiftUI_UDF_Binary15RenderComponentV4bodyQrvp", 0) 🦸<V>
+}
+public protocol Form : SwiftUI_UDF_Binary.Reducible {
+}
+public enum Actions {
+  public struct Error : SwiftUI_UDF_Binary.EquatableAction {
+    public var error: Swift.String?
+    public var id: Swift.AnyHashable
+    public init<Id>(error: Swift.String? = nil, id: Id) where Id : Swift.Hashable
+    public static func == (a: SwiftUI_UDF_Binary.Actions.Error, b: SwiftUI_UDF_Binary.Actions.Error) -> Swift.Bool
+  }
+  @available(*, deprecated, message: "Use `UpdateAlertStatus` action instead of `Message`")
+  public struct Message : SwiftUI_UDF_Binary.EquatableAction {
+    public var message: Swift.String?
+    public var id: Swift.AnyHashable
+    public init<Id>(message: Swift.String? = nil, id: Id) where Id : Swift.Hashable
+    public static func == (a: SwiftUI_UDF_Binary.Actions.Message, b: SwiftUI_UDF_Binary.Actions.Message) -> Swift.Bool
+  }
+  public struct LoadPage : SwiftUI_UDF_Binary.EquatableAction {
+    public var id: Swift.AnyHashable
+    public var pageNumber: Swift.Int
+    public init<Id>(pageNumber: Swift.Int = 1, id: Id) where Id : Swift.Hashable
+    public static func == (a: SwiftUI_UDF_Binary.Actions.LoadPage, b: SwiftUI_UDF_Binary.Actions.LoadPage) -> Swift.Bool
+  }
+  public struct UpdateFormField<F, V> : SwiftUI_UDF_Binary.EquatableAction where F : SwiftUI_UDF_Binary.Form, V : Swift.Equatable {
+    public var keyPath: Swift.WritableKeyPath<F, V>
+    public var value: V
+    public init(keyPath: Swift.WritableKeyPath<F, V>, value: V)
+    public static func == (a: SwiftUI_UDF_Binary.Actions.UpdateFormField<F, V>, b: SwiftUI_UDF_Binary.Actions.UpdateFormField<F, V>) -> Swift.Bool
+  }
+  public struct UpdateAlertStatus : SwiftUI_UDF_Binary.EquatableAction {
+    public var status: SwiftUI_UDF_Binary.AlertBuilder.AlertStatus
+    public var id: Swift.AnyHashable
+    public init<Id>(status: SwiftUI_UDF_Binary.AlertBuilder.AlertStatus, id: Id) where Id : Swift.Hashable
+    public init<Id>(style: SwiftUI_UDF_Binary.AlertBuilder.AlertStyle, id: Id) where Id : Swift.Hashable
+    public static func == (a: SwiftUI_UDF_Binary.Actions.UpdateAlertStatus, b: SwiftUI_UDF_Binary.Actions.UpdateAlertStatus) -> Swift.Bool
+  }
+}
+extension Actions {
+  public struct DidLoadItem<M> : SwiftUI_UDF_Binary.EquatableAction where M : Swift.Equatable {
+    public var item: M
+    public var id: Swift.AnyHashable?
+    public init(item: M)
+    public init<Id>(item: M, id: Id) where Id : Swift.Hashable
+    public static func == (a: SwiftUI_UDF_Binary.Actions.DidLoadItem<M>, b: SwiftUI_UDF_Binary.Actions.DidLoadItem<M>) -> Swift.Bool
+  }
+  public struct DidLoadItems<M> : SwiftUI_UDF_Binary.EquatableAction, Swift.CustomStringConvertible where M : Swift.Equatable {
+    public var items: [M]
+    public var id: Swift.AnyHashable
+    public var shortDescription: Swift.Bool
+    public init<Id>(items: [M], id: Id, shortDescription: Swift.Bool = true) where Id : Swift.Hashable
+    public var description: Swift.String {
+      get
+    }
+    public static func == (a: SwiftUI_UDF_Binary.Actions.DidLoadItems<M>, b: SwiftUI_UDF_Binary.Actions.DidLoadItems<M>) -> Swift.Bool
+  }
+  public struct DidUpdateItem<M> : SwiftUI_UDF_Binary.EquatableAction where M : Swift.Equatable {
+    public var item: M
+    public var id: Swift.AnyHashable?
+    public init(item: M)
+    public init<Id>(item: M, id: Id) where Id : Swift.Hashable
+    public static func == (a: SwiftUI_UDF_Binary.Actions.DidUpdateItem<M>, b: SwiftUI_UDF_Binary.Actions.DidUpdateItem<M>) -> Swift.Bool
+  }
+  public struct DeleteItem<M> : SwiftUI_UDF_Binary.EquatableAction where M : Swift.Equatable {
+    public var item: M
+    public var id: Swift.AnyHashable?
+    public init(item: M)
+    public init<Id>(item: M, id: Id) where Id : Swift.Hashable
+    public static func == (a: SwiftUI_UDF_Binary.Actions.DeleteItem<M>, b: SwiftUI_UDF_Binary.Actions.DeleteItem<M>) -> Swift.Bool
+  }
+}
+extension Actions {
+  public struct DidLoadNestedItem<ParentId, Nested> : SwiftUI_UDF_Binary.EquatableAction where ParentId : Swift.Hashable, Nested : Swift.Equatable {
+    public var item: Nested
+    public var id: Swift.AnyHashable?
+    public var parentId: ParentId
+    public init(parentId: ParentId, item: Nested)
+    public init<Id>(parentId: ParentId, item: Nested, id: Id) where Id : Swift.Hashable
+    public static func == (a: SwiftUI_UDF_Binary.Actions.DidLoadNestedItem<ParentId, Nested>, b: SwiftUI_UDF_Binary.Actions.DidLoadNestedItem<ParentId, Nested>) -> Swift.Bool
+  }
+  public struct DidLoadNestedItems<ParentId, Nested> : SwiftUI_UDF_Binary.EquatableAction, Swift.CustomStringConvertible where ParentId : Swift.Hashable, Nested : Swift.Equatable {
+    public var items: [Nested]
+    public var id: Swift.AnyHashable
+    public var shortDescription: Swift.Bool
+    public var parentId: ParentId
+    public init<Id>(parentId: ParentId, items: [Nested], id: Id, shortDescription: Swift.Bool = true) where Id : Swift.Hashable
+    public var description: Swift.String {
+      get
+    }
+    public static func == (a: SwiftUI_UDF_Binary.Actions.DidLoadNestedItems<ParentId, Nested>, b: SwiftUI_UDF_Binary.Actions.DidLoadNestedItems<ParentId, Nested>) -> Swift.Bool
+  }
+  public struct DidLoadNestedByParents<ParentId, Nested> : SwiftUI_UDF_Binary.Actionable, Swift.Equatable, Swift.CustomStringConvertible where ParentId : Swift.Hashable, Nested : Swift.Equatable {
+    public var dictionary: [ParentId : [Nested]]
+    public var id: Swift.AnyHashable
+    public var shortDescription: Swift.Bool
+    public init<Id>(dictionary: [ParentId : [Nested]], id: Id, shortDescription: Swift.Bool = true) where Id : Swift.Hashable
+    public var description: Swift.String {
+      get
+    }
+    public static func == (a: SwiftUI_UDF_Binary.Actions.DidLoadNestedByParents<ParentId, Nested>, b: SwiftUI_UDF_Binary.Actions.DidLoadNestedByParents<ParentId, Nested>) -> Swift.Bool
+  }
+  public struct DidUpdateNestedItem<ParentId, Nested> : SwiftUI_UDF_Binary.EquatableAction where ParentId : Swift.Hashable, Nested : Swift.Equatable {
+    public var item: Nested
+    public var id: Swift.AnyHashable?
+    public var parentId: ParentId
+    public init(parentId: ParentId, item: Nested)
+    public init<Id>(parentId: ParentId, item: Nested, id: Id) where Id : Swift.Hashable
+    public static func == (a: SwiftUI_UDF_Binary.Actions.DidUpdateNestedItem<ParentId, Nested>, b: SwiftUI_UDF_Binary.Actions.DidUpdateNestedItem<ParentId, Nested>) -> Swift.Bool
+  }
+  public struct DeleteNestedItem<ParentId, Nested> : SwiftUI_UDF_Binary.EquatableAction where ParentId : Swift.Hashable, Nested : Swift.Equatable {
+    public var item: Nested
+    public var id: Swift.AnyHashable?
+    public var parentId: ParentId
+    public init(parentId: ParentId, item: Nested)
+    public init<Id>(parentId: ParentId, item: Nested, id: Id) where Id : Swift.Hashable
+    public static func == (a: SwiftUI_UDF_Binary.Actions.DeleteNestedItem<ParentId, Nested>, b: SwiftUI_UDF_Binary.Actions.DeleteNestedItem<ParentId, Nested>) -> Swift.Bool
+  }
+}
+@_inheritsConvenienceInitializers open class AsyncMiddleware<State> : SwiftUI_UDF_Binary.Middleware<State> {
+  public var cancelations: [Swift.AnyHashable : Combine.AnyCancellable]
+  public func execute<E, Id>(_ effect: E, cancelation: Id) where E : SwiftUI_UDF_Binary.Effectable, Id : Swift.Hashable
+  public func run<E, Id>(_ effect: E, cancelation: Id) where E : SwiftUI_UDF_Binary.Effectable, Id : Swift.Hashable
+  @discardableResult
+  public func cancel<Id>(by cancelation: Id) -> Swift.Bool where Id : Swift.Hashable
+  public func cancelAll()
+  override public init(store: SwiftUI_UDF_Binary.Store<State>, queue: Dispatch.DispatchQueue)
+  @objc deinit
+}
+public protocol Initable {
+  init()
+}
+extension Dictionary : SwiftUI_UDF_Binary.Initable {
+}
+extension Set : SwiftUI_UDF_Binary.Initable {
+}
+extension Array : SwiftUI_UDF_Binary.Initable {
+}
+@_inheritsConvenienceInitializers open class SyncMiddleware<State> : SwiftUI_UDF_Binary.Middleware<State> {
+  public var cancellable: Combine.AnyCancellable?
+  override open func status(for state: State) -> SwiftUI_UDF_Binary.Observer<State>.Status
+  public func execute<E>(_ effect: E) where E : SwiftUI_UDF_Binary.Effectable
+  public func cancel()
+  override public init(store: SwiftUI_UDF_Binary.Store<State>, queue: Dispatch.DispatchQueue)
+  @objc deinit
+}
+public typealias EquatableAction = Swift.Equatable & SwiftUI_UDF_Binary.Actionable
+final public class Observer<State> : Swift.Hashable {
+  public static func == (lhs: SwiftUI_UDF_Binary.Observer<State>, rhs: SwiftUI_UDF_Binary.Observer<State>) -> Swift.Bool
+  final public func hash(into hasher: inout Swift.Hasher)
+  public enum Status {
+    case active
+    case postponed
+    case suspended
+    public static func == (a: SwiftUI_UDF_Binary.Observer<State>.Status, b: SwiftUI_UDF_Binary.Observer<State>.Status) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+  final public let queue: Dispatch.DispatchQueue
+  final public let observe: (State) -> Swift.Void
+  public init(queue: Dispatch.DispatchQueue, observe: @escaping (State) -> Swift.Void)
+  @objc deinit
+  final public var hashValue: Swift.Int {
+    get
+  }
+}
+public protocol Middlewareable : AnyObject {
+  associatedtype State
+  var store: SwiftUI_UDF_Binary.Store<Self.State> { get }
+  var queue: Dispatch.DispatchQueue { get }
+  var asObserver: SwiftUI_UDF_Binary.Observer<Self.State> { get }
+  func status(for state: Self.State) -> SwiftUI_UDF_Binary.Observer<Self.State>.Status
+  func observe(state: Self.State)
+}
+extension Middlewareable {
+  public var asObserver: SwiftUI_UDF_Binary.Observer<Self.State> {
+    get
+  }
+  public func status(for state: Self.State) -> SwiftUI_UDF_Binary.Observer<Self.State>.Status
+}
+public protocol CacheSource {
+  init(key: Swift.String)
+  func save<T>(_ value: T) where T : Swift.Encodable
+  func load<T>() -> T? where T : Swift.Decodable
+  func remove()
+}
+public enum Effects {
+}
+public protocol Effectable : Combine.Publisher where Self.Failure == Swift.Never, Self.Output == SwiftUI_UDF_Binary.AnyAction {
+  var upstream: Combine.AnyPublisher<SwiftUI_UDF_Binary.AnyAction, Swift.Never> { get }
+}
+extension Effectable {
+  public func receive<S>(subscriber: S) where S : Combine.Subscriber, S.Failure == Swift.Never, S.Input == SwiftUI_UDF_Binary.AnyAction
+}
+extension Effectable {
+  public func combine<E>(_ effect: E) -> some SwiftUI_UDF_Binary.Effectable where E : SwiftUI_UDF_Binary.Effectable
+  
+  public func filterAction<A>(_ isIncluded: @escaping (A) -> Swift.Bool) -> some SwiftUI_UDF_Binary.Effectable where A : SwiftUI_UDF_Binary.Actionable
+  
+  public func delay(duration: Foundation.TimeInterval, queue: Dispatch.DispatchQueue) -> some SwiftUI_UDF_Binary.Effectable
+  
+}
+public protocol Container : SwiftUI.View {
+  associatedtype ContainerState
+  associatedtype ContainerComponent : SwiftUI_UDF_Binary.Component
+  func map(state: Self.ContainerState, store: SwiftUI_UDF_Binary.EnvironmentStore<Self.ContainerState>) -> Self.ContainerComponent.Props
+  func onContainerAppear(store: SwiftUI_UDF_Binary.EnvironmentStore<Self.ContainerState>)
+  func onContainerDisappear(store: SwiftUI_UDF_Binary.EnvironmentStore<Self.ContainerState>)
+}
+extension Container {
+  public func onContainerAppear(store: SwiftUI_UDF_Binary.EnvironmentStore<Self.ContainerState>)
+  public func onContainerDisappear(store: SwiftUI_UDF_Binary.EnvironmentStore<Self.ContainerState>)
+}
+extension Container {
+  public var body: some SwiftUI.View {
+    get
+  }
+}
+@_functionBuilder public enum ActionGroupBuilder {
+  public static func buildArray(_ components: [[SwiftUI_UDF_Binary.AnyAction]]) -> [SwiftUI_UDF_Binary.AnyAction]
+  public static func buildBlock(_ components: [SwiftUI_UDF_Binary.AnyAction]...) -> [SwiftUI_UDF_Binary.AnyAction]
+  public static func buildExpression<T>(_ expression: T) -> [SwiftUI_UDF_Binary.AnyAction] where T : Swift.Equatable, T : SwiftUI_UDF_Binary.Actionable
+  public static func buildExpression(_ expression: Swift.Void) -> [SwiftUI_UDF_Binary.AnyAction]
+  public static func buildOptional(_ component: [SwiftUI_UDF_Binary.AnyAction]?) -> [SwiftUI_UDF_Binary.AnyAction]
+  public static func buildEither(first component: [SwiftUI_UDF_Binary.AnyAction]) -> [SwiftUI_UDF_Binary.AnyAction]
+  public static func buildEither(second component: [SwiftUI_UDF_Binary.AnyAction]) -> [SwiftUI_UDF_Binary.AnyAction]
+  public static func buildFinalResult(_ component: [SwiftUI_UDF_Binary.AnyAction]) -> SwiftUI_UDF_Binary.ActionGroup
+}
+open class Middleware<State> : SwiftUI_UDF_Binary.Middlewareable {
+  public var store: SwiftUI_UDF_Binary.Store<State>
+  public var queue: Dispatch.DispatchQueue
+  public init(store: SwiftUI_UDF_Binary.Store<State>, queue: Dispatch.DispatchQueue)
+  required convenience public init(store: SwiftUI_UDF_Binary.Store<State>)
+  open func observe(state: State)
+  open func status(for state: State) -> SwiftUI_UDF_Binary.Observer<State>.Status
+  @objc deinit
+}
+public struct NavigationContainerLink<C, Label> : SwiftUI.View where C : SwiftUI_UDF_Binary.Container, Label : SwiftUI.View {
+  public init(destination: C, @SwiftUI.ViewBuilder label: @escaping () -> Label)
+  public init(destination: C, isActive: SwiftUI.Binding<Swift.Bool>, @SwiftUI.ViewBuilder label: @escaping () -> Label)
+  public init(destination: C, isActive: SwiftUI.Binding<Swift.Bool>) where Label == SwiftUI.EmptyView
+  public var body: some SwiftUI.View {
+    get
+  }
+  public typealias Body = @_opaqueReturnTypeOf("$s18SwiftUI_UDF_Binary23NavigationContainerLinkV4bodyQrvp", 0) 🦸<C, Label>
+}
+extension Binding where Value : Swift.Equatable {
+  public init<F, S>(form: F, keyPath: Swift.WritableKeyPath<F, Value>, store: SwiftUI_UDF_Binary.EnvironmentStore<S>) where F : SwiftUI_UDF_Binary.Form
+}
+public protocol Flow : SwiftUI_UDF_Binary.Reducible {
+  init()
+}
+public struct Effect : SwiftUI_UDF_Binary.Effectable {
+  public var upstream: Combine.AnyPublisher<SwiftUI_UDF_Binary.AnyAction, Swift.Never>
+  public init<P, A, Id>(_ publisher: P, id: Id, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line, mapper: @escaping (P.Output) -> A) where P : Combine.Publisher, A : Swift.Equatable, A : SwiftUI_UDF_Binary.Actionable, Id : Swift.Hashable, P.Failure == Swift.Error
+  public init<P, Item, Id>(_ publisher: P, id: Id, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) where P : Combine.Publisher, Item : Swift.Equatable, Id : Swift.Hashable, P.Failure == Swift.Error, P.Output == Swift.Array<Item>
+  public init<P, Item, Id, EqItem>(_ publisher: P, id: Id, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line, mapItem: @escaping (Item) -> EqItem) where P : Combine.Publisher, Id : Swift.Hashable, EqItem : Swift.Equatable, P.Failure == Swift.Error, P.Output == Swift.Array<Item>
+  public init<P, Item, Id>(_ publisher: P, id: Id, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) where P : Combine.Publisher, Item : Swift.Equatable, Item == P.Output, Id : Swift.Hashable, P.Failure == Swift.Error
+  public init(action: SwiftUI_UDF_Binary.AnyAction)
+  public init<A>(fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line, _ future: @escaping () -> A) where A : Swift.Equatable, A : SwiftUI_UDF_Binary.Actionable
+  public typealias Failure = Swift.Never
+  public typealias Output = SwiftUI_UDF_Binary.AnyAction
+}
+extension View {
+  public func sheetContainer<C, V>(isPresented: SwiftUI.Binding<Swift.Bool>, onDismiss: (() -> Swift.Void)? = nil, container: C, kind: SwiftUI_UDF_Binary.ModalKind = .sheet, transform: @escaping (C) -> V) -> some SwiftUI.View where C : SwiftUI_UDF_Binary.Container, V : SwiftUI.View
+  
+  public func sheetContainer<C, V>(isPresented: SwiftUI.Binding<Swift.Bool>, onDismiss: (() -> Swift.Void)? = nil, kind: SwiftUI_UDF_Binary.ModalKind = .sheet, container: @escaping () -> C, transform: @escaping (C) -> V) -> some SwiftUI.View where C : SwiftUI_UDF_Binary.Container, V : SwiftUI.View
+  
+  public func sheetContainer<C>(isPresented: SwiftUI.Binding<Swift.Bool>, onDismiss: (() -> Swift.Void)? = nil, kind: SwiftUI_UDF_Binary.ModalKind = .sheet, container: @escaping () -> C) -> some SwiftUI.View where C : SwiftUI_UDF_Binary.Container
+  
+  public func sheetContainer<C>(isPresented: SwiftUI.Binding<Swift.Bool>, onDismiss: (() -> Swift.Void)? = nil, kind: SwiftUI_UDF_Binary.ModalKind = .sheet, container: C) -> some SwiftUI.View where C : SwiftUI_UDF_Binary.Container
+  
+}
+public struct ActionGroup : SwiftUI_UDF_Binary.Actionable, Swift.Equatable {
+  public var actions: [SwiftUI_UDF_Binary.AnyAction]
+  public init<T>(action: T, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) where T : Swift.Equatable, T : SwiftUI_UDF_Binary.Actionable
+  public init<T>(actions: [T], fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) where T : Swift.Equatable, T : SwiftUI_UDF_Binary.Actionable
+  public init(@SwiftUI_UDF_Binary.ActionGroupBuilder _ builder: () -> SwiftUI_UDF_Binary.ActionGroup)
+  public init(anyActions: [SwiftUI_UDF_Binary.AnyAction])
+  public init()
+  public static func == (a: SwiftUI_UDF_Binary.ActionGroup, b: SwiftUI_UDF_Binary.ActionGroup) -> Swift.Bool
+}
+extension ActionGroup {
+  public mutating func append<T>(action: T, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) where T : Swift.Equatable, T : SwiftUI_UDF_Binary.Actionable
+  public mutating func append(action: SwiftUI_UDF_Binary.AnyAction)
+}
+extension ActionGroup {
+  public mutating func insert<T>(action: T, at: Swift.Int = 0, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) where T : Swift.Equatable, T : SwiftUI_UDF_Binary.Actionable
+  public mutating func insert(action: SwiftUI_UDF_Binary.AnyAction, at: Swift.Int = 0)
+}
+extension Hashable {
+  public static func == (lhs: Swift.AnyHashable, rhs: Self) -> Swift.Bool
+}
+extension Hashable {
+  public static func == (lhs: Self, rhs: Swift.AnyHashable) -> Swift.Bool
+}
+extension Hashable {
+  public static func == (lhs: Swift.AnyHashable?, rhs: Self) -> Swift.Bool
+}
+extension Hashable {
+  public static func == (lhs: Self, rhs: Swift.AnyHashable?) -> Swift.Bool
+}
+public typealias Command = () -> ()
+public typealias CommandWith<T> = (T) -> ()
+final public class EnvironmentStore<State> : Foundation.ObservableObject {
+  final public let store: SwiftUI_UDF_Binary.Store<State>
+  @Combine.Published @_projectedValueProperty($state) final public var state: State {
+    get
+  }
+  final public var $state: Combine.Published<State>.Publisher {
+    get
+  }
+  public init(store: SwiftUI_UDF_Binary.Store<State>)
+  final public func dispatch<Action>(_ action: Action, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) where Action : Swift.Equatable, Action : SwiftUI_UDF_Binary.Actionable
+  final public func dispatch(_ action: SwiftUI_UDF_Binary.AnyAction)
+  final public func bind(_ action: SwiftUI_UDF_Binary.AnyAction) -> SwiftUI_UDF_Binary.Command
+  final public func bind<Action>(_ action: Action, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) -> SwiftUI_UDF_Binary.Command where Action : Swift.Equatable, Action : SwiftUI_UDF_Binary.Actionable
+  final public func bind<T>(_ action: @escaping (T) -> SwiftUI_UDF_Binary.AnyAction) -> SwiftUI_UDF_Binary.CommandWith<T>
+  final public func bind<Action, T>(_ action: @escaping (T) -> Action, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) -> SwiftUI_UDF_Binary.CommandWith<T> where Action : Swift.Equatable, Action : SwiftUI_UDF_Binary.Actionable
+  final public func subscribe(_ middlewareType: SwiftUI_UDF_Binary.Middleware<State>.Type)
+  final public func subscribe(observer: SwiftUI_UDF_Binary.Observer<State>)
+  public typealias ObjectWillChangePublisher = Combine.ObservableObjectPublisher
+  @objc deinit
+}
+public enum ModalKind {
+  case sheet
+  case fullScreen
+  public static func == (a: SwiftUI_UDF_Binary.ModalKind, b: SwiftUI_UDF_Binary.ModalKind) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+extension Effects {
+  public struct CombineEffect : SwiftUI_UDF_Binary.Effectable {
+    public var upstream: Combine.AnyPublisher<SwiftUI_UDF_Binary.AnyAction, Swift.Never>
+    public init<E1, E2>(_ effect1: E1, _ effect2: E2) where E1 : SwiftUI_UDF_Binary.Effectable, E2 : SwiftUI_UDF_Binary.Effectable
+    public typealias Failure = Swift.Never
+    public typealias Output = SwiftUI_UDF_Binary.AnyAction
+  }
+}
+public enum PaginationPage {
+  case number(Swift.Int)
+  case lastPage(Swift.Int)
+  public var pageNumber: Swift.Int {
+    get
+  }
+}
+extension PaginationPage : Swift.Codable {
+  public init(from decoder: Swift.Decoder) throws
+  public func encode(to encoder: Swift.Encoder) throws
+}
+extension Effects {
+  public struct Filter<A> : SwiftUI_UDF_Binary.Effectable where A : SwiftUI_UDF_Binary.Actionable {
+    public var upstream: Combine.AnyPublisher<SwiftUI_UDF_Binary.AnyAction, Swift.Never>
+    public init<E>(_ effect: E, _ isInclude: @escaping (A) -> Swift.Bool) where E : SwiftUI_UDF_Binary.Effectable
+    public typealias Failure = Swift.Never
+    public typealias Output = SwiftUI_UDF_Binary.AnyAction
+  }
+}
+public enum Flows {
+}
+extension Flows {
+  public struct Id : Swift.Hashable {
+    public init(value: Swift.String)
+    public func hash(into hasher: inout Swift.Hasher)
+    public static func == (a: SwiftUI_UDF_Binary.Flows.Id, b: SwiftUI_UDF_Binary.Flows.Id) -> Swift.Bool
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+}
+public struct FileCache {
+  public var fileManager: Foundation.FileManager
+  public var directoryName: Swift.String
+  public var key: Swift.String
+  public init(key: Swift.String)
+  public init(key: Swift.String, fileManager: Foundation.FileManager = .default, directoryName: Swift.String = "StateData")
+}
+extension FileCache : SwiftUI_UDF_Binary.CacheSource {
+  public func save<T>(_ value: T) where T : Swift.Encodable
+  public func load<T>() -> T? where T : Swift.Decodable
+  public func remove()
+}
+public protocol Reducible : SwiftUI_UDF_Binary.Initable {
+  mutating func reduce(_ action: SwiftUI_UDF_Binary.AnyAction)
+}
+extension View {
+  public func sheetContainer<C, V, I>(item: SwiftUI.Binding<I?>, onDismiss: (() -> Swift.Void)? = nil, kind: SwiftUI_UDF_Binary.ModalKind = .sheet, container: @escaping (I) -> C, transform: @escaping (C) -> V) -> some SwiftUI.View where C : SwiftUI_UDF_Binary.Container, V : SwiftUI.View, I : Swift.Identifiable
+  
+  public func sheetContainer<C, I>(item: SwiftUI.Binding<I?>, onDismiss: (() -> Swift.Void)? = nil, kind: SwiftUI_UDF_Binary.ModalKind = .sheet, container: @escaping (I) -> C) -> some SwiftUI.View where C : SwiftUI_UDF_Binary.Container, I : Swift.Identifiable
+  
+}
+extension SwiftUI_UDF_Binary.Observer.Status : Swift.Equatable {}
+extension SwiftUI_UDF_Binary.Observer.Status : Swift.Hashable {}
+extension SwiftUI_UDF_Binary.ModalKind : Swift.Equatable {}
+extension SwiftUI_UDF_Binary.ModalKind : Swift.Hashable {}
