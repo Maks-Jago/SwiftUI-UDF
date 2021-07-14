@@ -453,6 +453,7 @@ final public class EnvironmentStore<State> : Foundation.ObservableObject {
     get
   }
   public init(store: SwiftUI_UDF_Binary.Store<State>)
+  convenience public init(state: State) where State : SwiftUI_UDF_Binary.Reducible
   final public func dispatch<Action>(_ action: Action, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) where Action : Swift.Equatable, Action : SwiftUI_UDF_Binary.Actionable
   final public func dispatch(_ action: SwiftUI_UDF_Binary.AnyAction)
   final public func bind(_ action: SwiftUI_UDF_Binary.AnyAction) -> SwiftUI_UDF_Binary.Command
