@@ -106,20 +106,6 @@ extension Effects {
     public typealias Output = SwiftUI_UDF_Binary.AnyAction
   }
 }
-final public class Store<State> {
-  public typealias Reducer = (inout State, SwiftUI_UDF_Binary.AnyAction) -> ()
-  public init(initial state: State, reducer: @escaping SwiftUI_UDF_Binary.Store<State>.Reducer)
-  public init(initial state: State) where State : SwiftUI_UDF_Binary.Reducible
-  final public let reducer: SwiftUI_UDF_Binary.Store<State>.Reducer
-  final public var state: State {
-    get
-  }
-  final public func dispatch<Action>(action: Action, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) where Action : Swift.Equatable, Action : SwiftUI_UDF_Binary.Actionable
-  final public func dispatch(action: SwiftUI_UDF_Binary.AnyAction)
-  final public func subscribe(observer: SwiftUI_UDF_Binary.Observer<State>)
-  final public func subscribe<M>(middleware: M) where State == M.State, M : SwiftUI_UDF_Binary.Middlewareable
-  @objc deinit
-}
 public struct RenderContainer<V> : SwiftUI_UDF_Binary.Container where V : SwiftUI.View {
   public typealias ContainerComponent = SwiftUI_UDF_Binary.RenderComponent<V>
   public var viewToRender: V
@@ -264,7 +250,7 @@ extension Actions {
   @discardableResult
   public func cancel<Id>(by cancelation: Id) -> Swift.Bool where Id : Swift.Hashable
   public func cancelAll()
-  override public init(store: SwiftUI_UDF_Binary.Store<State>, queue: Dispatch.DispatchQueue)
+  override public init(store: SwiftUI_UDF_Binary.EnvironmentStore<State>, queue: Dispatch.DispatchQueue)
   @objc deinit
 }
 public protocol Initable {
@@ -281,7 +267,7 @@ extension Array : SwiftUI_UDF_Binary.Initable {
   override open func status(for state: State) -> SwiftUI_UDF_Binary.Observer<State>.Status
   public func execute<E>(_ effect: E) where E : SwiftUI_UDF_Binary.Effectable
   public func cancel()
-  override public init(store: SwiftUI_UDF_Binary.Store<State>, queue: Dispatch.DispatchQueue)
+  override public init(store: SwiftUI_UDF_Binary.EnvironmentStore<State>, queue: Dispatch.DispatchQueue)
   @objc deinit
 }
 public typealias EquatableAction = Swift.Equatable & SwiftUI_UDF_Binary.Actionable
@@ -308,7 +294,7 @@ final public class Observer<State> : Swift.Hashable {
 }
 public protocol Middlewareable : AnyObject {
   associatedtype State
-  var store: SwiftUI_UDF_Binary.Store<Self.State> { get }
+  var store: SwiftUI_UDF_Binary.EnvironmentStore<Self.State> { get }
   var queue: Dispatch.DispatchQueue { get }
   var asObserver: SwiftUI_UDF_Binary.Observer<Self.State> { get }
   func status(for state: Self.State) -> SwiftUI_UDF_Binary.Observer<Self.State>.Status
@@ -369,10 +355,10 @@ extension Container {
   public static func buildFinalResult(_ component: [SwiftUI_UDF_Binary.AnyAction]) -> SwiftUI_UDF_Binary.ActionGroup
 }
 open class Middleware<State> : SwiftUI_UDF_Binary.Middlewareable {
-  public var store: SwiftUI_UDF_Binary.Store<State>
+  public var store: SwiftUI_UDF_Binary.EnvironmentStore<State>
   public var queue: Dispatch.DispatchQueue
-  public init(store: SwiftUI_UDF_Binary.Store<State>, queue: Dispatch.DispatchQueue)
-  required convenience public init(store: SwiftUI_UDF_Binary.Store<State>)
+  public init(store: SwiftUI_UDF_Binary.EnvironmentStore<State>, queue: Dispatch.DispatchQueue)
+  required convenience public init(store: SwiftUI_UDF_Binary.EnvironmentStore<State>)
   open func observe(state: State)
   open func status(for state: State) -> SwiftUI_UDF_Binary.Observer<State>.Status
   @objc deinit
@@ -444,15 +430,15 @@ extension Hashable {
 }
 public typealias Command = () -> ()
 public typealias CommandWith<T> = (T) -> ()
-final public class EnvironmentStore<State> : Foundation.ObservableObject {
-  final public let store: SwiftUI_UDF_Binary.Store<State>
+@_hasMissingDesignatedInitializers final public class EnvironmentStore<State> : Foundation.ObservableObject {
+  public typealias Reducer = (inout State, SwiftUI_UDF_Binary.AnyAction) -> ()
   @Combine.Published @_projectedValueProperty($state) final public var state: State {
     get
   }
   final public var $state: Combine.Published<State>.Publisher {
     get
   }
-  public init(store: SwiftUI_UDF_Binary.Store<State>)
+  convenience public init(initial state: State, reducer: @escaping SwiftUI_UDF_Binary.EnvironmentStore<State>.Reducer)
   convenience public init(state: State) where State : SwiftUI_UDF_Binary.Reducible
   final public func dispatch<Action>(_ action: Action, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) where Action : Swift.Equatable, Action : SwiftUI_UDF_Binary.Actionable
   final public func dispatch(_ action: SwiftUI_UDF_Binary.AnyAction)
