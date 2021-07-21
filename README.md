@@ -1,6 +1,8 @@
-# SwiftUI-UDF
+<p align="center">
+  <img src="https://github.com/Maks-Jago/SwiftUI-UDF/blob/main/Resources/SwiftUI-UDF-Logo.svg" alt="SwiftUI UDF Logo"/>
+</p>
 
-A description of this package.
+
 
 ## The license
 
