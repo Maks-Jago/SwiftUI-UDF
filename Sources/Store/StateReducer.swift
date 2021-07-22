@@ -19,7 +19,7 @@ public struct StateReducer<State: Reducible> {
 }
 
 public extension EnvironmentStore {
-    convenience init(initial state: State) where State: Reducible {
+    convenience init(state: State) where State: Reducible {
         self.init(initial: state, reducer: StateReducer().callAsFunction(_:_:))
     }
 }
