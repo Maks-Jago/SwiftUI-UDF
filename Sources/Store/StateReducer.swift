@@ -7,9 +7,9 @@
 
 import Foundation
 
-struct StateReducer<State: Reducible> {
+public struct StateReducer<State: Reducible> {
 
-    func callAsFunction(_ state: inout State, _ action: AnyAction) {
+    public func callAsFunction(_ state: inout State, _ action: AnyAction) {
         #if DEBUG
         print("Reduce\t\t\t", action)
         print("---------------------------------------------------------------------------------------------------------------------------------------------------------------------------")
@@ -18,7 +18,7 @@ struct StateReducer<State: Reducible> {
     }
 }
 
-extension EnvironmentStore {
+public extension EnvironmentStore {
     convenience init(initial state: State) where State: Reducible {
         self.init(initial: state, reducer: StateReducer().callAsFunction(_:_:))
     }
