@@ -15,14 +15,11 @@ let package = Package(
             targets: ["SwiftUI-UDF"]
         )
     ],
-    dependencies: [
-        .package(url: "https://github.com/apple/swift-collections", .upToNextMajor(from: "0.0.4"))
-    ],
+    dependencies: [],
     targets: [
         .target(
             name: "SwiftUI-UDF",
             dependencies: [
-                .product(name: "OrderedCollections", package: "swift-collections"),
                 .target(name: "SwiftUI_UDF_Binary")
             ],
             path: "Sources"

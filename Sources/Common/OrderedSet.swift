@@ -22,11 +22,3 @@ public extension Dictionary {
         self[key] = set
     }
 }
-
-public extension OrderedSet {
-    
-    @available(*, deprecated, message: "Use `elements` property instead of contents")
-    var contents: [Element] {
-        self.elements
-    }
-}
