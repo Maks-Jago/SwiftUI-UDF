@@ -247,7 +247,7 @@ extension Actions {
   public typealias DispatchFilter<Output> = (State, Output) -> Swift.Bool
   public var cancelations: [Swift.AnyHashable : Combine.AnyCancellable]
   public func execute<E, Id>(_ effect: E, cancelation: Id) where E : SwiftUI_UDF_Binary.Effectable, Id : Swift.Hashable
-  public func run<E, Id>(_ effect: E, cancelation: Id, dispatchFilter: @escaping SwiftUI_UDF_Binary.AsyncMiddleware<State>.DispatchFilter<E.Output>) where E : SwiftUI_UDF_Binary.Effectable, Id : Swift.Hashable
+  public func run<E, Id, F>(_ effect: E, cancelation: Id, dispatchFilter: @escaping SwiftUI_UDF_Binary.AsyncMiddleware<State>.DispatchFilter<F>) where E : SwiftUI_UDF_Binary.Effectable, Id : Swift.Hashable, F : Swift.Equatable, F : SwiftUI_UDF_Binary.Actionable
   @discardableResult
   public func cancel<Id>(by cancelation: Id) -> Swift.Bool where Id : Swift.Hashable
   public func cancelAll()
