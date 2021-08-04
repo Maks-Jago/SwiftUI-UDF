@@ -8,6 +8,9 @@
 import Foundation
 
 public struct Paginator<Item: Hashable & Identifiable, Flow: IdentifiableFlow>: Reducible where Flow.FlowId: Hashable {
+    public static func == (lhs: Paginator<Item, Flow>, rhs: Paginator<Item, Flow>) -> Bool {
+        lhs.items == rhs.items && lhs.perPage == rhs.perPage && lhs.initialPage == rhs.initialPage
+    }
 
     public var items: OrderedSet<Item.ID> = []
     public var page: PaginationPage = .number(1)
