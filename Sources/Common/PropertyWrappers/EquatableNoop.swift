@@ -8,8 +8,12 @@
 import Foundation
 
 @propertyWrapper
-struct EquatableNoop<Value>: Equatable {
-    var wrappedValue: Value
+public struct EquatableNoop<Value>: Equatable {
+    public var wrappedValue: Value
 
-    static func == (lhs: EquatableNoop<Value>, rhs: EquatableNoop<Value>) -> Bool { true }
+    public init(wrappedValue value: Value) {
+        self.wrappedValue = value
+    }
+
+    public static func == (lhs: EquatableNoop<Value>, rhs: EquatableNoop<Value>) -> Bool { true }
 }

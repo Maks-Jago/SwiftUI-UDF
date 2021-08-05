@@ -8,12 +8,12 @@
 import Foundation
 
 @propertyWrapper
-struct HashableNoop<Value: Equatable>: Hashable {
-    var wrappedValue: Value
+public struct HashableNoop<Value: Equatable>: Hashable {
+    public var wrappedValue: Value
 
-    init(wrappedValue value: Value) {
+    public init(wrappedValue value: Value) {
         self.wrappedValue = value
     }
 
-    func hash(into hasher: inout Hasher) {}
+    public func hash(into hasher: inout Hasher) {}
 }
