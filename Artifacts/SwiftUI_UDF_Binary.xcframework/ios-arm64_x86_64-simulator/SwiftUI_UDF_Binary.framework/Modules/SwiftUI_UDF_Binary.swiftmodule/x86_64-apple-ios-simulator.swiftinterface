@@ -66,6 +66,16 @@ public protocol Component : SwiftUI.View {
   var props: Self.Props { get }
   init(props: Self.Props)
 }
+public protocol AppReducer {
+  mutating func preReduce(_ action: SwiftUI_UDF_Binary.AnyAction)
+  mutating func postReduce(_ action: SwiftUI_UDF_Binary.AnyAction)
+  mutating func reduce(_ action: SwiftUI_UDF_Binary.AnyAction) -> Swift.Bool
+}
+extension AppReducer {
+  public func preReduce(_ action: SwiftUI_UDF_Binary.AnyAction)
+  public func postReduce(_ action: SwiftUI_UDF_Binary.AnyAction)
+}
+public typealias EquatableAppReducer = Swift.Equatable & SwiftUI_UDF_Binary.AppReducer
 @propertyWrapper final public class Cached<T> where T : Swift.Decodable, T : Swift.Encodable {
   final public var key: Swift.String
   final public var defaultValue: T
@@ -85,7 +95,7 @@ extension View {
   
 }
 public protocol Mergeable {
-  mutating func merge(_ newValue: Self)
+  func merging(_ newValue: Self) -> Self
 }
 extension Dictionary where Value : SwiftUI_UDF_Binary.Mergeable {
   public subscript(key: Key) -> Value {
@@ -127,7 +137,7 @@ public struct RenderComponent<V> : SwiftUI_UDF_Binary.Component where V : SwiftU
   }
   public typealias Body = @_opaqueReturnTypeOf("$s18SwiftUI_UDF_Binary15RenderComponentV4bodyQrvp", 0) 🦸<V>
 }
-public protocol Form : SwiftUI_UDF_Binary.Reducible {
+public protocol Form : Swift.Equatable, SwiftUI_UDF_Binary.Reducing {
 }
 public enum Actions {
   public struct Error : SwiftUI_UDF_Binary.EquatableAction {
@@ -243,7 +253,7 @@ extension Actions {
     public static func == (a: SwiftUI_UDF_Binary.Actions.DeleteNestedItem<ParentId, Nested>, b: SwiftUI_UDF_Binary.Actions.DeleteNestedItem<ParentId, Nested>) -> Swift.Bool
   }
 }
-@_inheritsConvenienceInitializers open class AsyncMiddleware<State> : SwiftUI_UDF_Binary.Middleware<State> where State : SwiftUI_UDF_Binary.Reducible {
+@_inheritsConvenienceInitializers open class AsyncMiddleware<State> : SwiftUI_UDF_Binary.Middleware<State> where State : Swift.Equatable, State : SwiftUI_UDF_Binary.AppReducer {
   public typealias DispatchFilter<Output> = (State, Output) -> Swift.Bool
   public var cancelations: [Swift.AnyHashable : Combine.AnyCancellable]
   public func execute<E, Id>(_ effect: E, cancelation: Id) where E : SwiftUI_UDF_Binary.Effectable, Id : Swift.Hashable
@@ -264,7 +274,7 @@ extension Set : SwiftUI_UDF_Binary.Initable {
 }
 extension Array : SwiftUI_UDF_Binary.Initable {
 }
-@_inheritsConvenienceInitializers open class SyncMiddleware<State> : SwiftUI_UDF_Binary.Middleware<State> where State : SwiftUI_UDF_Binary.Reducible {
+@_inheritsConvenienceInitializers open class SyncMiddleware<State> : SwiftUI_UDF_Binary.Middleware<State> where State : Swift.Equatable, State : SwiftUI_UDF_Binary.AppReducer {
   public var cancellable: Combine.AnyCancellable?
   override open func status(for state: State) -> SwiftUI_UDF_Binary.Observer<State>.Status
   public func execute<E>(_ effect: E) where E : SwiftUI_UDF_Binary.Effectable
@@ -295,7 +305,7 @@ final public class Observer<State> : Swift.Hashable {
   }
 }
 public protocol Middlewareable : AnyObject {
-  associatedtype State : SwiftUI_UDF_Binary.Reducible
+  associatedtype State : Swift.Equatable, SwiftUI_UDF_Binary.AppReducer
   var store: SwiftUI_UDF_Binary.EnvironmentStore<Self.State> { get }
   var queue: Dispatch.DispatchQueue { get }
   var asObserver: SwiftUI_UDF_Binary.Observer<Self.State> { get }
@@ -331,7 +341,7 @@ extension Effectable {
   
 }
 public protocol Container : SwiftUI.View {
-  associatedtype ContainerState : SwiftUI_UDF_Binary.Reducible
+  associatedtype ContainerState : Swift.Equatable, SwiftUI_UDF_Binary.AppReducer
   associatedtype ContainerComponent : SwiftUI_UDF_Binary.Component
   func map(state: Self.ContainerState, store: SwiftUI_UDF_Binary.EnvironmentStore<Self.ContainerState>) -> Self.ContainerComponent.Props
   func onContainerAppear(store: SwiftUI_UDF_Binary.EnvironmentStore<Self.ContainerState>)
@@ -356,7 +366,7 @@ extension Container {
   public static func buildEither(second component: [SwiftUI_UDF_Binary.AnyAction]) -> [SwiftUI_UDF_Binary.AnyAction]
   public static func buildFinalResult(_ component: [SwiftUI_UDF_Binary.AnyAction]) -> SwiftUI_UDF_Binary.ActionGroup
 }
-open class Middleware<State> : SwiftUI_UDF_Binary.Middlewareable where State : SwiftUI_UDF_Binary.Reducible {
+open class Middleware<State> : SwiftUI_UDF_Binary.Middlewareable where State : Swift.Equatable, State : SwiftUI_UDF_Binary.AppReducer {
   public var store: SwiftUI_UDF_Binary.EnvironmentStore<State>
   public var queue: Dispatch.DispatchQueue
   public init(store: SwiftUI_UDF_Binary.EnvironmentStore<State>, queue: Dispatch.DispatchQueue)
@@ -375,9 +385,14 @@ public struct NavigationContainerLink<C, Label> : SwiftUI.View where C : SwiftUI
   public typealias Body = @_opaqueReturnTypeOf("$s18SwiftUI_UDF_Binary23NavigationContainerLinkV4bodyQrvp", 0) 🦸<C, Label>
 }
 extension Binding where Value : Swift.Equatable {
-  public init<F, S>(form: F, keyPath: Swift.WritableKeyPath<F, Value>, store: SwiftUI_UDF_Binary.EnvironmentStore<S>) where F : SwiftUI_UDF_Binary.Form, S : SwiftUI_UDF_Binary.Reducible
+  public init<F, S>(form: F, keyPath: Swift.WritableKeyPath<F, Value>, store: SwiftUI_UDF_Binary.EnvironmentStore<S>) where F : SwiftUI_UDF_Binary.Form, S : Swift.Equatable, S : SwiftUI_UDF_Binary.AppReducer
 }
-public protocol Flow : SwiftUI_UDF_Binary.Reducible {
+public struct EmptyReducer : SwiftUI_UDF_Binary.AppReducer, Swift.Equatable {
+  public init()
+  public mutating func reduce(_ action: SwiftUI_UDF_Binary.AnyAction) -> Swift.Bool
+  public static func == (a: SwiftUI_UDF_Binary.EmptyReducer, b: SwiftUI_UDF_Binary.EmptyReducer) -> Swift.Bool
+}
+public protocol Flow : Swift.Equatable, SwiftUI_UDF_Binary.Reducing {
   init()
 }
 public struct Effect : SwiftUI_UDF_Binary.Effectable {
@@ -391,6 +406,14 @@ public struct Effect : SwiftUI_UDF_Binary.Effectable {
   public typealias Failure = Swift.Never
   public typealias Output = SwiftUI_UDF_Binary.AnyAction
 }
+public protocol Reducing : SwiftUI_UDF_Binary.Initable {
+  mutating func reduce(_ action: SwiftUI_UDF_Binary.AnyAction)
+  func isEqual(_ rhs: SwiftUI_UDF_Binary.Reducing) -> Swift.Bool
+}
+extension Reducing where Self : Swift.Equatable {
+  public func isEqual(_ rhs: SwiftUI_UDF_Binary.Reducing) -> Swift.Bool
+}
+public typealias Reducible = Swift.Equatable & SwiftUI_UDF_Binary.Reducing
 extension View {
   public func sheetContainer<C, V>(isPresented: SwiftUI.Binding<Swift.Bool>, onDismiss: (() -> Swift.Void)? = nil, container: C, kind: SwiftUI_UDF_Binary.ModalKind = .sheet, transform: @escaping (C) -> V) -> some SwiftUI.View where C : SwiftUI_UDF_Binary.Container, V : SwiftUI.View
   
@@ -432,15 +455,14 @@ extension Hashable {
 }
 public typealias Command = () -> ()
 public typealias CommandWith<T> = (T) -> ()
-@_hasMissingDesignatedInitializers final public class EnvironmentStore<State> : Foundation.ObservableObject where State : SwiftUI_UDF_Binary.Reducible {
-  public typealias Reducer = (inout State, SwiftUI_UDF_Binary.AnyAction) -> ()
+@_hasMissingDesignatedInitializers final public class EnvironmentStore<State> : Foundation.ObservableObject where State : Swift.Equatable, State : SwiftUI_UDF_Binary.AppReducer {
   @Combine.Published @_projectedValueProperty($state) final public var state: State {
     get
   }
   final public var $state: Combine.Published<State>.Publisher {
     get
   }
-  convenience public init(initial state: State, reducer: @escaping SwiftUI_UDF_Binary.EnvironmentStore<State>.Reducer)
+  convenience public init(initial state: State)
   final public func dispatch<Action>(_ action: Action, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) where Action : Swift.Equatable, Action : SwiftUI_UDF_Binary.Actionable
   final public func dispatch(_ action: SwiftUI_UDF_Binary.AnyAction)
   final public func bind(_ action: SwiftUI_UDF_Binary.AnyAction) -> SwiftUI_UDF_Binary.Command
@@ -511,14 +533,6 @@ extension FileCache : SwiftUI_UDF_Binary.CacheSource {
   public func save<T>(_ value: T) where T : Swift.Encodable
   public func load<T>() -> T? where T : Swift.Decodable
   public func remove()
-}
-public protocol Reducible : Swift.Equatable, SwiftUI_UDF_Binary.Initable {
-  mutating func reduce(_ action: SwiftUI_UDF_Binary.AnyAction)
-}
-public struct EmptyReducer : SwiftUI_UDF_Binary.Reducible {
-  public init()
-  public mutating func reduce(_ action: SwiftUI_UDF_Binary.AnyAction)
-  public static func == (a: SwiftUI_UDF_Binary.EmptyReducer, b: SwiftUI_UDF_Binary.EmptyReducer) -> Swift.Bool
 }
 extension View {
   public func sheetContainer<C, V, I>(item: SwiftUI.Binding<I?>, onDismiss: (() -> Swift.Void)? = nil, kind: SwiftUI_UDF_Binary.ModalKind = .sheet, container: @escaping (I) -> C, transform: @escaping (C) -> V) -> some SwiftUI.View where C : SwiftUI_UDF_Binary.Container, V : SwiftUI.View, I : Swift.Identifiable

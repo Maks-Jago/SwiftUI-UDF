@@ -2,6 +2,15 @@
   "object": {
     "pins": [
       {
+        "package": "Runtime",
+        "repositoryURL": "https://github.com/wickwirew/Runtime",
+        "state": {
+          "branch": null,
+          "revision": "a848b81e1a0100801f572e5273ffe4352fd54088",
+          "version": "2.2.2"
+        }
+      },
+      {
         "package": "swift-collections",
         "repositoryURL": "https://github.com/apple/swift-collections",
         "state": {
