@@ -32,8 +32,8 @@ class StoreReducerTests: XCTestCase {
 
     func testAppState() {
         let testStore = EnvironmentStore(initial: AppState())
-        let exp = expectation(description: "")
         let newValue = "test title"
+        let exp = expectation(description: "test form `title` field should be updated to `\(newValue)`")
 
         cancelation = testStore.$state.sink { newState in
             if newState.testForm.title == newValue {
