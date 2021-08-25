@@ -417,20 +417,6 @@ extension Reducing where Self : Swift.Equatable {
   public func isEqual(_ rhs: SwiftUI_UDF_Binary.Reducing) -> Swift.Bool
 }
 public typealias Reducible = Swift.Equatable & SwiftUI_UDF_Binary.Reducing
-public struct ConsoleDebugLogger : SwiftUI_UDF_Binary.ActionLogging {
-  public init(options: SwiftUI_UDF_Binary.ConsoleDebugLogger.Options)
-  public func log(_ action: SwiftUI_UDF_Binary.AnyAction)
-}
-extension ConsoleDebugLogger {
-  public enum Options {
-    case none, error, all
-    public static func == (a: SwiftUI_UDF_Binary.ConsoleDebugLogger.Options, b: SwiftUI_UDF_Binary.ConsoleDebugLogger.Options) -> Swift.Bool
-    public func hash(into hasher: inout Swift.Hasher)
-    public var hashValue: Swift.Int {
-      get
-    }
-  }
-}
 extension View {
   public func sheetContainer<C, V>(isPresented: SwiftUI.Binding<Swift.Bool>, onDismiss: (() -> Swift.Void)? = nil, container: C, kind: SwiftUI_UDF_Binary.ModalKind = .sheet, transform: @escaping (C) -> V) -> some SwiftUI.View where C : SwiftUI_UDF_Binary.Container, V : SwiftUI.View
   
@@ -480,7 +466,6 @@ public typealias CommandWith<T> = (T) -> ()
     get
   }
   convenience public init(initial state: State, logger: SwiftUI_UDF_Binary.ActionLogging)
-  convenience public init(initial state: State)
   final public func dispatch<Action>(_ action: Action, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) where Action : Swift.Equatable, Action : SwiftUI_UDF_Binary.Actionable
   final public func dispatch(_ action: SwiftUI_UDF_Binary.AnyAction)
   final public func bind(_ action: SwiftUI_UDF_Binary.AnyAction) -> SwiftUI_UDF_Binary.Command
@@ -560,7 +545,5 @@ extension View {
 }
 extension SwiftUI_UDF_Binary.Observer.Status : Swift.Equatable {}
 extension SwiftUI_UDF_Binary.Observer.Status : Swift.Hashable {}
-extension SwiftUI_UDF_Binary.ConsoleDebugLogger.Options : Swift.Equatable {}
-extension SwiftUI_UDF_Binary.ConsoleDebugLogger.Options : Swift.Hashable {}
 extension SwiftUI_UDF_Binary.ModalKind : Swift.Equatable {}
 extension SwiftUI_UDF_Binary.ModalKind : Swift.Hashable {}
