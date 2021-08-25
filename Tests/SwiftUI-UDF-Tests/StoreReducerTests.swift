@@ -31,6 +31,7 @@ class StoreReducerTests: XCTestCase {
     var cancelation: AnyCancellable? = nil
 
     func testAppState() {
+
         let testStore = EnvironmentStore(initial: AppState())
         let newValue = "test title"
         let exp = expectation(description: "test form `title` field should be updated to `\(newValue)`")
