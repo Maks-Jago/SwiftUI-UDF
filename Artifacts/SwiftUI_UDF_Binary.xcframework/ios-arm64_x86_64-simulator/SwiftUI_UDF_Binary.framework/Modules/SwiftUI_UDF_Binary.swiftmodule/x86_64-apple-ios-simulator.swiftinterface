@@ -162,18 +162,23 @@ public enum Actions {
     public init<Id>(pageNumber: Swift.Int = 1, id: Id) where Id : Swift.Hashable
     public static func == (a: SwiftUI_UDF_Binary.Actions.LoadPage, b: SwiftUI_UDF_Binary.Actions.LoadPage) -> Swift.Bool
   }
-  public struct UpdateFormField<F, V> : SwiftUI_UDF_Binary.EquatableAction where F : SwiftUI_UDF_Binary.Form, V : Swift.Equatable {
-    public var keyPath: Swift.WritableKeyPath<F, V>
-    public var value: V
-    public init(keyPath: Swift.WritableKeyPath<F, V>, value: V)
-    public static func == (a: SwiftUI_UDF_Binary.Actions.UpdateFormField<F, V>, b: SwiftUI_UDF_Binary.Actions.UpdateFormField<F, V>) -> Swift.Bool
-  }
   public struct UpdateAlertStatus : SwiftUI_UDF_Binary.EquatableAction {
     public var status: SwiftUI_UDF_Binary.AlertBuilder.AlertStatus
     public var id: Swift.AnyHashable
     public init<Id>(status: SwiftUI_UDF_Binary.AlertBuilder.AlertStatus, id: Id) where Id : Swift.Hashable
     public init<Id>(style: SwiftUI_UDF_Binary.AlertBuilder.AlertStyle, id: Id) where Id : Swift.Hashable
     public static func == (a: SwiftUI_UDF_Binary.Actions.UpdateAlertStatus, b: SwiftUI_UDF_Binary.Actions.UpdateAlertStatus) -> Swift.Bool
+  }
+}
+extension Actions {
+  public struct UpdateFormField<F, V> : SwiftUI_UDF_Binary.EquatableAction where F : SwiftUI_UDF_Binary.Form, V : Swift.Equatable {
+    public var keyPath: Swift.WritableKeyPath<F, V>
+    public var value: V
+    public init(keyPath: Swift.WritableKeyPath<F, V>, value: V)
+    public static func == (a: SwiftUI_UDF_Binary.Actions.UpdateFormField<F, V>, b: SwiftUI_UDF_Binary.Actions.UpdateFormField<F, V>) -> Swift.Bool
+  }
+  public struct ResetForm<F> : SwiftUI_UDF_Binary.EquatableAction where F : SwiftUI_UDF_Binary.Form {
+    public static func == (a: SwiftUI_UDF_Binary.Actions.ResetForm<F>, b: SwiftUI_UDF_Binary.Actions.ResetForm<F>) -> Swift.Bool
   }
 }
 extension Actions {
