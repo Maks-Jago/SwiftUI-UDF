@@ -178,6 +178,7 @@ extension Actions {
     public static func == (a: SwiftUI_UDF_Binary.Actions.UpdateFormField<F, V>, b: SwiftUI_UDF_Binary.Actions.UpdateFormField<F, V>) -> Swift.Bool
   }
   public struct ResetForm<F> : SwiftUI_UDF_Binary.EquatableAction where F : SwiftUI_UDF_Binary.Form {
+    public init()
     public static func == (a: SwiftUI_UDF_Binary.Actions.ResetForm<F>, b: SwiftUI_UDF_Binary.Actions.ResetForm<F>) -> Swift.Bool
   }
 }
