@@ -368,7 +368,7 @@ extension Container {
 @_functionBuilder public enum ActionGroupBuilder {
   public static func buildArray(_ components: [[SwiftUI_UDF_Binary.AnyAction]]) -> [SwiftUI_UDF_Binary.AnyAction]
   public static func buildBlock(_ components: [SwiftUI_UDF_Binary.AnyAction]...) -> [SwiftUI_UDF_Binary.AnyAction]
-  public static func buildExpression<T>(_ expression: T) -> [SwiftUI_UDF_Binary.AnyAction] where T : Swift.Equatable, T : SwiftUI_UDF_Binary.Actionable
+  public static func buildExpression<T>(_ expression: T, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) -> [SwiftUI_UDF_Binary.AnyAction] where T : Swift.Equatable, T : SwiftUI_UDF_Binary.Actionable
   public static func buildExpression(_ expression: Swift.Void) -> [SwiftUI_UDF_Binary.AnyAction]
   public static func buildOptional(_ component: [SwiftUI_UDF_Binary.AnyAction]?) -> [SwiftUI_UDF_Binary.AnyAction]
   public static func buildEither(first component: [SwiftUI_UDF_Binary.AnyAction]) -> [SwiftUI_UDF_Binary.AnyAction]

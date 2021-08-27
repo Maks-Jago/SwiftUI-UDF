@@ -10,39 +10,6 @@ import XCTest
 
 class MergeableTests: XCTestCase {
 
-    struct AllItems {
-        var byId: [Item.Id: Item] = [ :
-//            .init(value: 1) : Item(id: .init(value: 1), title: "title 1", text: "text", number: 12.23)
-        ]
-
-        mutating func reduce(_ action: AnyAction) {
-            switch action.value {
-            case let action as Actions.DidLoadItems<Item>:
-                action.items.forEach {
-                    byId[$0.id] = $0
-                }
-
-            case let action as Actions.DidLoadItem<Item>:
-                byId[action.item.id] = action.item
-
-            case let action as Actions.DidUpdateItem<Item>:
-                byId[action.item.id] = action.item
-
-            case let action as Actions.DeleteItem<Item>:
-                byId.removeValue(forKey: action.item.id)
-
-            default:
-                break
-            }
-        }
-    }
-
-    var allItems = AllItems()
-
-//    var byId: [Item.Id: Item] = [
-//        .init(value: 1) : Item(id: .init(value: 1), title: "title 1", text: "text", number: 12.23)
-//    ]
-
     struct Item: Mergeable, Equatable {
         struct Id: Hashable {
             var value: Int
@@ -61,15 +28,12 @@ class MergeableTests: XCTestCase {
     }
 
     func testItemMerging() {
-        allItems.reduce(Actions.DidLoadItem(item: Item(id: .init(value: 1), title: "title 1", text: "text", number: 12.23)).eraseToAnyAction())
+        var item = Item(id: .init(value: 1), title: "title 1", text: "text", number: 12.23)
         let item2 = Item(id: .init(value: 1), title: "title 2", text: "new text", number: 0)
+        item = item.merging(item2)
 
-
-        allItems.reduce(Actions.DidUpdateItem(item: item2).eraseToAnyAction())
-//        byId[item2.id] = item2
-
-        XCTAssertEqual(allItems.byId[item2.id]!.title, "title 2")
-        XCTAssertEqual(allItems.byId[item2.id]!.text, "new text")
-        XCTAssertTrue(allItems.byId[item2.id]!.number > 0)
+        XCTAssertEqual(item.title, "title 2")
+        XCTAssertEqual(item.text, "new text")
+        XCTAssertTrue(item.number > 0)
     }
 }
