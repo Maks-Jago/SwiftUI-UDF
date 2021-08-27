@@ -142,6 +142,9 @@ public struct RenderComponent<V> : SwiftUI_UDF_Binary.Component where V : SwiftU
 }
 public protocol Form : Swift.Equatable, SwiftUI_UDF_Binary.Reducing {
 }
+extension Form {
+  public mutating func reduceBasicFormFields(_ action: SwiftUI_UDF_Binary.AnyAction)
+}
 public enum Actions {
   public struct Error : SwiftUI_UDF_Binary.EquatableAction {
     public var error: Swift.String?
