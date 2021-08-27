@@ -358,10 +358,13 @@ public protocol Container : SwiftUI.View {
   func map(state: Self.ContainerState, store: SwiftUI_UDF_Binary.EnvironmentStore<Self.ContainerState>) -> Self.ContainerComponent.Props
   func onContainerAppear(store: SwiftUI_UDF_Binary.EnvironmentStore<Self.ContainerState>)
   func onContainerDisappear(store: SwiftUI_UDF_Binary.EnvironmentStore<Self.ContainerState>)
+  @available(iOS 14, *)
+  func onContainerDidLoad(store: SwiftUI_UDF_Binary.EnvironmentStore<Self.ContainerState>)
 }
 extension Container {
   public func onContainerAppear(store: SwiftUI_UDF_Binary.EnvironmentStore<Self.ContainerState>)
   public func onContainerDisappear(store: SwiftUI_UDF_Binary.EnvironmentStore<Self.ContainerState>)
+  public func onContainerDidLoad(store: SwiftUI_UDF_Binary.EnvironmentStore<Self.ContainerState>)
 }
 extension Container {
   public var body: some SwiftUI.View {
