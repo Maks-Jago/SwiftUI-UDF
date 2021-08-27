@@ -30,7 +30,7 @@ public struct ConsoleDebugLogger: ActionLogging {
     }
 
     private func printAction(_ action: AnyAction) {
-        print("Reduce\t\t\t", action)
+        print("Reduce\t\t", action)
         print("---------------------------------------------------------------------------------------------------------------------------------------------------------------------------")
     }
 }
