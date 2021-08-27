@@ -442,6 +442,11 @@ public struct ActionGroup : SwiftUI_UDF_Binary.Actionable, Swift.Equatable {
   public init()
   public static func == (a: SwiftUI_UDF_Binary.ActionGroup, b: SwiftUI_UDF_Binary.ActionGroup) -> Swift.Bool
 }
+extension ActionGroup : Swift.CustomDebugStringConvertible {
+  public var debugDescription: Swift.String {
+    get
+  }
+}
 extension ActionGroup {
   public mutating func append<T>(action: T, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) where T : Swift.Equatable, T : SwiftUI_UDF_Binary.Actionable
   public mutating func append(action: SwiftUI_UDF_Binary.AnyAction)
