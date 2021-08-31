@@ -16,7 +16,7 @@ public extension Actions {
     }
 
     struct DidUpdateLocationAccess: EquatableAction {
-        var access: CLAuthorizationStatus
+        public var access: CLAuthorizationStatus
 
         public init(access: CLAuthorizationStatus) {
             self.access = access
@@ -24,7 +24,7 @@ public extension Actions {
     }
 
     struct DidUpdateUserLocation: EquatableAction {
-        var location: CLLocation
+        public var location: CLLocation
 
         public init(location: CLLocation) {
             self.location = location
