@@ -11,7 +11,7 @@ import CoreLocation
 
 // MARK: - Location actions
 public extension Actions {
-    struct RequestUserLocationAccess: EquatableAction {
+    struct RequestLocationAccess: EquatableAction {
         public init() {}
     }
 
