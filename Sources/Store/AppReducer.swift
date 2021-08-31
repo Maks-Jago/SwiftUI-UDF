@@ -8,17 +8,6 @@
 import Foundation
 import Runtime
 
-//public struct StateReducer<State: Reducible> {
-//
-//    public func callAsFunction(_ state: inout State, _ action: AnyAction) {
-//        #if DEBUG
-//        print("Reduce\t\t\t", action)
-//        print("---------------------------------------------------------------------------------------------------------------------------------------------------------------------------")
-//        #endif
-//        state.reduce(action)
-//    }
-//}
-
 extension AppReducer {
     public mutating func reduce(_ action: AnyAction) -> Bool {
         let info = try! typeInfo(of: Self.self)
