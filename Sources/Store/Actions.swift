@@ -9,12 +9,25 @@ import Foundation
 import SwiftUI_UDF_Binary
 import CoreLocation
 
+// MARK: - Location actions
 public extension Actions {
+    struct RequestUserLocationAccess: EquatableAction {
+        public init() {}
+    }
+
     struct DidUpdateLocationAccess: EquatableAction {
         var access: CLAuthorizationStatus
+
+        public init(access: CLAuthorizationStatus) {
+            self.access = access
+        }
     }
 
     struct DidUpdateUserLocation: EquatableAction {
         var location: CLLocation
+
+        public init(location: CLLocation) {
+            self.location = location
+        }
     }
 }
