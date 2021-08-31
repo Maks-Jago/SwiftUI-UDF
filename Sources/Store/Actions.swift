@@ -9,7 +9,7 @@ import Foundation
 import SwiftUI_UDF_Binary
 import CoreLocation
 
-extension Actions {
+public extension Actions {
     struct DidUpdateLocationAccess: EquatableAction {
         var access: CLAuthorizationStatus
     }
