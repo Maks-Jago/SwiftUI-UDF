@@ -28,6 +28,17 @@ public struct Paginator<Item: Hashable & Identifiable, Flow: IdentifiableFlow>: 
         self.perPage = 25
         self.usePrefixForFirstPage = true
     }
+
+    public mutating func removeItems(after page: Int) {
+        guard case .lastPage(let lastPageNumber) = self.page, lastPageNumber != page else {
+            return
+        }
+
+        self.page = .number(page)
+
+        let itemsToRemove = items.count - (page * perPage)
+        items.removeLast(itemsToRemove)
+    }
     
     public mutating func reduce(_ action: AnyAction) {
         switch action.value {
