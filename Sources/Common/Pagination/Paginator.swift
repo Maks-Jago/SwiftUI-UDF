@@ -29,8 +29,16 @@ public struct Paginator<Item: Hashable & Identifiable, Flow: IdentifiableFlow>: 
         self.usePrefixForFirstPage = true
     }
 
+    public func pageNumber(for item: Item) -> Int? {
+        guard let itemIndex = items.firstIndex(of: item.id) else {
+            return nil
+        }
+
+        return (itemIndex / perPage) + initialPage
+    }
+
     public mutating func removeItems(after page: Int) {
-        guard case .lastPage(let lastPageNumber) = self.page, lastPageNumber != page else {
+        guard self.page.pageNumber != page else {
             return
         }
 
@@ -60,6 +68,12 @@ public struct Paginator<Item: Hashable & Identifiable, Flow: IdentifiableFlow>: 
             }
             
         case let action as Actions.LoadPage where action.id == Flow.id && action.pageNumber == initialPage:
+
+            // if action.pageNumber < self.page.pageNumber, it means that we need to refresh some page inside list of pages. To be sure in next sequence of pages consistency, we must remove all items after refreshable page.
+            if action.pageNumber < self.page.pageNumber {
+                removeItems(after: action.pageNumber)
+            }
+
             isLoading = true
             page = .number(initialPage)
             
