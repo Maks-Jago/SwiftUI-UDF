@@ -34,7 +34,17 @@ public extension Effects {
                 locationManager.delegate = self
             }
 
-            func request(_ demand: Subscribers.Demand) {}
+            func request(_ demand: Subscribers.Demand) {
+                guard demand > 0 else {
+                    return
+                }
+
+                if #available(iOS 14, *) {
+                    send(status: locationManager.authorizationStatus)
+                } else {
+                    send(status: CLLocationManager.authorizationStatus())
+                }
+            }
 
             func cancel() {
                 subscriber = nil
@@ -42,8 +52,7 @@ public extension Effects {
 
             @available(iOS 14.0, *)
             func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
-                let action = Actions.DidUpdateLocationAccess(access: manager.authorizationStatus).eraseToAnyAction()
-                _ = subscriber?.receive(action)
+                send(status: manager.authorizationStatus)
             }
 
             func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
@@ -51,6 +60,10 @@ public extension Effects {
                     return
                 }
 
+                send(status: status)
+            }
+
+            private func send(status: CLAuthorizationStatus) {
                 let action = Actions.DidUpdateLocationAccess(access: status).eraseToAnyAction()
                 _ = subscriber?.receive(action)
             }
