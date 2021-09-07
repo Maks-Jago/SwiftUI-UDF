@@ -144,6 +144,9 @@ public struct RenderComponent<V> : SwiftUI_UDF_Binary.Component where V : SwiftU
   }
   public typealias Body = @_opaqueReturnTypeOf("$s18SwiftUI_UDF_Binary15RenderComponentV4bodyQrvp", 0) 🦸<V>
 }
+extension Mergeable {
+  public func filled(from value: Self, mutate: (inout Self, Self) -> Swift.Void) -> Self
+}
 public protocol Form : Swift.Equatable, SwiftUI_UDF_Binary.Reducing {
 }
 public enum Actions {
