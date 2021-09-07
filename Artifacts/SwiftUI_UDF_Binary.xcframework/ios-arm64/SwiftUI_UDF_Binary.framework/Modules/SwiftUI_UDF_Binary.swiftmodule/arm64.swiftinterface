@@ -66,16 +66,6 @@ public protocol Component : SwiftUI.View {
   var props: Self.Props { get }
   init(props: Self.Props)
 }
-public protocol AppReducer {
-  mutating func preReduce(_ action: SwiftUI_UDF_Binary.AnyAction)
-  mutating func postReduce(_ action: SwiftUI_UDF_Binary.AnyAction)
-  mutating func reduce(_ action: SwiftUI_UDF_Binary.AnyAction) -> Swift.Bool
-}
-extension AppReducer {
-  public func preReduce(_ action: SwiftUI_UDF_Binary.AnyAction)
-  public func postReduce(_ action: SwiftUI_UDF_Binary.AnyAction)
-}
-public typealias EquatableAppReducer = Swift.Equatable & SwiftUI_UDF_Binary.AppReducer
 public protocol ActionLogging {
   func log(_ action: SwiftUI_UDF_Binary.AnyAction)
 }
@@ -93,18 +83,32 @@ public protocol ActionLogging {
   }
   @objc deinit
 }
+public struct EmptyReducer : SwiftUI_UDF_Binary.AppReducer, Swift.Equatable {
+  public init()
+  public mutating func reduce(_ action: SwiftUI_UDF_Binary.AnyAction) -> Swift.Bool
+  public static func == (a: SwiftUI_UDF_Binary.EmptyReducer, b: SwiftUI_UDF_Binary.EmptyReducer) -> Swift.Bool
+}
 extension View {
   public func alert(status: SwiftUI.Binding<SwiftUI_UDF_Binary.AlertBuilder.AlertStatus>) -> some SwiftUI.View
   
 }
 public protocol Mergeable {
   func merging(_ newValue: Self) -> Self
+  func filled(from value: Self, mutate: (inout Self, Self) -> Swift.Void) -> Self
 }
 extension Dictionary where Value : SwiftUI_UDF_Binary.Mergeable {
   public subscript(key: Key) -> Value {
     get
     set
   }
+}
+public protocol AppReducer {
+  mutating func preReduce(_ action: SwiftUI_UDF_Binary.AnyAction)
+  mutating func postReduce(_ action: SwiftUI_UDF_Binary.AnyAction)
+}
+extension AppReducer {
+  public func preReduce(_ action: SwiftUI_UDF_Binary.AnyAction)
+  public func postReduce(_ action: SwiftUI_UDF_Binary.AnyAction)
 }
 public protocol Actionable {
 }
@@ -141,9 +145,6 @@ public struct RenderComponent<V> : SwiftUI_UDF_Binary.Component where V : SwiftU
   public typealias Body = @_opaqueReturnTypeOf("$s18SwiftUI_UDF_Binary15RenderComponentV4bodyQrvp", 0) 🦸<V>
 }
 public protocol Form : Swift.Equatable, SwiftUI_UDF_Binary.Reducing {
-}
-extension Form {
-  public mutating func reduceBasicFormFields(_ action: SwiftUI_UDF_Binary.AnyAction)
 }
 public enum Actions {
   public struct Error : SwiftUI_UDF_Binary.EquatableAction {
@@ -402,11 +403,6 @@ public struct NavigationContainerLink<C, Label> : SwiftUI.View where C : SwiftUI
 extension Binding where Value : Swift.Equatable {
   public init<F, S>(form: F, keyPath: Swift.WritableKeyPath<F, Value>, store: SwiftUI_UDF_Binary.EnvironmentStore<S>) where F : SwiftUI_UDF_Binary.Form, S : Swift.Equatable, S : SwiftUI_UDF_Binary.AppReducer
 }
-public struct EmptyReducer : SwiftUI_UDF_Binary.AppReducer, Swift.Equatable {
-  public init()
-  public mutating func reduce(_ action: SwiftUI_UDF_Binary.AnyAction) -> Swift.Bool
-  public static func == (a: SwiftUI_UDF_Binary.EmptyReducer, b: SwiftUI_UDF_Binary.EmptyReducer) -> Swift.Bool
-}
 public protocol Flow : Swift.Equatable, SwiftUI_UDF_Binary.Reducing {
   init()
 }
@@ -421,14 +417,6 @@ public struct Effect : SwiftUI_UDF_Binary.Effectable {
   public typealias Failure = Swift.Never
   public typealias Output = SwiftUI_UDF_Binary.AnyAction
 }
-public protocol Reducing : SwiftUI_UDF_Binary.Initable {
-  mutating func reduce(_ action: SwiftUI_UDF_Binary.AnyAction)
-  func isEqual(_ rhs: SwiftUI_UDF_Binary.Reducing) -> Swift.Bool
-}
-extension Reducing where Self : Swift.Equatable {
-  public func isEqual(_ rhs: SwiftUI_UDF_Binary.Reducing) -> Swift.Bool
-}
-public typealias Reducible = Swift.Equatable & SwiftUI_UDF_Binary.Reducing
 extension View {
   public func sheetContainer<C, V>(isPresented: SwiftUI.Binding<Swift.Bool>, onDismiss: (() -> Swift.Void)? = nil, container: C, kind: SwiftUI_UDF_Binary.ModalKind = .sheet, transform: @escaping (C) -> V) -> some SwiftUI.View where C : SwiftUI_UDF_Binary.Container, V : SwiftUI.View
   
@@ -560,6 +548,14 @@ extension View {
   public func sheetContainer<C, I>(item: SwiftUI.Binding<I?>, onDismiss: (() -> Swift.Void)? = nil, kind: SwiftUI_UDF_Binary.ModalKind = .sheet, container: @escaping (I) -> C) -> some SwiftUI.View where C : SwiftUI_UDF_Binary.Container, I : Swift.Identifiable
   
 }
+public protocol Reducing : SwiftUI_UDF_Binary.Initable {
+  mutating func reduce(_ action: SwiftUI_UDF_Binary.AnyAction)
+  func isEqual(_ rhs: SwiftUI_UDF_Binary.Reducing) -> Swift.Bool
+}
+extension Reducing where Self : Swift.Equatable {
+  public func isEqual(_ rhs: SwiftUI_UDF_Binary.Reducing) -> Swift.Bool
+}
+public typealias Reducible = Swift.Equatable & SwiftUI_UDF_Binary.Reducing
 extension SwiftUI_UDF_Binary.Observer.Status : Swift.Equatable {}
 extension SwiftUI_UDF_Binary.Observer.Status : Swift.Hashable {}
 extension SwiftUI_UDF_Binary.ModalKind : Swift.Equatable {}

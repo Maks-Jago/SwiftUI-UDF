@@ -10,7 +10,7 @@ import XCTest
 import Combine
 
 class StoreReducerTests: XCTestCase {
-    struct AppState: EquatableAppReducer {
+    struct AppState: AppReducer, Equatable {
 
         var testForm: TestForm = .init()
     }
