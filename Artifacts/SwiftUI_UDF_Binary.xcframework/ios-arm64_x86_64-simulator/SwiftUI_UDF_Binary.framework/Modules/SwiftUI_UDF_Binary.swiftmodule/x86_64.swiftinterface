@@ -499,17 +499,6 @@ extension Effects {
     public typealias Output = SwiftUI_UDF_Binary.AnyAction
   }
 }
-public enum PaginationPage {
-  case number(Swift.Int)
-  case lastPage(Swift.Int)
-  public var pageNumber: Swift.Int {
-    get
-  }
-}
-extension PaginationPage : Swift.Codable {
-  public init(from decoder: Swift.Decoder) throws
-  public func encode(to encoder: Swift.Encoder) throws
-}
 extension Effects {
   public struct Filter<A> : SwiftUI_UDF_Binary.Effectable where A : SwiftUI_UDF_Binary.Actionable {
     public var upstream: Combine.AnyPublisher<SwiftUI_UDF_Binary.AnyAction, Swift.Never>
