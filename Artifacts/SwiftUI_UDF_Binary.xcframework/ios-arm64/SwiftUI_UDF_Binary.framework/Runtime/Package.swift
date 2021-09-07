@@ -9,7 +9,8 @@ let package = Package(
     products: [
         .library(
             name: "Runtime",
-            targets: ["Runtime"])
+            targets: ["Runtime"]
+        )
     ],
     targets: [
         .target(
@@ -17,12 +18,14 @@ let package = Package(
             dependencies: ["CRuntime"],
             resources: [
                 .process("CMakeLists.txt")
-            ]),
+            ]
+        ),
         .target(
             name: "CRuntime",
             dependencies: [],
             resources: [
                 .process("CMakeLists.txt")
-            ])
+            ]
+        )
     ]
 )
