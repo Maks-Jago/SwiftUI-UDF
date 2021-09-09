@@ -66,6 +66,25 @@ public protocol Component : SwiftUI.View {
   var props: Self.Props { get }
   init(props: Self.Props)
 }
+public protocol PureEffect : Combine.Publisher {
+  var upstream: Combine.AnyPublisher<Self.Output, Self.Failure> { get }
+}
+extension PureEffect {
+  public func receive<S>(subscriber: S) where S : Combine.Subscriber, Self.Failure == S.Failure, Self.Output == S.Input
+  public func eraseToEffectable(output: @escaping (Self.Output) -> SwiftUI_UDF_Binary.AnyAction, failure: @escaping (Self.Failure) -> SwiftUI_UDF_Binary.AnyAction) -> Combine.AnyPublisher<SwiftUI_UDF_Binary.AnyAction, Swift.Never>
+}
+extension PureEffect where Self.Failure == Swift.Never {
+  public func eraseToEffectable(output: @escaping (Self.Output) -> SwiftUI_UDF_Binary.AnyAction) -> Combine.AnyPublisher<SwiftUI_UDF_Binary.AnyAction, Swift.Never>
+  public func eraseToEffectable<O>(output: @escaping (Self.Output) -> O) -> Combine.AnyPublisher<SwiftUI_UDF_Binary.AnyAction, Swift.Never> where O : Swift.Equatable, O : SwiftUI_UDF_Binary.Actionable
+}
+extension AnyPublisher : SwiftUI_UDF_Binary.PureEffect where Output == SwiftUI_UDF_Binary.AnyAction, Failure == Swift.Never {
+  public var upstream: Combine.AnyPublisher<SwiftUI_UDF_Binary.AnyAction, Swift.Never> {
+    get
+  }
+}
+public protocol ErasableToEffect {
+  var asEffectable: Combine.AnyPublisher<SwiftUI_UDF_Binary.AnyAction, Swift.Never> { get }
+}
 public protocol ActionLogging {
   func log(_ action: SwiftUI_UDF_Binary.AnyAction)
 }
@@ -272,9 +291,10 @@ extension Actions {
 @_inheritsConvenienceInitializers open class AsyncMiddleware<State> : SwiftUI_UDF_Binary.Middleware<State> where State : Swift.Equatable, State : SwiftUI_UDF_Binary.AppReducer {
   public typealias DispatchFilter<Output> = (State, Output) -> Swift.Bool
   public var cancelations: [Swift.AnyHashable : Combine.AnyCancellable]
-  public func execute<E, Id>(_ effect: E, cancelation: Id) where E : SwiftUI_UDF_Binary.Effectable, Id : Swift.Hashable
-  public func run<E, Id, F>(_ effect: E, cancelation: Id, dispatchFilter: @escaping SwiftUI_UDF_Binary.AsyncMiddleware<State>.DispatchFilter<F>) where E : SwiftUI_UDF_Binary.Effectable, Id : Swift.Hashable, F : Swift.Equatable, F : SwiftUI_UDF_Binary.Actionable
-  public func run<E, Id>(_ effect: E, cancelation: Id) where E : SwiftUI_UDF_Binary.Effectable, Id : Swift.Hashable
+  public func execute<E, Id>(_ effect: E, cancelation: Id) where E : SwiftUI_UDF_Binary.PureEffect, Id : Swift.Hashable, E.Failure == Swift.Never, E.Output == SwiftUI_UDF_Binary.AnyAction
+  public func execute<E, Id>(_ effect: E, cancelation: Id) where E : SwiftUI_UDF_Binary.ErasableToEffect, E : SwiftUI_UDF_Binary.PureEffect, Id : Swift.Hashable
+  public func run<E, Id, F>(_ effect: E, cancelation: Id, dispatchFilter: @escaping SwiftUI_UDF_Binary.AsyncMiddleware<State>.DispatchFilter<F>) where E : SwiftUI_UDF_Binary.PureEffect, Id : Swift.Hashable, F : Swift.Equatable, F : SwiftUI_UDF_Binary.Actionable, E.Failure == Swift.Never, E.Output == SwiftUI_UDF_Binary.AnyAction
+  public func run<E, Id>(_ effect: E, cancelation: Id) where E : SwiftUI_UDF_Binary.PureEffect, Id : Swift.Hashable, E.Failure == Swift.Never, E.Output == SwiftUI_UDF_Binary.AnyAction
   @discardableResult
   public func cancel<Id>(by cancelation: Id) -> Swift.Bool where Id : Swift.Hashable
   public func cancelAll()
@@ -293,7 +313,8 @@ extension Array : SwiftUI_UDF_Binary.Initable {
 @_inheritsConvenienceInitializers open class SyncMiddleware<State> : SwiftUI_UDF_Binary.Middleware<State> where State : Swift.Equatable, State : SwiftUI_UDF_Binary.AppReducer {
   public var cancellable: Combine.AnyCancellable?
   override open func status(for state: State) -> SwiftUI_UDF_Binary.Observer<State>.Status
-  public func execute<E>(_ effect: E) where E : SwiftUI_UDF_Binary.Effectable
+  public func execute<E>(_ effect: E) where E : SwiftUI_UDF_Binary.PureEffect, E.Failure == Swift.Never, E.Output == SwiftUI_UDF_Binary.AnyAction
+  public func execute<E>(_ effect: E) where E : SwiftUI_UDF_Binary.ErasableToEffect, E : SwiftUI_UDF_Binary.PureEffect
   public func cancel()
   override public init(store: SwiftUI_UDF_Binary.EnvironmentStore<State>, queue: Dispatch.DispatchQueue)
   @objc deinit
@@ -342,11 +363,7 @@ public protocol CacheSource {
 }
 public enum Effects {
 }
-public protocol Effectable : Combine.Publisher where Self.Failure == Swift.Never, Self.Output == SwiftUI_UDF_Binary.AnyAction {
-  var upstream: Combine.AnyPublisher<SwiftUI_UDF_Binary.AnyAction, Swift.Never> { get }
-}
-extension Effectable {
-  public func receive<S>(subscriber: S) where S : Combine.Subscriber, S.Failure == Swift.Never, S.Input == SwiftUI_UDF_Binary.AnyAction
+public protocol Effectable : SwiftUI_UDF_Binary.PureEffect where Self.Failure == Swift.Never, Self.Output == SwiftUI_UDF_Binary.AnyAction {
 }
 extension Effectable {
   public func combine<E>(_ effect: E) -> some SwiftUI_UDF_Binary.Effectable where E : SwiftUI_UDF_Binary.Effectable
