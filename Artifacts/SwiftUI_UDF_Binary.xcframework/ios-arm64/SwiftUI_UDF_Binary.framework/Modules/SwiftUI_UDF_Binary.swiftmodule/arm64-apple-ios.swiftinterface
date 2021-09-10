@@ -2,6 +2,8 @@
 // swift-compiler-version: Apple Swift version 5.4.2 (swiftlang-1205.0.28.2 clang-1205.0.19.57)
 // swift-module-flags: -target arm64-apple-ios14.5 -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -O -module-name SwiftUI_UDF_Binary
 import Combine
+import CoreLocation/*.CLAuthorizationStatus*/
+import CoreLocation/*.CLLocation*/
 import Foundation
 import Swift
 import SwiftUI
@@ -168,6 +170,13 @@ extension Mergeable {
 }
 public protocol Form : Swift.Equatable, SwiftUI_UDF_Binary.Reducing {
 }
+@propertyWrapper public struct FormField<F, Value> : SwiftUI_UDF_Binary.Reducing, Swift.Equatable where F : SwiftUI_UDF_Binary.Form, Value : Swift.Equatable {
+  public init()
+  public var wrappedValue: Value
+  public init(wrappedValue value: Value, _ formType: F.Type)
+  public mutating func reduce(_ action: SwiftUI_UDF_Binary.AnyAction)
+  public static func == (a: SwiftUI_UDF_Binary.FormField<F, Value>, b: SwiftUI_UDF_Binary.FormField<F, Value>) -> Swift.Bool
+}
 public enum Actions {
   public struct Error : SwiftUI_UDF_Binary.EquatableAction {
     public var error: Swift.String?
@@ -288,6 +297,22 @@ extension Actions {
     public static func == (a: SwiftUI_UDF_Binary.Actions.DeleteNestedItem<ParentId, Nested>, b: SwiftUI_UDF_Binary.Actions.DeleteNestedItem<ParentId, Nested>) -> Swift.Bool
   }
 }
+extension Actions {
+  public struct RequestLocationAccess : SwiftUI_UDF_Binary.EquatableAction {
+    public init()
+    public static func == (a: SwiftUI_UDF_Binary.Actions.RequestLocationAccess, b: SwiftUI_UDF_Binary.Actions.RequestLocationAccess) -> Swift.Bool
+  }
+  public struct DidUpdateLocationAccess : SwiftUI_UDF_Binary.EquatableAction {
+    public var access: CoreLocation.CLAuthorizationStatus
+    public init(access: CoreLocation.CLAuthorizationStatus)
+    public static func == (a: SwiftUI_UDF_Binary.Actions.DidUpdateLocationAccess, b: SwiftUI_UDF_Binary.Actions.DidUpdateLocationAccess) -> Swift.Bool
+  }
+  public struct DidUpdateUserLocation : SwiftUI_UDF_Binary.EquatableAction {
+    public var location: CoreLocation.CLLocation
+    public init(location: CoreLocation.CLLocation)
+    public static func == (a: SwiftUI_UDF_Binary.Actions.DidUpdateUserLocation, b: SwiftUI_UDF_Binary.Actions.DidUpdateUserLocation) -> Swift.Bool
+  }
+}
 @_inheritsConvenienceInitializers open class AsyncMiddleware<State> : SwiftUI_UDF_Binary.Middleware<State> where State : Swift.Equatable, State : SwiftUI_UDF_Binary.AppReducer {
   public typealias DispatchFilter<Output> = (State, Output) -> Swift.Bool
   public var cancelations: [Swift.AnyHashable : Combine.AnyCancellable]
@@ -372,6 +397,11 @@ extension Effectable {
   
   public func delay(duration: Foundation.TimeInterval, queue: Dispatch.DispatchQueue) -> some SwiftUI_UDF_Binary.Effectable
   
+}
+extension CLAuthorizationStatus : Swift.CustomDebugStringConvertible {
+  public var debugDescription: Swift.String {
+    get
+  }
 }
 public protocol Container : SwiftUI.View {
   associatedtype ContainerState : Swift.Equatable, SwiftUI_UDF_Binary.AppReducer

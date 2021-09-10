@@ -16,6 +16,14 @@ public enum UserLocationFlow: Reducible {
 
     public init() { self = .none }
 
+    public var notDetermined: Bool {
+        if case .locationStatus(let status) = self, status == .notDetermined {
+            return true
+        }
+
+        return false
+    }
+
     mutating public func reduce(_ action: AnyAction) {
         switch action.value {
         case is Actions.RequestLocationAccess:
