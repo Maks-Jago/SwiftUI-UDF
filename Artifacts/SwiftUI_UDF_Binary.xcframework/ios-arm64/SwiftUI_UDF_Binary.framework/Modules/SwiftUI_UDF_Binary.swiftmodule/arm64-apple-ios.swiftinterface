@@ -123,6 +123,13 @@ extension Dictionary where Value : SwiftUI_UDF_Binary.Mergeable {
     set
   }
 }
+@propertyWrapper public struct FormField<F, Value> : SwiftUI_UDF_Binary.Reducing, Swift.Equatable where F : SwiftUI_UDF_Binary.Form, Value : Swift.Equatable {
+  public init()
+  public var wrappedValue: Value
+  public init(wrappedValue value: Value, _ formType: F.Type)
+  public mutating func reduce(_ action: SwiftUI_UDF_Binary.AnyAction)
+  public static func == (a: SwiftUI_UDF_Binary.FormField<F, Value>, b: SwiftUI_UDF_Binary.FormField<F, Value>) -> Swift.Bool
+}
 public protocol AppReducer {
   mutating func preReduce(_ action: SwiftUI_UDF_Binary.AnyAction)
   mutating func postReduce(_ action: SwiftUI_UDF_Binary.AnyAction)
@@ -169,13 +176,6 @@ extension Mergeable {
   public func filled(from value: Self, mutate: (inout Self, Self) -> Swift.Void) -> Self
 }
 public protocol Form : Swift.Equatable, SwiftUI_UDF_Binary.Reducing {
-}
-@propertyWrapper public struct FormField<F, Value> : SwiftUI_UDF_Binary.Reducing, Swift.Equatable where F : SwiftUI_UDF_Binary.Form, Value : Swift.Equatable {
-  public init()
-  public var wrappedValue: Value
-  public init(wrappedValue value: Value, _ formType: F.Type)
-  public mutating func reduce(_ action: SwiftUI_UDF_Binary.AnyAction)
-  public static func == (a: SwiftUI_UDF_Binary.FormField<F, Value>, b: SwiftUI_UDF_Binary.FormField<F, Value>) -> Swift.Bool
 }
 public enum Actions {
   public struct Error : SwiftUI_UDF_Binary.EquatableAction {
