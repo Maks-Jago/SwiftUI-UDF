@@ -138,14 +138,13 @@ extension AppReducer {
   public func preReduce(_ action: SwiftUI_UDF_Binary.AnyAction)
   public func postReduce(_ action: SwiftUI_UDF_Binary.AnyAction)
 }
-@dynamicMemberLookup @propertyWrapper public struct SourceOfTruth<AppState> where AppState : SwiftUI_UDF_Binary.AppReducer {
+@dynamicMemberLookup @propertyWrapper public struct SourceOfTruth<AppState> where AppState : Swift.Equatable, AppState : SwiftUI_UDF_Binary.AppReducer {
   public var wrappedValue: AppState
-  public init(wrappedValue: AppState)
   public var projectedValue: SwiftUI_UDF_Binary.SourceOfTruth<AppState> {
     get
     set
   }
-  public subscript<R>(dynamicMember keyPath: Swift.KeyPath<AppState, R>) -> SwiftUI_UDF_Binary.ReducerReference<AppState, R> where AppState : Swift.Equatable, R : Swift.Equatable, R : SwiftUI_UDF_Binary.Reducing {
+  public subscript<R>(dynamicMember keyPath: Swift.KeyPath<AppState, R>) -> SwiftUI_UDF_Binary.ReducerReference<AppState, R> where R : Swift.Equatable, R : SwiftUI_UDF_Binary.Reducing {
     get
   }
 }
@@ -545,10 +544,6 @@ public typealias CommandWith<T> = (T) -> ()
   }
   final public var $state: SwiftUI_UDF_Binary.SourceOfTruth<State> {
     get
-  }
-  final public var projectedValue: State {
-    get
-    set
   }
   convenience public init(initial state: State, logger: SwiftUI_UDF_Binary.ActionLogging)
   final public func dispatch<Action>(_ action: Action, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) where Action : Swift.Equatable, Action : SwiftUI_UDF_Binary.Actionable
