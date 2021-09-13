@@ -138,6 +138,17 @@ extension AppReducer {
   public func preReduce(_ action: SwiftUI_UDF_Binary.AnyAction)
   public func postReduce(_ action: SwiftUI_UDF_Binary.AnyAction)
 }
+@dynamicMemberLookup @propertyWrapper public struct SourceOfTruth<AppState> where AppState : SwiftUI_UDF_Binary.AppReducer {
+  public var wrappedValue: AppState
+  public init(wrappedValue: AppState)
+  public var projectedValue: SwiftUI_UDF_Binary.SourceOfTruth<AppState> {
+    get
+    set
+  }
+  public subscript<R>(dynamicMember keyPath: Swift.KeyPath<AppState, R>) -> SwiftUI_UDF_Binary.ReducerReference<AppState, R> where AppState : Swift.Equatable, R : Swift.Equatable, R : SwiftUI_UDF_Binary.Reducing {
+    get
+  }
+}
 public protocol Actionable {
 }
 extension Actionable where Self : Swift.Equatable {
@@ -411,14 +422,11 @@ public protocol Container : SwiftUI.View {
   func onContainerDisappear(store: SwiftUI_UDF_Binary.EnvironmentStore<Self.ContainerState>)
   @available(iOS 14, *)
   func onContainerDidLoad(store: SwiftUI_UDF_Binary.EnvironmentStore<Self.ContainerState>)
-  @available(iOS 14, *)
-  func onContainerDidUnload(store: SwiftUI_UDF_Binary.EnvironmentStore<Self.ContainerState>)
 }
 extension Container {
   public func onContainerAppear(store: SwiftUI_UDF_Binary.EnvironmentStore<Self.ContainerState>)
   public func onContainerDisappear(store: SwiftUI_UDF_Binary.EnvironmentStore<Self.ContainerState>)
   public func onContainerDidLoad(store: SwiftUI_UDF_Binary.EnvironmentStore<Self.ContainerState>)
-  public func onContainerDidUnload(store: SwiftUI_UDF_Binary.EnvironmentStore<Self.ContainerState>)
 }
 extension Container {
   public var body: some SwiftUI.View {
@@ -480,6 +488,21 @@ extension View {
   public func sheetContainer<C>(isPresented: SwiftUI.Binding<Swift.Bool>, onDismiss: (() -> Swift.Void)? = nil, kind: SwiftUI_UDF_Binary.ModalKind = .sheet, container: C) -> some SwiftUI.View where C : SwiftUI_UDF_Binary.Container
   
 }
+@dynamicMemberLookup public struct ReducerReference<AppState, Reducer> where AppState : Swift.Equatable, AppState : SwiftUI_UDF_Binary.AppReducer, Reducer : Swift.Equatable, Reducer : SwiftUI_UDF_Binary.Reducing {
+  public var projectedValue: Reducer {
+    get
+    set
+  }
+  public init(reducer: Reducer)
+  public subscript<R>(dynamicMember keyPath: Swift.KeyPath<Reducer, R>) -> SwiftUI_UDF_Binary.ReducerReference<AppState, R> where R : Swift.Equatable, R : SwiftUI_UDF_Binary.Reducing {
+    get
+  }
+}
+extension ReducerReference where Reducer : SwiftUI_UDF_Binary.Form {
+  public subscript<T>(dynamicMember keyPath: Swift.WritableKeyPath<Reducer, T>) -> SwiftUI.Binding<T> where T : Swift.Equatable {
+    get
+  }
+}
 public struct ActionGroup : SwiftUI_UDF_Binary.Actionable, Swift.Equatable {
   public var actions: [SwiftUI_UDF_Binary.AnyAction]
   public init<T>(action: T, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) where T : Swift.Equatable, T : SwiftUI_UDF_Binary.Actionable
@@ -517,11 +540,15 @@ extension Hashable {
 public typealias Command = () -> ()
 public typealias CommandWith<T> = (T) -> ()
 @_hasMissingDesignatedInitializers final public class EnvironmentStore<State> : Foundation.ObservableObject where State : Swift.Equatable, State : SwiftUI_UDF_Binary.AppReducer {
-  @Combine.Published @_projectedValueProperty($state) final public var state: State {
+  @SwiftUI_UDF_Binary.SourceOfTruth @_projectedValueProperty($state) final public var state: State {
     get
   }
-  final public var $state: Combine.Published<State>.Publisher {
+  final public var $state: SwiftUI_UDF_Binary.SourceOfTruth<State> {
     get
+  }
+  final public var projectedValue: State {
+    get
+    set
   }
   convenience public init(initial state: State, logger: SwiftUI_UDF_Binary.ActionLogging)
   final public func dispatch<Action>(_ action: Action, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) where Action : Swift.Equatable, Action : SwiftUI_UDF_Binary.Actionable
