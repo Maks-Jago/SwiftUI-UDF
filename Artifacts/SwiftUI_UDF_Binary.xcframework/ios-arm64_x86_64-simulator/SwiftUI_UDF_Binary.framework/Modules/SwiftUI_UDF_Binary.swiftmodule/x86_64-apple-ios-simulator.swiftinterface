@@ -492,7 +492,6 @@ extension View {
     get
     set
   }
-  public init(reducer: Reducer)
   public subscript<R>(dynamicMember keyPath: Swift.KeyPath<Reducer, R>) -> SwiftUI_UDF_Binary.ReducerReference<AppState, R> where R : Swift.Equatable, R : SwiftUI_UDF_Binary.Reducing {
     get
   }
