@@ -34,6 +34,8 @@ public extension Form {
             self[keyPath: action.keyPath] = action.value
         case let action as Actions.UpdateFormField<Self, Bool?>:
             self[keyPath: action.keyPath] = action.value
+        case let action as Actions.UpdateFormField<Self, AlertBuilder.AlertStatus>:
+            self[keyPath: action.keyPath] = action.value
         default:
             break
         }
