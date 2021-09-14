@@ -123,7 +123,7 @@ extension Dictionary where Value : SwiftUI_UDF_Binary.Mergeable {
     set
   }
 }
-@propertyWrapper public struct FormField<F, Value> : SwiftUI_UDF_Binary.Reducing, Swift.Equatable where F : SwiftUI_UDF_Binary.Form, Value : Swift.Equatable {
+@propertyWrapper public struct FormField<F, Value> : SwiftUI_UDF_Binary.Reducible where F : SwiftUI_UDF_Binary.Form, Value : Swift.Equatable {
   public init()
   public var wrappedValue: Value
   public init(wrappedValue value: Value, _ formType: F.Type)
@@ -461,6 +461,7 @@ public struct NavigationContainerLink<C, Label> : SwiftUI.View where C : SwiftUI
   public typealias Body = @_opaqueReturnTypeOf("$s18SwiftUI_UDF_Binary23NavigationContainerLinkV4bodyQrvp", 0) 🦸<C, Label>
 }
 extension Binding where Value : Swift.Equatable {
+  @available(*, deprecated, message: "Use `store.$state.<formName>.<fieldName>` instead of `Binding(form:keyPath:store:)`")
   public init<F, S>(form: F, keyPath: Swift.WritableKeyPath<F, Value>, store: SwiftUI_UDF_Binary.EnvironmentStore<S>, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) where F : SwiftUI_UDF_Binary.Form, S : Swift.Equatable, S : SwiftUI_UDF_Binary.AppReducer
 }
 public protocol Flow : Swift.Equatable, SwiftUI_UDF_Binary.Reducing {
