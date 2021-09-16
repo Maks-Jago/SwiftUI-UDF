@@ -47,6 +47,11 @@ public struct Paginator<Item: Hashable & Identifiable, Flow: IdentifiableFlow>: 
         items.removeLast(itemsToRemove)
     }
 
+    public mutating func removeAllItems() {
+        self.page = .number(initialPage)
+        items.removeAll()
+    }
+
     public mutating func reduce(_ action: AnyAction) {
         switch action.value {
         case let action as Actions.DidLoadItems<Item> where action.id == Flow.id:
