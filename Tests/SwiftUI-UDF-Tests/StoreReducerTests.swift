@@ -35,11 +35,11 @@ class StoreReducerTests: XCTestCase {
         let newValue = "test title"
         let exp = expectation(description: "test form `title` field should be updated to `\(newValue)`")
 
-        cancelation = testStore.$state.sink { newState in
-            if newState.testForm.title == newValue {
-                exp.fulfill()
-            }
-        }
+//        cancelation = testStore.$state.sink { newState in
+//            if newState.testForm.title == newValue {
+//                exp.fulfill()
+//            }
+//        }
         
         testStore.dispatch(Actions.UpdateFormField(keyPath: \TestForm.title, value: newValue))
         waitForExpectations(timeout: 15, handler: nil)
