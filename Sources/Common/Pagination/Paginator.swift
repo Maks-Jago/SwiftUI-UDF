@@ -6,17 +6,19 @@
 
 import Foundation
 
-public struct Paginator<Item: Hashable & Identifiable, Flow: IdentifiableFlow>: Reducing where Flow.FlowId: Hashable {
+public struct Paginator<Item: Hashable & Identifiable, FlowId>: Reducing where FlowId: Hashable & Codable {
 
     public var items: OrderedSet<Item.ID> = []
     public var page: PaginationPage = .number(1)
     public var perPage: Int
     public var usePrefixForFirstPage: Bool = true
     public var initialPage: Int = 1
+    public var flowId: FlowId
 
     private var isLoading: Bool = false
 
-    public init(perPage: Int, usePrefixForFirstPage: Bool = true, initialPage: Int = 1) {
+    public init(flowId: FlowId, perPage: Int, usePrefixForFirstPage: Bool = true, initialPage: Int = 1) {
+        self.flowId = flowId
         self.perPage = perPage
         self.usePrefixForFirstPage = usePrefixForFirstPage
         self.initialPage = initialPage
@@ -24,8 +26,7 @@ public struct Paginator<Item: Hashable & Identifiable, Flow: IdentifiableFlow>: 
     }
 
     public init() {
-        self.perPage = 25
-        self.usePrefixForFirstPage = true
+        fatalError("use init(flowId:perPage:usePrefixForFirstPage:initialPage:) insted of init")
     }
 
     public func pageNumber(for item: Item) -> Int? {
@@ -54,7 +55,7 @@ public struct Paginator<Item: Hashable & Identifiable, Flow: IdentifiableFlow>: 
 
     public mutating func reduce(_ action: AnyAction) {
         switch action.value {
-        case let action as Actions.DidLoadItems<Item> where action.id == Flow.id:
+        case let action as Actions.DidLoadItems<Item> where action.id == flowId:
             isLoading = false
 
             if case .number(let currentPage) = self.page, currentPage == initialPage {
@@ -71,7 +72,7 @@ public struct Paginator<Item: Hashable & Identifiable, Flow: IdentifiableFlow>: 
                 page = .lastPage(self.page.pageNumber)
             }
 
-        case let action as Actions.LoadPage where action.id == Flow.id && action.pageNumber == initialPage:
+        case let action as Actions.LoadPage where action.id == flowId && action.pageNumber == initialPage:
 
             // if action.pageNumber < self.page.pageNumber, it means that we need to refresh some page inside list of pages. To be sure in next sequence of pages consistency, we must remove all items after refreshable page.
             if action.pageNumber < self.page.pageNumber {
@@ -81,7 +82,7 @@ public struct Paginator<Item: Hashable & Identifiable, Flow: IdentifiableFlow>: 
             isLoading = true
             page = .number(initialPage)
 
-        case let action as Actions.LoadPage where action.id == Flow.id:
+        case let action as Actions.LoadPage where action.id == flowId:
             guard case .number = self.page else {
                 return
             }
@@ -89,7 +90,7 @@ public struct Paginator<Item: Hashable & Identifiable, Flow: IdentifiableFlow>: 
             isLoading = true
             page = .number(action.pageNumber)
 
-        case let action as Actions.Error where action.id == Flow.id:
+        case let action as Actions.Error where action.id == flowId:
             if page.pageNumber > initialPage, isLoading {
                 page = .number(page.pageNumber - 1)
             }
