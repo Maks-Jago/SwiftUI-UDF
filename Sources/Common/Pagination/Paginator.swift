@@ -5,17 +5,18 @@
 //
 
 import Foundation
+import SwiftUI
 
 public struct Paginator<Item: Hashable & Identifiable, FlowId: Hashable>: Reducible {
 
-    public var items: OrderedSet<Item.ID> = []
-    public var page: PaginationPage = .number(1)
+    public private(set) var items: OrderedSet<Item.ID> = []
+    public private(set) var page: PaginationPage = .number(1)
     public var perPage: Int
     public var usePrefixForFirstPage: Bool = true
     public var initialPage: Int = 1
     public var flowId: FlowId
 
-    private var isLoading: Bool = false
+    public private(set) var isLoading: Bool = false
 
     public init(flowId: FlowId, perPage: Int, usePrefixForFirstPage: Bool = true, initialPage: Int = 1) {
         self.flowId = flowId
@@ -29,8 +30,23 @@ public struct Paginator<Item: Hashable & Identifiable, FlowId: Hashable>: Reduci
         fatalError("use init(flowId:perPage:usePrefixForFirstPage:initialPage:) insted of init")
     }
 
+    public mutating func set(items: [Item.ID]) {
+        self.items = .init(items)
+
+        if let last = items.last, let pageNumber = self.pageNumber(for: last) {
+            self.page = .number(pageNumber)
+        } else {
+            self.page = .number(initialPage)
+            self.items.removeAll()
+        }
+    }
+
     public func pageNumber(for item: Item) -> Int? {
-        guard let itemIndex = items.firstIndex(of: item.id) else {
+        pageNumber(for: item.id)
+    }
+
+    public func pageNumber(for itemId: Item.ID) -> Int? {
+        guard let itemIndex = items.firstIndex(of: itemId) else {
             return nil
         }
 
