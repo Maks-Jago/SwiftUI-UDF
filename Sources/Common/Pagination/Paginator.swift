@@ -41,6 +41,10 @@ public struct Paginator<Item: Hashable & Identifiable, FlowId: Hashable>: Reduci
         }
     }
 
+    public mutating func set(items: [Item]) {
+        set(items: items.map(\.id))
+    }
+
     public func pageNumber(for item: Item) -> Int? {
         pageNumber(for: item.id)
     }
