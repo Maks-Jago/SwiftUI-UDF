@@ -6,7 +6,7 @@
 
 import Foundation
 
-public struct Paginator<Item: Hashable & Identifiable, FlowId>: Reducing where FlowId: Hashable & Codable {
+public struct Paginator<Item: Hashable & Identifiable, FlowId: Hashable>: Reducible {
 
     public var items: OrderedSet<Item.ID> = []
     public var page: PaginationPage = .number(1)
@@ -104,7 +104,4 @@ public struct Paginator<Item: Hashable & Identifiable, FlowId>: Reducing where F
 }
 
 // MARK: - Codable
-extension Paginator: Codable where Item.ID: Codable {}
-
-// MARK: - Equatable
-extension Paginator: Equatable where Item.ID: Equatable & Hashable {}
+extension Paginator: Codable where Item.ID: Codable, FlowId: Codable & Hashable {}
