@@ -104,6 +104,15 @@ public protocol ActionLogging {
   }
   @objc deinit
 }
+extension Cached : Swift.Equatable where T : Swift.Equatable {
+  public static func == (lhs: SwiftUI_UDF_Binary.Cached<T>, rhs: SwiftUI_UDF_Binary.Cached<T>) -> Swift.Bool
+}
+extension Cached : Swift.Hashable where T : Swift.Hashable {
+  final public func hash(into hasher: inout Swift.Hasher)
+  final public var hashValue: Swift.Int {
+    get
+  }
+}
 public struct EmptyReducer : SwiftUI_UDF_Binary.AppReducer, Swift.Equatable {
   public init()
   public mutating func reduce(_ action: SwiftUI_UDF_Binary.AnyAction) -> Swift.Bool
