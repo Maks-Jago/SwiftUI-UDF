@@ -589,13 +589,15 @@ extension Effects {
 public enum Flows {
 }
 extension Flows {
-  public struct Id : Swift.Hashable {
+  public struct Id : Swift.Hashable, Swift.Codable {
     public init(value: Swift.String)
     public func hash(into hasher: inout Swift.Hasher)
     public static func == (a: SwiftUI_UDF_Binary.Flows.Id, b: SwiftUI_UDF_Binary.Flows.Id) -> Swift.Bool
+    public func encode(to encoder: Swift.Encoder) throws
     public var hashValue: Swift.Int {
       get
     }
+    public init(from decoder: Swift.Decoder) throws
   }
 }
 public struct FileCache {

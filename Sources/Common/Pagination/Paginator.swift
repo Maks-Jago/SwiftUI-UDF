@@ -124,4 +124,4 @@ public struct Paginator<Item: Hashable & Identifiable, FlowId: Hashable>: Reduci
 }
 
 // MARK: - Codable
-extension Paginator: Codable where Item.ID: Codable, FlowId: Codable & Hashable {}
+extension Paginator: Codable where Item.ID: Codable, FlowId: Codable {}
