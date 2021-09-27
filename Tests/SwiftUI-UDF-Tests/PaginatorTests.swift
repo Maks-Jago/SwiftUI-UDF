@@ -84,4 +84,18 @@ class PaginatorTests: XCTestCase {
         XCTAssertEqual(paginator.items.count, 24)
         XCTAssertEqual(paginator.page.pageNumber, 3)
     }
+
+    func testPaginatorSetItemsAction() {
+        var paginator = Paginator<Item, ItemFlow.FlowId>(flowId: ItemFlow.id, perPage: 10)
+        let items = Item.fakeItems(count: 24)
+
+        paginator.reduce(Actions.SetPaginationItems<Item>(items: items, id: ItemFlow.id).eraseToAnyAction())
+        XCTAssertEqual(paginator.items.count, 24)
+        XCTAssertEqual(paginator.page.pageNumber, 3)
+
+        paginator.removeAllItems()
+        paginator.reduce(Actions.SetPaginationItems<Item.Id>(items: items.map(\.id), id: ItemFlow.id).eraseToAnyAction())
+        XCTAssertEqual(paginator.items.count, 24)
+        XCTAssertEqual(paginator.page.pageNumber, 3)
+    }
 }

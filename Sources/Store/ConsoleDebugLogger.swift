@@ -45,4 +45,8 @@ extension EnvironmentStore {
     public convenience init(initial state: State) {
         self.init(initial: state, logger: ConsoleDebugLogger(options: .all))
     }
+
+    public convenience init(initial state: State, debugLoggerOptions options: ConsoleDebugLogger.Options) {
+        self.init(initial: state, logger: ConsoleDebugLogger(options: options))
+    }
 }
