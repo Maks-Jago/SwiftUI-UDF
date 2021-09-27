@@ -117,6 +117,12 @@ public struct Paginator<Item: Hashable & Identifiable, FlowId: Hashable>: Reduci
 
             isLoading = false
 
+        case let action as Actions.SetPaginationItems<Item> where action.id == flowId:
+            set(items: action.items)
+
+        case let action as Actions.SetPaginationItems<Item.ID> where action.id == flowId:
+            set(items: action.items)
+
         default:
             break
         }

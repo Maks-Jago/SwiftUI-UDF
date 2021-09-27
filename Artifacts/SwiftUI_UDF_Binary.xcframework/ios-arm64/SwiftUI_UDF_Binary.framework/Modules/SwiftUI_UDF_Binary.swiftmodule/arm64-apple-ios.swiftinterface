@@ -217,6 +217,12 @@ public enum Actions {
     public init<Id>(pageNumber: Swift.Int = 1, id: Id) where Id : Swift.Hashable
     public static func == (a: SwiftUI_UDF_Binary.Actions.LoadPage, b: SwiftUI_UDF_Binary.Actions.LoadPage) -> Swift.Bool
   }
+  public struct SetPaginationItems<I> : SwiftUI_UDF_Binary.EquatableAction where I : Swift.Equatable {
+    public var id: Swift.AnyHashable
+    public var items: [I]
+    public init<Id>(items: [I], id: Id) where Id : Swift.Hashable
+    public static func == (a: SwiftUI_UDF_Binary.Actions.SetPaginationItems<I>, b: SwiftUI_UDF_Binary.Actions.SetPaginationItems<I>) -> Swift.Bool
+  }
   public struct UpdateAlertStatus : SwiftUI_UDF_Binary.EquatableAction {
     public var status: SwiftUI_UDF_Binary.AlertBuilder.AlertStatus
     public var id: Swift.AnyHashable
