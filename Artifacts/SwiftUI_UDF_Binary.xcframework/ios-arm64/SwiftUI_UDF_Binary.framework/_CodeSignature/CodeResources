@@ -26,7 +26,7 @@
 		</data>
 		<key>Modules/SwiftUI_UDF_Binary.swiftmodule/arm64-apple-ios.swiftmodule</key>
 		<data>
-		i+z2XtH/IlmvK6SNBVFxnZbnrVg=
+		X7u84T32ihReCD/Yr2AEWUFiw3Y=
 		</data>
 		<key>Modules/SwiftUI_UDF_Binary.swiftmodule/arm64.swiftdoc</key>
 		<data>
@@ -38,7 +38,7 @@
 		</data>
 		<key>Modules/SwiftUI_UDF_Binary.swiftmodule/arm64.swiftmodule</key>
 		<data>
-		i+z2XtH/IlmvK6SNBVFxnZbnrVg=
+		X7u84T32ihReCD/Yr2AEWUFiw3Y=
 		</data>
 		<key>Modules/module.modulemap</key>
 		<data>
@@ -1119,7 +1119,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			CydacfYv5ZDl6EXxHQQHKJzvq3epbTMwKqbFA/5abNs=
+			CZhdMFLA181Wdc8FwabTN8euMzGdrdfadvIGZoDJQyk=
 			</data>
 		</dict>
 		<key>Modules/SwiftUI_UDF_Binary.swiftmodule/arm64.swiftdoc</key>
@@ -1140,7 +1140,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			CydacfYv5ZDl6EXxHQQHKJzvq3epbTMwKqbFA/5abNs=
+			CZhdMFLA181Wdc8FwabTN8euMzGdrdfadvIGZoDJQyk=
 			</data>
 		</dict>
 		<key>Modules/module.modulemap</key>
