@@ -403,9 +403,6 @@ public protocol Middlewareable : AnyObject {
   func observe(state: Self.State)
 }
 extension Middlewareable {
-  public var asObserver: SwiftUI_UDF_Binary.Observer<Self.State> {
-    get
-  }
   public func status(for state: Self.State) -> SwiftUI_UDF_Binary.Observer<Self.State>.Status
 }
 public protocol CacheSource {
@@ -468,6 +465,9 @@ open class Middleware<State> : SwiftUI_UDF_Binary.Middlewareable where State : S
   required convenience public init(store: SwiftUI_UDF_Binary.EnvironmentStore<State>)
   open func observe(state: State)
   open func status(for state: State) -> SwiftUI_UDF_Binary.Observer<State>.Status
+  public var asObserver: SwiftUI_UDF_Binary.Observer<State> {
+    get
+  }
   @objc deinit
 }
 public struct NavigationContainerLink<C, Label> : SwiftUI.View where C : SwiftUI_UDF_Binary.Container, Label : SwiftUI.View {
