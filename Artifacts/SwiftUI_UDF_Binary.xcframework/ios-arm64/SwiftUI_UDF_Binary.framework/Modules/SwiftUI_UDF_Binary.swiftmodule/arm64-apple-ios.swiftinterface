@@ -351,7 +351,7 @@ extension Actions {
   @discardableResult
   public func cancel<Id>(by cancelation: Id) -> Swift.Bool where Id : Swift.Hashable
   public func cancelAll()
-  override public init(store: SwiftUI_UDF_Binary.BaseStore<State>, queue: Dispatch.DispatchQueue)
+  override public init(store: SwiftUI_UDF_Binary.Store<State>, queue: Dispatch.DispatchQueue)
   @objc deinit
 }
 public protocol Initable {
@@ -369,7 +369,7 @@ extension Array : SwiftUI_UDF_Binary.Initable {
   public func execute<E>(_ effect: E) where E : SwiftUI_UDF_Binary.PureEffect, E.Failure == Swift.Never, E.Output == SwiftUI_UDF_Binary.AnyAction
   public func execute<E>(_ effect: E) where E : SwiftUI_UDF_Binary.ErasableToEffect, E : SwiftUI_UDF_Binary.PureEffect
   public func cancel()
-  override public init(store: SwiftUI_UDF_Binary.BaseStore<State>, queue: Dispatch.DispatchQueue)
+  override public init(store: SwiftUI_UDF_Binary.Store<State>, queue: Dispatch.DispatchQueue)
   @objc deinit
 }
 public typealias EquatableAction = Swift.Equatable & SwiftUI_UDF_Binary.Actionable
@@ -398,7 +398,7 @@ final public class Observer<State> : Swift.Hashable {
 }
 public protocol Middlewareable : AnyObject {
   associatedtype State : Swift.Equatable, SwiftUI_UDF_Binary.AppReducer
-  var store: SwiftUI_UDF_Binary.BaseStore<Self.State> { get }
+  var store: SwiftUI_UDF_Binary.Store<Self.State> { get }
   var queue: Dispatch.DispatchQueue { get }
   var asObserver: SwiftUI_UDF_Binary.Observer<Self.State> { get }
   func status(for state: Self.State) -> SwiftUI_UDF_Binary.Observer<Self.State>.Status
@@ -464,10 +464,10 @@ extension Container {
   public static func buildFinalResult(_ component: [SwiftUI_UDF_Binary.AnyAction]) -> SwiftUI_UDF_Binary.ActionGroup
 }
 open class Middleware<State> : SwiftUI_UDF_Binary.Middlewareable where State : Swift.Equatable, State : SwiftUI_UDF_Binary.AppReducer {
-  public var store: SwiftUI_UDF_Binary.BaseStore<State>
+  public var store: SwiftUI_UDF_Binary.Store<State>
   public var queue: Dispatch.DispatchQueue
-  public init(store: SwiftUI_UDF_Binary.BaseStore<State>, queue: Dispatch.DispatchQueue)
-  required convenience public init(store: SwiftUI_UDF_Binary.BaseStore<State>)
+  public init(store: SwiftUI_UDF_Binary.Store<State>, queue: Dispatch.DispatchQueue)
+  required convenience public init(store: SwiftUI_UDF_Binary.Store<State>)
   open func observe(state: State)
   open func status(for state: State) -> SwiftUI_UDF_Binary.Observer<State>.Status
   @objc deinit
@@ -557,7 +557,7 @@ extension Hashable {
 extension Hashable {
   public static func == (lhs: Self, rhs: Swift.AnyHashable?) -> Swift.Bool
 }
-@_inheritsConvenienceInitializers final public class EnvironmentStore<State> : SwiftUI_UDF_Binary.BaseStore<State> where State : Swift.Equatable, State : SwiftUI_UDF_Binary.AppReducer {
+@_inheritsConvenienceInitializers final public class EnvironmentStore<State> : SwiftUI_UDF_Binary.Store<State> where State : Swift.Equatable, State : SwiftUI_UDF_Binary.AppReducer {
   override public init(initial state: State, logger: SwiftUI_UDF_Binary.ActionLogging)
   final public func subscribe(_ middlewareType: SwiftUI_UDF_Binary.Middleware<State>.Type)
   override final public func subscribe(observer: SwiftUI_UDF_Binary.Observer<State>)
@@ -580,7 +580,7 @@ extension Effects {
     public typealias Output = SwiftUI_UDF_Binary.AnyAction
   }
 }
-public class BaseStore<State> : Foundation.ObservableObject where State : Swift.Equatable, State : SwiftUI_UDF_Binary.AppReducer {
+public class Store<State> : Foundation.ObservableObject where State : Swift.Equatable, State : SwiftUI_UDF_Binary.AppReducer {
   @SwiftUI_UDF_Binary.SourceOfTruth @_projectedValueProperty($state) public var state: State {
     get
     set
@@ -622,7 +622,7 @@ extension Flows {
     public init(from decoder: Swift.Decoder) throws
   }
 }
-final public class XCTestStore<State> : SwiftUI_UDF_Binary.BaseStore<State> where State : Swift.Equatable, State : SwiftUI_UDF_Binary.AppReducer {
+final public class XCTestStore<State> : SwiftUI_UDF_Binary.Store<State> where State : Swift.Equatable, State : SwiftUI_UDF_Binary.AppReducer {
   public init(initial state: State)
   override final public func subscribe(observer: SwiftUI_UDF_Binary.Observer<State>)
   override public init(initial state: State, logger: SwiftUI_UDF_Binary.ActionLogging)
