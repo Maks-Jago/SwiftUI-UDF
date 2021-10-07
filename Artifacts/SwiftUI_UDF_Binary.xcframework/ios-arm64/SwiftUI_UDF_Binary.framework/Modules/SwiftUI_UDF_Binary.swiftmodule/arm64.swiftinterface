@@ -351,7 +351,7 @@ extension Actions {
   @discardableResult
   public func cancel<Id>(by cancelation: Id) -> Swift.Bool where Id : Swift.Hashable
   public func cancelAll()
-  override public init(store: SwiftUI_UDF_Binary.EnvironmentStore<State>, queue: Dispatch.DispatchQueue)
+  override public init(store: SwiftUI_UDF_Binary.BaseStore<State>, queue: Dispatch.DispatchQueue)
   @objc deinit
 }
 public protocol Initable {
@@ -369,10 +369,12 @@ extension Array : SwiftUI_UDF_Binary.Initable {
   public func execute<E>(_ effect: E) where E : SwiftUI_UDF_Binary.PureEffect, E.Failure == Swift.Never, E.Output == SwiftUI_UDF_Binary.AnyAction
   public func execute<E>(_ effect: E) where E : SwiftUI_UDF_Binary.ErasableToEffect, E : SwiftUI_UDF_Binary.PureEffect
   public func cancel()
-  override public init(store: SwiftUI_UDF_Binary.EnvironmentStore<State>, queue: Dispatch.DispatchQueue)
+  override public init(store: SwiftUI_UDF_Binary.BaseStore<State>, queue: Dispatch.DispatchQueue)
   @objc deinit
 }
 public typealias EquatableAction = Swift.Equatable & SwiftUI_UDF_Binary.Actionable
+public typealias Command = () -> ()
+public typealias CommandWith<T> = (T) -> ()
 final public class Observer<State> : Swift.Hashable {
   public static func == (lhs: SwiftUI_UDF_Binary.Observer<State>, rhs: SwiftUI_UDF_Binary.Observer<State>) -> Swift.Bool
   final public func hash(into hasher: inout Swift.Hasher)
@@ -396,13 +398,16 @@ final public class Observer<State> : Swift.Hashable {
 }
 public protocol Middlewareable : AnyObject {
   associatedtype State : Swift.Equatable, SwiftUI_UDF_Binary.AppReducer
-  var store: SwiftUI_UDF_Binary.EnvironmentStore<Self.State> { get }
+  var store: SwiftUI_UDF_Binary.BaseStore<Self.State> { get }
   var queue: Dispatch.DispatchQueue { get }
   var asObserver: SwiftUI_UDF_Binary.Observer<Self.State> { get }
   func status(for state: Self.State) -> SwiftUI_UDF_Binary.Observer<Self.State>.Status
   func observe(state: Self.State)
 }
 extension Middlewareable {
+  public var asObserver: SwiftUI_UDF_Binary.Observer<Self.State> {
+    get
+  }
   public func status(for state: Self.State) -> SwiftUI_UDF_Binary.Observer<Self.State>.Status
 }
 public protocol CacheSource {
@@ -459,15 +464,12 @@ extension Container {
   public static func buildFinalResult(_ component: [SwiftUI_UDF_Binary.AnyAction]) -> SwiftUI_UDF_Binary.ActionGroup
 }
 open class Middleware<State> : SwiftUI_UDF_Binary.Middlewareable where State : Swift.Equatable, State : SwiftUI_UDF_Binary.AppReducer {
-  public var store: SwiftUI_UDF_Binary.EnvironmentStore<State>
+  public var store: SwiftUI_UDF_Binary.BaseStore<State>
   public var queue: Dispatch.DispatchQueue
-  public init(store: SwiftUI_UDF_Binary.EnvironmentStore<State>, queue: Dispatch.DispatchQueue)
-  required convenience public init(store: SwiftUI_UDF_Binary.EnvironmentStore<State>)
+  public init(store: SwiftUI_UDF_Binary.BaseStore<State>, queue: Dispatch.DispatchQueue)
+  required convenience public init(store: SwiftUI_UDF_Binary.BaseStore<State>)
   open func observe(state: State)
   open func status(for state: State) -> SwiftUI_UDF_Binary.Observer<State>.Status
-  public var asObserver: SwiftUI_UDF_Binary.Observer<State> {
-    get
-  }
   @objc deinit
 }
 public struct NavigationContainerLink<C, Label> : SwiftUI.View where C : SwiftUI_UDF_Binary.Container, Label : SwiftUI.View {
@@ -555,34 +557,10 @@ extension Hashable {
 extension Hashable {
   public static func == (lhs: Self, rhs: Swift.AnyHashable?) -> Swift.Bool
 }
-public typealias Command = () -> ()
-public typealias CommandWith<T> = (T) -> ()
-@_hasMissingDesignatedInitializers public class BaseStore<State> : Foundation.ObservableObject where State : Swift.Equatable, State : SwiftUI_UDF_Binary.AppReducer {
-  @SwiftUI_UDF_Binary.SourceOfTruth @_projectedValueProperty($state) public var state: State {
-    get
-    set
-  }
-  public var $state: SwiftUI_UDF_Binary.SourceOfTruth<State> {
-    get
-    set
-  }
-  public func dispatch<Action>(_ action: Action, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) where Action : Swift.Equatable, Action : SwiftUI_UDF_Binary.Actionable
-  public func dispatch(_ action: SwiftUI_UDF_Binary.AnyAction)
-  public func bind(_ action: SwiftUI_UDF_Binary.AnyAction) -> SwiftUI_UDF_Binary.Command
-  public func bind<Action>(_ action: Action, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) -> SwiftUI_UDF_Binary.Command where Action : Swift.Equatable, Action : SwiftUI_UDF_Binary.Actionable
-  public func bind<T>(_ action: @escaping (T) -> SwiftUI_UDF_Binary.AnyAction) -> SwiftUI_UDF_Binary.CommandWith<T>
-  public func bind<Action, T>(_ action: @escaping (T) -> Action, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) -> SwiftUI_UDF_Binary.CommandWith<T> where Action : Swift.Equatable, Action : SwiftUI_UDF_Binary.Actionable
-  public func subscribe(observer: SwiftUI_UDF_Binary.Observer<State>)
-  public typealias ObjectWillChangePublisher = Combine.ObservableObjectPublisher
-  @objc deinit
-}
-@_hasMissingDesignatedInitializers final public class XCTestStore<State> : SwiftUI_UDF_Binary.BaseStore<State> where State : Swift.Equatable, State : SwiftUI_UDF_Binary.AppReducer {
-  public init(initial state: State)
-  @objc deinit
-}
-@_inheritsConvenienceInitializers @_hasMissingDesignatedInitializers final public class EnvironmentStore<State> : SwiftUI_UDF_Binary.BaseStore<State> where State : Swift.Equatable, State : SwiftUI_UDF_Binary.AppReducer {
-  convenience public init(initial state: State, logger: SwiftUI_UDF_Binary.ActionLogging)
+@_inheritsConvenienceInitializers final public class EnvironmentStore<State> : SwiftUI_UDF_Binary.BaseStore<State> where State : Swift.Equatable, State : SwiftUI_UDF_Binary.AppReducer {
+  override public init(initial state: State, logger: SwiftUI_UDF_Binary.ActionLogging)
   final public func subscribe(_ middlewareType: SwiftUI_UDF_Binary.Middleware<State>.Type)
+  override final public func subscribe(observer: SwiftUI_UDF_Binary.Observer<State>)
   @objc deinit
 }
 public enum ModalKind {
@@ -601,6 +579,26 @@ extension Effects {
     public typealias Failure = Swift.Never
     public typealias Output = SwiftUI_UDF_Binary.AnyAction
   }
+}
+public class BaseStore<State> : Foundation.ObservableObject where State : Swift.Equatable, State : SwiftUI_UDF_Binary.AppReducer {
+  @SwiftUI_UDF_Binary.SourceOfTruth @_projectedValueProperty($state) public var state: State {
+    get
+    set
+  }
+  public var $state: SwiftUI_UDF_Binary.SourceOfTruth<State> {
+    get
+    set
+  }
+  public init(initial state: State, logger: SwiftUI_UDF_Binary.ActionLogging)
+  public func subscribe(observer: SwiftUI_UDF_Binary.Observer<State>)
+  public func subscribe<M>(middleware: M) where State == M.State, M : SwiftUI_UDF_Binary.Middlewareable
+  public func dispatch<Action>(_ action: Action, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) where Action : Swift.Equatable, Action : SwiftUI_UDF_Binary.Actionable
+  public func bind(_ action: SwiftUI_UDF_Binary.AnyAction) -> SwiftUI_UDF_Binary.Command
+  public func bind<Action>(_ action: Action, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) -> SwiftUI_UDF_Binary.Command where Action : Swift.Equatable, Action : SwiftUI_UDF_Binary.Actionable
+  public func bind<T>(_ action: @escaping (T) -> SwiftUI_UDF_Binary.AnyAction) -> SwiftUI_UDF_Binary.CommandWith<T>
+  public func bind<Action, T>(_ action: @escaping (T) -> Action, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) -> SwiftUI_UDF_Binary.CommandWith<T> where Action : Swift.Equatable, Action : SwiftUI_UDF_Binary.Actionable
+  public typealias ObjectWillChangePublisher = Combine.ObservableObjectPublisher
+  @objc deinit
 }
 extension Effects {
   public struct Filter<A> : SwiftUI_UDF_Binary.Effectable where A : SwiftUI_UDF_Binary.Actionable {
@@ -623,6 +621,12 @@ extension Flows {
     }
     public init(from decoder: Swift.Decoder) throws
   }
+}
+final public class XCTestStore<State> : SwiftUI_UDF_Binary.BaseStore<State> where State : Swift.Equatable, State : SwiftUI_UDF_Binary.AppReducer {
+  public init(initial state: State)
+  override final public func subscribe(observer: SwiftUI_UDF_Binary.Observer<State>)
+  override public init(initial state: State, logger: SwiftUI_UDF_Binary.ActionLogging)
+  @objc deinit
 }
 public struct FileCache {
   public var fileManager: Foundation.FileManager
