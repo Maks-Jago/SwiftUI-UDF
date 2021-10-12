@@ -54,6 +54,12 @@ extension AnyAction : Swift.CustomDebugStringConvertible {
     get
   }
 }
+public protocol WrappedReducer : SwiftUI_UDF_Binary.Reducing {
+  var reducer: SwiftUI_UDF_Binary.Reducing { get set }
+}
+extension WrappedReducer {
+  public mutating func reduce(_ action: SwiftUI_UDF_Binary.AnyAction)
+}
 public protocol IdentifiableFlow : SwiftUI_UDF_Binary.Flow {
   associatedtype FlowId
   static var id: Self.FlowId { get }
@@ -90,10 +96,11 @@ public protocol ErasableToEffect {
 public protocol ActionLogging {
   func log(_ action: SwiftUI_UDF_Binary.AnyAction)
 }
-@propertyWrapper final public class Cached<T> where T : Swift.Decodable, T : Swift.Encodable {
+@propertyWrapper final public class Cached<T> : SwiftUI_UDF_Binary.Initable where T : Swift.Decodable, T : Swift.Encodable {
   final public var key: Swift.String
   final public var defaultValue: T
   final public var intervalToSync: Foundation.TimeInterval
+  public init()
   public init(key: Swift.String, defaultValue: T, intervalToSync: Foundation.TimeInterval = 2, storage: SwiftUI_UDF_Binary.CacheSource)
   convenience public init(key: Swift.String, defaultValue: T, intervalToSync: Foundation.TimeInterval = 2)
   public init(key: Swift.String, defaultValue: T = .init(), intervalToSync: Foundation.TimeInterval = 2, storage: SwiftUI_UDF_Binary.CacheSource) where T : SwiftUI_UDF_Binary.Initable
@@ -103,6 +110,16 @@ public protocol ActionLogging {
     set
   }
   @objc deinit
+}
+extension Cached : SwiftUI_UDF_Binary.IsEquatable where T : Swift.Equatable, T : SwiftUI_UDF_Binary.Reducing {
+}
+extension Cached : SwiftUI_UDF_Binary.Reducing where T : Swift.Equatable, T : SwiftUI_UDF_Binary.Reducing {
+}
+extension Cached : SwiftUI_UDF_Binary.WrappedReducer where T : Swift.Equatable, T : SwiftUI_UDF_Binary.Reducing {
+  final public var reducer: SwiftUI_UDF_Binary.Reducing {
+    get
+    set
+  }
 }
 extension Cached : Swift.Equatable where T : Swift.Equatable {
   public static func == (lhs: SwiftUI_UDF_Binary.Cached<T>, rhs: SwiftUI_UDF_Binary.Cached<T>) -> Swift.Bool
@@ -139,6 +156,10 @@ extension Dictionary where Value : SwiftUI_UDF_Binary.Mergeable {
   public mutating func reduce(_ action: SwiftUI_UDF_Binary.AnyAction)
   public static func == (a: SwiftUI_UDF_Binary.FormField<F, Value>, b: SwiftUI_UDF_Binary.FormField<F, Value>) -> Swift.Bool
 }
+extension FormField : Swift.Codable where Value : Swift.Decodable, Value : Swift.Encodable {
+  public func encode(to encoder: Swift.Encoder) throws
+  public init(from decoder: Swift.Decoder) throws
+}
 public protocol AppReducer {
   mutating func preReduce(_ action: SwiftUI_UDF_Binary.AnyAction)
   mutating func postReduce(_ action: SwiftUI_UDF_Binary.AnyAction)
@@ -147,15 +168,11 @@ extension AppReducer {
   public func preReduce(_ action: SwiftUI_UDF_Binary.AnyAction)
   public func postReduce(_ action: SwiftUI_UDF_Binary.AnyAction)
 }
-@dynamicMemberLookup @propertyWrapper public struct SourceOfTruth<AppState> where AppState : Swift.Equatable, AppState : SwiftUI_UDF_Binary.AppReducer {
-  public var wrappedValue: AppState
-  public var projectedValue: SwiftUI_UDF_Binary.SourceOfTruth<AppState> {
-    get
-    set
-  }
-  public subscript<R>(dynamicMember keyPath: Swift.KeyPath<AppState, R>) -> SwiftUI_UDF_Binary.ReducerReference<AppState, R> where R : Swift.Equatable, R : SwiftUI_UDF_Binary.Reducing {
-    get
-  }
+public protocol IsEquatable {
+  func isEqual(_ rhs: SwiftUI_UDF_Binary.IsEquatable) -> Swift.Bool
+}
+extension IsEquatable where Self : Swift.Equatable {
+  public func isEqual(_ rhs: SwiftUI_UDF_Binary.IsEquatable) -> Swift.Bool
 }
 public protocol Actionable {
 }
@@ -488,6 +505,16 @@ extension Binding where Value : Swift.Equatable {
 public protocol Flow : Swift.Equatable, SwiftUI_UDF_Binary.Reducing {
   init()
 }
+@dynamicMemberLookup @propertyWrapper public struct SourceOfTruth<AppState> where AppState : Swift.Equatable, AppState : SwiftUI_UDF_Binary.AppReducer {
+  public var wrappedValue: AppState
+  public var projectedValue: SwiftUI_UDF_Binary.SourceOfTruth<AppState> {
+    get
+    set
+  }
+  public subscript<R>(dynamicMember keyPath: Swift.KeyPath<AppState, R>) -> SwiftUI_UDF_Binary.ReducerReference<AppState, R> where R : Swift.Equatable, R : SwiftUI_UDF_Binary.Reducing {
+    get
+  }
+}
 public struct Effect : SwiftUI_UDF_Binary.Effectable {
   public var upstream: Combine.AnyPublisher<SwiftUI_UDF_Binary.AnyAction, Swift.Never>
   public init<P, A, Id>(_ publisher: P, id: Id, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line, mapper: @escaping (P.Output) -> A) where P : Combine.Publisher, A : Swift.Equatable, A : SwiftUI_UDF_Binary.Actionable, Id : Swift.Hashable, P.Failure == Swift.Error
@@ -649,12 +676,11 @@ extension View {
   public func sheetContainer<C, I>(item: SwiftUI.Binding<I?>, onDismiss: (() -> Swift.Void)? = nil, kind: SwiftUI_UDF_Binary.ModalKind = .sheet, container: @escaping (I) -> C) -> some SwiftUI.View where C : SwiftUI_UDF_Binary.Container, I : Swift.Identifiable
   
 }
-public protocol Reducing : SwiftUI_UDF_Binary.Initable {
+public protocol Reducing : SwiftUI_UDF_Binary.Initable, SwiftUI_UDF_Binary.IsEquatable {
   mutating func reduce(_ action: SwiftUI_UDF_Binary.AnyAction)
-  func isEqual(_ rhs: SwiftUI_UDF_Binary.Reducing) -> Swift.Bool
 }
-extension Reducing where Self : Swift.Equatable {
-  public func isEqual(_ rhs: SwiftUI_UDF_Binary.Reducing) -> Swift.Bool
+extension Reducing {
+  public mutating func reduce(_ action: SwiftUI_UDF_Binary.AnyAction)
 }
 public typealias Reducible = Swift.Equatable & SwiftUI_UDF_Binary.Reducing
 extension SwiftUI_UDF_Binary.Observer.Status : Swift.Equatable {}

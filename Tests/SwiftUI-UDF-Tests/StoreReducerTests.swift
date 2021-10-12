@@ -42,6 +42,9 @@ class StoreReducerTests: XCTestCase {
 //        }
         
         testStore.dispatch(Actions.UpdateFormField(keyPath: \TestForm.title, value: newValue))
+        testStore.dispatch(Actions.UpdateFormField(keyPath: \TestForm.title, value: newValue))
+        testStore.dispatch(Actions.UpdateFormField(keyPath: \TestForm.title, value: newValue))
+        testStore.dispatch(Actions.UpdateFormField(keyPath: \TestForm.title, value: newValue))
         waitForExpectations(timeout: 15, handler: nil)
     }
 }
