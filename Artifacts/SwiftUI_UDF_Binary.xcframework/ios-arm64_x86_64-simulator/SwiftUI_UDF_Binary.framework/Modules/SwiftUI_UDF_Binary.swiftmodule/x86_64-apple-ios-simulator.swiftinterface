@@ -149,6 +149,15 @@ extension Dictionary where Value : SwiftUI_UDF_Binary.Mergeable {
     set
   }
 }
+extension Dictionary where Key == Value.ID, Value : Swift.Identifiable {
+  public mutating func insert(items: [Value])
+  public mutating func insert(item: Value)
+}
+public typealias MI = Swift.Identifiable & SwiftUI_UDF_Binary.Mergeable
+extension Dictionary where Key == Value.ID, Value : Swift.Identifiable, Value : SwiftUI_UDF_Binary.Mergeable {
+  public mutating func insert(items: [Value])
+  public mutating func insert(item: Value)
+}
 @propertyWrapper public struct FormField<F, Value> : SwiftUI_UDF_Binary.Reducible where F : Swift.Equatable, F : SwiftUI_UDF_Binary.Formable, Value : Swift.Equatable {
   public init()
   public var wrappedValue: Value
@@ -381,7 +390,6 @@ extension Set : SwiftUI_UDF_Binary.Initable {
 extension Array : SwiftUI_UDF_Binary.Initable {
 }
 @_inheritsConvenienceInitializers open class SyncMiddleware<State> : SwiftUI_UDF_Binary.Middleware<State> where State : Swift.Equatable, State : SwiftUI_UDF_Binary.AppReducer {
-  public var cancellable: Combine.AnyCancellable?
   override open func status(for state: State) -> SwiftUI_UDF_Binary.Observer<State>.Status
   public func execute<E>(_ effect: E) where E : SwiftUI_UDF_Binary.PureEffect, E.Failure == Swift.Never, E.Output == SwiftUI_UDF_Binary.AnyAction
   public func execute<E>(_ effect: E) where E : SwiftUI_UDF_Binary.ErasableToEffect, E : SwiftUI_UDF_Binary.PureEffect

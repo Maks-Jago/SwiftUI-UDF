@@ -22,16 +22,3 @@ public extension Dictionary {
         self[key] = set
     }
 }
-
-public extension Dictionary where Value: Identifiable, Key == Value.ID {
-
-    mutating func insert(items: [Value]) {
-        items.forEach { item in
-            self[item.id] = item
-        }
-    }
-
-    mutating func insert(item: Value) {
-        self[item.id] = item
-    }
-}
