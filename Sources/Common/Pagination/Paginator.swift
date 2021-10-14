@@ -93,18 +93,17 @@ public struct Paginator<Item: Hashable & Identifiable, FlowId: Hashable>: Reduci
             }
 
         case let action as Actions.LoadPage where action.id == flowId && action.pageNumber == initialPage:
-
-            // if action.pageNumber < self.page.pageNumber, it means that we need to refresh some page inside list of pages. To be sure in next sequence of pages consistency, we must remove all items after refreshable page.
-            if action.pageNumber < self.page.pageNumber {
-                removeItems(after: action.pageNumber)
-            }
-
             isLoading = true
             page = .number(initialPage)
 
         case let action as Actions.LoadPage where action.id == flowId:
             guard case .number = self.page else {
                 return
+            }
+
+            // if action.pageNumber < self.page.pageNumber, it means that we need to refresh some page inside list of pages. To be sure in next sequence of pages consistency, we must remove all items after refreshable page.
+            if action.pageNumber < self.page.pageNumber {
+                removeItems(after: action.pageNumber)
             }
 
             isLoading = true

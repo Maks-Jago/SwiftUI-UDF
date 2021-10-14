@@ -98,4 +98,32 @@ class PaginatorTests: XCTestCase {
         XCTAssertEqual(paginator.items.count, 24)
         XCTAssertEqual(paginator.page.pageNumber, 3)
     }
+
+    func testPaginatorLoadingMiddlePage() throws {
+        var paginator = Paginator<Item, ItemFlow.FlowId>(flowId: ItemFlow.id, perPage: 10)
+        let items = Item.fakeItems(count: 44)
+
+        paginator.reduce(Actions.SetPaginationItems<Item>(items: items, id: ItemFlow.id).eraseToAnyAction())
+        XCTAssertEqual(paginator.page.pageNumber, 5)
+
+        paginator.reduce(Actions.LoadPage(pageNumber: 2, id: ItemFlow.id).eraseToAnyAction())
+        paginator.reduce(Actions.DidLoadItems(items: Item.fakeItems(count: 10), id: ItemFlow.id).eraseToAnyAction())
+
+        XCTAssertEqual(paginator.page.pageNumber, 2)
+        XCTAssertEqual(paginator.items.count, 30)
+    }
+
+    func testPaginatorLoadingFirstPage() throws {
+        var paginator = Paginator<Item, ItemFlow.FlowId>(flowId: ItemFlow.id, perPage: 10)
+        let items = Item.fakeItems(count: 44)
+
+        paginator.reduce(Actions.SetPaginationItems<Item>(items: items, id: ItemFlow.id).eraseToAnyAction())
+        XCTAssertEqual(paginator.page.pageNumber, 5)
+
+        paginator.reduce(Actions.LoadPage(pageNumber: 1, id: ItemFlow.id).eraseToAnyAction())
+        paginator.reduce(Actions.DidLoadItems(items: Item.fakeItems(count: 10), id: ItemFlow.id).eraseToAnyAction())
+
+        XCTAssertEqual(paginator.page.pageNumber, 1)
+        XCTAssertEqual(paginator.items.count, 10)
+    }
 }
