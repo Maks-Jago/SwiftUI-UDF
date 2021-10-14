@@ -11,10 +11,6 @@ import XCTest
 class MergeableTests: XCTestCase {
 
     struct Item: Mergeable, Equatable {
-        func filled(from value: MergeableTests.Item, mutate: (inout MergeableTests.Item, MergeableTests.Item) -> Void) -> MergeableTests.Item {
-            return value
-        }
-
         struct Id: Hashable {
             var value: Int
         }
@@ -25,10 +21,9 @@ class MergeableTests: XCTestCase {
         var number: Double
 
         func merging(_ newValue: Item) -> Item {
-            newValue
-//            self.filled(from: newValue) { filledValue, oldValue in
-//                filledValue.number = newValue.number == 0 ? oldValue.number : newValue.number
-//            }
+            self.filled(from: newValue) { filledValue, oldValue in
+                filledValue.number = newValue.number == 0 ? oldValue.number : newValue.number
+            }
         }
     }
 

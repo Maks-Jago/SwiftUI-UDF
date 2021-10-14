@@ -10,8 +10,8 @@ import XCTest
 
 class PaginatorTests: XCTestCase {
 
-    struct Item: Equatable, Identifiable, Hashable {
-        struct Id: Hashable {
+    struct Item: Identifiable, Hashable, Codable {
+        struct Id: Hashable, Codable {
             var value: Int
         }
 
@@ -36,6 +36,15 @@ class PaginatorTests: XCTestCase {
         init() { self = .none }
 
         mutating func reduce(_ action: AnyAction) {}
+    }
+
+    struct AppState: AppReducer, Equatable {
+        @Cached(key: "UserCourseForm", defaultValue: .init())
+        var itemsForm: ItemsForm
+    }
+
+    struct ItemsForm: Form, Codable {
+        var paginator: Paginator<Item, ItemFlow.FlowId> = .init(flowId: ItemFlow.id, perPage: 10, usePrefixForFirstPage: false)
     }
 
     func testPaginatorPagesRemoving() throws {
@@ -125,5 +134,16 @@ class PaginatorTests: XCTestCase {
 
         XCTAssertEqual(paginator.page.pageNumber, 1)
         XCTAssertEqual(paginator.items.count, 10)
+    }
+
+    func testPaginatorLoading() {
+        let store = XCTestStore(initial: AppState())
+
+        store.dispatch(Actions.LoadPage(id: ItemFlow.id))
+        XCTAssertEqual(store.state.itemsForm.paginator.isLoading, true)
+
+        store.dispatch(Actions.DidLoadItems(items: Item.fakeItems(count: 10), id: ItemFlow.id))
+        XCTAssertEqual(store.state.itemsForm.paginator.page.pageNumber, 1)
+        XCTAssertEqual(store.state.itemsForm.paginator.items.count, 10)
     }
 }
