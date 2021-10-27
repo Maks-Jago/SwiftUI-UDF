@@ -101,10 +101,10 @@ public protocol ActionLogging {
   final public var defaultValue: T
   final public var intervalToSync: Foundation.TimeInterval
   public init()
-  public init(key: Swift.String, defaultValue: T, intervalToSync: Foundation.TimeInterval = 2, storage: SwiftUI_UDF_Binary.CacheSource)
-  convenience public init(key: Swift.String, defaultValue: T, intervalToSync: Foundation.TimeInterval = 2)
-  public init(key: Swift.String, defaultValue: T = .init(), intervalToSync: Foundation.TimeInterval = 2, storage: SwiftUI_UDF_Binary.CacheSource) where T : SwiftUI_UDF_Binary.Initable
-  convenience public init(key: Swift.String, defaultValue: T = .init(), intervalToSync: Foundation.TimeInterval = 2) where T : SwiftUI_UDF_Binary.Initable
+  public init(key: Swift.String, defaultValue: T, intervalToSync: Foundation.TimeInterval = 1, storage: SwiftUI_UDF_Binary.CacheSource)
+  convenience public init(key: Swift.String, defaultValue: T, intervalToSync: Foundation.TimeInterval = 1)
+  public init(key: Swift.String, defaultValue: T = .init(), intervalToSync: Foundation.TimeInterval = 1, storage: SwiftUI_UDF_Binary.CacheSource) where T : SwiftUI_UDF_Binary.Initable
+  convenience public init(key: Swift.String, defaultValue: T = .init(), intervalToSync: Foundation.TimeInterval = 1) where T : SwiftUI_UDF_Binary.Initable
   final public var wrappedValue: T {
     get
     set
