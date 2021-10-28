@@ -10,13 +10,14 @@ import SwiftUI
 public struct Paginator<Item: Hashable & Identifiable, FlowId: Hashable>: Reducible {
 
     public private(set) var items: OrderedSet<Item.ID> = []
-    public private(set) var page: PaginationPage = .number(1)
+    public private(set) var page: PaginationPage
     public var perPage: Int
-    public var usePrefixForFirstPage: Bool = true
-    public var initialPage: Int = 1
+    public var usePrefixForFirstPage: Bool
+    public var initialPage: Int
     public var flowId: FlowId
 
     public private(set) var isLoading: Bool = false
+    public var elements: [Item.ID] { items.elements }
 
     public init(flowId: FlowId, perPage: Int, usePrefixForFirstPage: Bool = true, initialPage: Int = 1) {
         self.flowId = flowId
