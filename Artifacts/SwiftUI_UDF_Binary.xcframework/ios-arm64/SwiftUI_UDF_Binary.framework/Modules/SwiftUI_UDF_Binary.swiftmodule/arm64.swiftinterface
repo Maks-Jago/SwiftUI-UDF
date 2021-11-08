@@ -538,6 +538,9 @@ extension SwiftUI.View {
   public subscript<R>(dynamicMember keyPath: Swift.KeyPath<Reducer, R>) -> SwiftUI_UDF_Binary.ReducerReference<AppState, R> where R : Swift.Equatable, R : SwiftUI_UDF_Binary.Reducing {
     get
   }
+  public subscript<R>(dynamicMember keyPath: Swift.KeyPath<Reducer, R>) -> SwiftUI_UDF_Binary.ReducerScope<R> where R : Swift.Equatable, R : SwiftUI_UDF_Binary.Reducing {
+    get
+  }
 }
 extension SwiftUI_UDF_Binary.ReducerReference where Reducer : SwiftUI_UDF_Binary.Formable {
   public subscript<T>(dynamicMember keyPath: Swift.WritableKeyPath<Reducer, T>) -> SwiftUI.Binding<T> where T : Swift.Equatable {
