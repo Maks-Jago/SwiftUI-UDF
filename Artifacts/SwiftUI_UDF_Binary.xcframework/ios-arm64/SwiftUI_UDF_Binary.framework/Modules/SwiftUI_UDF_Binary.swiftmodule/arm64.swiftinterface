@@ -616,7 +616,7 @@ public class Store<State> : Foundation.ObservableObject where State : Swift.Equa
 }
 @_inheritsConvenienceInitializers open class ReducibleMiddleware<State> : SwiftUI_UDF_Binary.Middleware<State>, SwiftUI_UDF_Binary.Reducing where State : Swift.Equatable, State : SwiftUI_UDF_Binary.AppReducer {
   public func isEqual(_ rhs: SwiftUI_UDF_Binary.IsEquatable) -> Swift.Bool
-  public func reduce(_ action: SwiftUI_UDF_Binary.AnyAction)
+  open func reduce(_ action: SwiftUI_UDF_Binary.AnyAction)
   override public init(store: SwiftUI_UDF_Binary.Store<State>, queue: Dispatch.DispatchQueue)
   required public init()
   @objc deinit
@@ -668,8 +668,8 @@ extension SwiftUI.View {
   
 }
 @_inheritsConvenienceInitializers open class ObservableMiddleware<State> : SwiftUI_UDF_Binary.Middleware<State> where State : Swift.Equatable, State : SwiftUI_UDF_Binary.AppReducer {
-  public func observe(state: State)
-  public func scope(for state: SwiftUI_UDF_Binary.SourceOfTruth<State>) -> SwiftUI_UDF_Binary.Scope
+  open func observe(state: State)
+  open func scope(for state: SwiftUI_UDF_Binary.SourceOfTruth<State>) -> SwiftUI_UDF_Binary.Scope
   override public init(store: SwiftUI_UDF_Binary.Store<State>, queue: Dispatch.DispatchQueue)
   required public init()
   @objc deinit
