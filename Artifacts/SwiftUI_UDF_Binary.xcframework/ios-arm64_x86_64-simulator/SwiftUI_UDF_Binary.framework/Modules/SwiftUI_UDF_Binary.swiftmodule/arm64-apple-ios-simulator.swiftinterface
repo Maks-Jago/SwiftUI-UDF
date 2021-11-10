@@ -454,11 +454,10 @@ extension SwiftUI_UDF_Binary.Container {
   public static func buildLimitedAvailability(_ component: [SwiftUI_UDF_Binary.AnyAction]) -> [SwiftUI_UDF_Binary.AnyAction]
   public static func buildFinalResult(_ component: [SwiftUI_UDF_Binary.AnyAction]) -> SwiftUI_UDF_Binary.ActionGroup
 }
-open class Middleware<State> : SwiftUI_UDF_Binary.Initable where State : Swift.Equatable, State : SwiftUI_UDF_Binary.AppReducer {
+open class Middleware<State> where State : Swift.Equatable, State : SwiftUI_UDF_Binary.AppReducer {
   public var store: SwiftUI_UDF_Binary.Store<State>
   public var queue: Dispatch.DispatchQueue
   public init(store: SwiftUI_UDF_Binary.Store<State>, queue: Dispatch.DispatchQueue)
-  required public init()
   required convenience public init(store: SwiftUI_UDF_Binary.Store<State>)
   open func status(for state: State) -> SwiftUI_UDF_Binary.Middleware<State>.Status
   public typealias DispatchFilter<Output> = (_ state: State, _ output: Output) -> Swift.Bool
@@ -630,10 +629,11 @@ public class Store<State> : Foundation.ObservableObject where State : Swift.Equa
   @objc deinit
 }
 @_inheritsConvenienceInitializers open class ReducibleMiddleware<State> : SwiftUI_UDF_Binary.Middleware<State>, SwiftUI_UDF_Binary.Reducing where State : Swift.Equatable, State : SwiftUI_UDF_Binary.AppReducer {
+  required public init()
+  required convenience public init(store: SwiftUI_UDF_Binary.Store<State>)
+  override public init(store: SwiftUI_UDF_Binary.Store<State>, queue: Dispatch.DispatchQueue)
   public func isEqual(_ rhs: SwiftUI_UDF_Binary.IsEquatable) -> Swift.Bool
   open func reduce(_ action: SwiftUI_UDF_Binary.AnyAction)
-  override public init(store: SwiftUI_UDF_Binary.Store<State>, queue: Dispatch.DispatchQueue)
-  required public init()
   @objc deinit
 }
 extension SwiftUI_UDF_Binary.Effects {
@@ -686,7 +686,6 @@ extension SwiftUI.View {
   open func observe(state: State)
   open func scope(for state: SwiftUI_UDF_Binary.SourceOfTruth<State>) -> SwiftUI_UDF_Binary.Scope
   override public init(store: SwiftUI_UDF_Binary.Store<State>, queue: Dispatch.DispatchQueue)
-  required public init()
   @objc deinit
 }
 public protocol Reducing : SwiftUI_UDF_Binary.Initable, SwiftUI_UDF_Binary.IsEquatable {
