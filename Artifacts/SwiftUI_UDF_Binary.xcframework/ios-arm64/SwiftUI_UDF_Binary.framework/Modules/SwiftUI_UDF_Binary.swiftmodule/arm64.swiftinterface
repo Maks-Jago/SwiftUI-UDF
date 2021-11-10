@@ -595,6 +595,7 @@ extension Swift.Hashable {
 }
 @_inheritsConvenienceInitializers final public class EnvironmentStore<State> : SwiftUI_UDF_Binary.Store<State> where State : Swift.Equatable, State : SwiftUI_UDF_Binary.AppReducer {
   override public init(initial state: State, logger: SwiftUI_UDF_Binary.ActionLogging)
+  override final public func subscribe(middleware: SwiftUI_UDF_Binary.Middleware<State>)
   override final public func dispatch(_ action: SwiftUI_UDF_Binary.AnyAction)
   @objc deinit
 }
