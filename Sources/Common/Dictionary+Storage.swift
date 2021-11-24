@@ -21,4 +21,12 @@ public extension Dictionary {
         }
         self[key] = set
     }
+
+    mutating func append<V: Identifiable>(_ value: V, by key: Key) where Value == OrderedSet<V.ID> {
+        append(value.id, by: key)
+    }
+
+    mutating func append<V: Identifiable>(_ values: [V], by key: Key) where Value == OrderedSet<V.ID> {
+        append(values.map(\.id), by: key)
+    }
 }
