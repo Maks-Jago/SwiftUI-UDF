@@ -210,7 +210,10 @@ public struct RenderContainer<V> : SwiftUI_UDF_Binary.Container where V : SwiftU
   public var viewToRender: V
   public init(viewToRender: V)
   public func map(state: SwiftUI_UDF_Binary.EmptyReducer, store: SwiftUI_UDF_Binary.EnvironmentStore<SwiftUI_UDF_Binary.EmptyReducer>) -> SwiftUI_UDF_Binary.RenderContainer<V>.ContainerComponent.Props
-  public typealias Body = @_opaqueReturnTypeOf("$s18SwiftUI_UDF_Binary9ContainerPAAE4bodyQrvp", 0) __<SwiftUI_UDF_Binary.RenderContainer<V>>
+  @_Concurrency.MainActor(unsafe) public var body: some SwiftUI.View {
+    get
+  }
+  public typealias Body = @_opaqueReturnTypeOf("$s18SwiftUI_UDF_Binary15RenderContainerV4bodyQrvp", 0) __<V>
   public typealias ContainerState = SwiftUI_UDF_Binary.EmptyReducer
 }
 public struct RenderComponent<V> : SwiftUI_UDF_Binary.Component where V : SwiftUI.View {
