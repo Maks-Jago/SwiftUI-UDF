@@ -1,5 +1,5 @@
 // swift-interface-format-version: 1.0
-// swift-compiler-version: Apple Swift version 5.5.1 (swiftlang-1300.0.31.4 clang-1300.0.29.6)
+// swift-compiler-version: Apple Swift version 5.5.2 (swiftlang-1300.0.47.5 clang-1300.0.29.30)
 // swift-module-flags: -target arm64-apple-ios14.1 -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -O -module-name SwiftUI_UDF_Binary
 import Combine
 import CoreLocation/*.CLAuthorizationStatus*/
@@ -382,7 +382,7 @@ extension SwiftUI_UDF_Binary.Actions {
 public protocol Routing : SwiftUI_UDF_Binary.Initable {
   associatedtype Route
   associatedtype View : SwiftUI.View
-  @SwiftUI.ViewBuilder func view(for route: Self.Route) -> Self.View
+  func view(for route: Self.Route) -> Self.View
 }
 open class Router<R> where R : SwiftUI_UDF_Binary.Routing {
   public var routing: R
@@ -630,12 +630,18 @@ public class Store<State> : Foundation.ObservableObject where State : Swift.Equa
   public typealias ObjectWillChangePublisher = Combine.ObservableObjectPublisher
   @objc deinit
 }
-@_inheritsConvenienceInitializers open class ReducibleMiddleware<State> : SwiftUI_UDF_Binary.Middleware<State>, SwiftUI_UDF_Binary.Reducing where State : Swift.Equatable, State : SwiftUI_UDF_Binary.AppReducer {
+@_functionBuilder public enum ContainerBuilder {
+  public static func buildBlock() -> SwiftUI_UDF_Binary.RenderContainer<SwiftUI.EmptyView>
+  public static func buildBlock<C>(_ container: C) -> C where C : SwiftUI_UDF_Binary.Container
+  public static func buildEither<C>(first container: C) -> C where C : SwiftUI_UDF_Binary.Container
+  public static func buildEither<C>(second container: C) -> C where C : SwiftUI_UDF_Binary.Container
+  public static func buildExpression<V>(_ expression: V) -> SwiftUI_UDF_Binary.RenderContainer<V> where V : SwiftUI.View
+}
+@_inheritsConvenienceInitializers open class ReducibleMiddleware<State> : SwiftUI_UDF_Binary.Middleware<State> where State : Swift.Equatable, State : SwiftUI_UDF_Binary.AppReducer {
   required public init()
   required convenience public init(store: SwiftUI_UDF_Binary.Store<State>)
   override public init(store: SwiftUI_UDF_Binary.Store<State>, queue: Dispatch.DispatchQueue)
-  public func isEqual(_ rhs: SwiftUI_UDF_Binary.IsEquatable) -> Swift.Bool
-  open func reduce(_ action: SwiftUI_UDF_Binary.AnyAction)
+  open func reduce(_ action: SwiftUI_UDF_Binary.AnyAction, for state: State)
   @objc deinit
 }
 extension SwiftUI_UDF_Binary.Effects {
