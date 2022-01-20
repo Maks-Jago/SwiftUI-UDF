@@ -16,8 +16,6 @@ public extension Effects {
 
         private var locationManagerConfigurator: (CLLocationManager) -> Void = { _ in }
 
-        public init() {}
-
         public init(distanceFilter: CLLocationDistance = 100) {
             locationManagerConfigurator = {
                 $0.distanceFilter = distanceFilter
