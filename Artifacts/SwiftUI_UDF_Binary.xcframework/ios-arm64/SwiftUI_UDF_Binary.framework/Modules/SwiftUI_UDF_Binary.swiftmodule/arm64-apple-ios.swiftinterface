@@ -498,6 +498,7 @@ extension SwiftUI_UDF_Binary.Middleware {
   @_Concurrency.MainActor(unsafe) public var body: some SwiftUI.View {
     get
   }
+  @_Concurrency.MainActor(unsafe) public func isDetailLink(_ isDetailLink: Swift.Bool) -> SwiftUI_UDF_Binary.NavigationContainerLink<C, Label>
   public typealias Body = @_opaqueReturnTypeOf("$s18SwiftUI_UDF_Binary23NavigationContainerLinkV4bodyQrvp", 0) __<C, Label>
 }
 extension SwiftUI.Binding where Value : Swift.Equatable {
