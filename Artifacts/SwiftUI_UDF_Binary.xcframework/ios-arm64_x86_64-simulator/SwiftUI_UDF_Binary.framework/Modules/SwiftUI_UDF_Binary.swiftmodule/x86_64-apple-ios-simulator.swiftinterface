@@ -152,6 +152,10 @@ public typealias NavigationLinkItem = SwiftUI_UDF_Binary.NavigationContainerLink
   @_Concurrency.MainActor(unsafe) public func isDetailLink(_ isDetailLink: Swift.Bool) -> SwiftUI_UDF_Binary.NavigationContainerLinkItem<State, I, Label, Destination>
   public typealias Body = @_opaqueReturnTypeOf("$s18SwiftUI_UDF_Binary27NavigationContainerLinkItemV4bodyQrvp", 0) __<State, I, Label, Destination>
 }
+extension SwiftUI_UDF_Binary.NavigationContainerLinkItem where State == Destination.ContainerState, Destination : SwiftUI_UDF_Binary.Container {
+  @_Concurrency.MainActor(unsafe) public init(item: SwiftUI.Binding<I?>, @SwiftUI.ViewBuilder destination: @escaping (I) -> Destination, @SwiftUI.ViewBuilder label: @escaping () -> Label)
+  @_Concurrency.MainActor(unsafe) public init(item: SwiftUI.Binding<I?>, @SwiftUI.ViewBuilder destination: @escaping (I) -> Destination) where Label == SwiftUI.EmptyView
+}
 extension SwiftUI.View {
   public func alert(status: SwiftUI.Binding<SwiftUI_UDF_Binary.AlertBuilder.AlertStatus>) -> some SwiftUI.View
   
@@ -521,6 +525,11 @@ extension SwiftUI_UDF_Binary.Middleware {
   }
   @_Concurrency.MainActor(unsafe) public func isDetailLink(_ isDetailLink: Swift.Bool) -> SwiftUI_UDF_Binary.NavigationContainerLink<State, Label, Destination>
   public typealias Body = @_opaqueReturnTypeOf("$s18SwiftUI_UDF_Binary23NavigationContainerLinkV4bodyQrvp", 0) __<State, Label, Destination>
+}
+extension SwiftUI_UDF_Binary.NavigationContainerLink where State == Destination.ContainerState, Destination : SwiftUI_UDF_Binary.Container {
+  @_Concurrency.MainActor(unsafe) public init(@SwiftUI.ViewBuilder destination: @escaping () -> Destination, @SwiftUI.ViewBuilder label: @escaping () -> Label)
+  @_Concurrency.MainActor(unsafe) public init(isActive: SwiftUI.Binding<Swift.Bool>, @SwiftUI.ViewBuilder destination: @escaping () -> Destination, @SwiftUI.ViewBuilder label: @escaping () -> Label)
+  @_Concurrency.MainActor(unsafe) public init(isActive: SwiftUI.Binding<Swift.Bool>, @SwiftUI.ViewBuilder destination: @escaping () -> Destination) where Label == SwiftUI.EmptyView
 }
 @available(*, deprecated, message: "Use `NavigationContainerLink with destination as a closure`")
 extension SwiftUI_UDF_Binary.NavigationContainerLink where Destination : SwiftUI_UDF_Binary.Container {
