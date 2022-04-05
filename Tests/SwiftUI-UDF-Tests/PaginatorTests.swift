@@ -39,8 +39,7 @@ class PaginatorTests: XCTestCase {
     }
 
     struct AppState: AppReducer, Equatable {
-        @Cached(key: "UserCourseForm", defaultValue: .init())
-        var itemsForm: ItemsForm
+        var itemsForm = ItemsForm()
     }
 
     struct ItemsForm: Form, Codable {

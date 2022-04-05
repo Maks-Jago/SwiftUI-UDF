@@ -1,5 +1,5 @@
 // swift-interface-format-version: 1.0
-// swift-compiler-version: Apple Swift version 5.5.2 (swiftlang-1300.0.47.5 clang-1300.0.29.30)
+// swift-compiler-version: Apple Swift version 5.6 (swiftlang-5.6.0.323.62 clang-1316.0.20.8)
 // swift-module-flags: -target arm64-apple-ios14.1-simulator -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -O -module-name SwiftUI_UDF_Binary
 import Combine
 import CoreLocation/*.CLAuthorizationStatus*/
@@ -110,6 +110,7 @@ public protocol ActionLogging {
     get
     set
   }
+  final public func reset()
   @objc deinit
 }
 extension SwiftUI_UDF_Binary.Cached : SwiftUI_UDF_Binary.IsEquatable where T : Swift.Equatable, T : SwiftUI_UDF_Binary.Reducing {
@@ -263,6 +264,11 @@ public enum Actions {
     public init<Id>(status: SwiftUI_UDF_Binary.AlertBuilder.AlertStatus, id: Id) where Id : Swift.Hashable
     public init<Id>(style: SwiftUI_UDF_Binary.AlertBuilder.AlertStyle, id: Id) where Id : Swift.Hashable
     public static func == (a: SwiftUI_UDF_Binary.Actions.UpdateAlertStatus, b: SwiftUI_UDF_Binary.Actions.UpdateAlertStatus) -> Swift.Bool
+  }
+  public struct DidCancelEffect : SwiftUI_UDF_Binary.EquatableAction {
+    public var cancelation: Swift.AnyHashable
+    public init<Id>(by cancelation: Id) where Id : Swift.Hashable
+    public static func == (a: SwiftUI_UDF_Binary.Actions.DidCancelEffect, b: SwiftUI_UDF_Binary.Actions.DidCancelEffect) -> Swift.Bool
   }
 }
 extension SwiftUI_UDF_Binary.Actions {
@@ -491,19 +497,20 @@ extension SwiftUI_UDF_Binary.Middleware {
     }
   }
 }
-@_Concurrency.MainActor(unsafe) public struct NavigationContainerLink<C, Label> : SwiftUI.View where C : SwiftUI_UDF_Binary.Container, Label : SwiftUI.View {
-  @_Concurrency.MainActor(unsafe) public init(destination: C, @SwiftUI.ViewBuilder label: @escaping () -> Label)
-  @_Concurrency.MainActor(unsafe) public init(destination: C, isActive: SwiftUI.Binding<Swift.Bool>, @SwiftUI.ViewBuilder label: @escaping () -> Label)
-  @_Concurrency.MainActor(unsafe) public init(destination: C, isActive: SwiftUI.Binding<Swift.Bool>) where Label == SwiftUI.EmptyView
+@_Concurrency.MainActor(unsafe) public struct NavigationContainerLink<State, Label, Destination> : SwiftUI.View where State : Swift.Equatable, State : SwiftUI_UDF_Binary.AppReducer, Label : SwiftUI.View, Destination : SwiftUI.View {
+  @_Concurrency.MainActor(unsafe) public init(_ stateType: State.Type, @SwiftUI.ViewBuilder destination: @escaping () -> Destination, @SwiftUI.ViewBuilder label: @escaping () -> Label)
+  @_Concurrency.MainActor(unsafe) public init(_ stateType: State.Type, isActive: SwiftUI.Binding<Swift.Bool>, @SwiftUI.ViewBuilder destination: @escaping () -> Destination, @SwiftUI.ViewBuilder label: @escaping () -> Label)
+  @_Concurrency.MainActor(unsafe) public init(_ stateType: State.Type, isActive: SwiftUI.Binding<Swift.Bool>, @SwiftUI.ViewBuilder destination: @escaping () -> Destination) where Label == SwiftUI.EmptyView
   @_Concurrency.MainActor(unsafe) public var body: some SwiftUI.View {
     get
   }
-  @_Concurrency.MainActor(unsafe) public func isDetailLink(_ isDetailLink: Swift.Bool) -> SwiftUI_UDF_Binary.NavigationContainerLink<C, Label>
-  public typealias Body = @_opaqueReturnTypeOf("$s18SwiftUI_UDF_Binary23NavigationContainerLinkV4bodyQrvp", 0) __<C, Label>
+  @_Concurrency.MainActor(unsafe) public func isDetailLink(_ isDetailLink: Swift.Bool) -> SwiftUI_UDF_Binary.NavigationContainerLink<State, Label, Destination>
+  public typealias Body = @_opaqueReturnTypeOf("$s18SwiftUI_UDF_Binary23NavigationContainerLinkV4bodyQrvp", 0) __<State, Label, Destination>
 }
-extension SwiftUI.Binding where Value : Swift.Equatable {
-  @available(*, deprecated, message: "Use `store.$state.<formName>.<fieldName>` instead of `Binding(form:keyPath:store:)`")
-  public init<F, S>(form: F, keyPath: Swift.WritableKeyPath<F, Value>, store: SwiftUI_UDF_Binary.EnvironmentStore<S>, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) where F : Swift.Equatable, F : SwiftUI_UDF_Binary.Formable, S : Swift.Equatable, S : SwiftUI_UDF_Binary.AppReducer
+extension SwiftUI_UDF_Binary.NavigationContainerLink where Destination : SwiftUI_UDF_Binary.Container {
+  @_Concurrency.MainActor(unsafe) public init(destination: Destination, @SwiftUI.ViewBuilder label: @escaping () -> Label) where State == Destination.ContainerState
+  @_Concurrency.MainActor(unsafe) public init(destination: Destination, isActive: SwiftUI.Binding<Swift.Bool>, @SwiftUI.ViewBuilder label: @escaping () -> Label) where State == Destination.ContainerState
+  @_Concurrency.MainActor(unsafe) public init(destination: Destination, isActive: SwiftUI.Binding<Swift.Bool>) where State == Destination.ContainerState, Label == SwiftUI.EmptyView
 }
 public protocol Flow : Swift.Equatable, SwiftUI_UDF_Binary.Reducing {
   init()
@@ -533,6 +540,11 @@ public struct Effect : SwiftUI_UDF_Binary.Effectable {
   public typealias Failure = Swift.Never
   public typealias Output = SwiftUI_UDF_Binary.AnyAction
 }
+extension SwiftUI.View {
+  public func sheetContainer<Destionation, State>(_ stateType: State.Type, isPresented: SwiftUI.Binding<Swift.Bool>, onDismiss: (() -> Swift.Void)? = nil, kind: SwiftUI_UDF_Binary.ModalKind = .sheet, @SwiftUI.ViewBuilder destination: @escaping () -> Destionation) -> some SwiftUI.View where Destionation : SwiftUI.View, State : Swift.Equatable, State : SwiftUI_UDF_Binary.AppReducer
+  
+}
+@available(*, deprecated, message: "Use `sheetContainer with destination as an closure`")
 extension SwiftUI.View {
   public func sheetContainer<C, V>(isPresented: SwiftUI.Binding<Swift.Bool>, onDismiss: (() -> Swift.Void)? = nil, container: C, kind: SwiftUI_UDF_Binary.ModalKind = .sheet, transform: @escaping (C) -> V) -> some SwiftUI.View where C : SwiftUI_UDF_Binary.Container, V : SwiftUI.View
   
