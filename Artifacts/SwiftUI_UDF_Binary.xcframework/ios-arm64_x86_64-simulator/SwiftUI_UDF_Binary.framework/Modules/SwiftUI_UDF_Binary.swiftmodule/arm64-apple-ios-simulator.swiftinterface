@@ -137,6 +137,21 @@ public struct EmptyReducer : SwiftUI_UDF_Binary.AppReducer, Swift.Equatable {
   public mutating func reduce(_ action: SwiftUI_UDF_Binary.AnyAction) -> Swift.Bool
   public static func == (a: SwiftUI_UDF_Binary.EmptyReducer, b: SwiftUI_UDF_Binary.EmptyReducer) -> Swift.Bool
 }
+@available(*, deprecated, message: "Use `NavigationContainerLinkItem` instead of NavigationLinkItem")
+public typealias NavigationLinkItem = SwiftUI_UDF_Binary.NavigationContainerLinkItem
+@_Concurrency.MainActor(unsafe) public struct NavigationContainerLinkItem<State, I, Label, Destination> : SwiftUI.View where State : Swift.Equatable, State : SwiftUI_UDF_Binary.AppReducer, I : Swift.Identifiable, Label : SwiftUI.View, Destination : SwiftUI.View {
+  @_Concurrency.MainActor(unsafe) public var item: SwiftUI.Binding<I?>
+  @_Concurrency.MainActor(unsafe) public var destination: (I) -> Destination
+  @_Concurrency.MainActor(unsafe) public var label: () -> Label
+  @_Concurrency.MainActor(unsafe) public var isDetailLink: Swift.Bool
+  @_Concurrency.MainActor(unsafe) public init(_ stateType: State.Type, item: SwiftUI.Binding<I?>, @SwiftUI.ViewBuilder destination: @escaping (I) -> Destination, @SwiftUI.ViewBuilder label: @escaping () -> Label)
+  @_Concurrency.MainActor(unsafe) public init(_ stateType: State.Type, item: SwiftUI.Binding<I?>, @SwiftUI.ViewBuilder destination: @escaping (I) -> Destination) where Label == SwiftUI.EmptyView
+  @_Concurrency.MainActor(unsafe) public var body: some SwiftUI.View {
+    get
+  }
+  @_Concurrency.MainActor(unsafe) public func isDetailLink(_ isDetailLink: Swift.Bool) -> SwiftUI_UDF_Binary.NavigationContainerLinkItem<State, I, Label, Destination>
+  public typealias Body = @_opaqueReturnTypeOf("$s18SwiftUI_UDF_Binary27NavigationContainerLinkItemV4bodyQrvp", 0) __<State, I, Label, Destination>
+}
 extension SwiftUI.View {
   public func alert(status: SwiftUI.Binding<SwiftUI_UDF_Binary.AlertBuilder.AlertStatus>) -> some SwiftUI.View
   
