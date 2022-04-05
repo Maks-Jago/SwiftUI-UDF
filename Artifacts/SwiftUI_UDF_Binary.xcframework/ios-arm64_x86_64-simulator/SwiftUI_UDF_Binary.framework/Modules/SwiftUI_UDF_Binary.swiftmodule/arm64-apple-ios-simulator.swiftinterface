@@ -507,6 +507,7 @@ extension SwiftUI_UDF_Binary.Middleware {
   @_Concurrency.MainActor(unsafe) public func isDetailLink(_ isDetailLink: Swift.Bool) -> SwiftUI_UDF_Binary.NavigationContainerLink<State, Label, Destination>
   public typealias Body = @_opaqueReturnTypeOf("$s18SwiftUI_UDF_Binary23NavigationContainerLinkV4bodyQrvp", 0) __<State, Label, Destination>
 }
+@available(*, deprecated, message: "Use `NavigationContainerLink with destination as a closure`")
 extension SwiftUI_UDF_Binary.NavigationContainerLink where Destination : SwiftUI_UDF_Binary.Container {
   @_Concurrency.MainActor(unsafe) public init(destination: Destination, @SwiftUI.ViewBuilder label: @escaping () -> Label) where State == Destination.ContainerState
   @_Concurrency.MainActor(unsafe) public init(destination: Destination, isActive: SwiftUI.Binding<Swift.Bool>, @SwiftUI.ViewBuilder label: @escaping () -> Label) where State == Destination.ContainerState
