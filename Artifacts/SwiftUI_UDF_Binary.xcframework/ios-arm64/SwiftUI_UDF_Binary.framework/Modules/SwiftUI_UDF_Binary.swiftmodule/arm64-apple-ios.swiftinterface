@@ -556,8 +556,16 @@ extension SwiftUI_UDF_Binary.NavigationContainerLink {
   @_Concurrency.MainActor(unsafe) public init<V>(_ stateType: State.Type, tag: V, selection: SwiftUI.Binding<V?>, @SwiftUI.ViewBuilder destination: @escaping () -> Destination) where NavLink == SwiftUI_UDF_Binary.TagNavigationLink<State, SwiftUI.EmptyView, Destination, V>, Label == SwiftUI.EmptyView, V : Swift.Hashable
 }
 extension SwiftUI_UDF_Binary.NavigationContainerLink where State == Destination.ContainerState, Destination : SwiftUI_UDF_Binary.Container {
+  @_Concurrency.MainActor(unsafe) public init<V>(tag: V, selection: SwiftUI.Binding<V?>, @SwiftUI.ViewBuilder destination: @escaping () -> Destination, @SwiftUI.ViewBuilder label: @escaping () -> Label) where NavLink == SwiftUI_UDF_Binary.TagNavigationLink<State, Label, Destination, V>, V : Swift.Hashable
+  @_Concurrency.MainActor(unsafe) public init<V>(tag: V, selection: SwiftUI.Binding<V?>, @SwiftUI.ViewBuilder destination: @escaping () -> Destination) where NavLink == SwiftUI_UDF_Binary.TagNavigationLink<State, SwiftUI.EmptyView, Destination, V>, Label == SwiftUI.EmptyView, V : Swift.Hashable
+}
+extension SwiftUI_UDF_Binary.NavigationContainerLink where State == Destination.ContainerState, Destination : SwiftUI_UDF_Binary.Container {
   @_Concurrency.MainActor(unsafe) public init<I>(item: SwiftUI.Binding<I?>, @SwiftUI.ViewBuilder destination: @escaping (I) -> Destination, @SwiftUI.ViewBuilder label: @escaping () -> Label) where NavLink == SwiftUI_UDF_Binary.ItemNavigationLink<State, I, Label, Destination>
   @_Concurrency.MainActor(unsafe) public init<I>(item: SwiftUI.Binding<I?>, @SwiftUI.ViewBuilder destination: @escaping (I) -> Destination) where NavLink == SwiftUI_UDF_Binary.ItemNavigationLink<State, I, SwiftUI.EmptyView, Destination>, Label == SwiftUI.EmptyView
+}
+extension SwiftUI_UDF_Binary.NavigationContainerLink {
+  @_Concurrency.MainActor(unsafe) public init<I>(_ stateType: State.Type, item: SwiftUI.Binding<I?>, @SwiftUI.ViewBuilder destination: @escaping (I) -> Destination, @SwiftUI.ViewBuilder label: @escaping () -> Label) where NavLink == SwiftUI_UDF_Binary.ItemNavigationLink<State, I, Label, Destination>
+  @_Concurrency.MainActor(unsafe) public init<I>(_ stateType: State.Type, item: SwiftUI.Binding<I?>, @SwiftUI.ViewBuilder destination: @escaping (I) -> Destination) where NavLink == SwiftUI_UDF_Binary.ItemNavigationLink<State, I, SwiftUI.EmptyView, Destination>, Label == SwiftUI.EmptyView
 }
 @available(*, deprecated, message: "Use `NavigationContainerLink with destination as a closure`")
 extension SwiftUI_UDF_Binary.NavigationContainerLink where NavLink == SwiftUI_UDF_Binary.PlainNavigationLink<State, Label, Destination>, State == Destination.ContainerState, Destination : SwiftUI_UDF_Binary.Container {
