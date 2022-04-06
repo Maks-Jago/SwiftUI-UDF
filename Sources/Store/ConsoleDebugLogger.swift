@@ -41,11 +41,11 @@ public extension ConsoleDebugLogger {
 }
 
 extension EnvironmentStore {
-    public convenience init(initial state: State) {
-        self.init(initial: state, logger: ConsoleDebugLogger(options: .all))
+    public convenience init(initial state: State, accessToken: String) {
+        self.init(initial: state, accessToken: accessToken, logger: ConsoleDebugLogger(options: .all))
     }
 
-    public convenience init(initial state: State, debugLoggerOptions options: ConsoleDebugLogger.Options) {
-        self.init(initial: state, logger: ConsoleDebugLogger(options: options))
+    public convenience init(initial state: State, debugLoggerOptions options: ConsoleDebugLogger.Options, accessToken: String) {
+        self.init(initial: state, accessToken: accessToken, logger: ConsoleDebugLogger(options: options))
     }
 }

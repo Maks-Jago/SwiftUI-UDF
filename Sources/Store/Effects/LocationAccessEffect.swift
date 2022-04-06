@@ -39,28 +39,15 @@ public extension Effects {
                     return
                 }
 
-                if #available(iOS 14, *) {
-                    send(status: locationManager.authorizationStatus)
-                } else {
-                    send(status: CLLocationManager.authorizationStatus())
-                }
+                send(status: locationManager.authorizationStatus)
             }
 
             func cancel() {
                 subscriber = nil
             }
 
-            @available(iOS 14.0, *)
             func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
                 send(status: manager.authorizationStatus)
-            }
-
-            func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
-                if #available(iOS 14, *) {
-                    return
-                }
-
-                send(status: status)
             }
 
             private func send(status: CLAuthorizationStatus) {

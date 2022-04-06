@@ -19,6 +19,10 @@ public struct Paginator<Item: Hashable & Identifiable, FlowId: Hashable>: Reduci
     public private(set) var isLoading: Bool = false
     public var elements: [Item.ID] { items.elements }
 
+    public var isLoadingInitialPage: Bool {
+        page.pageNumber == initialPage && isLoading
+    }
+
     public init(flowId: FlowId, perPage: Int, usePrefixForFirstPage: Bool = true, initialPage: Int = 1) {
         self.flowId = flowId
         self.perPage = perPage

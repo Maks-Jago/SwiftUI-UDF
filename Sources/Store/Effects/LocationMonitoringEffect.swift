@@ -16,9 +16,7 @@ public extension Effects {
 
         private var locationManagerConfigurator: (CLLocationManager) -> Void = { _ in }
 
-        public init() {}
-
-        public init(distanceFilter: CLLocationDistance) {
+        public init(distanceFilter: CLLocationDistance = 100) {
             locationManagerConfigurator = {
                 $0.distanceFilter = distanceFilter
             }
@@ -48,7 +46,6 @@ public extension Effects {
             var subscriber: S?
 
             private let locationManager: CLLocationManager
-            private var lastTrackedTime: Date? = nil
 
             init(subscriber: S, locationManager: CLLocationManager) {
                 self.locationManager = locationManager
@@ -75,15 +72,10 @@ public extension Effects {
             }
 
             private func sendLocation(_ location: CLLocation?) {
-                guard let location = location else {
+                guard let location = location, CLLocationCoordinate2DIsValid(location.coordinate) else {
                     return
                 }
 
-                if let lastTrackedTime = lastTrackedTime, lastTrackedTime.timeIntervalSince(Date()) < 2 {
-                    return
-                }
-
-                lastTrackedTime = Date()
                 _ = subscriber?.receive(Actions.DidUpdateUserLocation(location: location).eraseToAnyAction())
             }
         }
