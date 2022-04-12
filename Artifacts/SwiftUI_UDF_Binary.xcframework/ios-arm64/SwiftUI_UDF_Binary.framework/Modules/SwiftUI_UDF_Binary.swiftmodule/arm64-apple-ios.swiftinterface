@@ -773,6 +773,8 @@ extension SwiftUI_UDF_Binary.FileCache : SwiftUI_UDF_Binary.CacheSource {
 extension SwiftUI.View {
   public func sheetContainer<State, Destination, I>(_ stateType: State.Type, item: SwiftUI.Binding<I?>, onDismiss: (() -> Swift.Void)? = nil, kind: SwiftUI_UDF_Binary.ModalKind = .sheet, destination: @escaping (I) -> Destination) -> some SwiftUI.View where State : Swift.Equatable, State : SwiftUI_UDF_Binary.AppReducer, Destination : SwiftUI.View, I : Swift.Identifiable
   
+  public func sheetContainer<State, Destination, I>(item: SwiftUI.Binding<I?>, onDismiss: (() -> Swift.Void)? = nil, kind: SwiftUI_UDF_Binary.ModalKind = .sheet, destination: @escaping (I) -> Destination) -> some SwiftUI.View where State : Swift.Equatable, State : SwiftUI_UDF_Binary.AppReducer, Destination : SwiftUI_UDF_Binary.Container, I : Swift.Identifiable
+  
 }
 @available(*, deprecated, message: "Use `sheetContainer with destination as a closure`")
 extension SwiftUI.View {
