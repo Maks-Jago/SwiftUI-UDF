@@ -7,10 +7,10 @@
 
 import SwiftUI
 
-public func empty() -> RenderContainer<EmptyView> {
+public func empty() -> RenderContainer<EmptyView, EmptyReducer> {
     RenderContainer(viewToRender: EmptyView())
 }
 
-public func empty<T>(_ value: T) -> RenderContainer<EmptyView> {
+public func empty<T>(_ value: T) -> RenderContainer<EmptyView, EmptyReducer> {
     RenderContainer(viewToRender: EmptyView())
 }

@@ -26,6 +26,7 @@ public enum AlertBuilder {
     public init(title: Swift.String, message: Swift.String?)
     public init()
     public init(style: SwiftUI_UDF_Binary.AlertBuilder.AlertStyle)
+    public init<AlertId>(id: AlertId) where AlertId : Swift.Hashable
   }
   public struct AlertStyle : Swift.Equatable {
     public static func == (lhs: SwiftUI_UDF_Binary.AlertBuilder.AlertStyle, rhs: SwiftUI_UDF_Binary.AlertBuilder.AlertStyle) -> Swift.Bool
@@ -39,6 +40,7 @@ public enum AlertBuilder {
     public init(title: Swift.String, text: Swift.String, dismissButton: SwiftUI.Alert.Button)
   }
   public static func buildAlert(for style: SwiftUI_UDF_Binary.AlertBuilder.AlertStyle) -> SwiftUI.Alert
+  public static func registerAlert<AlertId>(by id: AlertId, _ builder: @escaping () -> SwiftUI_UDF_Binary.AlertBuilder.AlertStyle) where AlertId : Swift.Hashable
 }
 extension SwiftUI_UDF_Binary.AlertBuilder.AlertStatus : Swift.Identifiable {
   public typealias ID = Swift.Int
@@ -197,6 +199,8 @@ public protocol Actionable {
 extension SwiftUI_UDF_Binary.Actionable where Self : Swift.Equatable {
   public func eraseToAnyAction(fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) -> SwiftUI_UDF_Binary.AnyAction
 }
+public protocol ProtectedAction : Swift.Equatable, SwiftUI_UDF_Binary.Actionable {
+}
 extension SwiftUI_UDF_Binary.Effects {
   public struct Delay : SwiftUI_UDF_Binary.Effectable {
     public var upstream: Combine.AnyPublisher<SwiftUI_UDF_Binary.AnyAction, Swift.Never>
@@ -213,16 +217,17 @@ public enum Scopes {
   public static func Combined<S1, S2, S3>(_ s1: S1, _ s2: S2, _ s3: S3) -> SwiftUI_UDF_Binary.CombinedScope<S1, SwiftUI_UDF_Binary.CombinedScope<S2, S3>> where S1 : Swift.Equatable, S1 : SwiftUI_UDF_Binary.Scope, S2 : Swift.Equatable, S2 : SwiftUI_UDF_Binary.Scope, S3 : Swift.Equatable, S3 : SwiftUI_UDF_Binary.Scope
   public static func Combined<S1, S2, S3, S4>(_ s1: S1, _ s2: S2, _ s3: S3, _ s4: S4) -> SwiftUI_UDF_Binary.CombinedScope<SwiftUI_UDF_Binary.CombinedScope<S1, S2>, SwiftUI_UDF_Binary.CombinedScope<S3, S4>> where S1 : Swift.Equatable, S1 : SwiftUI_UDF_Binary.Scope, S2 : Swift.Equatable, S2 : SwiftUI_UDF_Binary.Scope, S3 : Swift.Equatable, S3 : SwiftUI_UDF_Binary.Scope, S4 : Swift.Equatable, S4 : SwiftUI_UDF_Binary.Scope
 }
-public struct RenderContainer<V> : SwiftUI_UDF_Binary.Container where V : SwiftUI.View {
+public struct RenderContainer<V, AppState> : SwiftUI_UDF_Binary.Container where V : SwiftUI.View, AppState : Swift.Equatable, AppState : SwiftUI_UDF_Binary.AppReducer {
   public typealias ContainerComponent = SwiftUI_UDF_Binary.RenderComponent<V>
   public var viewToRender: V
-  public init(viewToRender: V)
-  public func map(state: SwiftUI_UDF_Binary.EmptyReducer, store: SwiftUI_UDF_Binary.EnvironmentStore<SwiftUI_UDF_Binary.EmptyReducer>) -> SwiftUI_UDF_Binary.RenderContainer<V>.ContainerComponent.Props
+  public init(viewToRender: V) where AppState == SwiftUI_UDF_Binary.EmptyReducer
+  public init(_ state: AppState, viewToRender: V)
+  public func map(state: AppState, store: SwiftUI_UDF_Binary.EnvironmentStore<AppState>) -> SwiftUI_UDF_Binary.RenderContainer<V, AppState>.ContainerComponent.Props
   @_Concurrency.MainActor(unsafe) public var body: some SwiftUI.View {
     get
   }
-  public typealias Body = @_opaqueReturnTypeOf("$s18SwiftUI_UDF_Binary15RenderContainerV4bodyQrvp", 0) __<V>
-  public typealias ContainerState = SwiftUI_UDF_Binary.EmptyReducer
+  public typealias Body = @_opaqueReturnTypeOf("$s18SwiftUI_UDF_Binary15RenderContainerV4bodyQrvp", 0) __<V, AppState>
+  public typealias ContainerState = AppState
 }
 public struct RenderComponent<V> : SwiftUI_UDF_Binary.Component where V : SwiftUI.View {
   public struct Props {
@@ -446,8 +451,6 @@ extension SwiftUI_UDF_Binary.Effectable {
   public func delay(duration: Foundation.TimeInterval, queue: Dispatch.DispatchQueue) -> some SwiftUI_UDF_Binary.Effectable
   
 }
-@available(*, deprecated, message: "Use `NavigationContainerLink` instead of NavigationLinkItem")
-public typealias NavigationLinkItem = SwiftUI_UDF_Binary.NavigationContainerLink
 @_Concurrency.MainActor(unsafe) public struct ItemNavigationLink<State, I, Label, Destination> : SwiftUI_UDF_Binary.NavigationContainerLinking where State : Swift.Equatable, State : SwiftUI_UDF_Binary.AppReducer, Label : SwiftUI.View, Destination : SwiftUI.View {
   @_Concurrency.MainActor(unsafe) public var item: SwiftUI.Binding<I?>
   @_Concurrency.MainActor(unsafe) public var destination: (I) -> Destination
@@ -681,7 +684,8 @@ extension Swift.Hashable {
   public static func == (lhs: Self, rhs: Swift.AnyHashable?) -> Swift.Bool
 }
 @_inheritsConvenienceInitializers final public class EnvironmentStore<State> : SwiftUI_UDF_Binary.Store<State> where State : Swift.Equatable, State : SwiftUI_UDF_Binary.AppReducer {
-  override public init(initial state: State, accessToken: Swift.String, logger: SwiftUI_UDF_Binary.ActionLogging)
+  override public init(initial state: State, accessToken: Swift.String, loggers: [SwiftUI_UDF_Binary.ActionLogging])
+  convenience public init(initial state: State, accessToken: Swift.String, logger: SwiftUI_UDF_Binary.ActionLogging)
   override final public func subscribe(middleware: SwiftUI_UDF_Binary.Middleware<State>)
   override final public func dispatch(_ action: SwiftUI_UDF_Binary.AnyAction)
   @objc deinit
@@ -704,7 +708,7 @@ public class Store<State> : Foundation.ObservableObject where State : Swift.Equa
     get
     set
   }
-  public init(initial state: State, accessToken: Swift.String, logger: SwiftUI_UDF_Binary.ActionLogging)
+  public init(initial state: State, accessToken: Swift.String, loggers: [SwiftUI_UDF_Binary.ActionLogging])
   public func subscribe(_ middlewareType: SwiftUI_UDF_Binary.Middleware<State>.Type)
   public func subscribe(middleware: SwiftUI_UDF_Binary.Middleware<State>)
   public func dispatch<Action>(_ action: Action, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) where Action : Swift.Equatable, Action : SwiftUI_UDF_Binary.Actionable
@@ -717,11 +721,11 @@ public class Store<State> : Foundation.ObservableObject where State : Swift.Equa
   @objc deinit
 }
 @_functionBuilder public enum ContainerBuilder {
-  public static func buildBlock() -> SwiftUI_UDF_Binary.RenderContainer<SwiftUI.EmptyView>
+  public static func buildBlock() -> SwiftUI_UDF_Binary.RenderContainer<SwiftUI.EmptyView, SwiftUI_UDF_Binary.EmptyReducer>
   public static func buildBlock<C>(_ container: C) -> C where C : SwiftUI_UDF_Binary.Container
   public static func buildEither<C>(first container: C) -> C where C : SwiftUI_UDF_Binary.Container
   public static func buildEither<C>(second container: C) -> C where C : SwiftUI_UDF_Binary.Container
-  public static func buildExpression<V>(_ expression: V) -> SwiftUI_UDF_Binary.RenderContainer<V> where V : SwiftUI.View
+  public static func buildExpression<V>(_ expression: V) -> SwiftUI_UDF_Binary.RenderContainer<V, SwiftUI_UDF_Binary.EmptyReducer> where V : SwiftUI.View
 }
 @_inheritsConvenienceInitializers open class ReducibleMiddleware<State> : SwiftUI_UDF_Binary.Middleware<State> where State : Swift.Equatable, State : SwiftUI_UDF_Binary.AppReducer {
   required public init()
