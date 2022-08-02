@@ -1,0 +1,4 @@
+framework module SwiftUI_UDF_Binary {
+  header "SwiftUI_UDF_Binary-Swift.h"
+  requires objc
+}
