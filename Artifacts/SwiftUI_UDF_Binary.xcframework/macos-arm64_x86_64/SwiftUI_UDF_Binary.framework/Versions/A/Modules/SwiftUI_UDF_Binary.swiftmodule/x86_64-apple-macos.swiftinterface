@@ -159,6 +159,11 @@ extension Swift.Dictionary where Key == Value.ID, Value : Swift.Identifiable {
   public mutating func insert(items: [Value])
   public mutating func insert(item: Value)
 }
+public typealias MI = Swift.Identifiable & SwiftUI_UDF_Binary.Mergeable
+extension Swift.Dictionary where Key == Value.ID, Value : Swift.Identifiable, Value : SwiftUI_UDF_Binary.Mergeable {
+  public mutating func insert(items: [Value])
+  public mutating func insert(item: Value)
+}
 @propertyWrapper public struct FormField<F, Value> : SwiftUI_UDF_Binary.Reducible where F : Swift.Equatable, F : SwiftUI_UDF_Binary.Formable, Value : Swift.Equatable {
   public init()
   public var wrappedValue: Value
