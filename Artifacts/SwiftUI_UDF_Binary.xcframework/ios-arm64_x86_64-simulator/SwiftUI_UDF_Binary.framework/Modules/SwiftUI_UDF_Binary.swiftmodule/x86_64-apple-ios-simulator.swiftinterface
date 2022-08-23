@@ -420,7 +420,8 @@ open class Router<R> where R : SwiftUI_UDF_Binary.Routing {
   public var routing: R
   public init(routing: R)
   public init()
-  open func view(for route: R.Route) -> R.View
+  open func view(for route: R.Route) -> some SwiftUI.View
+  
   @objc deinit
 }
 public protocol Initable {

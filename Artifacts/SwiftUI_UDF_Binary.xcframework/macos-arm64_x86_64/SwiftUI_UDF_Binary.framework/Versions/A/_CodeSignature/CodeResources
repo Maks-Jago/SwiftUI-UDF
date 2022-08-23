@@ -36,14 +36,14 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			6Q6WrDmQ5/ay1jVLsrakVKXOMTyldVfOiI6L72RbjTQ=
+			EuXZ15umrLwm5q4U+KjWz6vbWBOa0Q0q+ToUKDRrORQ=
 			</data>
 		</dict>
 		<key>Modules/SwiftUI_UDF_Binary.swiftmodule/arm64-apple-macos.swiftmodule</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			FO7qwOFvPyfLC9axmUpp6yKgB2g7HZPcDm+vSlfc5ws=
+			mkpAAR0Fr55BNj3JEhywWtmLibQJt1NWyYGI8ZXWecU=
 			</data>
 		</dict>
 		<key>Modules/SwiftUI_UDF_Binary.swiftmodule/x86_64-apple-macos.swiftdoc</key>
@@ -57,14 +57,14 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			p4hpBjvg8tUtR6uKCKeG6SEDo7vwN90WvmHR6fEhBT8=
+			o6mSMeWSr2Hq7Vbz8VbawrXhAl7bkH0DkkKg1xsCmFY=
 			</data>
 		</dict>
 		<key>Modules/SwiftUI_UDF_Binary.swiftmodule/x86_64-apple-macos.swiftmodule</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			G3zECldXl4qjzMz8/GXXDUrRXKlxBRHLNDHUUad8OpE=
+			e5JQpLKSwH+bGy0fkMrRJz4G6NvrbdV7FrvIDz6Od5s=
 			</data>
 		</dict>
 		<key>Modules/module.modulemap</key>
