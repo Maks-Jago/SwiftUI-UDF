@@ -222,6 +222,7 @@ public struct RenderContainer<V, AppState> : SwiftUI_UDF_Binary.Container where 
   public var viewToRender: V
   public init(viewToRender: V) where AppState == SwiftUI_UDF_Binary.EmptyReducer
   public init(_ state: AppState, viewToRender: V)
+  public init(_ state: AppState, @SwiftUI.ViewBuilder viewToRender: () -> V)
   public func map(state: AppState, store: SwiftUI_UDF_Binary.EnvironmentStore<AppState>) -> SwiftUI_UDF_Binary.RenderContainer<V, AppState>.ContainerComponent.Props
   @_Concurrency.MainActor(unsafe) public var body: some SwiftUI.View {
     get
