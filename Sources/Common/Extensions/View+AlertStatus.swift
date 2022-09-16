@@ -9,7 +9,7 @@ public extension View {
                 if let newValue = newValue {
                     status.wrappedValue = newValue
                 } else {
-                    status.wrappedValue = .dismissed
+                    status.wrappedValue.status = .dismissed
                 }
             }
         )
