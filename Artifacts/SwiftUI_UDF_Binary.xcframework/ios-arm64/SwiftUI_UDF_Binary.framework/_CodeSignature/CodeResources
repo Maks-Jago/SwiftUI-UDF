@@ -10,23 +10,31 @@
 		</data>
 		<key>Headers/SwiftUI_UDF_Binary-Swift.h</key>
 		<data>
-		SENDrExzMkgrV6ReLlSTrpMa218=
+		0vtwNgzWlm3XpHXiUN+DatcyNyE=
 		</data>
 		<key>Info.plist</key>
 		<data>
-		BUTYpFQpbQRy/mv80ptz8eCbR0w=
+		cAMSaacQe2ODrZSTqM2+YYJyMK4=
+		</data>
+		<key>Modules/SwiftUI_UDF_Binary.swiftmodule/arm64-apple-ios.abi.json</key>
+		<data>
+		ipKm9NqJpjILtdYuQbqLvv89sRg=
+		</data>
+		<key>Modules/SwiftUI_UDF_Binary.swiftmodule/arm64-apple-ios.private.swiftinterface</key>
+		<data>
+		AE3YUBuEpKP8xFasGk22DUn2FqA=
 		</data>
 		<key>Modules/SwiftUI_UDF_Binary.swiftmodule/arm64-apple-ios.swiftdoc</key>
 		<data>
-		bSjPT6vFHRKhDR4m3AASca8q+/w=
+		34GBsG5U5AVXdUcGxxzoDQoRiZ4=
 		</data>
 		<key>Modules/SwiftUI_UDF_Binary.swiftmodule/arm64-apple-ios.swiftinterface</key>
 		<data>
-		E9HienUPoqzuWkiVoDeTAFURMm4=
+		AE3YUBuEpKP8xFasGk22DUn2FqA=
 		</data>
 		<key>Modules/SwiftUI_UDF_Binary.swiftmodule/arm64-apple-ios.swiftmodule</key>
 		<data>
-		Sc0BdmreuhIwdZqZRNqs4pC+CXM=
+		Nad8fxgvbogwwqIzk0kNP1xppao=
 		</data>
 		<key>Modules/module.modulemap</key>
 		<data>
@@ -46,28 +54,42 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			OxpmGBj3IG27RPAIXHFch9pjS2fceUXQEF7/Anrpve0=
+			y4ovMVIEzTfmK6OpJhqJ6S5aAO1gS+zB431eimXmT0E=
+			</data>
+		</dict>
+		<key>Modules/SwiftUI_UDF_Binary.swiftmodule/arm64-apple-ios.abi.json</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			hyVEAMdVa71zXBGgiaf/NE7wS9BlesCIAKxZFawhFWc=
+			</data>
+		</dict>
+		<key>Modules/SwiftUI_UDF_Binary.swiftmodule/arm64-apple-ios.private.swiftinterface</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			jEczUecMxXu3+FuVnXGkCPqWC/0CcQBFNYPuDa9KBdM=
 			</data>
 		</dict>
 		<key>Modules/SwiftUI_UDF_Binary.swiftmodule/arm64-apple-ios.swiftdoc</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			CymEnAxI9Brn0qgbFF7dRHAvMw3T5kEU2ucOl0LbUAc=
+			DP2EV+x0KmJoCRpYpmy6aru/HoFQEG83Fd1+o9AFTXc=
 			</data>
 		</dict>
 		<key>Modules/SwiftUI_UDF_Binary.swiftmodule/arm64-apple-ios.swiftinterface</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			2ff0rwZ69fcV/HNCzkw1S6wrzjMzwaUxhcqYuIEQDYE=
+			jEczUecMxXu3+FuVnXGkCPqWC/0CcQBFNYPuDa9KBdM=
 			</data>
 		</dict>
 		<key>Modules/SwiftUI_UDF_Binary.swiftmodule/arm64-apple-ios.swiftmodule</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			LLrP5e3aGXnImTY7qbGth+QpQ7+BYd3S3nKbcKotBzM=
+			wgN/j+pNuKBLkuIatsEcStTT7y6KlN9EUj89hxq0gtg=
 			</data>
 		</dict>
 		<key>Modules/module.modulemap</key>

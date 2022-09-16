@@ -1,6 +1,7 @@
 // swift-interface-format-version: 1.0
-// swift-compiler-version: Apple Swift version 5.6.1 (swiftlang-5.6.0.323.66 clang-1316.0.20.12)
+// swift-compiler-version: Apple Swift version 5.7 (swiftlang-5.7.0.127.4 clang-1400.0.29.50)
 // swift-module-flags: -target arm64-apple-ios14.0 -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -O -module-name SwiftUI_UDF_Binary
+// swift-module-flags-ignorable: -enable-bare-slash-regex
 import Combine
 import CoreLocation/*.CLAuthorizationStatus*/
 import CoreLocation/*.CLLocation*/
@@ -8,43 +9,7 @@ import Foundation
 import Swift
 import SwiftUI
 import _Concurrency
-public enum AlertBuilder {
-  public struct AlertStatus : Swift.Equatable {
-    public static var dismissed: SwiftUI_UDF_Binary.AlertBuilder.AlertStatus {
-      get
-    }
-    public static func == (lhs: SwiftUI_UDF_Binary.AlertBuilder.AlertStatus, rhs: SwiftUI_UDF_Binary.AlertBuilder.AlertStatus) -> Swift.Bool
-    public var id: Swift.Int
-    public var status: SwiftUI_UDF_Binary.AlertBuilder.AlertStatus.Status
-    public enum Status : Swift.Equatable {
-      case presented(SwiftUI_UDF_Binary.AlertBuilder.AlertStyle)
-      case dismissed
-      public static func == (lhs: SwiftUI_UDF_Binary.AlertBuilder.AlertStatus.Status, rhs: SwiftUI_UDF_Binary.AlertBuilder.AlertStatus.Status) -> Swift.Bool
-    }
-    public init(error: Swift.String?)
-    public init(message: Swift.String?)
-    public init(title: Swift.String, message: Swift.String?)
-    public init()
-    public init(style: SwiftUI_UDF_Binary.AlertBuilder.AlertStyle)
-    public init<AlertId>(id: AlertId) where AlertId : Swift.Hashable
-  }
-  public struct AlertStyle : Swift.Equatable {
-    public static func == (lhs: SwiftUI_UDF_Binary.AlertBuilder.AlertStyle, rhs: SwiftUI_UDF_Binary.AlertBuilder.AlertStyle) -> Swift.Bool
-    public var id: Swift.Int
-    public init(validationError text: Swift.String)
-    public init(failure text: Swift.String)
-    public init(success text: Swift.String)
-    public init(message text: Swift.String)
-    public init(title: Swift.String, message: Swift.String)
-    public init(title: Swift.String, text: Swift.String, primaryButton: SwiftUI.Alert.Button, secondaryButton: SwiftUI.Alert.Button)
-    public init(title: Swift.String, text: Swift.String, dismissButton: SwiftUI.Alert.Button)
-  }
-  public static func buildAlert(for style: SwiftUI_UDF_Binary.AlertBuilder.AlertStyle) -> SwiftUI.Alert
-  public static func registerAlert<AlertId>(by id: AlertId, _ builder: @escaping () -> SwiftUI_UDF_Binary.AlertBuilder.AlertStyle) where AlertId : Swift.Hashable
-}
-extension SwiftUI_UDF_Binary.AlertBuilder.AlertStatus : Swift.Identifiable {
-  public typealias ID = Swift.Int
-}
+import _StringProcessing
 public struct AnyAction {
   public let value: SwiftUI_UDF_Binary.Actionable
   public init<T>(_ value: T, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) where T : Swift.Equatable, T : SwiftUI_UDF_Binary.Actionable
@@ -145,10 +110,6 @@ public struct EmptyReducer : SwiftUI_UDF_Binary.AppReducer, Swift.Equatable {
   public init()
   public mutating func reduce(_ action: SwiftUI_UDF_Binary.AnyAction) -> Swift.Bool
   public static func == (a: SwiftUI_UDF_Binary.EmptyReducer, b: SwiftUI_UDF_Binary.EmptyReducer) -> Swift.Bool
-}
-extension SwiftUI.View {
-  public func alert(status: SwiftUI.Binding<SwiftUI_UDF_Binary.AlertBuilder.AlertStatus>) -> some SwiftUI.View
-  
 }
 public protocol Mergeable {
   func merging(_ newValue: Self) -> Self
@@ -284,13 +245,6 @@ public enum Actions {
     public var items: [I]
     public init<Id>(items: [I], id: Id) where Id : Swift.Hashable
     public static func == (a: SwiftUI_UDF_Binary.Actions.SetPaginationItems<I>, b: SwiftUI_UDF_Binary.Actions.SetPaginationItems<I>) -> Swift.Bool
-  }
-  public struct UpdateAlertStatus : SwiftUI_UDF_Binary.EquatableAction {
-    public var status: SwiftUI_UDF_Binary.AlertBuilder.AlertStatus
-    public var id: Swift.AnyHashable
-    public init<Id>(status: SwiftUI_UDF_Binary.AlertBuilder.AlertStatus, id: Id) where Id : Swift.Hashable
-    public init<Id>(style: SwiftUI_UDF_Binary.AlertBuilder.AlertStyle, id: Id) where Id : Swift.Hashable
-    public static func == (a: SwiftUI_UDF_Binary.Actions.UpdateAlertStatus, b: SwiftUI_UDF_Binary.Actions.UpdateAlertStatus) -> Swift.Bool
   }
   public struct DidCancelEffect : SwiftUI_UDF_Binary.EquatableAction {
     public var cancelation: Swift.AnyHashable
@@ -601,8 +555,8 @@ public struct Effect : SwiftUI_UDF_Binary.Effectable {
   public var upstream: Combine.AnyPublisher<SwiftUI_UDF_Binary.AnyAction, Swift.Never>
   public init<P, A, Id>(_ publisher: P, id: Id, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line, mapper: @escaping (P.Output) -> A) where P : Combine.Publisher, A : Swift.Equatable, A : SwiftUI_UDF_Binary.Actionable, Id : Swift.Hashable, P.Failure == Swift.Error
   public init<P, A, Id>(_ publisher: P, id: Id, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line, mapper: @escaping (P.Output) -> A) where P : Combine.Publisher, A : Swift.Equatable, Id : Swift.Hashable, P.Failure == Swift.Error
-  public init<P, Item, Id>(_ publisher: P, id: Id, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) where P : Combine.Publisher, Item : Swift.Equatable, Id : Swift.Hashable, P.Failure == Swift.Error, P.Output == Swift.Array<Item>
-  public init<P, Item, Id, EqItem>(_ publisher: P, id: Id, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line, mapItem: @escaping (Item) -> EqItem) where P : Combine.Publisher, Id : Swift.Hashable, EqItem : Swift.Equatable, P.Failure == Swift.Error, P.Output == Swift.Array<Item>
+  public init<P, Item, Id>(_ publisher: P, id: Id, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) where P : Combine.Publisher, Item : Swift.Equatable, Id : Swift.Hashable, P.Failure == Swift.Error, P.Output == [Item]
+  public init<P, Item, Id, EqItem>(_ publisher: P, id: Id, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line, mapItem: @escaping (Item) -> EqItem) where P : Combine.Publisher, Id : Swift.Hashable, EqItem : Swift.Equatable, P.Failure == Swift.Error, P.Output == [Item]
   public init<P, Item, Id>(_ publisher: P, id: Id, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) where P : Combine.Publisher, Item : Swift.Equatable, Item == P.Output, Id : Swift.Hashable, P.Failure == Swift.Error
   public init(action: SwiftUI_UDF_Binary.AnyAction)
   public init<A>(fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line, _ future: @escaping () -> A) where A : Swift.Equatable, A : SwiftUI_UDF_Binary.Actionable
