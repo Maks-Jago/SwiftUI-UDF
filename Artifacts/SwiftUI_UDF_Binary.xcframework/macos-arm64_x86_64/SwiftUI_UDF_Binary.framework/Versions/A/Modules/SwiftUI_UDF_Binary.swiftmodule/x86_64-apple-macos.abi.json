@@ -19,6 +19,1083 @@
         "moduleName": "SwiftUI_UDF_Binary"
       },
       {
+        "kind": "TypeDecl",
+        "name": "AlertBuilder",
+        "printedName": "AlertBuilder",
+        "children": [
+          {
+            "kind": "TypeDecl",
+            "name": "AlertStatus",
+            "printedName": "AlertStatus",
+            "children": [
+              {
+                "kind": "Var",
+                "name": "dismissed",
+                "printedName": "dismissed",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "AlertStatus",
+                    "printedName": "SwiftUI_UDF_Binary.AlertBuilder.AlertStatus",
+                    "usr": "s:18SwiftUI_UDF_Binary12AlertBuilderO0E6StatusV"
+                  }
+                ],
+                "declKind": "Var",
+                "usr": "s:18SwiftUI_UDF_Binary12AlertBuilderO0E6StatusV9dismissedAEvpZ",
+                "mangledName": "$s18SwiftUI_UDF_Binary12AlertBuilderO0E6StatusV9dismissedAEvpZ",
+                "moduleName": "SwiftUI_UDF_Binary",
+                "static": true,
+                "declAttributes": [
+                  "AccessControl"
+                ],
+                "accessors": [
+                  {
+                    "kind": "Accessor",
+                    "name": "Get",
+                    "printedName": "Get()",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "AlertStatus",
+                        "printedName": "SwiftUI_UDF_Binary.AlertBuilder.AlertStatus",
+                        "usr": "s:18SwiftUI_UDF_Binary12AlertBuilderO0E6StatusV"
+                      }
+                    ],
+                    "declKind": "Accessor",
+                    "usr": "s:18SwiftUI_UDF_Binary12AlertBuilderO0E6StatusV9dismissedAEvgZ",
+                    "mangledName": "$s18SwiftUI_UDF_Binary12AlertBuilderO0E6StatusV9dismissedAEvgZ",
+                    "moduleName": "SwiftUI_UDF_Binary",
+                    "static": true,
+                    "accessorKind": "get"
+                  }
+                ]
+              },
+              {
+                "kind": "Function",
+                "name": "==",
+                "printedName": "==(_:_:)",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Bool",
+                    "printedName": "Swift.Bool",
+                    "usr": "s:Sb"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "AlertStatus",
+                    "printedName": "SwiftUI_UDF_Binary.AlertBuilder.AlertStatus",
+                    "usr": "s:18SwiftUI_UDF_Binary12AlertBuilderO0E6StatusV"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "AlertStatus",
+                    "printedName": "SwiftUI_UDF_Binary.AlertBuilder.AlertStatus",
+                    "usr": "s:18SwiftUI_UDF_Binary12AlertBuilderO0E6StatusV"
+                  }
+                ],
+                "declKind": "Func",
+                "usr": "s:18SwiftUI_UDF_Binary12AlertBuilderO0E6StatusV2eeoiySbAE_AEtFZ",
+                "mangledName": "$s18SwiftUI_UDF_Binary12AlertBuilderO0E6StatusV2eeoiySbAE_AEtFZ",
+                "moduleName": "SwiftUI_UDF_Binary",
+                "static": true,
+                "declAttributes": [
+                  "AccessControl"
+                ],
+                "funcSelfKind": "NonMutating"
+              },
+              {
+                "kind": "Var",
+                "name": "id",
+                "printedName": "id",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Int",
+                    "printedName": "Swift.Int",
+                    "usr": "s:Si"
+                  }
+                ],
+                "declKind": "Var",
+                "usr": "s:18SwiftUI_UDF_Binary12AlertBuilderO0E6StatusV2idSivp",
+                "mangledName": "$s18SwiftUI_UDF_Binary12AlertBuilderO0E6StatusV2idSivp",
+                "moduleName": "SwiftUI_UDF_Binary",
+                "declAttributes": [
+                  "HasStorage",
+                  "AccessControl"
+                ],
+                "hasStorage": true,
+                "accessors": [
+                  {
+                    "kind": "Accessor",
+                    "name": "Get",
+                    "printedName": "Get()",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "Int",
+                        "printedName": "Swift.Int",
+                        "usr": "s:Si"
+                      }
+                    ],
+                    "declKind": "Accessor",
+                    "usr": "s:18SwiftUI_UDF_Binary12AlertBuilderO0E6StatusV2idSivg",
+                    "mangledName": "$s18SwiftUI_UDF_Binary12AlertBuilderO0E6StatusV2idSivg",
+                    "moduleName": "SwiftUI_UDF_Binary",
+                    "implicit": true,
+                    "accessorKind": "get"
+                  },
+                  {
+                    "kind": "Accessor",
+                    "name": "Set",
+                    "printedName": "Set()",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "Void",
+                        "printedName": "()"
+                      },
+                      {
+                        "kind": "TypeNominal",
+                        "name": "Int",
+                        "printedName": "Swift.Int",
+                        "usr": "s:Si"
+                      }
+                    ],
+                    "declKind": "Accessor",
+                    "usr": "s:18SwiftUI_UDF_Binary12AlertBuilderO0E6StatusV2idSivs",
+                    "mangledName": "$s18SwiftUI_UDF_Binary12AlertBuilderO0E6StatusV2idSivs",
+                    "moduleName": "SwiftUI_UDF_Binary",
+                    "implicit": true,
+                    "accessorKind": "set"
+                  },
+                  {
+                    "kind": "Accessor",
+                    "name": "Modify",
+                    "printedName": "Modify()",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "Void",
+                        "printedName": "()"
+                      }
+                    ],
+                    "declKind": "Accessor",
+                    "usr": "s:18SwiftUI_UDF_Binary12AlertBuilderO0E6StatusV2idSivM",
+                    "mangledName": "$s18SwiftUI_UDF_Binary12AlertBuilderO0E6StatusV2idSivM",
+                    "moduleName": "SwiftUI_UDF_Binary",
+                    "implicit": true,
+                    "accessorKind": "_modify"
+                  }
+                ]
+              },
+              {
+                "kind": "Var",
+                "name": "status",
+                "printedName": "status",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Status",
+                    "printedName": "SwiftUI_UDF_Binary.AlertBuilder.AlertStatus.Status",
+                    "usr": "s:18SwiftUI_UDF_Binary12AlertBuilderO0E6StatusV0G0O"
+                  }
+                ],
+                "declKind": "Var",
+                "usr": "s:18SwiftUI_UDF_Binary12AlertBuilderO0E6StatusV6statusAE0G0Ovp",
+                "mangledName": "$s18SwiftUI_UDF_Binary12AlertBuilderO0E6StatusV6statusAE0G0Ovp",
+                "moduleName": "SwiftUI_UDF_Binary",
+                "declAttributes": [
+                  "HasStorage",
+                  "AccessControl"
+                ],
+                "hasStorage": true,
+                "accessors": [
+                  {
+                    "kind": "Accessor",
+                    "name": "Get",
+                    "printedName": "Get()",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "Status",
+                        "printedName": "SwiftUI_UDF_Binary.AlertBuilder.AlertStatus.Status",
+                        "usr": "s:18SwiftUI_UDF_Binary12AlertBuilderO0E6StatusV0G0O"
+                      }
+                    ],
+                    "declKind": "Accessor",
+                    "usr": "s:18SwiftUI_UDF_Binary12AlertBuilderO0E6StatusV6statusAE0G0Ovg",
+                    "mangledName": "$s18SwiftUI_UDF_Binary12AlertBuilderO0E6StatusV6statusAE0G0Ovg",
+                    "moduleName": "SwiftUI_UDF_Binary",
+                    "implicit": true,
+                    "accessorKind": "get"
+                  },
+                  {
+                    "kind": "Accessor",
+                    "name": "Set",
+                    "printedName": "Set()",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "Void",
+                        "printedName": "()"
+                      },
+                      {
+                        "kind": "TypeNominal",
+                        "name": "Status",
+                        "printedName": "SwiftUI_UDF_Binary.AlertBuilder.AlertStatus.Status",
+                        "usr": "s:18SwiftUI_UDF_Binary12AlertBuilderO0E6StatusV0G0O"
+                      }
+                    ],
+                    "declKind": "Accessor",
+                    "usr": "s:18SwiftUI_UDF_Binary12AlertBuilderO0E6StatusV6statusAE0G0Ovs",
+                    "mangledName": "$s18SwiftUI_UDF_Binary12AlertBuilderO0E6StatusV6statusAE0G0Ovs",
+                    "moduleName": "SwiftUI_UDF_Binary",
+                    "implicit": true,
+                    "accessorKind": "set"
+                  },
+                  {
+                    "kind": "Accessor",
+                    "name": "Modify",
+                    "printedName": "Modify()",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "Void",
+                        "printedName": "()"
+                      }
+                    ],
+                    "declKind": "Accessor",
+                    "usr": "s:18SwiftUI_UDF_Binary12AlertBuilderO0E6StatusV6statusAE0G0OvM",
+                    "mangledName": "$s18SwiftUI_UDF_Binary12AlertBuilderO0E6StatusV6statusAE0G0OvM",
+                    "moduleName": "SwiftUI_UDF_Binary",
+                    "implicit": true,
+                    "accessorKind": "_modify"
+                  }
+                ]
+              },
+              {
+                "kind": "TypeDecl",
+                "name": "Status",
+                "printedName": "Status",
+                "children": [
+                  {
+                    "kind": "Var",
+                    "name": "presented",
+                    "printedName": "presented",
+                    "children": [
+                      {
+                        "kind": "TypeFunc",
+                        "name": "Function",
+                        "printedName": "(SwiftUI_UDF_Binary.AlertBuilder.AlertStatus.Status.Type) -> (SwiftUI_UDF_Binary.AlertBuilder.AlertStyle) -> SwiftUI_UDF_Binary.AlertBuilder.AlertStatus.Status",
+                        "children": [
+                          {
+                            "kind": "TypeFunc",
+                            "name": "Function",
+                            "printedName": "(SwiftUI_UDF_Binary.AlertBuilder.AlertStyle) -> SwiftUI_UDF_Binary.AlertBuilder.AlertStatus.Status",
+                            "children": [
+                              {
+                                "kind": "TypeNominal",
+                                "name": "Status",
+                                "printedName": "SwiftUI_UDF_Binary.AlertBuilder.AlertStatus.Status",
+                                "usr": "s:18SwiftUI_UDF_Binary12AlertBuilderO0E6StatusV0G0O"
+                              },
+                              {
+                                "kind": "TypeNominal",
+                                "name": "AlertStyle",
+                                "printedName": "SwiftUI_UDF_Binary.AlertBuilder.AlertStyle",
+                                "usr": "s:18SwiftUI_UDF_Binary12AlertBuilderO0E5StyleV"
+                              }
+                            ]
+                          },
+                          {
+                            "kind": "TypeNominal",
+                            "name": "Metatype",
+                            "printedName": "SwiftUI_UDF_Binary.AlertBuilder.AlertStatus.Status.Type",
+                            "children": [
+                              {
+                                "kind": "TypeNominal",
+                                "name": "Status",
+                                "printedName": "SwiftUI_UDF_Binary.AlertBuilder.AlertStatus.Status",
+                                "usr": "s:18SwiftUI_UDF_Binary12AlertBuilderO0E6StatusV0G0O"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ],
+                    "declKind": "EnumElement",
+                    "usr": "s:18SwiftUI_UDF_Binary12AlertBuilderO0E6StatusV0G0O9presentedyAgC0E5StyleVcAGmF",
+                    "mangledName": "$s18SwiftUI_UDF_Binary12AlertBuilderO0E6StatusV0G0O9presentedyAgC0E5StyleVcAGmF",
+                    "moduleName": "SwiftUI_UDF_Binary"
+                  },
+                  {
+                    "kind": "Var",
+                    "name": "dismissed",
+                    "printedName": "dismissed",
+                    "children": [
+                      {
+                        "kind": "TypeFunc",
+                        "name": "Function",
+                        "printedName": "(SwiftUI_UDF_Binary.AlertBuilder.AlertStatus.Status.Type) -> SwiftUI_UDF_Binary.AlertBuilder.AlertStatus.Status",
+                        "children": [
+                          {
+                            "kind": "TypeNominal",
+                            "name": "Status",
+                            "printedName": "SwiftUI_UDF_Binary.AlertBuilder.AlertStatus.Status",
+                            "usr": "s:18SwiftUI_UDF_Binary12AlertBuilderO0E6StatusV0G0O"
+                          },
+                          {
+                            "kind": "TypeNominal",
+                            "name": "Metatype",
+                            "printedName": "SwiftUI_UDF_Binary.AlertBuilder.AlertStatus.Status.Type",
+                            "children": [
+                              {
+                                "kind": "TypeNominal",
+                                "name": "Status",
+                                "printedName": "SwiftUI_UDF_Binary.AlertBuilder.AlertStatus.Status",
+                                "usr": "s:18SwiftUI_UDF_Binary12AlertBuilderO0E6StatusV0G0O"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ],
+                    "declKind": "EnumElement",
+                    "usr": "s:18SwiftUI_UDF_Binary12AlertBuilderO0E6StatusV0G0O9dismissedyA2GmF",
+                    "mangledName": "$s18SwiftUI_UDF_Binary12AlertBuilderO0E6StatusV0G0O9dismissedyA2GmF",
+                    "moduleName": "SwiftUI_UDF_Binary"
+                  },
+                  {
+                    "kind": "Function",
+                    "name": "==",
+                    "printedName": "==(_:_:)",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "Bool",
+                        "printedName": "Swift.Bool",
+                        "usr": "s:Sb"
+                      },
+                      {
+                        "kind": "TypeNominal",
+                        "name": "Status",
+                        "printedName": "SwiftUI_UDF_Binary.AlertBuilder.AlertStatus.Status",
+                        "usr": "s:18SwiftUI_UDF_Binary12AlertBuilderO0E6StatusV0G0O"
+                      },
+                      {
+                        "kind": "TypeNominal",
+                        "name": "Status",
+                        "printedName": "SwiftUI_UDF_Binary.AlertBuilder.AlertStatus.Status",
+                        "usr": "s:18SwiftUI_UDF_Binary12AlertBuilderO0E6StatusV0G0O"
+                      }
+                    ],
+                    "declKind": "Func",
+                    "usr": "s:18SwiftUI_UDF_Binary12AlertBuilderO0E6StatusV0G0O2eeoiySbAG_AGtFZ",
+                    "mangledName": "$s18SwiftUI_UDF_Binary12AlertBuilderO0E6StatusV0G0O2eeoiySbAG_AGtFZ",
+                    "moduleName": "SwiftUI_UDF_Binary",
+                    "static": true,
+                    "declAttributes": [
+                      "AccessControl"
+                    ],
+                    "funcSelfKind": "NonMutating"
+                  }
+                ],
+                "declKind": "Enum",
+                "usr": "s:18SwiftUI_UDF_Binary12AlertBuilderO0E6StatusV0G0O",
+                "mangledName": "$s18SwiftUI_UDF_Binary12AlertBuilderO0E6StatusV0G0O",
+                "moduleName": "SwiftUI_UDF_Binary",
+                "declAttributes": [
+                  "AccessControl"
+                ],
+                "conformances": [
+                  {
+                    "kind": "Conformance",
+                    "name": "Equatable",
+                    "printedName": "Equatable",
+                    "usr": "s:SQ",
+                    "mangledName": "$sSQ"
+                  }
+                ]
+              },
+              {
+                "kind": "Constructor",
+                "name": "init",
+                "printedName": "init(error:)",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "AlertStatus",
+                    "printedName": "SwiftUI_UDF_Binary.AlertBuilder.AlertStatus",
+                    "usr": "s:18SwiftUI_UDF_Binary12AlertBuilderO0E6StatusV"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Optional",
+                    "printedName": "Swift.String?",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "String",
+                        "printedName": "Swift.String",
+                        "usr": "s:SS"
+                      }
+                    ],
+                    "usr": "s:Sq"
+                  }
+                ],
+                "declKind": "Constructor",
+                "usr": "s:18SwiftUI_UDF_Binary12AlertBuilderO0E6StatusV5errorAESSSg_tcfc",
+                "mangledName": "$s18SwiftUI_UDF_Binary12AlertBuilderO0E6StatusV5errorAESSSg_tcfc",
+                "moduleName": "SwiftUI_UDF_Binary",
+                "declAttributes": [
+                  "AccessControl"
+                ],
+                "init_kind": "Designated"
+              },
+              {
+                "kind": "Constructor",
+                "name": "init",
+                "printedName": "init(message:)",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "AlertStatus",
+                    "printedName": "SwiftUI_UDF_Binary.AlertBuilder.AlertStatus",
+                    "usr": "s:18SwiftUI_UDF_Binary12AlertBuilderO0E6StatusV"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Optional",
+                    "printedName": "Swift.String?",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "String",
+                        "printedName": "Swift.String",
+                        "usr": "s:SS"
+                      }
+                    ],
+                    "usr": "s:Sq"
+                  }
+                ],
+                "declKind": "Constructor",
+                "usr": "s:18SwiftUI_UDF_Binary12AlertBuilderO0E6StatusV7messageAESSSg_tcfc",
+                "mangledName": "$s18SwiftUI_UDF_Binary12AlertBuilderO0E6StatusV7messageAESSSg_tcfc",
+                "moduleName": "SwiftUI_UDF_Binary",
+                "declAttributes": [
+                  "AccessControl"
+                ],
+                "init_kind": "Designated"
+              },
+              {
+                "kind": "Constructor",
+                "name": "init",
+                "printedName": "init(title:message:)",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "AlertStatus",
+                    "printedName": "SwiftUI_UDF_Binary.AlertBuilder.AlertStatus",
+                    "usr": "s:18SwiftUI_UDF_Binary12AlertBuilderO0E6StatusV"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Optional",
+                    "printedName": "Swift.String?",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "String",
+                        "printedName": "Swift.String",
+                        "usr": "s:SS"
+                      }
+                    ],
+                    "usr": "s:Sq"
+                  }
+                ],
+                "declKind": "Constructor",
+                "usr": "s:18SwiftUI_UDF_Binary12AlertBuilderO0E6StatusV5title7messageAESS_SSSgtcfc",
+                "mangledName": "$s18SwiftUI_UDF_Binary12AlertBuilderO0E6StatusV5title7messageAESS_SSSgtcfc",
+                "moduleName": "SwiftUI_UDF_Binary",
+                "declAttributes": [
+                  "AccessControl"
+                ],
+                "init_kind": "Designated"
+              },
+              {
+                "kind": "Constructor",
+                "name": "init",
+                "printedName": "init()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "AlertStatus",
+                    "printedName": "SwiftUI_UDF_Binary.AlertBuilder.AlertStatus",
+                    "usr": "s:18SwiftUI_UDF_Binary12AlertBuilderO0E6StatusV"
+                  }
+                ],
+                "declKind": "Constructor",
+                "usr": "s:18SwiftUI_UDF_Binary12AlertBuilderO0E6StatusVAEycfc",
+                "mangledName": "$s18SwiftUI_UDF_Binary12AlertBuilderO0E6StatusVAEycfc",
+                "moduleName": "SwiftUI_UDF_Binary",
+                "declAttributes": [
+                  "AccessControl"
+                ],
+                "init_kind": "Designated"
+              },
+              {
+                "kind": "Constructor",
+                "name": "init",
+                "printedName": "init(style:)",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "AlertStatus",
+                    "printedName": "SwiftUI_UDF_Binary.AlertBuilder.AlertStatus",
+                    "usr": "s:18SwiftUI_UDF_Binary12AlertBuilderO0E6StatusV"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "AlertStyle",
+                    "printedName": "SwiftUI_UDF_Binary.AlertBuilder.AlertStyle",
+                    "usr": "s:18SwiftUI_UDF_Binary12AlertBuilderO0E5StyleV"
+                  }
+                ],
+                "declKind": "Constructor",
+                "usr": "s:18SwiftUI_UDF_Binary12AlertBuilderO0E6StatusV5styleAeC0E5StyleV_tcfc",
+                "mangledName": "$s18SwiftUI_UDF_Binary12AlertBuilderO0E6StatusV5styleAeC0E5StyleV_tcfc",
+                "moduleName": "SwiftUI_UDF_Binary",
+                "declAttributes": [
+                  "AccessControl"
+                ],
+                "init_kind": "Designated"
+              },
+              {
+                "kind": "Constructor",
+                "name": "init",
+                "printedName": "init(id:)",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "AlertStatus",
+                    "printedName": "SwiftUI_UDF_Binary.AlertBuilder.AlertStatus",
+                    "usr": "s:18SwiftUI_UDF_Binary12AlertBuilderO0E6StatusV"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "GenericTypeParam",
+                    "printedName": "τ_0_0"
+                  }
+                ],
+                "declKind": "Constructor",
+                "usr": "s:18SwiftUI_UDF_Binary12AlertBuilderO0E6StatusV2idAEx_tcSHRzlufc",
+                "mangledName": "$s18SwiftUI_UDF_Binary12AlertBuilderO0E6StatusV2idAEx_tcSHRzlufc",
+                "moduleName": "SwiftUI_UDF_Binary",
+                "genericSig": "<τ_0_0 where τ_0_0 : Swift.Hashable>",
+                "sugared_genericSig": "<AlertId where AlertId : Swift.Hashable>",
+                "declAttributes": [
+                  "AccessControl"
+                ],
+                "init_kind": "Designated"
+              }
+            ],
+            "declKind": "Struct",
+            "usr": "s:18SwiftUI_UDF_Binary12AlertBuilderO0E6StatusV",
+            "mangledName": "$s18SwiftUI_UDF_Binary12AlertBuilderO0E6StatusV",
+            "moduleName": "SwiftUI_UDF_Binary",
+            "declAttributes": [
+              "AccessControl"
+            ],
+            "conformances": [
+              {
+                "kind": "Conformance",
+                "name": "Equatable",
+                "printedName": "Equatable",
+                "usr": "s:SQ",
+                "mangledName": "$sSQ"
+              },
+              {
+                "kind": "Conformance",
+                "name": "Identifiable",
+                "printedName": "Identifiable",
+                "children": [
+                  {
+                    "kind": "TypeWitness",
+                    "name": "ID",
+                    "printedName": "ID",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "Int",
+                        "printedName": "Swift.Int",
+                        "usr": "s:Si"
+                      }
+                    ]
+                  }
+                ],
+                "usr": "s:s12IdentifiableP",
+                "mangledName": "$ss12IdentifiableP"
+              }
+            ]
+          },
+          {
+            "kind": "TypeDecl",
+            "name": "AlertStyle",
+            "printedName": "AlertStyle",
+            "children": [
+              {
+                "kind": "Function",
+                "name": "==",
+                "printedName": "==(_:_:)",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Bool",
+                    "printedName": "Swift.Bool",
+                    "usr": "s:Sb"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "AlertStyle",
+                    "printedName": "SwiftUI_UDF_Binary.AlertBuilder.AlertStyle",
+                    "usr": "s:18SwiftUI_UDF_Binary12AlertBuilderO0E5StyleV"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "AlertStyle",
+                    "printedName": "SwiftUI_UDF_Binary.AlertBuilder.AlertStyle",
+                    "usr": "s:18SwiftUI_UDF_Binary12AlertBuilderO0E5StyleV"
+                  }
+                ],
+                "declKind": "Func",
+                "usr": "s:18SwiftUI_UDF_Binary12AlertBuilderO0E5StyleV2eeoiySbAE_AEtFZ",
+                "mangledName": "$s18SwiftUI_UDF_Binary12AlertBuilderO0E5StyleV2eeoiySbAE_AEtFZ",
+                "moduleName": "SwiftUI_UDF_Binary",
+                "static": true,
+                "declAttributes": [
+                  "AccessControl"
+                ],
+                "funcSelfKind": "NonMutating"
+              },
+              {
+                "kind": "Var",
+                "name": "id",
+                "printedName": "id",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Int",
+                    "printedName": "Swift.Int",
+                    "usr": "s:Si"
+                  }
+                ],
+                "declKind": "Var",
+                "usr": "s:18SwiftUI_UDF_Binary12AlertBuilderO0E5StyleV2idSivp",
+                "mangledName": "$s18SwiftUI_UDF_Binary12AlertBuilderO0E5StyleV2idSivp",
+                "moduleName": "SwiftUI_UDF_Binary",
+                "declAttributes": [
+                  "HasStorage",
+                  "AccessControl"
+                ],
+                "hasStorage": true,
+                "accessors": [
+                  {
+                    "kind": "Accessor",
+                    "name": "Get",
+                    "printedName": "Get()",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "Int",
+                        "printedName": "Swift.Int",
+                        "usr": "s:Si"
+                      }
+                    ],
+                    "declKind": "Accessor",
+                    "usr": "s:18SwiftUI_UDF_Binary12AlertBuilderO0E5StyleV2idSivg",
+                    "mangledName": "$s18SwiftUI_UDF_Binary12AlertBuilderO0E5StyleV2idSivg",
+                    "moduleName": "SwiftUI_UDF_Binary",
+                    "implicit": true,
+                    "accessorKind": "get"
+                  },
+                  {
+                    "kind": "Accessor",
+                    "name": "Set",
+                    "printedName": "Set()",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "Void",
+                        "printedName": "()"
+                      },
+                      {
+                        "kind": "TypeNominal",
+                        "name": "Int",
+                        "printedName": "Swift.Int",
+                        "usr": "s:Si"
+                      }
+                    ],
+                    "declKind": "Accessor",
+                    "usr": "s:18SwiftUI_UDF_Binary12AlertBuilderO0E5StyleV2idSivs",
+                    "mangledName": "$s18SwiftUI_UDF_Binary12AlertBuilderO0E5StyleV2idSivs",
+                    "moduleName": "SwiftUI_UDF_Binary",
+                    "implicit": true,
+                    "accessorKind": "set"
+                  },
+                  {
+                    "kind": "Accessor",
+                    "name": "Modify",
+                    "printedName": "Modify()",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "Void",
+                        "printedName": "()"
+                      }
+                    ],
+                    "declKind": "Accessor",
+                    "usr": "s:18SwiftUI_UDF_Binary12AlertBuilderO0E5StyleV2idSivM",
+                    "mangledName": "$s18SwiftUI_UDF_Binary12AlertBuilderO0E5StyleV2idSivM",
+                    "moduleName": "SwiftUI_UDF_Binary",
+                    "implicit": true,
+                    "accessorKind": "_modify"
+                  }
+                ]
+              },
+              {
+                "kind": "Constructor",
+                "name": "init",
+                "printedName": "init(validationError:)",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "AlertStyle",
+                    "printedName": "SwiftUI_UDF_Binary.AlertBuilder.AlertStyle",
+                    "usr": "s:18SwiftUI_UDF_Binary12AlertBuilderO0E5StyleV"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "declKind": "Constructor",
+                "usr": "s:18SwiftUI_UDF_Binary12AlertBuilderO0E5StyleV15validationErrorAESS_tcfc",
+                "mangledName": "$s18SwiftUI_UDF_Binary12AlertBuilderO0E5StyleV15validationErrorAESS_tcfc",
+                "moduleName": "SwiftUI_UDF_Binary",
+                "declAttributes": [
+                  "AccessControl"
+                ],
+                "init_kind": "Designated"
+              },
+              {
+                "kind": "Constructor",
+                "name": "init",
+                "printedName": "init(failure:)",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "AlertStyle",
+                    "printedName": "SwiftUI_UDF_Binary.AlertBuilder.AlertStyle",
+                    "usr": "s:18SwiftUI_UDF_Binary12AlertBuilderO0E5StyleV"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "declKind": "Constructor",
+                "usr": "s:18SwiftUI_UDF_Binary12AlertBuilderO0E5StyleV7failureAESS_tcfc",
+                "mangledName": "$s18SwiftUI_UDF_Binary12AlertBuilderO0E5StyleV7failureAESS_tcfc",
+                "moduleName": "SwiftUI_UDF_Binary",
+                "declAttributes": [
+                  "AccessControl"
+                ],
+                "init_kind": "Designated"
+              },
+              {
+                "kind": "Constructor",
+                "name": "init",
+                "printedName": "init(success:)",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "AlertStyle",
+                    "printedName": "SwiftUI_UDF_Binary.AlertBuilder.AlertStyle",
+                    "usr": "s:18SwiftUI_UDF_Binary12AlertBuilderO0E5StyleV"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "declKind": "Constructor",
+                "usr": "s:18SwiftUI_UDF_Binary12AlertBuilderO0E5StyleV7successAESS_tcfc",
+                "mangledName": "$s18SwiftUI_UDF_Binary12AlertBuilderO0E5StyleV7successAESS_tcfc",
+                "moduleName": "SwiftUI_UDF_Binary",
+                "declAttributes": [
+                  "AccessControl"
+                ],
+                "init_kind": "Designated"
+              },
+              {
+                "kind": "Constructor",
+                "name": "init",
+                "printedName": "init(message:)",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "AlertStyle",
+                    "printedName": "SwiftUI_UDF_Binary.AlertBuilder.AlertStyle",
+                    "usr": "s:18SwiftUI_UDF_Binary12AlertBuilderO0E5StyleV"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "declKind": "Constructor",
+                "usr": "s:18SwiftUI_UDF_Binary12AlertBuilderO0E5StyleV7messageAESS_tcfc",
+                "mangledName": "$s18SwiftUI_UDF_Binary12AlertBuilderO0E5StyleV7messageAESS_tcfc",
+                "moduleName": "SwiftUI_UDF_Binary",
+                "declAttributes": [
+                  "AccessControl"
+                ],
+                "init_kind": "Designated"
+              },
+              {
+                "kind": "Constructor",
+                "name": "init",
+                "printedName": "init(title:message:)",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "AlertStyle",
+                    "printedName": "SwiftUI_UDF_Binary.AlertBuilder.AlertStyle",
+                    "usr": "s:18SwiftUI_UDF_Binary12AlertBuilderO0E5StyleV"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "declKind": "Constructor",
+                "usr": "s:18SwiftUI_UDF_Binary12AlertBuilderO0E5StyleV5title7messageAESS_SStcfc",
+                "mangledName": "$s18SwiftUI_UDF_Binary12AlertBuilderO0E5StyleV5title7messageAESS_SStcfc",
+                "moduleName": "SwiftUI_UDF_Binary",
+                "declAttributes": [
+                  "AccessControl"
+                ],
+                "init_kind": "Designated"
+              },
+              {
+                "kind": "Constructor",
+                "name": "init",
+                "printedName": "init(title:text:primaryButton:secondaryButton:)",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "AlertStyle",
+                    "printedName": "SwiftUI_UDF_Binary.AlertBuilder.AlertStyle",
+                    "usr": "s:18SwiftUI_UDF_Binary12AlertBuilderO0E5StyleV"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Button",
+                    "printedName": "SwiftUI.Alert.Button",
+                    "usr": "s:7SwiftUI5AlertV6ButtonV"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Button",
+                    "printedName": "SwiftUI.Alert.Button",
+                    "usr": "s:7SwiftUI5AlertV6ButtonV"
+                  }
+                ],
+                "declKind": "Constructor",
+                "usr": "s:18SwiftUI_UDF_Binary12AlertBuilderO0E5StyleV5title4text13primaryButton09secondaryK0AESS_SS0aB00E0V0K0VANtcfc",
+                "mangledName": "$s18SwiftUI_UDF_Binary12AlertBuilderO0E5StyleV5title4text13primaryButton09secondaryK0AESS_SS0aB00E0V0K0VANtcfc",
+                "moduleName": "SwiftUI_UDF_Binary",
+                "declAttributes": [
+                  "AccessControl"
+                ],
+                "init_kind": "Designated"
+              },
+              {
+                "kind": "Constructor",
+                "name": "init",
+                "printedName": "init(title:text:dismissButton:)",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "AlertStyle",
+                    "printedName": "SwiftUI_UDF_Binary.AlertBuilder.AlertStyle",
+                    "usr": "s:18SwiftUI_UDF_Binary12AlertBuilderO0E5StyleV"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Button",
+                    "printedName": "SwiftUI.Alert.Button",
+                    "usr": "s:7SwiftUI5AlertV6ButtonV"
+                  }
+                ],
+                "declKind": "Constructor",
+                "usr": "s:18SwiftUI_UDF_Binary12AlertBuilderO0E5StyleV5title4text13dismissButtonAESS_SS0aB00E0V0K0Vtcfc",
+                "mangledName": "$s18SwiftUI_UDF_Binary12AlertBuilderO0E5StyleV5title4text13dismissButtonAESS_SS0aB00E0V0K0Vtcfc",
+                "moduleName": "SwiftUI_UDF_Binary",
+                "declAttributes": [
+                  "AccessControl"
+                ],
+                "init_kind": "Designated"
+              }
+            ],
+            "declKind": "Struct",
+            "usr": "s:18SwiftUI_UDF_Binary12AlertBuilderO0E5StyleV",
+            "mangledName": "$s18SwiftUI_UDF_Binary12AlertBuilderO0E5StyleV",
+            "moduleName": "SwiftUI_UDF_Binary",
+            "declAttributes": [
+              "AccessControl"
+            ],
+            "conformances": [
+              {
+                "kind": "Conformance",
+                "name": "Equatable",
+                "printedName": "Equatable",
+                "usr": "s:SQ",
+                "mangledName": "$sSQ"
+              }
+            ]
+          },
+          {
+            "kind": "Function",
+            "name": "buildAlert",
+            "printedName": "buildAlert(for:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Alert",
+                "printedName": "SwiftUI.Alert",
+                "usr": "s:7SwiftUI5AlertV"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "AlertStyle",
+                "printedName": "SwiftUI_UDF_Binary.AlertBuilder.AlertStyle",
+                "usr": "s:18SwiftUI_UDF_Binary12AlertBuilderO0E5StyleV"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:18SwiftUI_UDF_Binary12AlertBuilderO05buildE03for0aB00E0VAC0E5StyleV_tFZ",
+            "mangledName": "$s18SwiftUI_UDF_Binary12AlertBuilderO05buildE03for0aB00E0VAC0E5StyleV_tFZ",
+            "moduleName": "SwiftUI_UDF_Binary",
+            "static": true,
+            "declAttributes": [
+              "AccessControl"
+            ],
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "registerAlert",
+            "printedName": "registerAlert(by:_:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "GenericTypeParam",
+                "printedName": "τ_0_0"
+              },
+              {
+                "kind": "TypeFunc",
+                "name": "Function",
+                "printedName": "() -> SwiftUI_UDF_Binary.AlertBuilder.AlertStyle",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "AlertStyle",
+                    "printedName": "SwiftUI_UDF_Binary.AlertBuilder.AlertStyle",
+                    "usr": "s:18SwiftUI_UDF_Binary12AlertBuilderO0E5StyleV"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  }
+                ]
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:18SwiftUI_UDF_Binary12AlertBuilderO08registerE02by_yx_AC0E5StyleVyctSHRzlFZ",
+            "mangledName": "$s18SwiftUI_UDF_Binary12AlertBuilderO08registerE02by_yx_AC0E5StyleVyctSHRzlFZ",
+            "moduleName": "SwiftUI_UDF_Binary",
+            "genericSig": "<τ_0_0 where τ_0_0 : Swift.Hashable>",
+            "sugared_genericSig": "<AlertId where AlertId : Swift.Hashable>",
+            "static": true,
+            "declAttributes": [
+              "AccessControl"
+            ],
+            "funcSelfKind": "NonMutating"
+          }
+        ],
+        "declKind": "Enum",
+        "usr": "s:18SwiftUI_UDF_Binary12AlertBuilderO",
+        "mangledName": "$s18SwiftUI_UDF_Binary12AlertBuilderO",
+        "moduleName": "SwiftUI_UDF_Binary",
+        "declAttributes": [
+          "AccessControl"
+        ]
+      },
+      {
         "kind": "Import",
         "name": "Foundation",
         "printedName": "Foundation",
@@ -5771,8 +6848,7 @@
             "mangledName": "$s18SwiftUI_UDF_Binary7ActionsO15DidCancelEffectV",
             "moduleName": "SwiftUI_UDF_Binary",
             "declAttributes": [
-              "AccessControl",
-              "RawDocComment"
+              "AccessControl"
             ],
             "conformances": [
               {
@@ -24520,6 +25596,13 @@
   },
   "ConstValues": [
     {
+      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/View\/AlertBuilder.swift",
+      "kind": "Dictionary",
+      "offset": 5570,
+      "length": 3,
+      "value": "[]"
+    },
+    {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Common\/Cached\/Cached.swift",
       "kind": "IntegerLiteral",
       "offset": 792,
@@ -24578,35 +25661,35 @@
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/Action\/Actions.swift",
       "kind": "BooleanLiteral",
-      "offset": 3336,
+      "offset": 2854,
       "length": 4,
       "value": "true"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/Action\/Actions.swift",
       "kind": "BooleanLiteral",
-      "offset": 5545,
+      "offset": 5063,
       "length": 4,
       "value": "true"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/Action\/Actions.swift",
       "kind": "BooleanLiteral",
-      "offset": 5789,
+      "offset": 5307,
       "length": 4,
       "value": "true"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/Action\/Actions.swift",
       "kind": "BooleanLiteral",
-      "offset": 6827,
+      "offset": 6345,
       "length": 4,
       "value": "true"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/Action\/Actions.swift",
       "kind": "BooleanLiteral",
-      "offset": 7041,
+      "offset": 6559,
       "length": 4,
       "value": "true"
     },
