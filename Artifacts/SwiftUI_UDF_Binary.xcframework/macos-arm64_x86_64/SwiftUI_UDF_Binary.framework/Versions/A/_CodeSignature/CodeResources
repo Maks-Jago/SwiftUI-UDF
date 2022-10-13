@@ -6,7 +6,7 @@
 	<dict>
 		<key>Resources/Info.plist</key>
 		<data>
-		H/zlK4tfWESappEd7FHOSO1zzo4=
+		1H4mPseoqc63kq2r6QU2PpOXE5A=
 		</data>
 	</dict>
 	<key>files2</key>
@@ -22,49 +22,77 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			ZoZYwnzJbXlpcD7W5L/7Z3RVgGgFmYxCw7B2SMA0w+s=
+			AfgJOdIScVkoL0sSbMYseSiHg9Hihhe8HPQw6PJyt1g=
+			</data>
+		</dict>
+		<key>Modules/SwiftUI_UDF_Binary.swiftmodule/arm64-apple-macos.abi.json</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			c8vgT5g+1X+RMIWWnBYqdp2hh7wVujn3qVRLFhI4d6o=
+			</data>
+		</dict>
+		<key>Modules/SwiftUI_UDF_Binary.swiftmodule/arm64-apple-macos.private.swiftinterface</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			duHBStgN6LjTdBkvCKqdf89wz9FTGbxqSOLXSoHJ+jo=
 			</data>
 		</dict>
 		<key>Modules/SwiftUI_UDF_Binary.swiftmodule/arm64-apple-macos.swiftdoc</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			/l14s6A4LtxRiJz02MmPnhrPQtwRZfWcqpDYsXwQ+7o=
+			WE8k9/Frdm4R4HNQbNQzir0eyj0L/XkpzLl4BXIJcx0=
 			</data>
 		</dict>
 		<key>Modules/SwiftUI_UDF_Binary.swiftmodule/arm64-apple-macos.swiftinterface</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			18/lMyiNh/sdF1CInKp1or3BFgMarPYcPTRYidvyono=
+			duHBStgN6LjTdBkvCKqdf89wz9FTGbxqSOLXSoHJ+jo=
 			</data>
 		</dict>
 		<key>Modules/SwiftUI_UDF_Binary.swiftmodule/arm64-apple-macos.swiftmodule</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			p+A1YZSjn8dOVEjGjY0E9GLM7YCciHP9hIMesEGhG2A=
+			OI+OzkA8TtNsXfrjbDRPiMPfVTChN5RmqN+9GCzoLJA=
+			</data>
+		</dict>
+		<key>Modules/SwiftUI_UDF_Binary.swiftmodule/x86_64-apple-macos.abi.json</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			c8vgT5g+1X+RMIWWnBYqdp2hh7wVujn3qVRLFhI4d6o=
+			</data>
+		</dict>
+		<key>Modules/SwiftUI_UDF_Binary.swiftmodule/x86_64-apple-macos.private.swiftinterface</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			I+AP6CEUQbCKaBGF+3NJqdFeM91kzg/HIanefbn1Rxc=
 			</data>
 		</dict>
 		<key>Modules/SwiftUI_UDF_Binary.swiftmodule/x86_64-apple-macos.swiftdoc</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			Vu6y5MFn2KqGy5/uboAKYj8pxJBJEw38na20oZbg4n8=
+			qLKmP1KadbxaeMgG8+Vp6CxzLMbWvYqaXtVS8+ufrL4=
 			</data>
 		</dict>
 		<key>Modules/SwiftUI_UDF_Binary.swiftmodule/x86_64-apple-macos.swiftinterface</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			ENXfOITn1DbmSqSye8ZMV71MtnHVzA0jsVxkwqClO7k=
+			I+AP6CEUQbCKaBGF+3NJqdFeM91kzg/HIanefbn1Rxc=
 			</data>
 		</dict>
 		<key>Modules/SwiftUI_UDF_Binary.swiftmodule/x86_64-apple-macos.swiftmodule</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			0VVuwLLFAZkymv3LPrUvn/5H1pEP60zOAUgfUjkz6hM=
+			iF3+CXppWcA2F8v53MfjaTY6aWogwoHRaT9YvDHV0Ks=
 			</data>
 		</dict>
 		<key>Modules/module.modulemap</key>
@@ -78,7 +106,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			yPxJN3N+sv3j54TFoHuDQFYfzzkjLqSwqNPBTJ4Cg4g=
+			+5AP9SIBoOggxnOSr9Tbi0fe6fC32T0wWor6Dke7Dfc=
 			</data>
 		</dict>
 	</dict>
