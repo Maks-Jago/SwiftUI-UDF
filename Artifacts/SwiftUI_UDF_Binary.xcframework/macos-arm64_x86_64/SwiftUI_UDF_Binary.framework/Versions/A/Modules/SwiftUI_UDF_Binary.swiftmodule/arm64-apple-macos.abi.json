@@ -12193,11 +12193,11 @@
           },
           {
             "kind": "AssociatedType",
-            "name": "View",
-            "printedName": "View",
+            "name": "Destination",
+            "printedName": "Destination",
             "declKind": "AssociatedType",
-            "usr": "s:18SwiftUI_UDF_Binary6RouterP4ViewQa",
-            "mangledName": "$s18SwiftUI_UDF_Binary6RouterP4ViewQa",
+            "usr": "s:18SwiftUI_UDF_Binary6RouterP11DestinationQa",
+            "mangledName": "$s18SwiftUI_UDF_Binary6RouterP11DestinationQa",
             "moduleName": "SwiftUI_UDF_Binary",
             "protocolReq": true
           },
@@ -12209,7 +12209,7 @@
               {
                 "kind": "TypeNominal",
                 "name": "DependentMember",
-                "printedName": "τ_0_0.View"
+                "printedName": "τ_0_0.Destination"
               },
               {
                 "kind": "TypeNominal",
@@ -12218,8 +12218,8 @@
               }
             ],
             "declKind": "Func",
-            "usr": "s:18SwiftUI_UDF_Binary6RouterP4view3for4ViewQz5RouteQz_tF",
-            "mangledName": "$s18SwiftUI_UDF_Binary6RouterP4view3for4ViewQz5RouteQz_tF",
+            "usr": "s:18SwiftUI_UDF_Binary6RouterP4view3for11DestinationQz5RouteQz_tF",
+            "mangledName": "$s18SwiftUI_UDF_Binary6RouterP4view3for11DestinationQz5RouteQz_tF",
             "moduleName": "SwiftUI_UDF_Binary",
             "genericSig": "<τ_0_0 where τ_0_0 : SwiftUI_UDF_Binary.Router>",
             "sugared_genericSig": "<Self where Self : SwiftUI_UDF_Binary.Router>",
@@ -12252,8 +12252,8 @@
         "usr": "s:18SwiftUI_UDF_Binary6RouterP",
         "mangledName": "$s18SwiftUI_UDF_Binary6RouterP",
         "moduleName": "SwiftUI_UDF_Binary",
-        "genericSig": "<τ_0_0 : SwiftUI_UDF_Binary.Initable, τ_0_0.View : SwiftUI.View>",
-        "sugared_genericSig": "<Self : SwiftUI_UDF_Binary.Initable, Self.View : SwiftUI.View>",
+        "genericSig": "<τ_0_0 : SwiftUI_UDF_Binary.Initable, τ_0_0.Destination : SwiftUI.View>",
+        "sugared_genericSig": "<Self : SwiftUI_UDF_Binary.Initable, Self.Destination : SwiftUI.View>",
         "declAttributes": [
           "AccessControl"
         ],

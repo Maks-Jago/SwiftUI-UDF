@@ -406,14 +406,14 @@ extension SwiftUI_UDF_Binary.Actions {
 #if compiler(>=5.3) && $PrimaryAssociatedTypes2
 public protocol Router<Route> : SwiftUI_UDF_Binary.Initable {
   associatedtype Route
-  associatedtype View : SwiftUI.View
-  func view(for route: Self.Route) -> Self.View
+  associatedtype Destination : SwiftUI.View
+  func view(for route: Self.Route) -> Self.Destination
 }
 #else
 public protocol Router : SwiftUI_UDF_Binary.Initable {
   associatedtype Route
-  associatedtype View : SwiftUI.View
-  func view(for route: Self.Route) -> Self.View
+  associatedtype Destination : SwiftUI.View
+  func view(for route: Self.Route) -> Self.Destination
 }
 #endif
 extension SwiftUI_UDF_Binary.Router {
