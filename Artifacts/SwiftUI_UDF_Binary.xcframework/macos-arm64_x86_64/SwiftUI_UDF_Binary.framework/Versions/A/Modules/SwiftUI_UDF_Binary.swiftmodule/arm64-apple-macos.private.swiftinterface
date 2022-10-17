@@ -395,18 +395,21 @@ extension SwiftUI_UDF_Binary.Actions {
   public static func == (lhs: SwiftUI_UDF_Binary.CombinedScope<S1, S2>, rhs: SwiftUI_UDF_Binary.CombinedScope<S1, S2>) -> Swift.Bool
   @objc deinit
 }
-public protocol Routing : SwiftUI_UDF_Binary.Initable {
+#if compiler(>=5.3) && $PrimaryAssociatedTypes2
+public protocol Router<Route> : SwiftUI_UDF_Binary.Initable {
   associatedtype Route
   associatedtype View : SwiftUI.View
-  @SwiftUI.ViewBuilder func view(for route: Self.Route) -> Self.View
+  func view(for route: Self.Route) -> Self.View
 }
-open class Router<R> where R : SwiftUI_UDF_Binary.Routing {
-  public var routing: R
-  public init(routing: R)
+#else
+public protocol Router : SwiftUI_UDF_Binary.Initable {
+  associatedtype Route
+  associatedtype View : SwiftUI.View
+  func view(for route: Self.Route) -> Self.View
+}
+#endif
+extension SwiftUI_UDF_Binary.Router {
   public init()
-  open func view(for route: R.Route) -> some SwiftUI.View
-  
-  @objc deinit
 }
 public protocol Initable {
   init()
