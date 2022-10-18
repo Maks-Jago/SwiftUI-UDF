@@ -12178,26 +12178,26 @@
       },
       {
         "kind": "TypeDecl",
-        "name": "Router",
-        "printedName": "Router",
+        "name": "Routing",
+        "printedName": "Routing",
         "children": [
           {
             "kind": "AssociatedType",
             "name": "Route",
             "printedName": "Route",
             "declKind": "AssociatedType",
-            "usr": "s:18SwiftUI_UDF_Binary6RouterP5RouteQa",
-            "mangledName": "$s18SwiftUI_UDF_Binary6RouterP5RouteQa",
+            "usr": "s:18SwiftUI_UDF_Binary7RoutingP5RouteQa",
+            "mangledName": "$s18SwiftUI_UDF_Binary7RoutingP5RouteQa",
             "moduleName": "SwiftUI_UDF_Binary",
             "protocolReq": true
           },
           {
             "kind": "AssociatedType",
-            "name": "Destination",
-            "printedName": "Destination",
+            "name": "View",
+            "printedName": "View",
             "declKind": "AssociatedType",
-            "usr": "s:18SwiftUI_UDF_Binary6RouterP11DestinationQa",
-            "mangledName": "$s18SwiftUI_UDF_Binary6RouterP11DestinationQa",
+            "usr": "s:18SwiftUI_UDF_Binary7RoutingP4ViewQa",
+            "mangledName": "$s18SwiftUI_UDF_Binary7RoutingP4ViewQa",
             "moduleName": "SwiftUI_UDF_Binary",
             "protocolReq": true
           },
@@ -12209,7 +12209,7 @@
               {
                 "kind": "TypeNominal",
                 "name": "DependentMember",
-                "printedName": "τ_0_0.Destination"
+                "printedName": "τ_0_0.View"
               },
               {
                 "kind": "TypeNominal",
@@ -12218,42 +12218,22 @@
               }
             ],
             "declKind": "Func",
-            "usr": "s:18SwiftUI_UDF_Binary6RouterP4view3for11DestinationQz5RouteQz_tF",
-            "mangledName": "$s18SwiftUI_UDF_Binary6RouterP4view3for11DestinationQz5RouteQz_tF",
+            "usr": "s:18SwiftUI_UDF_Binary7RoutingP4view3for4ViewQz5RouteQz_tF",
+            "mangledName": "$s18SwiftUI_UDF_Binary7RoutingP4view3for4ViewQz5RouteQz_tF",
             "moduleName": "SwiftUI_UDF_Binary",
-            "genericSig": "<τ_0_0 where τ_0_0 : SwiftUI_UDF_Binary.Router>",
-            "sugared_genericSig": "<Self where Self : SwiftUI_UDF_Binary.Router>",
+            "genericSig": "<τ_0_0 where τ_0_0 : SwiftUI_UDF_Binary.Routing>",
+            "sugared_genericSig": "<Self where Self : SwiftUI_UDF_Binary.Routing>",
             "protocolReq": true,
             "reqNewWitnessTableEntry": true,
             "funcSelfKind": "NonMutating"
-          },
-          {
-            "kind": "Constructor",
-            "name": "init",
-            "printedName": "init()",
-            "children": [
-              {
-                "kind": "TypeNominal",
-                "name": "GenericTypeParam",
-                "printedName": "τ_0_0"
-              }
-            ],
-            "declKind": "Constructor",
-            "usr": "s:18SwiftUI_UDF_Binary6RouterPAAExycfc",
-            "mangledName": "$s18SwiftUI_UDF_Binary6RouterPAAExycfc",
-            "moduleName": "SwiftUI_UDF_Binary",
-            "genericSig": "<τ_0_0 where τ_0_0 : SwiftUI_UDF_Binary.Router>",
-            "sugared_genericSig": "<Self where Self : SwiftUI_UDF_Binary.Router>",
-            "isFromExtension": true,
-            "init_kind": "Convenience"
           }
         ],
         "declKind": "Protocol",
-        "usr": "s:18SwiftUI_UDF_Binary6RouterP",
-        "mangledName": "$s18SwiftUI_UDF_Binary6RouterP",
+        "usr": "s:18SwiftUI_UDF_Binary7RoutingP",
+        "mangledName": "$s18SwiftUI_UDF_Binary7RoutingP",
         "moduleName": "SwiftUI_UDF_Binary",
-        "genericSig": "<τ_0_0 : SwiftUI_UDF_Binary.Initable, τ_0_0.Destination : SwiftUI.View>",
-        "sugared_genericSig": "<Self : SwiftUI_UDF_Binary.Initable, Self.Destination : SwiftUI.View>",
+        "genericSig": "<τ_0_0 : SwiftUI_UDF_Binary.Initable, τ_0_0.View : SwiftUI.View>",
+        "sugared_genericSig": "<Self : SwiftUI_UDF_Binary.Initable, Self.View : SwiftUI.View>",
         "declAttributes": [
           "AccessControl"
         ],
@@ -12265,6 +12245,275 @@
             "usr": "s:18SwiftUI_UDF_Binary8InitableP",
             "mangledName": "$s18SwiftUI_UDF_Binary8InitableP"
           }
+        ]
+      },
+      {
+        "kind": "TypeDecl",
+        "name": "Router",
+        "printedName": "Router",
+        "children": [
+          {
+            "kind": "Var",
+            "name": "routing",
+            "printedName": "routing",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "GenericTypeParam",
+                "printedName": "τ_0_0"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:18SwiftUI_UDF_Binary6RouterC7routingxvp",
+            "mangledName": "$s18SwiftUI_UDF_Binary6RouterC7routingxvp",
+            "moduleName": "SwiftUI_UDF_Binary",
+            "declAttributes": [
+              "HasStorage",
+              "AccessControl"
+            ],
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "GenericTypeParam",
+                    "printedName": "τ_0_0"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:18SwiftUI_UDF_Binary6RouterC7routingxvg",
+                "mangledName": "$s18SwiftUI_UDF_Binary6RouterC7routingxvg",
+                "moduleName": "SwiftUI_UDF_Binary",
+                "genericSig": "<τ_0_0 where τ_0_0 : SwiftUI_UDF_Binary.Routing>",
+                "sugared_genericSig": "<R where R : SwiftUI_UDF_Binary.Routing>",
+                "implicit": true,
+                "accessorKind": "get"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Set",
+                "printedName": "Set()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "GenericTypeParam",
+                    "printedName": "τ_0_0"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:18SwiftUI_UDF_Binary6RouterC7routingxvs",
+                "mangledName": "$s18SwiftUI_UDF_Binary6RouterC7routingxvs",
+                "moduleName": "SwiftUI_UDF_Binary",
+                "genericSig": "<τ_0_0 where τ_0_0 : SwiftUI_UDF_Binary.Routing>",
+                "sugared_genericSig": "<R where R : SwiftUI_UDF_Binary.Routing>",
+                "implicit": true,
+                "accessorKind": "set"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Modify",
+                "printedName": "Modify()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:18SwiftUI_UDF_Binary6RouterC7routingxvM",
+                "mangledName": "$s18SwiftUI_UDF_Binary6RouterC7routingxvM",
+                "moduleName": "SwiftUI_UDF_Binary",
+                "genericSig": "<τ_0_0 where τ_0_0 : SwiftUI_UDF_Binary.Routing>",
+                "sugared_genericSig": "<R where R : SwiftUI_UDF_Binary.Routing>",
+                "implicit": true,
+                "accessorKind": "_modify"
+              }
+            ]
+          },
+          {
+            "kind": "Constructor",
+            "name": "init",
+            "printedName": "init(routing:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Router",
+                "printedName": "SwiftUI_UDF_Binary.Router<τ_0_0>",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "GenericTypeParam",
+                    "printedName": "τ_0_0"
+                  }
+                ],
+                "usr": "s:18SwiftUI_UDF_Binary6RouterC"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "GenericTypeParam",
+                "printedName": "τ_0_0"
+              }
+            ],
+            "declKind": "Constructor",
+            "usr": "s:18SwiftUI_UDF_Binary6RouterC7routingACyxGx_tcfc",
+            "mangledName": "$s18SwiftUI_UDF_Binary6RouterC7routingACyxGx_tcfc",
+            "moduleName": "SwiftUI_UDF_Binary",
+            "genericSig": "<τ_0_0 where τ_0_0 : SwiftUI_UDF_Binary.Routing>",
+            "sugared_genericSig": "<R where R : SwiftUI_UDF_Binary.Routing>",
+            "declAttributes": [
+              "AccessControl"
+            ],
+            "init_kind": "Designated"
+          },
+          {
+            "kind": "Constructor",
+            "name": "init",
+            "printedName": "init()",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Router",
+                "printedName": "SwiftUI_UDF_Binary.Router<τ_0_0>",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "GenericTypeParam",
+                    "printedName": "τ_0_0"
+                  }
+                ],
+                "usr": "s:18SwiftUI_UDF_Binary6RouterC"
+              }
+            ],
+            "declKind": "Constructor",
+            "usr": "s:18SwiftUI_UDF_Binary6RouterCACyxGycfc",
+            "mangledName": "$s18SwiftUI_UDF_Binary6RouterCACyxGycfc",
+            "moduleName": "SwiftUI_UDF_Binary",
+            "genericSig": "<τ_0_0 where τ_0_0 : SwiftUI_UDF_Binary.Routing>",
+            "sugared_genericSig": "<R where R : SwiftUI_UDF_Binary.Routing>",
+            "declAttributes": [
+              "AccessControl"
+            ],
+            "init_kind": "Designated"
+          },
+          {
+            "kind": "Constructor",
+            "name": "init",
+            "printedName": "init(routing:mocked:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Router",
+                "printedName": "SwiftUI_UDF_Binary.Router<τ_0_0>",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "GenericTypeParam",
+                    "printedName": "τ_0_0"
+                  }
+                ],
+                "usr": "s:18SwiftUI_UDF_Binary6RouterC"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "GenericTypeParam",
+                "printedName": "τ_0_0"
+              },
+              {
+                "kind": "TypeFunc",
+                "name": "Function",
+                "printedName": "(τ_0_0, τ_0_0.Route) -> τ_1_0",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "GenericTypeParam",
+                    "printedName": "τ_1_0"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Tuple",
+                    "printedName": "(τ_0_0, τ_0_0.Route)",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "GenericTypeParam",
+                        "printedName": "τ_0_0"
+                      },
+                      {
+                        "kind": "TypeNominal",
+                        "name": "DependentMember",
+                        "printedName": "τ_0_0.Route"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "declKind": "Constructor",
+            "usr": "s:18SwiftUI_UDF_Binary6RouterC7routing6mockedACyxGx_qd__x_5RouteQztctc0aB04ViewRd__lufc",
+            "mangledName": "$s18SwiftUI_UDF_Binary6RouterC7routing6mockedACyxGx_qd__x_5RouteQztctc0aB04ViewRd__lufc",
+            "moduleName": "SwiftUI_UDF_Binary",
+            "genericSig": "<τ_0_0, τ_1_0 where τ_0_0 : SwiftUI_UDF_Binary.Routing, τ_1_0 : SwiftUI.View>",
+            "sugared_genericSig": "<R, MockView where R : SwiftUI_UDF_Binary.Routing, MockView : SwiftUI.View>",
+            "declAttributes": [
+              "AccessControl"
+            ],
+            "init_kind": "Designated"
+          },
+          {
+            "kind": "Function",
+            "name": "view",
+            "printedName": "view(for:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "OpaqueTypeArchetype",
+                "printedName": "some SwiftUI.View",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "View",
+                    "printedName": "SwiftUI.View",
+                    "usr": "s:7SwiftUI4ViewP"
+                  }
+                ]
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "DependentMember",
+                "printedName": "τ_0_0.Route"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:18SwiftUI_UDF_Binary6RouterC4view3forQr5RouteQz_tF",
+            "mangledName": "$s18SwiftUI_UDF_Binary6RouterC4view3forQr5RouteQz_tF",
+            "moduleName": "SwiftUI_UDF_Binary",
+            "genericSig": "<τ_0_0 where τ_0_0 : SwiftUI_UDF_Binary.Routing>",
+            "sugared_genericSig": "<R where R : SwiftUI_UDF_Binary.Routing>",
+            "declAttributes": [
+              "AccessControl",
+              "Custom"
+            ],
+            "funcSelfKind": "NonMutating"
+          }
+        ],
+        "declKind": "Class",
+        "usr": "s:18SwiftUI_UDF_Binary6RouterC",
+        "mangledName": "$s18SwiftUI_UDF_Binary6RouterC",
+        "moduleName": "SwiftUI_UDF_Binary",
+        "genericSig": "<τ_0_0 where τ_0_0 : SwiftUI_UDF_Binary.Routing>",
+        "sugared_genericSig": "<R where R : SwiftUI_UDF_Binary.Routing>",
+        "declAttributes": [
+          "AccessControl"
         ]
       },
       {
