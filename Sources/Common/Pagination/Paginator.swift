@@ -78,8 +78,8 @@ public struct Paginator<Item: Hashable & Identifiable, FlowId: Hashable>: Reduci
         items.removeAll()
     }
 
-    public mutating func reduce(_ action: AnyAction) {
-        switch action.value {
+    public mutating func reduce(_ action: some Action) {
+        switch action {
         case let action as Actions.DidLoadItems<Item> where action.id == flowId:
             isLoading = false
 

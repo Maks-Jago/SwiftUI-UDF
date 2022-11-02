@@ -3,7 +3,7 @@ import Foundation
 import SwiftUI_UDF_Binary
 
 public extension Actions {
-    struct UpdateAlertStatus: EquatableAction {
+    struct UpdateAlertStatus: Action {
         public var status: AlertBuilder.AlertStatus
         public var id: AnyHashable
 

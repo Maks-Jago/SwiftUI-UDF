@@ -24,8 +24,8 @@ public enum UserLocationFlow: Reducible {
         return false
     }
 
-    mutating public func reduce(_ action: AnyAction) {
-        switch action.value {
+    mutating public func reduce(_ action: some Action) {
+        switch action {
         case is Actions.RequestLocationAccess:
             self = .requestPermissions
 

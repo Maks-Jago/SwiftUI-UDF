@@ -26,7 +26,7 @@ public extension Effects {
             self.locationManagerConfigurator = locationManagerConfigurator
         }
 
-        public var upstream: AnyPublisher<AnyAction, Never> {
+        public var upstream: AnyPublisher<any Action, Never> {
             self.eraseToAnyPublisher()
         }
 
@@ -42,7 +42,7 @@ public extension Effects {
             )
         }
 
-        private final class LocationMonitoringSubscription<S: Subscriber>: NSObject, CLLocationManagerDelegate, Subscription where S.Input == AnyAction {
+        private final class LocationMonitoringSubscription<S: Subscriber>: NSObject, CLLocationManagerDelegate, Subscription where S.Input == any Action {
             var subscriber: S?
 
             private let locationManager: CLLocationManager
@@ -76,7 +76,7 @@ public extension Effects {
                     return
                 }
 
-                _ = subscriber?.receive(Actions.DidUpdateUserLocation(location: location).eraseToAnyAction())
+                _ = subscriber?.receive(Actions.DidUpdateUserLocation(location: location))
             }
         }
     }

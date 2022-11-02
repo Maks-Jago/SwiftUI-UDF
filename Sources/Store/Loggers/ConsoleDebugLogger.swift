@@ -7,17 +7,17 @@
 
 import Foundation
 
-public struct ConsoleDebugLogger: ActionLogging {
+public struct ConsoleDebugLogger: ActionLogger {
     var options: Options
 
     public init(options: ConsoleDebugLogger.Options) {
         self.options = options
     }
 
-    public func log(_ action: AnyAction) {
+    public func log(_ action: LoggingAction) {
         #if DEBUG
         switch options {
-        case .error where action.value is Actions.Error:
+        case .error where action.action is Actions.Error:
             printAction(action)
 
         case .all:
@@ -29,13 +29,13 @@ public struct ConsoleDebugLogger: ActionLogging {
         #endif
     }
 
-    private func printAction(_ action: AnyAction) {
+    private func printAction(_ action: LoggingAction) {
         print("Reduce\t\t \(action)\n---------------------------------------------------------------------------------------------------------------------------------------------------------------------------")
     }
 }
 
 public extension ConsoleDebugLogger {
-    enum Options {
+    enum Options: Sendable {
         case none, error, all
     }
 }

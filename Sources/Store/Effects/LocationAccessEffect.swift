@@ -15,7 +15,7 @@ public extension Effects {
     struct LocationAccessEffect: Effectable {
         public init() {}
 
-        public var upstream: AnyPublisher<AnyAction, Never> {
+        public var upstream: AnyPublisher<any Action, Never> {
             self.eraseToAnyPublisher()
         }
 
@@ -23,7 +23,7 @@ public extension Effects {
             subscriber.receive(subscription: LocationSubscription(subscriber: subscriber))
         }
 
-        private final class LocationSubscription<S: Subscriber>: NSObject, CLLocationManagerDelegate, Subscription where S.Input == AnyAction {
+        private final class LocationSubscription<S: Subscriber>: NSObject, CLLocationManagerDelegate, Subscription where S.Input == any Action {
             var subscriber: S?
 
             private let locationManager = CLLocationManager()
@@ -51,7 +51,7 @@ public extension Effects {
             }
 
             private func send(status: CLAuthorizationStatus) {
-                let action = Actions.DidUpdateLocationAccess(access: status).eraseToAnyAction()
+                let action = Actions.DidUpdateLocationAccess(access: status)
                 _ = subscriber?.receive(action)
             }
         }
