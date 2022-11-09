@@ -17,7 +17,7 @@ public struct ConsoleDebugLogger: ActionLogger {
     public func log(_ action: LoggingAction) {
         #if DEBUG
         switch options {
-        case .error where action.action is Actions.Error:
+        case .error where action.value is Actions.Error:
             printAction(action)
 
         case .all:
