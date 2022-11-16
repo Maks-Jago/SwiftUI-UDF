@@ -75,13 +75,6 @@ extension SwiftUI_UDF_Binary.IdentifiableFlow where Self.FlowId == SwiftUI_UDF_B
     get
   }
 }
-public protocol NavigationContainerLinking : SwiftUI.View {
-  var isDetailLink: Swift.Bool { get set }
-  func isDetailLink(_ isDetailLink: Swift.Bool) -> Self
-}
-extension SwiftUI_UDF_Binary.NavigationContainerLinking {
-  public func isDetailLink(_ isDetailLink: Swift.Bool) -> Self
-}
 public protocol Component : SwiftUI.View {
   associatedtype Props
   var props: Self.Props { get }
@@ -193,7 +186,7 @@ extension SwiftUI_UDF_Binary.FormField : Swift.Codable where Value : Swift.Decod
   public func encode(to encoder: Swift.Encoder) throws
   public init(from decoder: Swift.Decoder) throws
 }
-public protocol AppReducer : Swift.Equatable {
+public protocol AppReducer : Swift.Equatable, SwiftUI_UDF_Binary.Scope {
   mutating func preReduce(_ action: some Action)
   mutating func postReduce(_ action: some Action)
 }
@@ -532,6 +525,8 @@ extension SwiftUI_UDF_Binary.Middleware {
   public init(store: some Store<State>)
 }
 extension SwiftUI_UDF_Binary.Middleware where Self : SwiftUI_UDF_Binary.EnvironmentMiddleware {
+  public init(store: some Store<State>)
+  public init(store: some Store<State>, queue: Dispatch.DispatchQueue)
   public init(store: some Store<State>, environment: Self.Environment)
   public init(store: some Store<State>, environment: Self.Environment, queue: Dispatch.DispatchQueue)
 }
@@ -550,6 +545,11 @@ public protocol Flow : Swift.Equatable, SwiftUI_UDF_Binary.Reducing {
   public subscript<R>(dynamicMember keyPath: Swift.KeyPath<AppState, R>) -> SwiftUI_UDF_Binary.ReducerScope<R> where R : Swift.Equatable, R : SwiftUI_UDF_Binary.Reducing {
     get
   }
+}
+extension SwiftUI_UDF_Binary.SourceOfTruth : Swift.Equatable {
+  public static func == (lhs: SwiftUI_UDF_Binary.SourceOfTruth<AppState>, rhs: SwiftUI_UDF_Binary.SourceOfTruth<AppState>) -> Swift.Bool
+}
+extension SwiftUI_UDF_Binary.SourceOfTruth : SwiftUI_UDF_Binary.Scope {
 }
 public struct Effect : SwiftUI_UDF_Binary.Effectable {
   public var upstream: Combine.AnyPublisher<SwiftUI_UDF_Binary.Action, Swift.Never>
@@ -673,15 +673,6 @@ extension SwiftUI_UDF_Binary.EnvironmentStore {
   final public func subscribeAsync<M>(_ middlewareType: M.Type, on queue: Dispatch.DispatchQueue) where State == M.State, M : SwiftUI_UDF_Binary.EnvironmentMiddleware, M : SwiftUI_UDF_Binary.Middleware
   final public func subscribeAsync<M>(_ middlewareType: M.Type, environment: M.Environment, on queue: Dispatch.DispatchQueue) where State == M.State, M : SwiftUI_UDF_Binary.EnvironmentMiddleware, M : SwiftUI_UDF_Binary.Middleware
 }
-public enum ModalKind {
-  case sheet
-  case fullScreen
-  public static func == (a: SwiftUI_UDF_Binary.ModalKind, b: SwiftUI_UDF_Binary.ModalKind) -> Swift.Bool
-  public func hash(into hasher: inout Swift.Hasher)
-  public var hashValue: Swift.Int {
-    get
-  }
-}
 public protocol ConcurrencyEffect {
   associatedtype Id : Swift.Hashable
   var id: Self.Id { get }
@@ -704,27 +695,9 @@ public protocol Store : _Concurrency.Actor {
 #endif
 extension SwiftUI_UDF_Binary.Store {
   nonisolated public func dispatch(_ action: some Action, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line)
+  public func bind(_ action: some Action, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) -> SwiftUI_UDF_Binary.Command
+  public func bind<T>(_ action: @escaping (T) -> some Action, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) -> SwiftUI_UDF_Binary.CommandWith<T>
 }
-#if compiler(>=5.3) && $Actors
-public actor InternalStore<State> : SwiftUI_UDF_Binary.Store where State : SwiftUI_UDF_Binary.AppReducer {
-  public var state: State {
-    get
-    set
-  }
-  public init(initial state: State, accessToken: Swift.String, loggers: [SwiftUI_UDF_Binary.ActionLogger]) throws
-  @objc deinit
-  @available(iOS 13.0, tvOS 13.0, watchOS 6.0, macOS 10.15, *)
-  @_semantics("defaultActor") nonisolated final public var unownedExecutor: _Concurrency.UnownedSerialExecutor {
-    get
-  }
-}
-#endif
-#if compiler(>=5.3) && $Actors
-extension SwiftUI_UDF_Binary.InternalStore {
-  nonisolated public func dispatch(_ action: some Action, fileName: Swift.String, functionName: Swift.String, lineNumber: Swift.Int)
-  public func subscribe(_ middleware: some Middleware<State>)
-}
-#endif
 @_functionBuilder public enum ContainerBuilder {
   public static func buildBlock() -> SwiftUI_UDF_Binary.RenderContainer<SwiftUI.EmptyView, SwiftUI_UDF_Binary.EmptyReducer>
   public static func buildBlock<C>(_ container: C) -> C where C : SwiftUI_UDF_Binary.Container
@@ -807,6 +780,9 @@ open class BaseConcurrencyMiddleware<State> : SwiftUI_UDF_Binary.Middleware wher
   public var queue: Dispatch.DispatchQueue
   public var cancelations: [Swift.AnyHashable : _Concurrency.Task<Swift.Void, Swift.Never>]
   required public init(store: some Store<State>, queue: Dispatch.DispatchQueue)
+  #if compiler(>=5.3) && $AsyncAwait
+  public func execute<TaskId>(id: TaskId, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line, _ task: @escaping (TaskId) async throws -> SwiftUI_UDF_Binary.Action) where TaskId : Swift.Hashable
+  #endif
   public func execute(_ effect: some ConcurrencyEffect, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line)
   public func execute<Id>(_ effect: some ConcurrencyEffect, cancelation: Id, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) where Id : Swift.Hashable
   @discardableResult
@@ -829,6 +805,4 @@ public typealias Reducible = Swift.Equatable & SwiftUI_UDF_Binary.Reducing
 }
 extension SwiftUI_UDF_Binary.MiddlewareStatus : Swift.Equatable {}
 extension SwiftUI_UDF_Binary.MiddlewareStatus : Swift.Hashable {}
-extension SwiftUI_UDF_Binary.ModalKind : Swift.Equatable {}
-extension SwiftUI_UDF_Binary.ModalKind : Swift.Hashable {}
 extension SwiftUI_UDF_Binary.XCTestStore : Swift.Sendable {}

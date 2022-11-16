@@ -1763,182 +1763,6 @@
         "name": "SwiftUI",
         "printedName": "SwiftUI",
         "declKind": "Import",
-        "moduleName": "SwiftUI_UDF_Binary"
-      },
-      {
-        "kind": "TypeDecl",
-        "name": "NavigationContainerLinking",
-        "printedName": "NavigationContainerLinking",
-        "children": [
-          {
-            "kind": "Var",
-            "name": "isDetailLink",
-            "printedName": "isDetailLink",
-            "children": [
-              {
-                "kind": "TypeNominal",
-                "name": "Bool",
-                "printedName": "Swift.Bool",
-                "usr": "s:Sb"
-              }
-            ],
-            "declKind": "Var",
-            "usr": "s:18SwiftUI_UDF_Binary26NavigationContainerLinkingP12isDetailLinkSbvp",
-            "mangledName": "$s18SwiftUI_UDF_Binary26NavigationContainerLinkingP12isDetailLinkSbvp",
-            "moduleName": "SwiftUI_UDF_Binary",
-            "protocolReq": true,
-            "accessors": [
-              {
-                "kind": "Accessor",
-                "name": "Get",
-                "printedName": "Get()",
-                "children": [
-                  {
-                    "kind": "TypeNominal",
-                    "name": "Bool",
-                    "printedName": "Swift.Bool",
-                    "usr": "s:Sb"
-                  }
-                ],
-                "declKind": "Accessor",
-                "usr": "s:18SwiftUI_UDF_Binary26NavigationContainerLinkingP12isDetailLinkSbvg",
-                "mangledName": "$s18SwiftUI_UDF_Binary26NavigationContainerLinkingP12isDetailLinkSbvg",
-                "moduleName": "SwiftUI_UDF_Binary",
-                "genericSig": "<τ_0_0 where τ_0_0 : SwiftUI_UDF_Binary.NavigationContainerLinking>",
-                "sugared_genericSig": "<Self where Self : SwiftUI_UDF_Binary.NavigationContainerLinking>",
-                "protocolReq": true,
-                "reqNewWitnessTableEntry": true,
-                "accessorKind": "get"
-              },
-              {
-                "kind": "Accessor",
-                "name": "Set",
-                "printedName": "Set()",
-                "children": [
-                  {
-                    "kind": "TypeNominal",
-                    "name": "Void",
-                    "printedName": "()"
-                  },
-                  {
-                    "kind": "TypeNominal",
-                    "name": "Bool",
-                    "printedName": "Swift.Bool",
-                    "usr": "s:Sb"
-                  }
-                ],
-                "declKind": "Accessor",
-                "usr": "s:18SwiftUI_UDF_Binary26NavigationContainerLinkingP12isDetailLinkSbvs",
-                "mangledName": "$s18SwiftUI_UDF_Binary26NavigationContainerLinkingP12isDetailLinkSbvs",
-                "moduleName": "SwiftUI_UDF_Binary",
-                "genericSig": "<τ_0_0 where τ_0_0 : SwiftUI_UDF_Binary.NavigationContainerLinking>",
-                "sugared_genericSig": "<Self where Self : SwiftUI_UDF_Binary.NavigationContainerLinking>",
-                "protocolReq": true,
-                "reqNewWitnessTableEntry": true,
-                "accessorKind": "set"
-              },
-              {
-                "kind": "Accessor",
-                "name": "Modify",
-                "printedName": "Modify()",
-                "children": [
-                  {
-                    "kind": "TypeNominal",
-                    "name": "Void",
-                    "printedName": "()"
-                  }
-                ],
-                "declKind": "Accessor",
-                "usr": "s:18SwiftUI_UDF_Binary26NavigationContainerLinkingP12isDetailLinkSbvM",
-                "mangledName": "$s18SwiftUI_UDF_Binary26NavigationContainerLinkingP12isDetailLinkSbvM",
-                "moduleName": "SwiftUI_UDF_Binary",
-                "genericSig": "<τ_0_0 where τ_0_0 : SwiftUI_UDF_Binary.NavigationContainerLinking>",
-                "sugared_genericSig": "<Self where Self : SwiftUI_UDF_Binary.NavigationContainerLinking>",
-                "protocolReq": true,
-                "implicit": true,
-                "reqNewWitnessTableEntry": true,
-                "accessorKind": "_modify"
-              }
-            ]
-          },
-          {
-            "kind": "Function",
-            "name": "isDetailLink",
-            "printedName": "isDetailLink(_:)",
-            "children": [
-              {
-                "kind": "TypeNominal",
-                "name": "GenericTypeParam",
-                "printedName": "τ_0_0"
-              },
-              {
-                "kind": "TypeNominal",
-                "name": "Bool",
-                "printedName": "Swift.Bool",
-                "usr": "s:Sb"
-              }
-            ],
-            "declKind": "Func",
-            "usr": "s:18SwiftUI_UDF_Binary26NavigationContainerLinkingP12isDetailLinkyxSbF",
-            "mangledName": "$s18SwiftUI_UDF_Binary26NavigationContainerLinkingP12isDetailLinkyxSbF",
-            "moduleName": "SwiftUI_UDF_Binary",
-            "genericSig": "<τ_0_0 where τ_0_0 : SwiftUI_UDF_Binary.NavigationContainerLinking>",
-            "sugared_genericSig": "<Self where Self : SwiftUI_UDF_Binary.NavigationContainerLinking>",
-            "protocolReq": true,
-            "reqNewWitnessTableEntry": true,
-            "funcSelfKind": "NonMutating"
-          },
-          {
-            "kind": "Function",
-            "name": "isDetailLink",
-            "printedName": "isDetailLink(_:)",
-            "children": [
-              {
-                "kind": "TypeNominal",
-                "name": "GenericTypeParam",
-                "printedName": "τ_0_0"
-              },
-              {
-                "kind": "TypeNominal",
-                "name": "Bool",
-                "printedName": "Swift.Bool",
-                "usr": "s:Sb"
-              }
-            ],
-            "declKind": "Func",
-            "usr": "s:18SwiftUI_UDF_Binary26NavigationContainerLinkingPAAE12isDetailLinkyxSbF",
-            "mangledName": "$s18SwiftUI_UDF_Binary26NavigationContainerLinkingPAAE12isDetailLinkyxSbF",
-            "moduleName": "SwiftUI_UDF_Binary",
-            "genericSig": "<τ_0_0 where τ_0_0 : SwiftUI_UDF_Binary.NavigationContainerLinking>",
-            "sugared_genericSig": "<Self where Self : SwiftUI_UDF_Binary.NavigationContainerLinking>",
-            "isFromExtension": true,
-            "funcSelfKind": "NonMutating"
-          }
-        ],
-        "declKind": "Protocol",
-        "usr": "s:18SwiftUI_UDF_Binary26NavigationContainerLinkingP",
-        "mangledName": "$s18SwiftUI_UDF_Binary26NavigationContainerLinkingP",
-        "moduleName": "SwiftUI_UDF_Binary",
-        "genericSig": "<τ_0_0 : SwiftUI.View>",
-        "sugared_genericSig": "<Self : SwiftUI.View>",
-        "declAttributes": [
-          "AccessControl"
-        ],
-        "conformances": [
-          {
-            "kind": "Conformance",
-            "name": "View",
-            "printedName": "View",
-            "usr": "s:7SwiftUI4ViewP",
-            "mangledName": "$s7SwiftUI4ViewP"
-          }
-        ]
-      },
-      {
-        "kind": "Import",
-        "name": "SwiftUI",
-        "printedName": "SwiftUI",
-        "declKind": "Import",
         "moduleName": "SwiftUI_UDF_Binary",
         "declAttributes": [
           "RawDocComment"
@@ -3765,6 +3589,20 @@
             "printedName": "Equatable",
             "usr": "s:SQ",
             "mangledName": "$sSQ"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Scope",
+            "printedName": "Scope",
+            "usr": "s:18SwiftUI_UDF_Binary5ScopeP",
+            "mangledName": "$s18SwiftUI_UDF_Binary5ScopeP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "IsEquatable",
+            "printedName": "IsEquatable",
+            "usr": "s:18SwiftUI_UDF_Binary11IsEquatableP",
+            "mangledName": "$s18SwiftUI_UDF_Binary11IsEquatableP"
           }
         ]
       },
@@ -4485,8 +4323,8 @@
         "usr": "s:18SwiftUI_UDF_Binary10AppReducerP",
         "mangledName": "$s18SwiftUI_UDF_Binary10AppReducerP",
         "moduleName": "SwiftUI_UDF_Binary",
-        "genericSig": "<τ_0_0 : Swift.Equatable>",
-        "sugared_genericSig": "<Self : Swift.Equatable>",
+        "genericSig": "<τ_0_0 : Swift.Equatable, τ_0_0 : SwiftUI_UDF_Binary.Scope>",
+        "sugared_genericSig": "<Self : Swift.Equatable, Self : SwiftUI_UDF_Binary.Scope>",
         "declAttributes": [
           "AccessControl"
         ],
@@ -4497,6 +4335,20 @@
             "printedName": "Equatable",
             "usr": "s:SQ",
             "mangledName": "$sSQ"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Scope",
+            "printedName": "Scope",
+            "usr": "s:18SwiftUI_UDF_Binary5ScopeP",
+            "mangledName": "$s18SwiftUI_UDF_Binary5ScopeP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "IsEquatable",
+            "printedName": "IsEquatable",
+            "usr": "s:18SwiftUI_UDF_Binary11IsEquatableP",
+            "mangledName": "$s18SwiftUI_UDF_Binary11IsEquatableP"
           }
         ]
       },
@@ -5549,13 +5401,6 @@
       },
       {
         "kind": "Import",
-        "name": "SwiftUI",
-        "printedName": "SwiftUI",
-        "declKind": "Import",
-        "moduleName": "SwiftUI_UDF_Binary"
-      },
-      {
-        "kind": "Import",
         "name": "Foundation",
         "printedName": "Foundation",
         "declKind": "Import",
@@ -5838,13 +5683,6 @@
             "mangledName": "$s18SwiftUI_UDF_Binary11IsEquatableP"
           }
         ]
-      },
-      {
-        "kind": "Import",
-        "name": "SwiftUI",
-        "printedName": "SwiftUI",
-        "declKind": "Import",
-        "moduleName": "SwiftUI_UDF_Binary"
       },
       {
         "kind": "Import",
@@ -13654,16 +13492,6 @@
       },
       {
         "kind": "Import",
-        "name": "SwiftUI",
-        "printedName": "SwiftUI",
-        "declKind": "Import",
-        "moduleName": "SwiftUI_UDF_Binary",
-        "declAttributes": [
-          "RawDocComment"
-        ]
-      },
-      {
-        "kind": "Import",
         "name": "Foundation",
         "printedName": "Foundation",
         "declKind": "Import",
@@ -14911,6 +14739,62 @@
           {
             "kind": "Constructor",
             "name": "init",
+            "printedName": "init(store:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "GenericTypeParam",
+                "printedName": "τ_0_0"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "GenericTypeParam",
+                "printedName": "τ_1_0"
+              }
+            ],
+            "declKind": "Constructor",
+            "usr": "s:18SwiftUI_UDF_Binary10MiddlewarePA2A011EnvironmentE0RzrlE5storexqd___tcAA5StoreRd__5StateQyd__AgaDPRtzlufc",
+            "mangledName": "$s18SwiftUI_UDF_Binary10MiddlewarePA2A011EnvironmentE0RzrlE5storexqd___tcAA5StoreRd__5StateQyd__AgaDPRtzlufc",
+            "moduleName": "SwiftUI_UDF_Binary",
+            "genericSig": "<τ_0_0, τ_1_0 where τ_0_0 : SwiftUI_UDF_Binary.EnvironmentMiddleware, τ_0_0 : SwiftUI_UDF_Binary.Middleware, τ_1_0 : SwiftUI_UDF_Binary.Store, τ_0_0.State == τ_1_0.State>",
+            "sugared_genericSig": "<Self where Self : SwiftUI_UDF_Binary.EnvironmentMiddleware, Self : SwiftUI_UDF_Binary.Middleware>",
+            "isFromExtension": true,
+            "init_kind": "Convenience"
+          },
+          {
+            "kind": "Constructor",
+            "name": "init",
+            "printedName": "init(store:queue:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "GenericTypeParam",
+                "printedName": "τ_0_0"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "GenericTypeParam",
+                "printedName": "τ_1_0"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "DispatchQueue",
+                "printedName": "Dispatch.DispatchQueue",
+                "usr": "c:objc(cs)OS_dispatch_queue"
+              }
+            ],
+            "declKind": "Constructor",
+            "usr": "s:18SwiftUI_UDF_Binary10MiddlewarePA2A011EnvironmentE0RzrlE5store5queuexqd___So012OS_dispatch_H0CtcAA5StoreRd__5StateQyd__AjaDPRtzlufc",
+            "mangledName": "$s18SwiftUI_UDF_Binary10MiddlewarePA2A011EnvironmentE0RzrlE5store5queuexqd___So012OS_dispatch_H0CtcAA5StoreRd__5StateQyd__AjaDPRtzlufc",
+            "moduleName": "SwiftUI_UDF_Binary",
+            "genericSig": "<τ_0_0, τ_1_0 where τ_0_0 : SwiftUI_UDF_Binary.EnvironmentMiddleware, τ_0_0 : SwiftUI_UDF_Binary.Middleware, τ_1_0 : SwiftUI_UDF_Binary.Store, τ_0_0.State == τ_1_0.State>",
+            "sugared_genericSig": "<Self where Self : SwiftUI_UDF_Binary.EnvironmentMiddleware, Self : SwiftUI_UDF_Binary.Middleware>",
+            "isFromExtension": true,
+            "init_kind": "Convenience"
+          },
+          {
+            "kind": "Constructor",
+            "name": "init",
             "printedName": "init(store:environment:)",
             "children": [
               {
@@ -14983,16 +14867,6 @@
         "sugared_genericSig": "<Self.State : SwiftUI_UDF_Binary.AppReducer>",
         "declAttributes": [
           "AccessControl"
-        ]
-      },
-      {
-        "kind": "Import",
-        "name": "SwiftUI",
-        "printedName": "SwiftUI",
-        "declKind": "Import",
-        "moduleName": "SwiftUI_UDF_Binary",
-        "declAttributes": [
-          "RawDocComment"
         ]
       },
       {
@@ -15480,6 +15354,57 @@
                 "accessorKind": "get"
               }
             ]
+          },
+          {
+            "kind": "Function",
+            "name": "==",
+            "printedName": "==(_:_:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Bool",
+                "printedName": "Swift.Bool",
+                "usr": "s:Sb"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "SourceOfTruth",
+                "printedName": "SwiftUI_UDF_Binary.SourceOfTruth<τ_0_0>",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "GenericTypeParam",
+                    "printedName": "τ_0_0"
+                  }
+                ],
+                "usr": "s:18SwiftUI_UDF_Binary13SourceOfTruthV"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "SourceOfTruth",
+                "printedName": "SwiftUI_UDF_Binary.SourceOfTruth<τ_0_0>",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "GenericTypeParam",
+                    "printedName": "τ_0_0"
+                  }
+                ],
+                "usr": "s:18SwiftUI_UDF_Binary13SourceOfTruthV"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:18SwiftUI_UDF_Binary13SourceOfTruthV2eeoiySbACyxG_AEtFZ",
+            "mangledName": "$s18SwiftUI_UDF_Binary13SourceOfTruthV2eeoiySbACyxG_AEtFZ",
+            "moduleName": "SwiftUI_UDF_Binary",
+            "genericSig": "<τ_0_0 where τ_0_0 : SwiftUI_UDF_Binary.AppReducer>",
+            "sugared_genericSig": "<AppState where AppState : SwiftUI_UDF_Binary.AppReducer>",
+            "static": true,
+            "declAttributes": [
+              "AccessControl"
+            ],
+            "isFromExtension": true,
+            "funcSelfKind": "NonMutating"
           }
         ],
         "declKind": "Struct",
@@ -15492,7 +15417,37 @@
           "AccessControl",
           "PropertyWrapper",
           "DynamicMemberLookup"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Equatable",
+            "printedName": "Equatable",
+            "usr": "s:SQ",
+            "mangledName": "$sSQ"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Scope",
+            "printedName": "Scope",
+            "usr": "s:18SwiftUI_UDF_Binary5ScopeP",
+            "mangledName": "$s18SwiftUI_UDF_Binary5ScopeP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "IsEquatable",
+            "printedName": "IsEquatable",
+            "usr": "s:18SwiftUI_UDF_Binary11IsEquatableP",
+            "mangledName": "$s18SwiftUI_UDF_Binary11IsEquatableP"
+          }
         ]
+      },
+      {
+        "kind": "Import",
+        "name": "Foundation",
+        "printedName": "Foundation",
+        "declKind": "Import",
+        "moduleName": "SwiftUI_UDF_Binary"
       },
       {
         "kind": "Import",
@@ -16939,16 +16894,6 @@
       },
       {
         "kind": "Import",
-        "name": "SwiftUI",
-        "printedName": "SwiftUI",
-        "declKind": "Import",
-        "moduleName": "SwiftUI_UDF_Binary",
-        "declAttributes": [
-          "RawDocComment"
-        ]
-      },
-      {
-        "kind": "Import",
         "name": "Foundation",
         "printedName": "Foundation",
         "declKind": "Import",
@@ -17955,13 +17900,6 @@
       },
       {
         "kind": "Import",
-        "name": "SwiftUI",
-        "printedName": "SwiftUI",
-        "declKind": "Import",
-        "moduleName": "SwiftUI_UDF_Binary"
-      },
-      {
-        "kind": "Import",
         "name": "Foundation",
         "printedName": "Foundation",
         "declKind": "Import",
@@ -18790,216 +18728,6 @@
         "name": "Foundation",
         "printedName": "Foundation",
         "declKind": "Import",
-        "moduleName": "SwiftUI_UDF_Binary",
-        "declAttributes": [
-          "RawDocComment"
-        ]
-      },
-      {
-        "kind": "TypeDecl",
-        "name": "ModalKind",
-        "printedName": "ModalKind",
-        "children": [
-          {
-            "kind": "Var",
-            "name": "sheet",
-            "printedName": "sheet",
-            "children": [
-              {
-                "kind": "TypeFunc",
-                "name": "Function",
-                "printedName": "(SwiftUI_UDF_Binary.ModalKind.Type) -> SwiftUI_UDF_Binary.ModalKind",
-                "children": [
-                  {
-                    "kind": "TypeNominal",
-                    "name": "ModalKind",
-                    "printedName": "SwiftUI_UDF_Binary.ModalKind",
-                    "usr": "s:18SwiftUI_UDF_Binary9ModalKindO"
-                  },
-                  {
-                    "kind": "TypeNominal",
-                    "name": "Metatype",
-                    "printedName": "SwiftUI_UDF_Binary.ModalKind.Type",
-                    "children": [
-                      {
-                        "kind": "TypeNominal",
-                        "name": "ModalKind",
-                        "printedName": "SwiftUI_UDF_Binary.ModalKind",
-                        "usr": "s:18SwiftUI_UDF_Binary9ModalKindO"
-                      }
-                    ]
-                  }
-                ]
-              }
-            ],
-            "declKind": "EnumElement",
-            "usr": "s:18SwiftUI_UDF_Binary9ModalKindO5sheetyA2CmF",
-            "mangledName": "$s18SwiftUI_UDF_Binary9ModalKindO5sheetyA2CmF",
-            "moduleName": "SwiftUI_UDF_Binary"
-          },
-          {
-            "kind": "Var",
-            "name": "fullScreen",
-            "printedName": "fullScreen",
-            "children": [
-              {
-                "kind": "TypeFunc",
-                "name": "Function",
-                "printedName": "(SwiftUI_UDF_Binary.ModalKind.Type) -> SwiftUI_UDF_Binary.ModalKind",
-                "children": [
-                  {
-                    "kind": "TypeNominal",
-                    "name": "ModalKind",
-                    "printedName": "SwiftUI_UDF_Binary.ModalKind",
-                    "usr": "s:18SwiftUI_UDF_Binary9ModalKindO"
-                  },
-                  {
-                    "kind": "TypeNominal",
-                    "name": "Metatype",
-                    "printedName": "SwiftUI_UDF_Binary.ModalKind.Type",
-                    "children": [
-                      {
-                        "kind": "TypeNominal",
-                        "name": "ModalKind",
-                        "printedName": "SwiftUI_UDF_Binary.ModalKind",
-                        "usr": "s:18SwiftUI_UDF_Binary9ModalKindO"
-                      }
-                    ]
-                  }
-                ]
-              }
-            ],
-            "declKind": "EnumElement",
-            "usr": "s:18SwiftUI_UDF_Binary9ModalKindO10fullScreenyA2CmF",
-            "mangledName": "$s18SwiftUI_UDF_Binary9ModalKindO10fullScreenyA2CmF",
-            "moduleName": "SwiftUI_UDF_Binary"
-          },
-          {
-            "kind": "Function",
-            "name": "==",
-            "printedName": "==(_:_:)",
-            "children": [
-              {
-                "kind": "TypeNominal",
-                "name": "Bool",
-                "printedName": "Swift.Bool",
-                "usr": "s:Sb"
-              },
-              {
-                "kind": "TypeNominal",
-                "name": "ModalKind",
-                "printedName": "SwiftUI_UDF_Binary.ModalKind",
-                "usr": "s:18SwiftUI_UDF_Binary9ModalKindO"
-              },
-              {
-                "kind": "TypeNominal",
-                "name": "ModalKind",
-                "printedName": "SwiftUI_UDF_Binary.ModalKind",
-                "usr": "s:18SwiftUI_UDF_Binary9ModalKindO"
-              }
-            ],
-            "declKind": "Func",
-            "usr": "s:18SwiftUI_UDF_Binary9ModalKindO2eeoiySbAC_ACtFZ",
-            "mangledName": "$s18SwiftUI_UDF_Binary9ModalKindO2eeoiySbAC_ACtFZ",
-            "moduleName": "SwiftUI_UDF_Binary",
-            "static": true,
-            "implicit": true,
-            "funcSelfKind": "NonMutating"
-          },
-          {
-            "kind": "Var",
-            "name": "hashValue",
-            "printedName": "hashValue",
-            "children": [
-              {
-                "kind": "TypeNominal",
-                "name": "Int",
-                "printedName": "Swift.Int",
-                "usr": "s:Si"
-              }
-            ],
-            "declKind": "Var",
-            "usr": "s:18SwiftUI_UDF_Binary9ModalKindO9hashValueSivp",
-            "mangledName": "$s18SwiftUI_UDF_Binary9ModalKindO9hashValueSivp",
-            "moduleName": "SwiftUI_UDF_Binary",
-            "implicit": true,
-            "accessors": [
-              {
-                "kind": "Accessor",
-                "name": "Get",
-                "printedName": "Get()",
-                "children": [
-                  {
-                    "kind": "TypeNominal",
-                    "name": "Int",
-                    "printedName": "Swift.Int",
-                    "usr": "s:Si"
-                  }
-                ],
-                "declKind": "Accessor",
-                "usr": "s:18SwiftUI_UDF_Binary9ModalKindO9hashValueSivg",
-                "mangledName": "$s18SwiftUI_UDF_Binary9ModalKindO9hashValueSivg",
-                "moduleName": "SwiftUI_UDF_Binary",
-                "implicit": true,
-                "accessorKind": "get"
-              }
-            ]
-          },
-          {
-            "kind": "Function",
-            "name": "hash",
-            "printedName": "hash(into:)",
-            "children": [
-              {
-                "kind": "TypeNominal",
-                "name": "Void",
-                "printedName": "()"
-              },
-              {
-                "kind": "TypeNominal",
-                "name": "Hasher",
-                "printedName": "Swift.Hasher",
-                "paramValueOwnership": "InOut",
-                "usr": "s:s6HasherV"
-              }
-            ],
-            "declKind": "Func",
-            "usr": "s:18SwiftUI_UDF_Binary9ModalKindO4hash4intoys6HasherVz_tF",
-            "mangledName": "$s18SwiftUI_UDF_Binary9ModalKindO4hash4intoys6HasherVz_tF",
-            "moduleName": "SwiftUI_UDF_Binary",
-            "implicit": true,
-            "funcSelfKind": "NonMutating"
-          }
-        ],
-        "declKind": "Enum",
-        "usr": "s:18SwiftUI_UDF_Binary9ModalKindO",
-        "mangledName": "$s18SwiftUI_UDF_Binary9ModalKindO",
-        "moduleName": "SwiftUI_UDF_Binary",
-        "declAttributes": [
-          "AccessControl"
-        ],
-        "conformances": [
-          {
-            "kind": "Conformance",
-            "name": "Equatable",
-            "printedName": "Equatable",
-            "usr": "s:SQ",
-            "mangledName": "$sSQ"
-          },
-          {
-            "kind": "Conformance",
-            "name": "Hashable",
-            "printedName": "Hashable",
-            "usr": "s:SH",
-            "mangledName": "$sSH"
-          }
-        ]
-      },
-      {
-        "kind": "Import",
-        "name": "Foundation",
-        "printedName": "Foundation",
-        "declKind": "Import",
         "moduleName": "SwiftUI_UDF_Binary"
       },
       {
@@ -19251,6 +18979,134 @@
             ],
             "isFromExtension": true,
             "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "bind",
+            "printedName": "bind(_:fileName:functionName:lineNumber:)",
+            "children": [
+              {
+                "kind": "TypeFunc",
+                "name": "Function",
+                "printedName": "() -> ()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  }
+                ]
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "GenericTypeParam",
+                "printedName": "τ_1_0"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "hasDefaultArg": true,
+                "usr": "s:SS"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "hasDefaultArg": true,
+                "usr": "s:SS"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Int",
+                "printedName": "Swift.Int",
+                "hasDefaultArg": true,
+                "usr": "s:Si"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:18SwiftUI_UDF_Binary5StorePAAE4bind_8fileName08functionH010lineNumberyycqd___S2SSitAA6ActionRd__lF",
+            "mangledName": "$s18SwiftUI_UDF_Binary5StorePAAE4bind_8fileName08functionH010lineNumberyycqd___S2SSitAA6ActionRd__lF",
+            "moduleName": "SwiftUI_UDF_Binary",
+            "genericSig": "<τ_0_0, τ_1_0 where τ_0_0 : SwiftUI_UDF_Binary.Store, τ_1_0 : SwiftUI_UDF_Binary.Action>",
+            "sugared_genericSig": "<Self where Self : SwiftUI_UDF_Binary.Store>",
+            "isFromExtension": true,
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "bind",
+            "printedName": "bind(_:fileName:functionName:lineNumber:)",
+            "children": [
+              {
+                "kind": "TypeFunc",
+                "name": "Function",
+                "printedName": "(τ_1_0) -> ()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "GenericTypeParam",
+                    "printedName": "τ_1_0"
+                  }
+                ]
+              },
+              {
+                "kind": "TypeFunc",
+                "name": "Function",
+                "printedName": "(τ_1_0) -> τ_1_1",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "GenericTypeParam",
+                    "printedName": "τ_1_1"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "GenericTypeParam",
+                    "printedName": "τ_1_0"
+                  }
+                ]
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "hasDefaultArg": true,
+                "usr": "s:SS"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "hasDefaultArg": true,
+                "usr": "s:SS"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Int",
+                "printedName": "Swift.Int",
+                "hasDefaultArg": true,
+                "usr": "s:Si"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:18SwiftUI_UDF_Binary5StorePAAE4bind_8fileName08functionH010lineNumberyqd__cqd_0_qd__c_S2SSitAA6ActionRd_0_r0_lF",
+            "mangledName": "$s18SwiftUI_UDF_Binary5StorePAAE4bind_8fileName08functionH010lineNumberyqd__cqd_0_qd__c_S2SSitAA6ActionRd_0_r0_lF",
+            "moduleName": "SwiftUI_UDF_Binary",
+            "genericSig": "<τ_0_0, τ_1_0, τ_1_1 where τ_0_0 : SwiftUI_UDF_Binary.Store, τ_1_1 : SwiftUI_UDF_Binary.Action>",
+            "sugared_genericSig": "<Self, T where Self : SwiftUI_UDF_Binary.Store>",
+            "isFromExtension": true,
+            "funcSelfKind": "NonMutating"
           }
         ],
         "declKind": "Protocol",
@@ -19302,338 +19158,6 @@
         "printedName": "Combine",
         "declKind": "Import",
         "moduleName": "SwiftUI_UDF_Binary"
-      },
-      {
-        "kind": "TypeDecl",
-        "name": "InternalStore",
-        "printedName": "InternalStore",
-        "children": [
-          {
-            "kind": "Var",
-            "name": "state",
-            "printedName": "state",
-            "children": [
-              {
-                "kind": "TypeNominal",
-                "name": "GenericTypeParam",
-                "printedName": "τ_0_0"
-              }
-            ],
-            "declKind": "Var",
-            "usr": "s:18SwiftUI_UDF_Binary13InternalStoreC5statexvp",
-            "mangledName": "$s18SwiftUI_UDF_Binary13InternalStoreC5statexvp",
-            "moduleName": "SwiftUI_UDF_Binary",
-            "declAttributes": [
-              "HasStorage",
-              "AccessControl"
-            ],
-            "hasStorage": true,
-            "accessors": [
-              {
-                "kind": "Accessor",
-                "name": "Get",
-                "printedName": "Get()",
-                "children": [
-                  {
-                    "kind": "TypeNominal",
-                    "name": "GenericTypeParam",
-                    "printedName": "τ_0_0"
-                  }
-                ],
-                "declKind": "Accessor",
-                "usr": "s:18SwiftUI_UDF_Binary13InternalStoreC5statexvg",
-                "mangledName": "$s18SwiftUI_UDF_Binary13InternalStoreC5statexvg",
-                "moduleName": "SwiftUI_UDF_Binary",
-                "genericSig": "<τ_0_0 where τ_0_0 : SwiftUI_UDF_Binary.AppReducer>",
-                "sugared_genericSig": "<State where State : SwiftUI_UDF_Binary.AppReducer>",
-                "implicit": true,
-                "accessorKind": "get"
-              },
-              {
-                "kind": "Accessor",
-                "name": "Set",
-                "printedName": "Set()",
-                "children": [
-                  {
-                    "kind": "TypeNominal",
-                    "name": "Void",
-                    "printedName": "()"
-                  },
-                  {
-                    "kind": "TypeNominal",
-                    "name": "GenericTypeParam",
-                    "printedName": "τ_0_0"
-                  }
-                ],
-                "declKind": "Accessor",
-                "usr": "s:18SwiftUI_UDF_Binary13InternalStoreC5statexvs",
-                "mangledName": "$s18SwiftUI_UDF_Binary13InternalStoreC5statexvs",
-                "moduleName": "SwiftUI_UDF_Binary",
-                "genericSig": "<τ_0_0 where τ_0_0 : SwiftUI_UDF_Binary.AppReducer>",
-                "sugared_genericSig": "<State where State : SwiftUI_UDF_Binary.AppReducer>",
-                "implicit": true,
-                "accessorKind": "set"
-              },
-              {
-                "kind": "Accessor",
-                "name": "Modify",
-                "printedName": "Modify()",
-                "children": [
-                  {
-                    "kind": "TypeNominal",
-                    "name": "Void",
-                    "printedName": "()"
-                  }
-                ],
-                "declKind": "Accessor",
-                "usr": "s:18SwiftUI_UDF_Binary13InternalStoreC5statexvM",
-                "mangledName": "$s18SwiftUI_UDF_Binary13InternalStoreC5statexvM",
-                "moduleName": "SwiftUI_UDF_Binary",
-                "genericSig": "<τ_0_0 where τ_0_0 : SwiftUI_UDF_Binary.AppReducer>",
-                "sugared_genericSig": "<State where State : SwiftUI_UDF_Binary.AppReducer>",
-                "implicit": true,
-                "accessorKind": "_modify"
-              }
-            ]
-          },
-          {
-            "kind": "Constructor",
-            "name": "init",
-            "printedName": "init(initial:accessToken:loggers:)",
-            "children": [
-              {
-                "kind": "TypeNominal",
-                "name": "InternalStore",
-                "printedName": "SwiftUI_UDF_Binary.InternalStore<τ_0_0>",
-                "children": [
-                  {
-                    "kind": "TypeNominal",
-                    "name": "GenericTypeParam",
-                    "printedName": "τ_0_0"
-                  }
-                ],
-                "usr": "s:18SwiftUI_UDF_Binary13InternalStoreC"
-              },
-              {
-                "kind": "TypeNominal",
-                "name": "GenericTypeParam",
-                "printedName": "τ_0_0"
-              },
-              {
-                "kind": "TypeNominal",
-                "name": "String",
-                "printedName": "Swift.String",
-                "usr": "s:SS"
-              },
-              {
-                "kind": "TypeNominal",
-                "name": "Array",
-                "printedName": "[SwiftUI_UDF_Binary.ActionLogger]",
-                "children": [
-                  {
-                    "kind": "TypeNominal",
-                    "name": "ActionLogger",
-                    "printedName": "SwiftUI_UDF_Binary.ActionLogger",
-                    "usr": "s:18SwiftUI_UDF_Binary12ActionLoggerP"
-                  }
-                ],
-                "usr": "s:Sa"
-              }
-            ],
-            "declKind": "Constructor",
-            "usr": "s:18SwiftUI_UDF_Binary13InternalStoreC7initial11accessToken7loggersACyxGx_SSSayAA12ActionLogger_pGtKcfc",
-            "mangledName": "$s18SwiftUI_UDF_Binary13InternalStoreC7initial11accessToken7loggersACyxGx_SSSayAA12ActionLogger_pGtKcfc",
-            "moduleName": "SwiftUI_UDF_Binary",
-            "genericSig": "<τ_0_0 where τ_0_0 : SwiftUI_UDF_Binary.AppReducer>",
-            "sugared_genericSig": "<State where State : SwiftUI_UDF_Binary.AppReducer>",
-            "declAttributes": [
-              "AccessControl"
-            ],
-            "throwing": true,
-            "init_kind": "Designated"
-          },
-          {
-            "kind": "Var",
-            "name": "unownedExecutor",
-            "printedName": "unownedExecutor",
-            "children": [
-              {
-                "kind": "TypeNominal",
-                "name": "UnownedSerialExecutor",
-                "printedName": "_Concurrency.UnownedSerialExecutor",
-                "usr": "s:Sce"
-              }
-            ],
-            "declKind": "Var",
-            "usr": "s:18SwiftUI_UDF_Binary13InternalStoreC15unownedExecutorScevp",
-            "mangledName": "$s18SwiftUI_UDF_Binary13InternalStoreC15unownedExecutorScevp",
-            "moduleName": "SwiftUI_UDF_Binary",
-            "implicit": true,
-            "intro_Macosx": "10.15",
-            "intro_iOS": "13.0",
-            "intro_tvOS": "13.0",
-            "intro_watchOS": "6.0",
-            "declAttributes": [
-              "Available",
-              "Available",
-              "Available",
-              "Available",
-              "Final",
-              "Nonisolated",
-              "Semantics"
-            ],
-            "accessors": [
-              {
-                "kind": "Accessor",
-                "name": "Get",
-                "printedName": "Get()",
-                "children": [
-                  {
-                    "kind": "TypeNominal",
-                    "name": "UnownedSerialExecutor",
-                    "printedName": "_Concurrency.UnownedSerialExecutor",
-                    "usr": "s:Sce"
-                  }
-                ],
-                "declKind": "Accessor",
-                "usr": "s:18SwiftUI_UDF_Binary13InternalStoreC15unownedExecutorScevg",
-                "mangledName": "$s18SwiftUI_UDF_Binary13InternalStoreC15unownedExecutorScevg",
-                "moduleName": "SwiftUI_UDF_Binary",
-                "genericSig": "<τ_0_0 where τ_0_0 : SwiftUI_UDF_Binary.AppReducer>",
-                "sugared_genericSig": "<State where State : SwiftUI_UDF_Binary.AppReducer>",
-                "implicit": true,
-                "declAttributes": [
-                  "Final"
-                ],
-                "accessorKind": "get"
-              }
-            ]
-          },
-          {
-            "kind": "Function",
-            "name": "dispatch",
-            "printedName": "dispatch(_:fileName:functionName:lineNumber:)",
-            "children": [
-              {
-                "kind": "TypeNominal",
-                "name": "Void",
-                "printedName": "()"
-              },
-              {
-                "kind": "TypeNominal",
-                "name": "GenericTypeParam",
-                "printedName": "τ_1_0"
-              },
-              {
-                "kind": "TypeNominal",
-                "name": "String",
-                "printedName": "Swift.String",
-                "usr": "s:SS"
-              },
-              {
-                "kind": "TypeNominal",
-                "name": "String",
-                "printedName": "Swift.String",
-                "usr": "s:SS"
-              },
-              {
-                "kind": "TypeNominal",
-                "name": "Int",
-                "printedName": "Swift.Int",
-                "usr": "s:Si"
-              }
-            ],
-            "declKind": "Func",
-            "usr": "s:18SwiftUI_UDF_Binary13InternalStoreC8dispatch_8fileName08functionI010lineNumberyqd___S2SSitAA6ActionRd__lF",
-            "mangledName": "$s18SwiftUI_UDF_Binary13InternalStoreC8dispatch_8fileName08functionI010lineNumberyqd___S2SSitAA6ActionRd__lF",
-            "moduleName": "SwiftUI_UDF_Binary",
-            "genericSig": "<τ_0_0, τ_1_0 where τ_0_0 : SwiftUI_UDF_Binary.AppReducer, τ_1_0 : SwiftUI_UDF_Binary.Action>",
-            "sugared_genericSig": "<State where State : SwiftUI_UDF_Binary.AppReducer>",
-            "declAttributes": [
-              "Nonisolated"
-            ],
-            "isFromExtension": true,
-            "funcSelfKind": "NonMutating"
-          },
-          {
-            "kind": "Function",
-            "name": "subscribe",
-            "printedName": "subscribe(_:)",
-            "children": [
-              {
-                "kind": "TypeNominal",
-                "name": "Void",
-                "printedName": "()"
-              },
-              {
-                "kind": "TypeNominal",
-                "name": "GenericTypeParam",
-                "printedName": "τ_1_0"
-              }
-            ],
-            "declKind": "Func",
-            "usr": "s:18SwiftUI_UDF_Binary13InternalStoreC9subscribeyyqd__5StateQyd__RszAA10MiddlewareRd__lF",
-            "mangledName": "$s18SwiftUI_UDF_Binary13InternalStoreC9subscribeyyqd__5StateQyd__RszAA10MiddlewareRd__lF",
-            "moduleName": "SwiftUI_UDF_Binary",
-            "genericSig": "<τ_0_0, τ_1_0 where τ_0_0 == τ_1_0.State, τ_1_0 : SwiftUI_UDF_Binary.Middleware>",
-            "sugared_genericSig": "<State>",
-            "isFromExtension": true,
-            "funcSelfKind": "NonMutating"
-          }
-        ],
-        "declKind": "Class",
-        "usr": "s:18SwiftUI_UDF_Binary13InternalStoreC",
-        "mangledName": "$s18SwiftUI_UDF_Binary13InternalStoreC",
-        "moduleName": "SwiftUI_UDF_Binary",
-        "genericSig": "<τ_0_0 where τ_0_0 : SwiftUI_UDF_Binary.AppReducer>",
-        "sugared_genericSig": "<State where State : SwiftUI_UDF_Binary.AppReducer>",
-        "declAttributes": [
-          "AccessControl"
-        ],
-        "conformances": [
-          {
-            "kind": "Conformance",
-            "name": "Actor",
-            "printedName": "Actor",
-            "usr": "s:ScA",
-            "mangledName": "$sScA"
-          },
-          {
-            "kind": "Conformance",
-            "name": "Store",
-            "printedName": "Store",
-            "children": [
-              {
-                "kind": "TypeWitness",
-                "name": "State",
-                "printedName": "State",
-                "children": [
-                  {
-                    "kind": "TypeNominal",
-                    "name": "GenericTypeParam",
-                    "printedName": "τ_0_0"
-                  }
-                ]
-              }
-            ],
-            "usr": "s:18SwiftUI_UDF_Binary5StoreP",
-            "mangledName": "$s18SwiftUI_UDF_Binary5StoreP"
-          },
-          {
-            "kind": "Conformance",
-            "name": "AnyActor",
-            "printedName": "AnyActor",
-            "usr": "s:12_Concurrency8AnyActorP",
-            "mangledName": "$ss8AnyActorP"
-          },
-          {
-            "kind": "Conformance",
-            "name": "Sendable",
-            "printedName": "Sendable",
-            "usr": "s:s8SendableP",
-            "mangledName": "$ss8SendableP"
-          }
-        ]
       },
       {
         "kind": "Import",
@@ -21059,23 +20583,6 @@
         ]
       },
       {
-        "kind": "Import",
-        "name": "SwiftUI",
-        "printedName": "SwiftUI",
-        "declKind": "Import",
-        "moduleName": "SwiftUI_UDF_Binary"
-      },
-      {
-        "kind": "Import",
-        "name": "Foundation",
-        "printedName": "Foundation",
-        "declKind": "Import",
-        "moduleName": "SwiftUI_UDF_Binary",
-        "declAttributes": [
-          "RawDocComment"
-        ]
-      },
-      {
         "kind": "TypeDecl",
         "name": "ObservableMiddleware",
         "printedName": "ObservableMiddleware",
@@ -21573,6 +21080,72 @@
           {
             "kind": "Function",
             "name": "execute",
+            "printedName": "execute(id:fileName:functionName:lineNumber:_:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "GenericTypeParam",
+                "printedName": "τ_1_0"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "hasDefaultArg": true,
+                "usr": "s:SS"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "hasDefaultArg": true,
+                "usr": "s:SS"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Int",
+                "printedName": "Swift.Int",
+                "hasDefaultArg": true,
+                "usr": "s:Si"
+              },
+              {
+                "kind": "TypeFunc",
+                "name": "Function",
+                "printedName": "(τ_1_0) async throws -> SwiftUI_UDF_Binary.Action",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Action",
+                    "printedName": "SwiftUI_UDF_Binary.Action",
+                    "usr": "s:18SwiftUI_UDF_Binary6ActionP"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "GenericTypeParam",
+                    "printedName": "τ_1_0"
+                  }
+                ]
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:18SwiftUI_UDF_Binary25BaseConcurrencyMiddlewareC7execute2id8fileName08functionK010lineNumber_yqd___S2SSiAA6Action_pqd__YaKctSHRd__lF",
+            "mangledName": "$s18SwiftUI_UDF_Binary25BaseConcurrencyMiddlewareC7execute2id8fileName08functionK010lineNumber_yqd___S2SSiAA6Action_pqd__YaKctSHRd__lF",
+            "moduleName": "SwiftUI_UDF_Binary",
+            "genericSig": "<τ_0_0, τ_1_0 where τ_0_0 : SwiftUI_UDF_Binary.AppReducer, τ_1_0 : Swift.Hashable>",
+            "sugared_genericSig": "<State, TaskId where State : SwiftUI_UDF_Binary.AppReducer, TaskId : Swift.Hashable>",
+            "declAttributes": [
+              "AccessControl"
+            ],
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "execute",
             "printedName": "execute(_:fileName:functionName:lineNumber:)",
             "children": [
               {
@@ -21756,6 +21329,13 @@
             "mangledName": "$s18SwiftUI_UDF_Binary10MiddlewareP"
           }
         ]
+      },
+      {
+        "kind": "Import",
+        "name": "Foundation",
+        "printedName": "Foundation",
+        "declKind": "Import",
+        "moduleName": "SwiftUI_UDF_Binary"
       },
       {
         "kind": "Import",
@@ -24183,23 +23763,9 @@
       "value": "0"
     },
     {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/EnvironmentStore.swift",
-      "kind": "IntegerLiteral",
-      "offset": 259,
-      "length": 1,
-      "value": "0"
-    },
-    {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/EnvironmentStore.swift",
-      "kind": "Dictionary",
-      "offset": 301,
-      "length": 3,
-      "value": "[]"
-    },
-    {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/InternalStore.swift",
       "kind": "Array",
-      "offset": 420,
+      "offset": 406,
       "length": 2,
       "value": "[]"
     },
@@ -24223,6 +23789,20 @@
       "offset": 270,
       "length": 10,
       "value": "\"DCF2022E\""
+    },
+    {
+      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Common\/SubscribersCoordinator.swift",
+      "kind": "IntegerLiteral",
+      "offset": 225,
+      "length": 1,
+      "value": "0"
+    },
+    {
+      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Common\/SubscribersCoordinator.swift",
+      "kind": "Dictionary",
+      "offset": 267,
+      "length": 3,
+      "value": "[]"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Common\/Debouncer.swift",
