@@ -1104,6 +1104,13 @@
       },
       {
         "kind": "Import",
+        "name": "SwiftUI",
+        "printedName": "SwiftUI",
+        "declKind": "Import",
+        "moduleName": "SwiftUI_UDF_Binary"
+      },
+      {
+        "kind": "Import",
         "name": "Foundation",
         "printedName": "Foundation",
         "declKind": "Import",
@@ -18256,7 +18263,7 @@
           {
             "kind": "Function",
             "name": "dispatch",
-            "printedName": "dispatch(_:fileName:functionName:lineNumber:)",
+            "printedName": "dispatch(_:animation:fileName:functionName:lineNumber:)",
             "children": [
               {
                 "kind": "TypeNominal",
@@ -18267,6 +18274,21 @@
                 "kind": "TypeNominal",
                 "name": "GenericTypeParam",
                 "printedName": "τ_1_0"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "SwiftUI.Animation?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Animation",
+                    "printedName": "SwiftUI.Animation",
+                    "usr": "s:7SwiftUI9AnimationV"
+                  }
+                ],
+                "hasDefaultArg": true,
+                "usr": "s:Sq"
               },
               {
                 "kind": "TypeNominal",
@@ -18291,8 +18313,8 @@
               }
             ],
             "declKind": "Func",
-            "usr": "s:18SwiftUI_UDF_Binary16EnvironmentStoreC8dispatch_8fileName08functionI010lineNumberyqd___S2SSitAA6ActionRd__lF",
-            "mangledName": "$s18SwiftUI_UDF_Binary16EnvironmentStoreC8dispatch_8fileName08functionI010lineNumberyqd___S2SSitAA6ActionRd__lF",
+            "usr": "s:18SwiftUI_UDF_Binary16EnvironmentStoreC8dispatch_9animation8fileName08functionJ010lineNumberyqd___0aB09AnimationVSgS2SSitAA6ActionRd__lF",
+            "mangledName": "$s18SwiftUI_UDF_Binary16EnvironmentStoreC8dispatch_9animation8fileName08functionJ010lineNumberyqd___0aB09AnimationVSgS2SSitAA6ActionRd__lF",
             "moduleName": "SwiftUI_UDF_Binary",
             "genericSig": "<τ_0_0, τ_1_0 where τ_0_0 : SwiftUI_UDF_Binary.AppReducer, τ_1_0 : SwiftUI_UDF_Binary.Action>",
             "sugared_genericSig": "<State where State : SwiftUI_UDF_Binary.AppReducer>",
@@ -18887,7 +18909,7 @@
           {
             "kind": "Function",
             "name": "dispatch",
-            "printedName": "dispatch(_:fileName:functionName:lineNumber:)",
+            "printedName": "dispatch(_:animation:fileName:functionName:lineNumber:)",
             "children": [
               {
                 "kind": "TypeNominal",
@@ -18898,6 +18920,20 @@
                 "kind": "TypeNominal",
                 "name": "GenericTypeParam",
                 "printedName": "τ_1_0"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "SwiftUI.Animation?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Animation",
+                    "printedName": "SwiftUI.Animation",
+                    "usr": "s:7SwiftUI9AnimationV"
+                  }
+                ],
+                "usr": "s:Sq"
               },
               {
                 "kind": "TypeNominal",
@@ -18919,8 +18955,8 @@
               }
             ],
             "declKind": "Func",
-            "usr": "s:18SwiftUI_UDF_Binary5StoreP8dispatch_8fileName08functionH010lineNumberyqd___S2SSitAA6ActionRd__lF",
-            "mangledName": "$s18SwiftUI_UDF_Binary5StoreP8dispatch_8fileName08functionH010lineNumberyqd___S2SSitAA6ActionRd__lF",
+            "usr": "s:18SwiftUI_UDF_Binary5StoreP8dispatch_9animation8fileName08functionI010lineNumberyqd___0aB09AnimationVSgS2SSitAA6ActionRd__lF",
+            "mangledName": "$s18SwiftUI_UDF_Binary5StoreP8dispatch_9animation8fileName08functionI010lineNumberyqd___0aB09AnimationVSgS2SSitAA6ActionRd__lF",
             "moduleName": "SwiftUI_UDF_Binary",
             "genericSig": "<τ_0_0, τ_1_0 where τ_0_0 : SwiftUI_UDF_Binary.Store, τ_1_0 : SwiftUI_UDF_Binary.Action>",
             "sugared_genericSig": "<Self where Self : SwiftUI_UDF_Binary.Store>",
@@ -18934,7 +18970,7 @@
           {
             "kind": "Function",
             "name": "dispatch",
-            "printedName": "dispatch(_:fileName:functionName:lineNumber:)",
+            "printedName": "dispatch(_:animation:fileName:functionName:lineNumber:)",
             "children": [
               {
                 "kind": "TypeNominal",
@@ -18945,6 +18981,21 @@
                 "kind": "TypeNominal",
                 "name": "GenericTypeParam",
                 "printedName": "τ_1_0"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "SwiftUI.Animation?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Animation",
+                    "printedName": "SwiftUI.Animation",
+                    "usr": "s:7SwiftUI9AnimationV"
+                  }
+                ],
+                "hasDefaultArg": true,
+                "usr": "s:Sq"
               },
               {
                 "kind": "TypeNominal",
@@ -18969,8 +19020,8 @@
               }
             ],
             "declKind": "Func",
-            "usr": "s:18SwiftUI_UDF_Binary5StorePAAE8dispatch_8fileName08functionH010lineNumberyqd___S2SSitAA6ActionRd__lF",
-            "mangledName": "$s18SwiftUI_UDF_Binary5StorePAAE8dispatch_8fileName08functionH010lineNumberyqd___S2SSitAA6ActionRd__lF",
+            "usr": "s:18SwiftUI_UDF_Binary5StorePAAE8dispatch_9animation8fileName08functionI010lineNumberyqd___0aB09AnimationVSgS2SSitAA6ActionRd__lF",
+            "mangledName": "$s18SwiftUI_UDF_Binary5StorePAAE8dispatch_9animation8fileName08functionI010lineNumberyqd___0aB09AnimationVSgS2SSitAA6ActionRd__lF",
             "moduleName": "SwiftUI_UDF_Binary",
             "genericSig": "<τ_0_0, τ_1_0 where τ_0_0 : SwiftUI_UDF_Binary.Store, τ_1_0 : SwiftUI_UDF_Binary.Action>",
             "sugared_genericSig": "<Self where Self : SwiftUI_UDF_Binary.Store>",
@@ -18983,7 +19034,7 @@
           {
             "kind": "Function",
             "name": "bind",
-            "printedName": "bind(_:fileName:functionName:lineNumber:)",
+            "printedName": "bind(_:animation:fileName:functionName:lineNumber:)",
             "children": [
               {
                 "kind": "TypeFunc",
@@ -19009,6 +19060,21 @@
               },
               {
                 "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "SwiftUI.Animation?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Animation",
+                    "printedName": "SwiftUI.Animation",
+                    "usr": "s:7SwiftUI9AnimationV"
+                  }
+                ],
+                "hasDefaultArg": true,
+                "usr": "s:Sq"
+              },
+              {
+                "kind": "TypeNominal",
                 "name": "String",
                 "printedName": "Swift.String",
                 "hasDefaultArg": true,
@@ -19030,8 +19096,8 @@
               }
             ],
             "declKind": "Func",
-            "usr": "s:18SwiftUI_UDF_Binary5StorePAAE4bind_8fileName08functionH010lineNumberyycqd___S2SSitAA6ActionRd__lF",
-            "mangledName": "$s18SwiftUI_UDF_Binary5StorePAAE4bind_8fileName08functionH010lineNumberyycqd___S2SSitAA6ActionRd__lF",
+            "usr": "s:18SwiftUI_UDF_Binary5StorePAAE4bind_9animation8fileName08functionI010lineNumberyycqd___0aB09AnimationVSgS2SSitAA6ActionRd__lF",
+            "mangledName": "$s18SwiftUI_UDF_Binary5StorePAAE4bind_9animation8fileName08functionI010lineNumberyycqd___0aB09AnimationVSgS2SSitAA6ActionRd__lF",
             "moduleName": "SwiftUI_UDF_Binary",
             "genericSig": "<τ_0_0, τ_1_0 where τ_0_0 : SwiftUI_UDF_Binary.Store, τ_1_0 : SwiftUI_UDF_Binary.Action>",
             "sugared_genericSig": "<Self where Self : SwiftUI_UDF_Binary.Store>",
@@ -19041,7 +19107,7 @@
           {
             "kind": "Function",
             "name": "bind",
-            "printedName": "bind(_:fileName:functionName:lineNumber:)",
+            "printedName": "bind(_:animation:fileName:functionName:lineNumber:)",
             "children": [
               {
                 "kind": "TypeFunc",
@@ -19079,6 +19145,21 @@
               },
               {
                 "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "SwiftUI.Animation?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Animation",
+                    "printedName": "SwiftUI.Animation",
+                    "usr": "s:7SwiftUI9AnimationV"
+                  }
+                ],
+                "hasDefaultArg": true,
+                "usr": "s:Sq"
+              },
+              {
+                "kind": "TypeNominal",
                 "name": "String",
                 "printedName": "Swift.String",
                 "hasDefaultArg": true,
@@ -19100,8 +19181,8 @@
               }
             ],
             "declKind": "Func",
-            "usr": "s:18SwiftUI_UDF_Binary5StorePAAE4bind_8fileName08functionH010lineNumberyqd__cqd_0_qd__c_S2SSitAA6ActionRd_0_r0_lF",
-            "mangledName": "$s18SwiftUI_UDF_Binary5StorePAAE4bind_8fileName08functionH010lineNumberyqd__cqd_0_qd__c_S2SSitAA6ActionRd_0_r0_lF",
+            "usr": "s:18SwiftUI_UDF_Binary5StorePAAE4bind_9animation8fileName08functionI010lineNumberyqd__cqd_0_qd__c_0aB09AnimationVSgS2SSitAA6ActionRd_0_r0_lF",
+            "mangledName": "$s18SwiftUI_UDF_Binary5StorePAAE4bind_9animation8fileName08functionI010lineNumberyqd__cqd_0_qd__c_0aB09AnimationVSgS2SSitAA6ActionRd_0_r0_lF",
             "moduleName": "SwiftUI_UDF_Binary",
             "genericSig": "<τ_0_0, τ_1_0, τ_1_1 where τ_0_0 : SwiftUI_UDF_Binary.Store, τ_1_1 : SwiftUI_UDF_Binary.Action>",
             "sugared_genericSig": "<Self, T where Self : SwiftUI_UDF_Binary.Store>",
@@ -19156,6 +19237,13 @@
         "kind": "Import",
         "name": "Combine",
         "printedName": "Combine",
+        "declKind": "Import",
+        "moduleName": "SwiftUI_UDF_Binary"
+      },
+      {
+        "kind": "Import",
+        "name": "SwiftUI",
+        "printedName": "SwiftUI",
         "declKind": "Import",
         "moduleName": "SwiftUI_UDF_Binary"
       },
@@ -21334,6 +21422,13 @@
         "kind": "Import",
         "name": "Foundation",
         "printedName": "Foundation",
+        "declKind": "Import",
+        "moduleName": "SwiftUI_UDF_Binary"
+      },
+      {
+        "kind": "Import",
+        "name": "SwiftUI",
+        "printedName": "SwiftUI",
         "declKind": "Import",
         "moduleName": "SwiftUI_UDF_Binary"
       },
@@ -23729,15 +23824,15 @@
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/View\/Container\/Container.swift",
-      "kind": "IntegerLiteral",
-      "offset": 1411,
-      "length": 1,
-      "value": "0"
+      "kind": "StringLiteral",
+      "offset": 1414,
+      "length": 2,
+      "value": "\"\""
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/View\/Container\/Container.swift",
       "kind": "BooleanLiteral",
-      "offset": 3585,
+      "offset": 3764,
       "length": 5,
       "value": "false"
     },
@@ -23765,7 +23860,7 @@
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/InternalStore.swift",
       "kind": "Array",
-      "offset": 406,
+      "offset": 368,
       "length": 2,
       "value": "[]"
     },
@@ -23789,13 +23884,6 @@
       "offset": 270,
       "length": 10,
       "value": "\"DCF2022E\""
-    },
-    {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Common\/SubscribersCoordinator.swift",
-      "kind": "IntegerLiteral",
-      "offset": 225,
-      "length": 1,
-      "value": "0"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Common\/SubscribersCoordinator.swift",

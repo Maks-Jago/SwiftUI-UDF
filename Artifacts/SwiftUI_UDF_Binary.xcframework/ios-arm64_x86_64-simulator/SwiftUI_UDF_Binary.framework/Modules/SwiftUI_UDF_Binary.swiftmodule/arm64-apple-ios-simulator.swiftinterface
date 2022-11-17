@@ -641,6 +641,7 @@ final public class EnvironmentStore<State> where State : SwiftUI_UDF_Binary.AppR
   @SwiftUI_UDF_Binary.SourceOfTruth @_projectedValueProperty($state) final public var state: State {
     get
     set
+    _modify
   }
   final public var $state: SwiftUI_UDF_Binary.SourceOfTruth<State> {
     get
@@ -648,7 +649,7 @@ final public class EnvironmentStore<State> where State : SwiftUI_UDF_Binary.AppR
   }
   public init(initial state: State, accessToken: Swift.String, loggers: [SwiftUI_UDF_Binary.ActionLogger]) throws
   convenience public init(initial state: State, accessToken: Swift.String, logger: SwiftUI_UDF_Binary.ActionLogger) throws
-  final public func dispatch(_ action: some Action, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line)
+  final public func dispatch(_ action: some Action, animation: SwiftUI.Animation? = nil, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line)
   @objc deinit
 }
 extension SwiftUI_UDF_Binary.EnvironmentStore {
@@ -684,19 +685,19 @@ public protocol ConcurrencyEffect {
 public protocol Store<State> : _Concurrency.Actor {
   associatedtype State : SwiftUI_UDF_Binary.AppReducer
   var state: Self.State { get }
-  nonisolated func dispatch(_ action: some Action, fileName: Swift.String, functionName: Swift.String, lineNumber: Swift.Int)
+  nonisolated func dispatch(_ action: some Action, animation: SwiftUI.Animation?, fileName: Swift.String, functionName: Swift.String, lineNumber: Swift.Int)
 }
 #else
 public protocol Store : _Concurrency.Actor {
   associatedtype State : SwiftUI_UDF_Binary.AppReducer
   var state: Self.State { get }
-  nonisolated func dispatch(_ action: some Action, fileName: Swift.String, functionName: Swift.String, lineNumber: Swift.Int)
+  nonisolated func dispatch(_ action: some Action, animation: SwiftUI.Animation?, fileName: Swift.String, functionName: Swift.String, lineNumber: Swift.Int)
 }
 #endif
 extension SwiftUI_UDF_Binary.Store {
-  nonisolated public func dispatch(_ action: some Action, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line)
-  public func bind(_ action: some Action, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) -> SwiftUI_UDF_Binary.Command
-  public func bind<T>(_ action: @escaping (T) -> some Action, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) -> SwiftUI_UDF_Binary.CommandWith<T>
+  nonisolated public func dispatch(_ action: some Action, animation: SwiftUI.Animation? = nil, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line)
+  public func bind(_ action: some Action, animation: SwiftUI.Animation? = nil, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) -> SwiftUI_UDF_Binary.Command
+  public func bind<T>(_ action: @escaping (T) -> some Action, animation: SwiftUI.Animation? = nil, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) -> SwiftUI_UDF_Binary.CommandWith<T>
 }
 @_functionBuilder public enum ContainerBuilder {
   public static func buildBlock() -> SwiftUI_UDF_Binary.RenderContainer<SwiftUI.EmptyView, SwiftUI_UDF_Binary.EmptyReducer>
