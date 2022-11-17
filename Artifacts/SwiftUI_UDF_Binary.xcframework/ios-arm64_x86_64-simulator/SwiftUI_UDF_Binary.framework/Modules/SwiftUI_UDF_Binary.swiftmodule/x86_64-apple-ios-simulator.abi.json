@@ -23824,15 +23824,15 @@
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/View\/Container\/Container.swift",
-      "kind": "IntegerLiteral",
-      "offset": 1411,
-      "length": 1,
-      "value": "0"
+      "kind": "StringLiteral",
+      "offset": 1414,
+      "length": 2,
+      "value": "\"\""
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/View\/Container\/Container.swift",
       "kind": "BooleanLiteral",
-      "offset": 3661,
+      "offset": 3764,
       "length": 5,
       "value": "false"
     },
@@ -23887,15 +23887,8 @@
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Common\/SubscribersCoordinator.swift",
-      "kind": "IntegerLiteral",
-      "offset": 265,
-      "length": 1,
-      "value": "0"
-    },
-    {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Common\/SubscribersCoordinator.swift",
       "kind": "Dictionary",
-      "offset": 307,
+      "offset": 267,
       "length": 3,
       "value": "[]"
     },
