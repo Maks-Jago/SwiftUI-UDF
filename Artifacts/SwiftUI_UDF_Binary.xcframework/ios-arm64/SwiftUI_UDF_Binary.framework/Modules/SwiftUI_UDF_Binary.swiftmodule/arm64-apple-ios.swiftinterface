@@ -649,7 +649,7 @@ final public class EnvironmentStore<State> where State : SwiftUI_UDF_Binary.AppR
   }
   public init(initial state: State, accessToken: Swift.String, loggers: [SwiftUI_UDF_Binary.ActionLogger]) throws
   convenience public init(initial state: State, accessToken: Swift.String, logger: SwiftUI_UDF_Binary.ActionLogger) throws
-  final public func dispatch(_ action: some Action, animation: SwiftUI.Animation? = nil, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line)
+  final public func dispatch(_ action: some Action, priority: SwiftUI_UDF_Binary.ActionPriority = .default, animation: SwiftUI.Animation? = nil, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line)
   @objc deinit
 }
 extension SwiftUI_UDF_Binary.EnvironmentStore {
@@ -685,19 +685,28 @@ public protocol ConcurrencyEffect {
 public protocol Store<State> : _Concurrency.Actor {
   associatedtype State : SwiftUI_UDF_Binary.AppReducer
   var state: Self.State { get }
-  nonisolated func dispatch(_ action: some Action, animation: SwiftUI.Animation?, fileName: Swift.String, functionName: Swift.String, lineNumber: Swift.Int)
+  nonisolated func dispatch(_ action: some Action, priority: SwiftUI_UDF_Binary.ActionPriority, animation: SwiftUI.Animation?, fileName: Swift.String, functionName: Swift.String, lineNumber: Swift.Int)
 }
 #else
 public protocol Store : _Concurrency.Actor {
   associatedtype State : SwiftUI_UDF_Binary.AppReducer
   var state: Self.State { get }
-  nonisolated func dispatch(_ action: some Action, animation: SwiftUI.Animation?, fileName: Swift.String, functionName: Swift.String, lineNumber: Swift.Int)
+  nonisolated func dispatch(_ action: some Action, priority: SwiftUI_UDF_Binary.ActionPriority, animation: SwiftUI.Animation?, fileName: Swift.String, functionName: Swift.String, lineNumber: Swift.Int)
 }
 #endif
 extension SwiftUI_UDF_Binary.Store {
-  nonisolated public func dispatch(_ action: some Action, animation: SwiftUI.Animation? = nil, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line)
-  public func bind(_ action: some Action, animation: SwiftUI.Animation? = nil, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) -> SwiftUI_UDF_Binary.Command
-  public func bind<T>(_ action: @escaping (T) -> some Action, animation: SwiftUI.Animation? = nil, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) -> SwiftUI_UDF_Binary.CommandWith<T>
+  nonisolated public func dispatch(_ action: some Action, priority: SwiftUI_UDF_Binary.ActionPriority = .default, animation: SwiftUI.Animation? = nil, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line)
+  public func bind(_ action: some Action, priority: SwiftUI_UDF_Binary.ActionPriority = .default, animation: SwiftUI.Animation? = nil, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) -> SwiftUI_UDF_Binary.Command
+  public func bind<T>(_ action: @escaping (T) -> some Action, priority: SwiftUI_UDF_Binary.ActionPriority = .default, animation: SwiftUI.Animation? = nil, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) -> SwiftUI_UDF_Binary.CommandWith<T>
+}
+public enum ActionPriority {
+  case `default`
+  case userInitiated
+  public static func == (a: SwiftUI_UDF_Binary.ActionPriority, b: SwiftUI_UDF_Binary.ActionPriority) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
 }
 @_functionBuilder public enum ContainerBuilder {
   public static func buildBlock() -> SwiftUI_UDF_Binary.RenderContainer<SwiftUI.EmptyView, SwiftUI_UDF_Binary.EmptyReducer>
@@ -737,10 +746,11 @@ extension _Concurrency.Task where Success == Swift.Never, Failure == Swift.Never
   public static func sleep(seconds: Foundation.TimeInterval) async throws
   #endif
 }
-@_Concurrency.MainActor final public class XCTestStore<State> : Combine.ObservableObject where State : SwiftUI_UDF_Binary.AppReducer {
+@_Concurrency.MainActor final public class XCTestStore<State> where State : SwiftUI_UDF_Binary.AppReducer {
   @SwiftUI_UDF_Binary.SourceOfTruth @_projectedValueProperty($state) @_Concurrency.MainActor final public var state: State {
     get
     set
+    _modify
   }
   @_Concurrency.MainActor final public var $state: SwiftUI_UDF_Binary.SourceOfTruth<State> {
     get
@@ -756,7 +766,6 @@ extension _Concurrency.Task where Success == Swift.Never, Failure == Swift.Never
   #if compiler(>=5.3) && $AsyncAwait
   @_Concurrency.MainActor final public func dispatch(_ action: some Action, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) async
   #endif
-  public typealias ObjectWillChangePublisher = Combine.ObservableObjectPublisher
   @objc deinit
 }
 public struct FileCache {
@@ -806,4 +815,6 @@ public typealias Reducible = Swift.Equatable & SwiftUI_UDF_Binary.Reducing
 }
 extension SwiftUI_UDF_Binary.MiddlewareStatus : Swift.Equatable {}
 extension SwiftUI_UDF_Binary.MiddlewareStatus : Swift.Hashable {}
+extension SwiftUI_UDF_Binary.ActionPriority : Swift.Equatable {}
+extension SwiftUI_UDF_Binary.ActionPriority : Swift.Hashable {}
 extension SwiftUI_UDF_Binary.XCTestStore : Swift.Sendable {}

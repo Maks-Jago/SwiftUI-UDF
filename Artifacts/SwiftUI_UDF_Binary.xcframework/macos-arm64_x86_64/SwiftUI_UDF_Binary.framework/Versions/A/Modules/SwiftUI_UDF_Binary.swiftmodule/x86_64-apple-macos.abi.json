@@ -18263,7 +18263,7 @@
           {
             "kind": "Function",
             "name": "dispatch",
-            "printedName": "dispatch(_:animation:fileName:functionName:lineNumber:)",
+            "printedName": "dispatch(_:priority:animation:fileName:functionName:lineNumber:)",
             "children": [
               {
                 "kind": "TypeNominal",
@@ -18274,6 +18274,13 @@
                 "kind": "TypeNominal",
                 "name": "GenericTypeParam",
                 "printedName": "τ_1_0"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "ActionPriority",
+                "printedName": "SwiftUI_UDF_Binary.ActionPriority",
+                "hasDefaultArg": true,
+                "usr": "s:18SwiftUI_UDF_Binary14ActionPriorityO"
               },
               {
                 "kind": "TypeNominal",
@@ -18313,8 +18320,8 @@
               }
             ],
             "declKind": "Func",
-            "usr": "s:18SwiftUI_UDF_Binary16EnvironmentStoreC8dispatch_9animation8fileName08functionJ010lineNumberyqd___0aB09AnimationVSgS2SSitAA6ActionRd__lF",
-            "mangledName": "$s18SwiftUI_UDF_Binary16EnvironmentStoreC8dispatch_9animation8fileName08functionJ010lineNumberyqd___0aB09AnimationVSgS2SSitAA6ActionRd__lF",
+            "usr": "s:18SwiftUI_UDF_Binary16EnvironmentStoreC8dispatch_8priority9animation8fileName08functionK010lineNumberyqd___AA14ActionPriorityO0aB09AnimationVSgS2SSitAA0O0Rd__lF",
+            "mangledName": "$s18SwiftUI_UDF_Binary16EnvironmentStoreC8dispatch_8priority9animation8fileName08functionK010lineNumberyqd___AA14ActionPriorityO0aB09AnimationVSgS2SSitAA0O0Rd__lF",
             "moduleName": "SwiftUI_UDF_Binary",
             "genericSig": "<τ_0_0, τ_1_0 where τ_0_0 : SwiftUI_UDF_Binary.AppReducer, τ_1_0 : SwiftUI_UDF_Binary.Action>",
             "sugared_genericSig": "<State where State : SwiftUI_UDF_Binary.AppReducer>",
@@ -18909,7 +18916,7 @@
           {
             "kind": "Function",
             "name": "dispatch",
-            "printedName": "dispatch(_:animation:fileName:functionName:lineNumber:)",
+            "printedName": "dispatch(_:priority:animation:fileName:functionName:lineNumber:)",
             "children": [
               {
                 "kind": "TypeNominal",
@@ -18920,6 +18927,12 @@
                 "kind": "TypeNominal",
                 "name": "GenericTypeParam",
                 "printedName": "τ_1_0"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "ActionPriority",
+                "printedName": "SwiftUI_UDF_Binary.ActionPriority",
+                "usr": "s:18SwiftUI_UDF_Binary14ActionPriorityO"
               },
               {
                 "kind": "TypeNominal",
@@ -18955,8 +18968,8 @@
               }
             ],
             "declKind": "Func",
-            "usr": "s:18SwiftUI_UDF_Binary5StoreP8dispatch_9animation8fileName08functionI010lineNumberyqd___0aB09AnimationVSgS2SSitAA6ActionRd__lF",
-            "mangledName": "$s18SwiftUI_UDF_Binary5StoreP8dispatch_9animation8fileName08functionI010lineNumberyqd___0aB09AnimationVSgS2SSitAA6ActionRd__lF",
+            "usr": "s:18SwiftUI_UDF_Binary5StoreP8dispatch_8priority9animation8fileName08functionJ010lineNumberyqd___AA14ActionPriorityO0aB09AnimationVSgS2SSitAA0N0Rd__lF",
+            "mangledName": "$s18SwiftUI_UDF_Binary5StoreP8dispatch_8priority9animation8fileName08functionJ010lineNumberyqd___AA14ActionPriorityO0aB09AnimationVSgS2SSitAA0N0Rd__lF",
             "moduleName": "SwiftUI_UDF_Binary",
             "genericSig": "<τ_0_0, τ_1_0 where τ_0_0 : SwiftUI_UDF_Binary.Store, τ_1_0 : SwiftUI_UDF_Binary.Action>",
             "sugared_genericSig": "<Self where Self : SwiftUI_UDF_Binary.Store>",
@@ -18970,7 +18983,7 @@
           {
             "kind": "Function",
             "name": "dispatch",
-            "printedName": "dispatch(_:animation:fileName:functionName:lineNumber:)",
+            "printedName": "dispatch(_:priority:animation:fileName:functionName:lineNumber:)",
             "children": [
               {
                 "kind": "TypeNominal",
@@ -18981,6 +18994,13 @@
                 "kind": "TypeNominal",
                 "name": "GenericTypeParam",
                 "printedName": "τ_1_0"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "ActionPriority",
+                "printedName": "SwiftUI_UDF_Binary.ActionPriority",
+                "hasDefaultArg": true,
+                "usr": "s:18SwiftUI_UDF_Binary14ActionPriorityO"
               },
               {
                 "kind": "TypeNominal",
@@ -19020,8 +19040,8 @@
               }
             ],
             "declKind": "Func",
-            "usr": "s:18SwiftUI_UDF_Binary5StorePAAE8dispatch_9animation8fileName08functionI010lineNumberyqd___0aB09AnimationVSgS2SSitAA6ActionRd__lF",
-            "mangledName": "$s18SwiftUI_UDF_Binary5StorePAAE8dispatch_9animation8fileName08functionI010lineNumberyqd___0aB09AnimationVSgS2SSitAA6ActionRd__lF",
+            "usr": "s:18SwiftUI_UDF_Binary5StorePAAE8dispatch_8priority9animation8fileName08functionJ010lineNumberyqd___AA14ActionPriorityO0aB09AnimationVSgS2SSitAA0N0Rd__lF",
+            "mangledName": "$s18SwiftUI_UDF_Binary5StorePAAE8dispatch_8priority9animation8fileName08functionJ010lineNumberyqd___AA14ActionPriorityO0aB09AnimationVSgS2SSitAA0N0Rd__lF",
             "moduleName": "SwiftUI_UDF_Binary",
             "genericSig": "<τ_0_0, τ_1_0 where τ_0_0 : SwiftUI_UDF_Binary.Store, τ_1_0 : SwiftUI_UDF_Binary.Action>",
             "sugared_genericSig": "<Self where Self : SwiftUI_UDF_Binary.Store>",
@@ -19034,7 +19054,7 @@
           {
             "kind": "Function",
             "name": "bind",
-            "printedName": "bind(_:animation:fileName:functionName:lineNumber:)",
+            "printedName": "bind(_:priority:animation:fileName:functionName:lineNumber:)",
             "children": [
               {
                 "kind": "TypeFunc",
@@ -19060,6 +19080,13 @@
               },
               {
                 "kind": "TypeNominal",
+                "name": "ActionPriority",
+                "printedName": "SwiftUI_UDF_Binary.ActionPriority",
+                "hasDefaultArg": true,
+                "usr": "s:18SwiftUI_UDF_Binary14ActionPriorityO"
+              },
+              {
+                "kind": "TypeNominal",
                 "name": "Optional",
                 "printedName": "SwiftUI.Animation?",
                 "children": [
@@ -19096,8 +19123,8 @@
               }
             ],
             "declKind": "Func",
-            "usr": "s:18SwiftUI_UDF_Binary5StorePAAE4bind_9animation8fileName08functionI010lineNumberyycqd___0aB09AnimationVSgS2SSitAA6ActionRd__lF",
-            "mangledName": "$s18SwiftUI_UDF_Binary5StorePAAE4bind_9animation8fileName08functionI010lineNumberyycqd___0aB09AnimationVSgS2SSitAA6ActionRd__lF",
+            "usr": "s:18SwiftUI_UDF_Binary5StorePAAE4bind_8priority9animation8fileName08functionJ010lineNumberyycqd___AA14ActionPriorityO0aB09AnimationVSgS2SSitAA0N0Rd__lF",
+            "mangledName": "$s18SwiftUI_UDF_Binary5StorePAAE4bind_8priority9animation8fileName08functionJ010lineNumberyycqd___AA14ActionPriorityO0aB09AnimationVSgS2SSitAA0N0Rd__lF",
             "moduleName": "SwiftUI_UDF_Binary",
             "genericSig": "<τ_0_0, τ_1_0 where τ_0_0 : SwiftUI_UDF_Binary.Store, τ_1_0 : SwiftUI_UDF_Binary.Action>",
             "sugared_genericSig": "<Self where Self : SwiftUI_UDF_Binary.Store>",
@@ -19107,7 +19134,7 @@
           {
             "kind": "Function",
             "name": "bind",
-            "printedName": "bind(_:animation:fileName:functionName:lineNumber:)",
+            "printedName": "bind(_:priority:animation:fileName:functionName:lineNumber:)",
             "children": [
               {
                 "kind": "TypeFunc",
@@ -19145,6 +19172,13 @@
               },
               {
                 "kind": "TypeNominal",
+                "name": "ActionPriority",
+                "printedName": "SwiftUI_UDF_Binary.ActionPriority",
+                "hasDefaultArg": true,
+                "usr": "s:18SwiftUI_UDF_Binary14ActionPriorityO"
+              },
+              {
+                "kind": "TypeNominal",
                 "name": "Optional",
                 "printedName": "SwiftUI.Animation?",
                 "children": [
@@ -19181,8 +19215,8 @@
               }
             ],
             "declKind": "Func",
-            "usr": "s:18SwiftUI_UDF_Binary5StorePAAE4bind_9animation8fileName08functionI010lineNumberyqd__cqd_0_qd__c_0aB09AnimationVSgS2SSitAA6ActionRd_0_r0_lF",
-            "mangledName": "$s18SwiftUI_UDF_Binary5StorePAAE4bind_9animation8fileName08functionI010lineNumberyqd__cqd_0_qd__c_0aB09AnimationVSgS2SSitAA6ActionRd_0_r0_lF",
+            "usr": "s:18SwiftUI_UDF_Binary5StorePAAE4bind_8priority9animation8fileName08functionJ010lineNumberyqd__cqd_0_qd__c_AA14ActionPriorityO0aB09AnimationVSgS2SSitAA0N0Rd_0_r0_lF",
+            "mangledName": "$s18SwiftUI_UDF_Binary5StorePAAE4bind_8priority9animation8fileName08functionJ010lineNumberyqd__cqd_0_qd__c_AA14ActionPriorityO0aB09AnimationVSgS2SSitAA0N0Rd_0_r0_lF",
             "moduleName": "SwiftUI_UDF_Binary",
             "genericSig": "<τ_0_0, τ_1_0, τ_1_1 where τ_0_0 : SwiftUI_UDF_Binary.Store, τ_1_1 : SwiftUI_UDF_Binary.Action>",
             "sugared_genericSig": "<Self, T where Self : SwiftUI_UDF_Binary.Store>",
@@ -19220,6 +19254,216 @@
             "printedName": "Sendable",
             "usr": "s:s8SendableP",
             "mangledName": "$ss8SendableP"
+          }
+        ]
+      },
+      {
+        "kind": "Import",
+        "name": "Foundation",
+        "printedName": "Foundation",
+        "declKind": "Import",
+        "moduleName": "SwiftUI_UDF_Binary",
+        "declAttributes": [
+          "RawDocComment"
+        ]
+      },
+      {
+        "kind": "TypeDecl",
+        "name": "ActionPriority",
+        "printedName": "ActionPriority",
+        "children": [
+          {
+            "kind": "Var",
+            "name": "default",
+            "printedName": "default",
+            "children": [
+              {
+                "kind": "TypeFunc",
+                "name": "Function",
+                "printedName": "(SwiftUI_UDF_Binary.ActionPriority.Type) -> SwiftUI_UDF_Binary.ActionPriority",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "ActionPriority",
+                    "printedName": "SwiftUI_UDF_Binary.ActionPriority",
+                    "usr": "s:18SwiftUI_UDF_Binary14ActionPriorityO"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Metatype",
+                    "printedName": "SwiftUI_UDF_Binary.ActionPriority.Type",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "ActionPriority",
+                        "printedName": "SwiftUI_UDF_Binary.ActionPriority",
+                        "usr": "s:18SwiftUI_UDF_Binary14ActionPriorityO"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "declKind": "EnumElement",
+            "usr": "s:18SwiftUI_UDF_Binary14ActionPriorityO7defaultyA2CmF",
+            "mangledName": "$s18SwiftUI_UDF_Binary14ActionPriorityO7defaultyA2CmF",
+            "moduleName": "SwiftUI_UDF_Binary"
+          },
+          {
+            "kind": "Var",
+            "name": "userInitiated",
+            "printedName": "userInitiated",
+            "children": [
+              {
+                "kind": "TypeFunc",
+                "name": "Function",
+                "printedName": "(SwiftUI_UDF_Binary.ActionPriority.Type) -> SwiftUI_UDF_Binary.ActionPriority",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "ActionPriority",
+                    "printedName": "SwiftUI_UDF_Binary.ActionPriority",
+                    "usr": "s:18SwiftUI_UDF_Binary14ActionPriorityO"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Metatype",
+                    "printedName": "SwiftUI_UDF_Binary.ActionPriority.Type",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "ActionPriority",
+                        "printedName": "SwiftUI_UDF_Binary.ActionPriority",
+                        "usr": "s:18SwiftUI_UDF_Binary14ActionPriorityO"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "declKind": "EnumElement",
+            "usr": "s:18SwiftUI_UDF_Binary14ActionPriorityO13userInitiatedyA2CmF",
+            "mangledName": "$s18SwiftUI_UDF_Binary14ActionPriorityO13userInitiatedyA2CmF",
+            "moduleName": "SwiftUI_UDF_Binary"
+          },
+          {
+            "kind": "Function",
+            "name": "==",
+            "printedName": "==(_:_:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Bool",
+                "printedName": "Swift.Bool",
+                "usr": "s:Sb"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "ActionPriority",
+                "printedName": "SwiftUI_UDF_Binary.ActionPriority",
+                "usr": "s:18SwiftUI_UDF_Binary14ActionPriorityO"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "ActionPriority",
+                "printedName": "SwiftUI_UDF_Binary.ActionPriority",
+                "usr": "s:18SwiftUI_UDF_Binary14ActionPriorityO"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:18SwiftUI_UDF_Binary14ActionPriorityO2eeoiySbAC_ACtFZ",
+            "mangledName": "$s18SwiftUI_UDF_Binary14ActionPriorityO2eeoiySbAC_ACtFZ",
+            "moduleName": "SwiftUI_UDF_Binary",
+            "static": true,
+            "implicit": true,
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Var",
+            "name": "hashValue",
+            "printedName": "hashValue",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Int",
+                "printedName": "Swift.Int",
+                "usr": "s:Si"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:18SwiftUI_UDF_Binary14ActionPriorityO9hashValueSivp",
+            "mangledName": "$s18SwiftUI_UDF_Binary14ActionPriorityO9hashValueSivp",
+            "moduleName": "SwiftUI_UDF_Binary",
+            "implicit": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Int",
+                    "printedName": "Swift.Int",
+                    "usr": "s:Si"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:18SwiftUI_UDF_Binary14ActionPriorityO9hashValueSivg",
+                "mangledName": "$s18SwiftUI_UDF_Binary14ActionPriorityO9hashValueSivg",
+                "moduleName": "SwiftUI_UDF_Binary",
+                "implicit": true,
+                "accessorKind": "get"
+              }
+            ]
+          },
+          {
+            "kind": "Function",
+            "name": "hash",
+            "printedName": "hash(into:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Hasher",
+                "printedName": "Swift.Hasher",
+                "paramValueOwnership": "InOut",
+                "usr": "s:s6HasherV"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:18SwiftUI_UDF_Binary14ActionPriorityO4hash4intoys6HasherVz_tF",
+            "mangledName": "$s18SwiftUI_UDF_Binary14ActionPriorityO4hash4intoys6HasherVz_tF",
+            "moduleName": "SwiftUI_UDF_Binary",
+            "implicit": true,
+            "funcSelfKind": "NonMutating"
+          }
+        ],
+        "declKind": "Enum",
+        "usr": "s:18SwiftUI_UDF_Binary14ActionPriorityO",
+        "mangledName": "$s18SwiftUI_UDF_Binary14ActionPriorityO",
+        "moduleName": "SwiftUI_UDF_Binary",
+        "declAttributes": [
+          "AccessControl"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Equatable",
+            "printedName": "Equatable",
+            "usr": "s:SQ",
+            "mangledName": "$sSQ"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Hashable",
+            "printedName": "Hashable",
+            "usr": "s:SH",
+            "mangledName": "$sSH"
           }
         ]
       },
@@ -20193,28 +20437,6 @@
           "Custom"
         ],
         "conformances": [
-          {
-            "kind": "Conformance",
-            "name": "ObservableObject",
-            "printedName": "ObservableObject",
-            "children": [
-              {
-                "kind": "TypeWitness",
-                "name": "ObjectWillChangePublisher",
-                "printedName": "ObjectWillChangePublisher",
-                "children": [
-                  {
-                    "kind": "TypeNominal",
-                    "name": "ObservableObjectPublisher",
-                    "printedName": "Combine.ObservableObjectPublisher",
-                    "usr": "s:7Combine25ObservableObjectPublisherC"
-                  }
-                ]
-              }
-            ],
-            "usr": "s:7Combine16ObservableObjectP",
-            "mangledName": "$s7Combine16ObservableObjectP"
-          },
           {
             "kind": "Conformance",
             "name": "Sendable",
@@ -23832,7 +24054,7 @@
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/View\/Container\/Container.swift",
       "kind": "BooleanLiteral",
-      "offset": 3764,
+      "offset": 3668,
       "length": 5,
       "value": "false"
     },
