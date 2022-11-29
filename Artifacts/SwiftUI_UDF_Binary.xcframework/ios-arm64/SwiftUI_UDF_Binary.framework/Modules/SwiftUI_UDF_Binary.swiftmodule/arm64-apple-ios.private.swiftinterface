@@ -214,7 +214,14 @@ public protocol Scope : SwiftUI_UDF_Binary.IsEquatable {
 }
 public typealias EquatableScope = Swift.Equatable & SwiftUI_UDF_Binary.Scope
 @_functionBuilder public enum ScopesBuilder {
-  public static func buildPartialBlock<S>(first scope: S) -> S where S : Swift.Equatable, S : SwiftUI_UDF_Binary.Scope
+  public static func buildExpression<S>(_ expression: S) -> some Swift.Equatable & SwiftUI_UDF_Binary.Scope where S : Swift.Equatable, S : SwiftUI_UDF_Binary.Scope
+  
+  public static func buildExpression<R>(_ expression: R) -> some Swift.Equatable & SwiftUI_UDF_Binary.Scope where R : Swift.Equatable, R : SwiftUI_UDF_Binary.Reducing
+  
+  public static func buildExpression<R>(_ expression: R) -> some Swift.Equatable & SwiftUI_UDF_Binary.Scope where R : SwiftUI_UDF_Binary.AppReducer
+  
+  public static func buildPartialBlock<S>(first scope: S) -> some Swift.Equatable & SwiftUI_UDF_Binary.Scope where S : Swift.Equatable, S : SwiftUI_UDF_Binary.Scope
+  
   public static func buildPartialBlock<S1, S2>(accumulated: S1, next: S2) -> some Swift.Equatable & SwiftUI_UDF_Binary.Scope where S1 : Swift.Equatable, S1 : SwiftUI_UDF_Binary.Scope, S2 : Swift.Equatable, S2 : SwiftUI_UDF_Binary.Scope
   
 }
@@ -227,7 +234,7 @@ public struct RenderContainer<V, AppState> : SwiftUI_UDF_Binary.Container where 
   public init(_ state: AppState, viewToRender: V)
   public init(_ state: AppState, @SwiftUI.ViewBuilder viewToRender: () -> V)
   public func map(store: SwiftUI_UDF_Binary.EnvironmentStore<AppState>) -> SwiftUI_UDF_Binary.RenderContainer<V, AppState>.ContainerComponent.Props
-  public func scope(for state: SwiftUI_UDF_Binary.SourceOfTruth<AppState>) -> SwiftUI_UDF_Binary.Scope
+  public func scope(for state: AppState) -> SwiftUI_UDF_Binary.Scope
   @_Concurrency.MainActor(unsafe) public var body: some SwiftUI.View {
     get
   }
@@ -421,6 +428,9 @@ public class Router<R> where R : SwiftUI_UDF_Binary.Routing {
   
   @objc deinit
 }
+extension SwiftUI.Binding {
+  public init(_ bind: @autoclosure @escaping () -> SwiftUI.Binding<Value>)
+}
 public protocol Initable {
   init()
 }
@@ -458,7 +468,7 @@ public protocol Container<ContainerState> : SwiftUI.View {
   associatedtype ContainerState : SwiftUI_UDF_Binary.AppReducer
   associatedtype ContainerComponent : SwiftUI_UDF_Binary.Component
   func map(store: SwiftUI_UDF_Binary.EnvironmentStore<Self.ContainerState>) -> Self.ContainerComponent.Props
-  func scope(for state: SwiftUI_UDF_Binary.SourceOfTruth<Self.ContainerState>) -> SwiftUI_UDF_Binary.Scope
+  @SwiftUI_UDF_Binary.ScopesBuilder func scope(for state: Self.ContainerState) -> SwiftUI_UDF_Binary.Scope
   func onContainerAppear(store: SwiftUI_UDF_Binary.EnvironmentStore<Self.ContainerState>)
   func onContainerDisappear(store: SwiftUI_UDF_Binary.EnvironmentStore<Self.ContainerState>)
   func onContainerDidLoad(store: SwiftUI_UDF_Binary.EnvironmentStore<Self.ContainerState>)
@@ -468,7 +478,7 @@ public protocol Container : SwiftUI.View {
   associatedtype ContainerState : SwiftUI_UDF_Binary.AppReducer
   associatedtype ContainerComponent : SwiftUI_UDF_Binary.Component
   func map(store: SwiftUI_UDF_Binary.EnvironmentStore<Self.ContainerState>) -> Self.ContainerComponent.Props
-  func scope(for state: SwiftUI_UDF_Binary.SourceOfTruth<Self.ContainerState>) -> SwiftUI_UDF_Binary.Scope
+  @SwiftUI_UDF_Binary.ScopesBuilder func scope(for state: Self.ContainerState) -> SwiftUI_UDF_Binary.Scope
   func onContainerAppear(store: SwiftUI_UDF_Binary.EnvironmentStore<Self.ContainerState>)
   func onContainerDisappear(store: SwiftUI_UDF_Binary.EnvironmentStore<Self.ContainerState>)
   func onContainerDidLoad(store: SwiftUI_UDF_Binary.EnvironmentStore<Self.ContainerState>)
@@ -533,23 +543,21 @@ extension SwiftUI_UDF_Binary.Middleware where Self : SwiftUI_UDF_Binary.Environm
 public protocol Flow : Swift.Equatable, SwiftUI_UDF_Binary.Reducing {
   init()
 }
-@dynamicMemberLookup @propertyWrapper public struct SourceOfTruth<AppState> where AppState : SwiftUI_UDF_Binary.AppReducer {
-  public var wrappedValue: AppState
-  public var projectedValue: SwiftUI_UDF_Binary.SourceOfTruth<AppState> {
-    get
-    set
-  }
-  public subscript<R>(dynamicMember keyPath: Swift.KeyPath<AppState, R>) -> SwiftUI_UDF_Binary.ReducerReference<AppState, R> where R : Swift.Equatable, R : SwiftUI_UDF_Binary.Reducing {
+@_hasMissingDesignatedInitializers @propertyWrapper @dynamicMemberLookup final public class SourceOfTruth<AppState> where AppState : SwiftUI_UDF_Binary.AppReducer {
+  final public var wrappedValue: AppState
+  final public var projectedValue: SwiftUI_UDF_Binary.SourceOfTruth<AppState> {
     get
   }
-  public subscript<R>(dynamicMember keyPath: Swift.KeyPath<AppState, R>) -> SwiftUI_UDF_Binary.ReducerScope<R> where R : Swift.Equatable, R : SwiftUI_UDF_Binary.Reducing {
+  final public subscript<R>(dynamicMember keyPath: Swift.KeyPath<AppState, R>) -> SwiftUI_UDF_Binary.ReducerReference<AppState, R> where R : Swift.Equatable, R : SwiftUI_UDF_Binary.Reducing {
     get
   }
+  final public subscript<R>(dynamicMember keyPath: Swift.KeyPath<AppState, R>) -> SwiftUI_UDF_Binary.ReducerScope<R> where R : Swift.Equatable, R : SwiftUI_UDF_Binary.Reducing {
+    get
+  }
+  @objc deinit
 }
 extension SwiftUI_UDF_Binary.SourceOfTruth : Swift.Equatable {
   public static func == (lhs: SwiftUI_UDF_Binary.SourceOfTruth<AppState>, rhs: SwiftUI_UDF_Binary.SourceOfTruth<AppState>) -> Swift.Bool
-}
-extension SwiftUI_UDF_Binary.SourceOfTruth : SwiftUI_UDF_Binary.Scope {
 }
 public struct Effect : SwiftUI_UDF_Binary.Effectable {
   public var upstream: Combine.AnyPublisher<SwiftUI_UDF_Binary.Action, Swift.Never>
@@ -580,20 +588,21 @@ open class BaseMiddleware<State> : SwiftUI_UDF_Binary.Middleware where State : S
   public func execute<E>(_ effect: E, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) where E : SwiftUI_UDF_Binary.ErasableToEffect, E : SwiftUI_UDF_Binary.PureEffect
   @objc deinit
 }
-@dynamicMemberLookup public struct ReducerReference<AppState, Reducer> where AppState : SwiftUI_UDF_Binary.AppReducer, Reducer : Swift.Equatable, Reducer : SwiftUI_UDF_Binary.Reducing {
-  public var projectedValue: Reducer {
+@_hasMissingDesignatedInitializers @dynamicMemberLookup final public class ReducerReference<AppState, Reducer> where AppState : SwiftUI_UDF_Binary.AppReducer, Reducer : Swift.Equatable, Reducer : SwiftUI_UDF_Binary.Reducing {
+  final public var projectedValue: Reducer {
     get
     set
   }
-  public subscript<R>(dynamicMember keyPath: Swift.KeyPath<Reducer, R>) -> SwiftUI_UDF_Binary.ReducerReference<AppState, R> where R : Swift.Equatable, R : SwiftUI_UDF_Binary.Reducing {
+  final public subscript<R>(dynamicMember keyPath: Swift.KeyPath<Reducer, R>) -> SwiftUI_UDF_Binary.ReducerReference<AppState, R> where R : Swift.Equatable, R : SwiftUI_UDF_Binary.Reducing {
     get
   }
-  public subscript<R>(dynamicMember keyPath: Swift.KeyPath<Reducer, R>) -> SwiftUI_UDF_Binary.ReducerScope<R> where R : Swift.Equatable, R : SwiftUI_UDF_Binary.Reducing {
+  final public subscript<R>(dynamicMember keyPath: Swift.KeyPath<Reducer, R>) -> SwiftUI_UDF_Binary.ReducerScope<R> where R : Swift.Equatable, R : SwiftUI_UDF_Binary.Reducing {
     get
   }
+  @objc deinit
 }
 extension SwiftUI_UDF_Binary.ReducerReference where Reducer : SwiftUI_UDF_Binary.Form {
-  public subscript<T>(dynamicMember keyPath: Swift.WritableKeyPath<Reducer, T>) -> SwiftUI.Binding<T> where T : Swift.Equatable {
+  final public subscript<T>(dynamicMember keyPath: Swift.WritableKeyPath<Reducer, T>) -> SwiftUI.Binding<T> where T : Swift.Equatable {
     get
   }
 }
@@ -645,7 +654,6 @@ final public class EnvironmentStore<State> where State : SwiftUI_UDF_Binary.AppR
   }
   final public var $state: SwiftUI_UDF_Binary.SourceOfTruth<State> {
     get
-    set
   }
   public init(initial state: State, accessToken: Swift.String, loggers: [SwiftUI_UDF_Binary.ActionLogger]) throws
   convenience public init(initial state: State, accessToken: Swift.String, logger: SwiftUI_UDF_Binary.ActionLogger) throws
@@ -701,7 +709,7 @@ extension SwiftUI_UDF_Binary.Store {
 }
 public enum ActionPriority {
   case `default`
-  case userInitiated
+  case userInteractive
   public static func == (a: SwiftUI_UDF_Binary.ActionPriority, b: SwiftUI_UDF_Binary.ActionPriority) -> Swift.Bool
   public func hash(into hasher: inout Swift.Hasher)
   public var hashValue: Swift.Int {
@@ -754,7 +762,6 @@ extension _Concurrency.Task where Success == Swift.Never, Failure == Swift.Never
   }
   @_Concurrency.MainActor final public var $state: SwiftUI_UDF_Binary.SourceOfTruth<State> {
     get
-    set
   }
   @_Concurrency.MainActor public init(initial state: State) throws
   #if compiler(>=5.3) && $AsyncAwait
@@ -781,7 +788,7 @@ extension SwiftUI_UDF_Binary.FileCache : SwiftUI_UDF_Binary.CacheSource {
   public func remove()
 }
 public protocol ObservableMiddleware : SwiftUI_UDF_Binary.Middleware {
-  func scope(for state: SwiftUI_UDF_Binary.SourceOfTruth<Self.State>) -> SwiftUI_UDF_Binary.Scope
+  @SwiftUI_UDF_Binary.ScopesBuilder func scope(for state: Self.State) -> SwiftUI_UDF_Binary.Scope
   func observe(state: Self.State)
 }
 public typealias BaseObservableMiddleware<State> = SwiftUI_UDF_Binary.BaseMiddleware<State> & SwiftUI_UDF_Binary.ObservableMiddleware & SwiftUI_UDF_Binary.EnvironmentMiddleware where State : SwiftUI_UDF_Binary.AppReducer
