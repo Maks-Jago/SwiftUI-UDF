@@ -3813,407 +3813,6 @@
       },
       {
         "kind": "TypeDecl",
-        "name": "FormField",
-        "printedName": "FormField",
-        "children": [
-          {
-            "kind": "Constructor",
-            "name": "init",
-            "printedName": "init()",
-            "children": [
-              {
-                "kind": "TypeNominal",
-                "name": "FormField",
-                "printedName": "SwiftUI_UDF_Binary.FormField<τ_0_0, τ_0_1>",
-                "children": [
-                  {
-                    "kind": "TypeNominal",
-                    "name": "GenericTypeParam",
-                    "printedName": "τ_0_0"
-                  },
-                  {
-                    "kind": "TypeNominal",
-                    "name": "GenericTypeParam",
-                    "printedName": "τ_0_1"
-                  }
-                ],
-                "usr": "s:18SwiftUI_UDF_Binary9FormFieldV"
-              }
-            ],
-            "declKind": "Constructor",
-            "usr": "s:18SwiftUI_UDF_Binary9FormFieldVACyxq_Gycfc",
-            "mangledName": "$s18SwiftUI_UDF_Binary9FormFieldVACyxq_Gycfc",
-            "moduleName": "SwiftUI_UDF_Binary",
-            "genericSig": "<τ_0_0, τ_0_1 where τ_0_0 : SwiftUI_UDF_Binary.Form, τ_0_1 : Swift.Equatable>",
-            "sugared_genericSig": "<F, Value where F : SwiftUI_UDF_Binary.Form, Value : Swift.Equatable>",
-            "declAttributes": [
-              "AccessControl"
-            ],
-            "init_kind": "Designated"
-          },
-          {
-            "kind": "Var",
-            "name": "wrappedValue",
-            "printedName": "wrappedValue",
-            "children": [
-              {
-                "kind": "TypeNominal",
-                "name": "GenericTypeParam",
-                "printedName": "τ_0_1"
-              }
-            ],
-            "declKind": "Var",
-            "usr": "s:18SwiftUI_UDF_Binary9FormFieldV12wrappedValueq_vp",
-            "mangledName": "$s18SwiftUI_UDF_Binary9FormFieldV12wrappedValueq_vp",
-            "moduleName": "SwiftUI_UDF_Binary",
-            "declAttributes": [
-              "HasStorage",
-              "AccessControl"
-            ],
-            "hasStorage": true,
-            "accessors": [
-              {
-                "kind": "Accessor",
-                "name": "Get",
-                "printedName": "Get()",
-                "children": [
-                  {
-                    "kind": "TypeNominal",
-                    "name": "GenericTypeParam",
-                    "printedName": "τ_0_1"
-                  }
-                ],
-                "declKind": "Accessor",
-                "usr": "s:18SwiftUI_UDF_Binary9FormFieldV12wrappedValueq_vg",
-                "mangledName": "$s18SwiftUI_UDF_Binary9FormFieldV12wrappedValueq_vg",
-                "moduleName": "SwiftUI_UDF_Binary",
-                "genericSig": "<τ_0_0, τ_0_1 where τ_0_0 : SwiftUI_UDF_Binary.Form, τ_0_1 : Swift.Equatable>",
-                "sugared_genericSig": "<F, Value where F : SwiftUI_UDF_Binary.Form, Value : Swift.Equatable>",
-                "implicit": true,
-                "accessorKind": "get"
-              },
-              {
-                "kind": "Accessor",
-                "name": "Set",
-                "printedName": "Set()",
-                "children": [
-                  {
-                    "kind": "TypeNominal",
-                    "name": "Void",
-                    "printedName": "()"
-                  },
-                  {
-                    "kind": "TypeNominal",
-                    "name": "GenericTypeParam",
-                    "printedName": "τ_0_1"
-                  }
-                ],
-                "declKind": "Accessor",
-                "usr": "s:18SwiftUI_UDF_Binary9FormFieldV12wrappedValueq_vs",
-                "mangledName": "$s18SwiftUI_UDF_Binary9FormFieldV12wrappedValueq_vs",
-                "moduleName": "SwiftUI_UDF_Binary",
-                "genericSig": "<τ_0_0, τ_0_1 where τ_0_0 : SwiftUI_UDF_Binary.Form, τ_0_1 : Swift.Equatable>",
-                "sugared_genericSig": "<F, Value where F : SwiftUI_UDF_Binary.Form, Value : Swift.Equatable>",
-                "implicit": true,
-                "accessorKind": "set"
-              },
-              {
-                "kind": "Accessor",
-                "name": "Modify",
-                "printedName": "Modify()",
-                "children": [
-                  {
-                    "kind": "TypeNominal",
-                    "name": "Void",
-                    "printedName": "()"
-                  }
-                ],
-                "declKind": "Accessor",
-                "usr": "s:18SwiftUI_UDF_Binary9FormFieldV12wrappedValueq_vM",
-                "mangledName": "$s18SwiftUI_UDF_Binary9FormFieldV12wrappedValueq_vM",
-                "moduleName": "SwiftUI_UDF_Binary",
-                "genericSig": "<τ_0_0, τ_0_1 where τ_0_0 : SwiftUI_UDF_Binary.Form, τ_0_1 : Swift.Equatable>",
-                "sugared_genericSig": "<F, Value where F : SwiftUI_UDF_Binary.Form, Value : Swift.Equatable>",
-                "implicit": true,
-                "accessorKind": "_modify"
-              }
-            ]
-          },
-          {
-            "kind": "Constructor",
-            "name": "init",
-            "printedName": "init(wrappedValue:_:)",
-            "children": [
-              {
-                "kind": "TypeNominal",
-                "name": "FormField",
-                "printedName": "SwiftUI_UDF_Binary.FormField<τ_0_0, τ_0_1>",
-                "children": [
-                  {
-                    "kind": "TypeNominal",
-                    "name": "GenericTypeParam",
-                    "printedName": "τ_0_0"
-                  },
-                  {
-                    "kind": "TypeNominal",
-                    "name": "GenericTypeParam",
-                    "printedName": "τ_0_1"
-                  }
-                ],
-                "usr": "s:18SwiftUI_UDF_Binary9FormFieldV"
-              },
-              {
-                "kind": "TypeNominal",
-                "name": "GenericTypeParam",
-                "printedName": "τ_0_1"
-              },
-              {
-                "kind": "TypeNominal",
-                "name": "Metatype",
-                "printedName": "τ_0_0.Type",
-                "children": [
-                  {
-                    "kind": "TypeNominal",
-                    "name": "GenericTypeParam",
-                    "printedName": "τ_0_0"
-                  }
-                ]
-              }
-            ],
-            "declKind": "Constructor",
-            "usr": "s:18SwiftUI_UDF_Binary9FormFieldV12wrappedValue_ACyxq_Gq__xmtcfc",
-            "mangledName": "$s18SwiftUI_UDF_Binary9FormFieldV12wrappedValue_ACyxq_Gq__xmtcfc",
-            "moduleName": "SwiftUI_UDF_Binary",
-            "genericSig": "<τ_0_0, τ_0_1 where τ_0_0 : SwiftUI_UDF_Binary.Form, τ_0_1 : Swift.Equatable>",
-            "sugared_genericSig": "<F, Value where F : SwiftUI_UDF_Binary.Form, Value : Swift.Equatable>",
-            "declAttributes": [
-              "AccessControl"
-            ],
-            "init_kind": "Designated"
-          },
-          {
-            "kind": "Function",
-            "name": "reduce",
-            "printedName": "reduce(_:)",
-            "children": [
-              {
-                "kind": "TypeNominal",
-                "name": "Void",
-                "printedName": "()"
-              },
-              {
-                "kind": "TypeNominal",
-                "name": "GenericTypeParam",
-                "printedName": "τ_1_0"
-              }
-            ],
-            "declKind": "Func",
-            "usr": "s:18SwiftUI_UDF_Binary9FormFieldV6reduceyyqd__AA6ActionRd__lF",
-            "mangledName": "$s18SwiftUI_UDF_Binary9FormFieldV6reduceyyqd__AA6ActionRd__lF",
-            "moduleName": "SwiftUI_UDF_Binary",
-            "genericSig": "<τ_0_0, τ_0_1, τ_1_0 where τ_0_0 : SwiftUI_UDF_Binary.Form, τ_0_1 : Swift.Equatable, τ_1_0 : SwiftUI_UDF_Binary.Action>",
-            "sugared_genericSig": "<F, Value where F : SwiftUI_UDF_Binary.Form, Value : Swift.Equatable>",
-            "declAttributes": [
-              "Mutating",
-              "AccessControl"
-            ],
-            "funcSelfKind": "Mutating"
-          },
-          {
-            "kind": "Function",
-            "name": "==",
-            "printedName": "==(_:_:)",
-            "children": [
-              {
-                "kind": "TypeNominal",
-                "name": "Bool",
-                "printedName": "Swift.Bool",
-                "usr": "s:Sb"
-              },
-              {
-                "kind": "TypeNominal",
-                "name": "FormField",
-                "printedName": "SwiftUI_UDF_Binary.FormField<τ_0_0, τ_0_1>",
-                "children": [
-                  {
-                    "kind": "TypeNominal",
-                    "name": "GenericTypeParam",
-                    "printedName": "τ_0_0"
-                  },
-                  {
-                    "kind": "TypeNominal",
-                    "name": "GenericTypeParam",
-                    "printedName": "τ_0_1"
-                  }
-                ],
-                "usr": "s:18SwiftUI_UDF_Binary9FormFieldV"
-              },
-              {
-                "kind": "TypeNominal",
-                "name": "FormField",
-                "printedName": "SwiftUI_UDF_Binary.FormField<τ_0_0, τ_0_1>",
-                "children": [
-                  {
-                    "kind": "TypeNominal",
-                    "name": "GenericTypeParam",
-                    "printedName": "τ_0_0"
-                  },
-                  {
-                    "kind": "TypeNominal",
-                    "name": "GenericTypeParam",
-                    "printedName": "τ_0_1"
-                  }
-                ],
-                "usr": "s:18SwiftUI_UDF_Binary9FormFieldV"
-              }
-            ],
-            "declKind": "Func",
-            "usr": "s:18SwiftUI_UDF_Binary9FormFieldV2eeoiySbACyxq_G_AEtFZ",
-            "mangledName": "$s18SwiftUI_UDF_Binary9FormFieldV2eeoiySbACyxq_G_AEtFZ",
-            "moduleName": "SwiftUI_UDF_Binary",
-            "genericSig": "<τ_0_0, τ_0_1 where τ_0_0 : SwiftUI_UDF_Binary.Form, τ_0_1 : Swift.Equatable>",
-            "sugared_genericSig": "<F, Value where F : SwiftUI_UDF_Binary.Form, Value : Swift.Equatable>",
-            "static": true,
-            "implicit": true,
-            "funcSelfKind": "NonMutating"
-          },
-          {
-            "kind": "Constructor",
-            "name": "init",
-            "printedName": "init(from:)",
-            "children": [
-              {
-                "kind": "TypeNominal",
-                "name": "FormField",
-                "printedName": "SwiftUI_UDF_Binary.FormField<τ_0_0, τ_0_1>",
-                "children": [
-                  {
-                    "kind": "TypeNominal",
-                    "name": "GenericTypeParam",
-                    "printedName": "τ_0_0"
-                  },
-                  {
-                    "kind": "TypeNominal",
-                    "name": "GenericTypeParam",
-                    "printedName": "τ_0_1"
-                  }
-                ],
-                "usr": "s:18SwiftUI_UDF_Binary9FormFieldV"
-              },
-              {
-                "kind": "TypeNominal",
-                "name": "Decoder",
-                "printedName": "Swift.Decoder",
-                "usr": "s:s7DecoderP"
-              }
-            ],
-            "declKind": "Constructor",
-            "usr": "s:18SwiftUI_UDF_Binary9FormFieldVAASeR_SER_rlE4fromACyxq_Gs7Decoder_p_tKcfc",
-            "mangledName": "$s18SwiftUI_UDF_Binary9FormFieldVAASeR_SER_rlE4fromACyxq_Gs7Decoder_p_tKcfc",
-            "moduleName": "SwiftUI_UDF_Binary",
-            "genericSig": "<τ_0_0, τ_0_1 where τ_0_0 : SwiftUI_UDF_Binary.Form, τ_0_1 : Swift.Decodable, τ_0_1 : Swift.Encodable, τ_0_1 : Swift.Equatable>",
-            "sugared_genericSig": "<F, Value where F : SwiftUI_UDF_Binary.Form, Value : Swift.Decodable, Value : Swift.Encodable, Value : Swift.Equatable>",
-            "implicit": true,
-            "isFromExtension": true,
-            "throwing": true,
-            "init_kind": "Designated"
-          },
-          {
-            "kind": "Function",
-            "name": "encode",
-            "printedName": "encode(to:)",
-            "children": [
-              {
-                "kind": "TypeNominal",
-                "name": "Void",
-                "printedName": "()"
-              },
-              {
-                "kind": "TypeNominal",
-                "name": "Encoder",
-                "printedName": "Swift.Encoder",
-                "usr": "s:s7EncoderP"
-              }
-            ],
-            "declKind": "Func",
-            "usr": "s:18SwiftUI_UDF_Binary9FormFieldVAASeR_SER_rlE6encode2toys7Encoder_p_tKF",
-            "mangledName": "$s18SwiftUI_UDF_Binary9FormFieldVAASeR_SER_rlE6encode2toys7Encoder_p_tKF",
-            "moduleName": "SwiftUI_UDF_Binary",
-            "genericSig": "<τ_0_0, τ_0_1 where τ_0_0 : SwiftUI_UDF_Binary.Form, τ_0_1 : Swift.Decodable, τ_0_1 : Swift.Encodable, τ_0_1 : Swift.Equatable>",
-            "sugared_genericSig": "<F, Value where F : SwiftUI_UDF_Binary.Form, Value : Swift.Decodable, Value : Swift.Encodable, Value : Swift.Equatable>",
-            "implicit": true,
-            "isFromExtension": true,
-            "throwing": true,
-            "funcSelfKind": "NonMutating"
-          }
-        ],
-        "declKind": "Struct",
-        "usr": "s:18SwiftUI_UDF_Binary9FormFieldV",
-        "mangledName": "$s18SwiftUI_UDF_Binary9FormFieldV",
-        "moduleName": "SwiftUI_UDF_Binary",
-        "genericSig": "<τ_0_0, τ_0_1 where τ_0_0 : SwiftUI_UDF_Binary.Form, τ_0_1 : Swift.Equatable>",
-        "sugared_genericSig": "<F, Value where F : SwiftUI_UDF_Binary.Form, Value : Swift.Equatable>",
-        "declAttributes": [
-          "AccessControl",
-          "PropertyWrapper"
-        ],
-        "conformances": [
-          {
-            "kind": "Conformance",
-            "name": "Reducing",
-            "printedName": "Reducing",
-            "usr": "s:18SwiftUI_UDF_Binary8ReducingP",
-            "mangledName": "$s18SwiftUI_UDF_Binary8ReducingP"
-          },
-          {
-            "kind": "Conformance",
-            "name": "Equatable",
-            "printedName": "Equatable",
-            "usr": "s:SQ",
-            "mangledName": "$sSQ"
-          },
-          {
-            "kind": "Conformance",
-            "name": "Initable",
-            "printedName": "Initable",
-            "usr": "s:18SwiftUI_UDF_Binary8InitableP",
-            "mangledName": "$s18SwiftUI_UDF_Binary8InitableP"
-          },
-          {
-            "kind": "Conformance",
-            "name": "IsEquatable",
-            "printedName": "IsEquatable",
-            "usr": "s:18SwiftUI_UDF_Binary11IsEquatableP",
-            "mangledName": "$s18SwiftUI_UDF_Binary11IsEquatableP"
-          },
-          {
-            "kind": "Conformance",
-            "name": "Decodable",
-            "printedName": "Decodable",
-            "usr": "s:Se",
-            "mangledName": "$sSe"
-          },
-          {
-            "kind": "Conformance",
-            "name": "Encodable",
-            "printedName": "Encodable",
-            "usr": "s:SE",
-            "mangledName": "$sSE"
-          }
-        ]
-      },
-      {
-        "kind": "Import",
-        "name": "Foundation",
-        "printedName": "Foundation",
-        "declKind": "Import",
-        "moduleName": "SwiftUI_UDF_Binary",
-        "declAttributes": [
-          "RawDocComment"
-        ]
-      },
-      {
-        "kind": "TypeDecl",
         "name": "AppReducer",
         "printedName": "AppReducer",
         "children": [
@@ -7252,279 +6851,6 @@
             "printedName": "UpdateFormField",
             "children": [
               {
-                "kind": "Var",
-                "name": "keyPath",
-                "printedName": "keyPath",
-                "children": [
-                  {
-                    "kind": "TypeNominal",
-                    "name": "WritableKeyPath",
-                    "printedName": "Swift.WritableKeyPath<τ_0_0, τ_0_1>",
-                    "children": [
-                      {
-                        "kind": "TypeNominal",
-                        "name": "GenericTypeParam",
-                        "printedName": "τ_0_0"
-                      },
-                      {
-                        "kind": "TypeNominal",
-                        "name": "GenericTypeParam",
-                        "printedName": "τ_0_1"
-                      }
-                    ],
-                    "usr": "s:s15WritableKeyPathC"
-                  }
-                ],
-                "declKind": "Var",
-                "usr": "s:18SwiftUI_UDF_Binary7ActionsO15UpdateFormFieldV7keyPaths011WritableKeyJ0Cyxq_Gvp",
-                "mangledName": "$s18SwiftUI_UDF_Binary7ActionsO15UpdateFormFieldV7keyPaths011WritableKeyJ0Cyxq_Gvp",
-                "moduleName": "SwiftUI_UDF_Binary",
-                "declAttributes": [
-                  "HasStorage",
-                  "AccessControl"
-                ],
-                "hasStorage": true,
-                "accessors": [
-                  {
-                    "kind": "Accessor",
-                    "name": "Get",
-                    "printedName": "Get()",
-                    "children": [
-                      {
-                        "kind": "TypeNominal",
-                        "name": "WritableKeyPath",
-                        "printedName": "Swift.WritableKeyPath<τ_0_0, τ_0_1>",
-                        "children": [
-                          {
-                            "kind": "TypeNominal",
-                            "name": "GenericTypeParam",
-                            "printedName": "τ_0_0"
-                          },
-                          {
-                            "kind": "TypeNominal",
-                            "name": "GenericTypeParam",
-                            "printedName": "τ_0_1"
-                          }
-                        ],
-                        "usr": "s:s15WritableKeyPathC"
-                      }
-                    ],
-                    "declKind": "Accessor",
-                    "usr": "s:18SwiftUI_UDF_Binary7ActionsO15UpdateFormFieldV7keyPaths011WritableKeyJ0Cyxq_Gvg",
-                    "mangledName": "$s18SwiftUI_UDF_Binary7ActionsO15UpdateFormFieldV7keyPaths011WritableKeyJ0Cyxq_Gvg",
-                    "moduleName": "SwiftUI_UDF_Binary",
-                    "genericSig": "<τ_0_0, τ_0_1 where τ_0_0 : SwiftUI_UDF_Binary.Form, τ_0_1 : Swift.Equatable>",
-                    "sugared_genericSig": "<F, V where F : SwiftUI_UDF_Binary.Form, V : Swift.Equatable>",
-                    "implicit": true,
-                    "accessorKind": "get"
-                  },
-                  {
-                    "kind": "Accessor",
-                    "name": "Set",
-                    "printedName": "Set()",
-                    "children": [
-                      {
-                        "kind": "TypeNominal",
-                        "name": "Void",
-                        "printedName": "()"
-                      },
-                      {
-                        "kind": "TypeNominal",
-                        "name": "WritableKeyPath",
-                        "printedName": "Swift.WritableKeyPath<τ_0_0, τ_0_1>",
-                        "children": [
-                          {
-                            "kind": "TypeNominal",
-                            "name": "GenericTypeParam",
-                            "printedName": "τ_0_0"
-                          },
-                          {
-                            "kind": "TypeNominal",
-                            "name": "GenericTypeParam",
-                            "printedName": "τ_0_1"
-                          }
-                        ],
-                        "usr": "s:s15WritableKeyPathC"
-                      }
-                    ],
-                    "declKind": "Accessor",
-                    "usr": "s:18SwiftUI_UDF_Binary7ActionsO15UpdateFormFieldV7keyPaths011WritableKeyJ0Cyxq_Gvs",
-                    "mangledName": "$s18SwiftUI_UDF_Binary7ActionsO15UpdateFormFieldV7keyPaths011WritableKeyJ0Cyxq_Gvs",
-                    "moduleName": "SwiftUI_UDF_Binary",
-                    "genericSig": "<τ_0_0, τ_0_1 where τ_0_0 : SwiftUI_UDF_Binary.Form, τ_0_1 : Swift.Equatable>",
-                    "sugared_genericSig": "<F, V where F : SwiftUI_UDF_Binary.Form, V : Swift.Equatable>",
-                    "implicit": true,
-                    "accessorKind": "set"
-                  },
-                  {
-                    "kind": "Accessor",
-                    "name": "Modify",
-                    "printedName": "Modify()",
-                    "children": [
-                      {
-                        "kind": "TypeNominal",
-                        "name": "Void",
-                        "printedName": "()"
-                      }
-                    ],
-                    "declKind": "Accessor",
-                    "usr": "s:18SwiftUI_UDF_Binary7ActionsO15UpdateFormFieldV7keyPaths011WritableKeyJ0Cyxq_GvM",
-                    "mangledName": "$s18SwiftUI_UDF_Binary7ActionsO15UpdateFormFieldV7keyPaths011WritableKeyJ0Cyxq_GvM",
-                    "moduleName": "SwiftUI_UDF_Binary",
-                    "genericSig": "<τ_0_0, τ_0_1 where τ_0_0 : SwiftUI_UDF_Binary.Form, τ_0_1 : Swift.Equatable>",
-                    "sugared_genericSig": "<F, V where F : SwiftUI_UDF_Binary.Form, V : Swift.Equatable>",
-                    "implicit": true,
-                    "accessorKind": "_modify"
-                  }
-                ]
-              },
-              {
-                "kind": "Var",
-                "name": "value",
-                "printedName": "value",
-                "children": [
-                  {
-                    "kind": "TypeNominal",
-                    "name": "GenericTypeParam",
-                    "printedName": "τ_0_1"
-                  }
-                ],
-                "declKind": "Var",
-                "usr": "s:18SwiftUI_UDF_Binary7ActionsO15UpdateFormFieldV5valueq_vp",
-                "mangledName": "$s18SwiftUI_UDF_Binary7ActionsO15UpdateFormFieldV5valueq_vp",
-                "moduleName": "SwiftUI_UDF_Binary",
-                "declAttributes": [
-                  "HasStorage",
-                  "AccessControl"
-                ],
-                "hasStorage": true,
-                "accessors": [
-                  {
-                    "kind": "Accessor",
-                    "name": "Get",
-                    "printedName": "Get()",
-                    "children": [
-                      {
-                        "kind": "TypeNominal",
-                        "name": "GenericTypeParam",
-                        "printedName": "τ_0_1"
-                      }
-                    ],
-                    "declKind": "Accessor",
-                    "usr": "s:18SwiftUI_UDF_Binary7ActionsO15UpdateFormFieldV5valueq_vg",
-                    "mangledName": "$s18SwiftUI_UDF_Binary7ActionsO15UpdateFormFieldV5valueq_vg",
-                    "moduleName": "SwiftUI_UDF_Binary",
-                    "genericSig": "<τ_0_0, τ_0_1 where τ_0_0 : SwiftUI_UDF_Binary.Form, τ_0_1 : Swift.Equatable>",
-                    "sugared_genericSig": "<F, V where F : SwiftUI_UDF_Binary.Form, V : Swift.Equatable>",
-                    "implicit": true,
-                    "accessorKind": "get"
-                  },
-                  {
-                    "kind": "Accessor",
-                    "name": "Set",
-                    "printedName": "Set()",
-                    "children": [
-                      {
-                        "kind": "TypeNominal",
-                        "name": "Void",
-                        "printedName": "()"
-                      },
-                      {
-                        "kind": "TypeNominal",
-                        "name": "GenericTypeParam",
-                        "printedName": "τ_0_1"
-                      }
-                    ],
-                    "declKind": "Accessor",
-                    "usr": "s:18SwiftUI_UDF_Binary7ActionsO15UpdateFormFieldV5valueq_vs",
-                    "mangledName": "$s18SwiftUI_UDF_Binary7ActionsO15UpdateFormFieldV5valueq_vs",
-                    "moduleName": "SwiftUI_UDF_Binary",
-                    "genericSig": "<τ_0_0, τ_0_1 where τ_0_0 : SwiftUI_UDF_Binary.Form, τ_0_1 : Swift.Equatable>",
-                    "sugared_genericSig": "<F, V where F : SwiftUI_UDF_Binary.Form, V : Swift.Equatable>",
-                    "implicit": true,
-                    "accessorKind": "set"
-                  },
-                  {
-                    "kind": "Accessor",
-                    "name": "Modify",
-                    "printedName": "Modify()",
-                    "children": [
-                      {
-                        "kind": "TypeNominal",
-                        "name": "Void",
-                        "printedName": "()"
-                      }
-                    ],
-                    "declKind": "Accessor",
-                    "usr": "s:18SwiftUI_UDF_Binary7ActionsO15UpdateFormFieldV5valueq_vM",
-                    "mangledName": "$s18SwiftUI_UDF_Binary7ActionsO15UpdateFormFieldV5valueq_vM",
-                    "moduleName": "SwiftUI_UDF_Binary",
-                    "genericSig": "<τ_0_0, τ_0_1 where τ_0_0 : SwiftUI_UDF_Binary.Form, τ_0_1 : Swift.Equatable>",
-                    "sugared_genericSig": "<F, V where F : SwiftUI_UDF_Binary.Form, V : Swift.Equatable>",
-                    "implicit": true,
-                    "accessorKind": "_modify"
-                  }
-                ]
-              },
-              {
-                "kind": "Constructor",
-                "name": "init",
-                "printedName": "init(keyPath:value:)",
-                "children": [
-                  {
-                    "kind": "TypeNominal",
-                    "name": "UpdateFormField",
-                    "printedName": "SwiftUI_UDF_Binary.Actions.UpdateFormField<τ_0_0, τ_0_1>",
-                    "children": [
-                      {
-                        "kind": "TypeNominal",
-                        "name": "GenericTypeParam",
-                        "printedName": "τ_0_0"
-                      },
-                      {
-                        "kind": "TypeNominal",
-                        "name": "GenericTypeParam",
-                        "printedName": "τ_0_1"
-                      }
-                    ],
-                    "usr": "s:18SwiftUI_UDF_Binary7ActionsO15UpdateFormFieldV"
-                  },
-                  {
-                    "kind": "TypeNominal",
-                    "name": "WritableKeyPath",
-                    "printedName": "Swift.WritableKeyPath<τ_0_0, τ_0_1>",
-                    "children": [
-                      {
-                        "kind": "TypeNominal",
-                        "name": "GenericTypeParam",
-                        "printedName": "τ_0_0"
-                      },
-                      {
-                        "kind": "TypeNominal",
-                        "name": "GenericTypeParam",
-                        "printedName": "τ_0_1"
-                      }
-                    ],
-                    "usr": "s:s15WritableKeyPathC"
-                  },
-                  {
-                    "kind": "TypeNominal",
-                    "name": "GenericTypeParam",
-                    "printedName": "τ_0_1"
-                  }
-                ],
-                "declKind": "Constructor",
-                "usr": "s:18SwiftUI_UDF_Binary7ActionsO15UpdateFormFieldV7keyPath5valueAEy_xq_Gs011WritableKeyJ0Cyxq_G_q_tcfc",
-                "mangledName": "$s18SwiftUI_UDF_Binary7ActionsO15UpdateFormFieldV7keyPath5valueAEy_xq_Gs011WritableKeyJ0Cyxq_G_q_tcfc",
-                "moduleName": "SwiftUI_UDF_Binary",
-                "genericSig": "<τ_0_0, τ_0_1 where τ_0_0 : SwiftUI_UDF_Binary.Form, τ_0_1 : Swift.Equatable>",
-                "sugared_genericSig": "<F, V where F : SwiftUI_UDF_Binary.Form, V : Swift.Equatable>",
-                "declAttributes": [
-                  "AccessControl"
-                ],
-                "init_kind": "Designated"
-              },
-              {
                 "kind": "Function",
                 "name": "==",
                 "printedName": "==(_:_:)",
@@ -7538,17 +6864,12 @@
                   {
                     "kind": "TypeNominal",
                     "name": "UpdateFormField",
-                    "printedName": "SwiftUI_UDF_Binary.Actions.UpdateFormField<τ_0_0, τ_0_1>",
+                    "printedName": "SwiftUI_UDF_Binary.Actions.UpdateFormField<τ_0_0>",
                     "children": [
                       {
                         "kind": "TypeNominal",
                         "name": "GenericTypeParam",
                         "printedName": "τ_0_0"
-                      },
-                      {
-                        "kind": "TypeNominal",
-                        "name": "GenericTypeParam",
-                        "printedName": "τ_0_1"
                       }
                     ],
                     "usr": "s:18SwiftUI_UDF_Binary7ActionsO15UpdateFormFieldV"
@@ -7556,7 +6877,254 @@
                   {
                     "kind": "TypeNominal",
                     "name": "UpdateFormField",
-                    "printedName": "SwiftUI_UDF_Binary.Actions.UpdateFormField<τ_0_0, τ_0_1>",
+                    "printedName": "SwiftUI_UDF_Binary.Actions.UpdateFormField<τ_0_0>",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "GenericTypeParam",
+                        "printedName": "τ_0_0"
+                      }
+                    ],
+                    "usr": "s:18SwiftUI_UDF_Binary7ActionsO15UpdateFormFieldV"
+                  }
+                ],
+                "declKind": "Func",
+                "usr": "s:18SwiftUI_UDF_Binary7ActionsO15UpdateFormFieldV2eeoiySbAEy_xG_AGtFZ",
+                "mangledName": "$s18SwiftUI_UDF_Binary7ActionsO15UpdateFormFieldV2eeoiySbAEy_xG_AGtFZ",
+                "moduleName": "SwiftUI_UDF_Binary",
+                "genericSig": "<τ_0_0 where τ_0_0 : SwiftUI_UDF_Binary.Form>",
+                "sugared_genericSig": "<F where F : SwiftUI_UDF_Binary.Form>",
+                "static": true,
+                "declAttributes": [
+                  "AccessControl"
+                ],
+                "funcSelfKind": "NonMutating"
+              },
+              {
+                "kind": "Var",
+                "name": "value",
+                "printedName": "value",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Equatable",
+                    "printedName": "Swift.Equatable",
+                    "usr": "s:SQ"
+                  }
+                ],
+                "declKind": "Var",
+                "usr": "s:18SwiftUI_UDF_Binary7ActionsO15UpdateFormFieldV5valueSQ_pvp",
+                "mangledName": "$s18SwiftUI_UDF_Binary7ActionsO15UpdateFormFieldV5valueSQ_pvp",
+                "moduleName": "SwiftUI_UDF_Binary",
+                "declAttributes": [
+                  "HasStorage",
+                  "AccessControl"
+                ],
+                "hasStorage": true,
+                "accessors": [
+                  {
+                    "kind": "Accessor",
+                    "name": "Get",
+                    "printedName": "Get()",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "Equatable",
+                        "printedName": "Swift.Equatable",
+                        "usr": "s:SQ"
+                      }
+                    ],
+                    "declKind": "Accessor",
+                    "usr": "s:18SwiftUI_UDF_Binary7ActionsO15UpdateFormFieldV5valueSQ_pvg",
+                    "mangledName": "$s18SwiftUI_UDF_Binary7ActionsO15UpdateFormFieldV5valueSQ_pvg",
+                    "moduleName": "SwiftUI_UDF_Binary",
+                    "genericSig": "<τ_0_0 where τ_0_0 : SwiftUI_UDF_Binary.Form>",
+                    "sugared_genericSig": "<F where F : SwiftUI_UDF_Binary.Form>",
+                    "implicit": true,
+                    "accessorKind": "get"
+                  },
+                  {
+                    "kind": "Accessor",
+                    "name": "Set",
+                    "printedName": "Set()",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "Void",
+                        "printedName": "()"
+                      },
+                      {
+                        "kind": "TypeNominal",
+                        "name": "Equatable",
+                        "printedName": "Swift.Equatable",
+                        "usr": "s:SQ"
+                      }
+                    ],
+                    "declKind": "Accessor",
+                    "usr": "s:18SwiftUI_UDF_Binary7ActionsO15UpdateFormFieldV5valueSQ_pvs",
+                    "mangledName": "$s18SwiftUI_UDF_Binary7ActionsO15UpdateFormFieldV5valueSQ_pvs",
+                    "moduleName": "SwiftUI_UDF_Binary",
+                    "genericSig": "<τ_0_0 where τ_0_0 : SwiftUI_UDF_Binary.Form>",
+                    "sugared_genericSig": "<F where F : SwiftUI_UDF_Binary.Form>",
+                    "implicit": true,
+                    "accessorKind": "set"
+                  },
+                  {
+                    "kind": "Accessor",
+                    "name": "Modify",
+                    "printedName": "Modify()",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "Void",
+                        "printedName": "()"
+                      }
+                    ],
+                    "declKind": "Accessor",
+                    "usr": "s:18SwiftUI_UDF_Binary7ActionsO15UpdateFormFieldV5valueSQ_pvM",
+                    "mangledName": "$s18SwiftUI_UDF_Binary7ActionsO15UpdateFormFieldV5valueSQ_pvM",
+                    "moduleName": "SwiftUI_UDF_Binary",
+                    "genericSig": "<τ_0_0 where τ_0_0 : SwiftUI_UDF_Binary.Form>",
+                    "sugared_genericSig": "<F where F : SwiftUI_UDF_Binary.Form>",
+                    "implicit": true,
+                    "accessorKind": "_modify"
+                  }
+                ]
+              },
+              {
+                "kind": "Var",
+                "name": "keyPath",
+                "printedName": "keyPath",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "PartialKeyPath",
+                    "printedName": "Swift.PartialKeyPath<τ_0_0>",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "GenericTypeParam",
+                        "printedName": "τ_0_0"
+                      }
+                    ],
+                    "usr": "s:s14PartialKeyPathC"
+                  }
+                ],
+                "declKind": "Var",
+                "usr": "s:18SwiftUI_UDF_Binary7ActionsO15UpdateFormFieldV7keyPaths010PartialKeyJ0CyxGvp",
+                "mangledName": "$s18SwiftUI_UDF_Binary7ActionsO15UpdateFormFieldV7keyPaths010PartialKeyJ0CyxGvp",
+                "moduleName": "SwiftUI_UDF_Binary",
+                "declAttributes": [
+                  "HasStorage",
+                  "AccessControl"
+                ],
+                "hasStorage": true,
+                "accessors": [
+                  {
+                    "kind": "Accessor",
+                    "name": "Get",
+                    "printedName": "Get()",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "PartialKeyPath",
+                        "printedName": "Swift.PartialKeyPath<τ_0_0>",
+                        "children": [
+                          {
+                            "kind": "TypeNominal",
+                            "name": "GenericTypeParam",
+                            "printedName": "τ_0_0"
+                          }
+                        ],
+                        "usr": "s:s14PartialKeyPathC"
+                      }
+                    ],
+                    "declKind": "Accessor",
+                    "usr": "s:18SwiftUI_UDF_Binary7ActionsO15UpdateFormFieldV7keyPaths010PartialKeyJ0CyxGvg",
+                    "mangledName": "$s18SwiftUI_UDF_Binary7ActionsO15UpdateFormFieldV7keyPaths010PartialKeyJ0CyxGvg",
+                    "moduleName": "SwiftUI_UDF_Binary",
+                    "genericSig": "<τ_0_0 where τ_0_0 : SwiftUI_UDF_Binary.Form>",
+                    "sugared_genericSig": "<F where F : SwiftUI_UDF_Binary.Form>",
+                    "implicit": true,
+                    "accessorKind": "get"
+                  },
+                  {
+                    "kind": "Accessor",
+                    "name": "Set",
+                    "printedName": "Set()",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "Void",
+                        "printedName": "()"
+                      },
+                      {
+                        "kind": "TypeNominal",
+                        "name": "PartialKeyPath",
+                        "printedName": "Swift.PartialKeyPath<τ_0_0>",
+                        "children": [
+                          {
+                            "kind": "TypeNominal",
+                            "name": "GenericTypeParam",
+                            "printedName": "τ_0_0"
+                          }
+                        ],
+                        "usr": "s:s14PartialKeyPathC"
+                      }
+                    ],
+                    "declKind": "Accessor",
+                    "usr": "s:18SwiftUI_UDF_Binary7ActionsO15UpdateFormFieldV7keyPaths010PartialKeyJ0CyxGvs",
+                    "mangledName": "$s18SwiftUI_UDF_Binary7ActionsO15UpdateFormFieldV7keyPaths010PartialKeyJ0CyxGvs",
+                    "moduleName": "SwiftUI_UDF_Binary",
+                    "genericSig": "<τ_0_0 where τ_0_0 : SwiftUI_UDF_Binary.Form>",
+                    "sugared_genericSig": "<F where F : SwiftUI_UDF_Binary.Form>",
+                    "implicit": true,
+                    "accessorKind": "set"
+                  },
+                  {
+                    "kind": "Accessor",
+                    "name": "Modify",
+                    "printedName": "Modify()",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "Void",
+                        "printedName": "()"
+                      }
+                    ],
+                    "declKind": "Accessor",
+                    "usr": "s:18SwiftUI_UDF_Binary7ActionsO15UpdateFormFieldV7keyPaths010PartialKeyJ0CyxGvM",
+                    "mangledName": "$s18SwiftUI_UDF_Binary7ActionsO15UpdateFormFieldV7keyPaths010PartialKeyJ0CyxGvM",
+                    "moduleName": "SwiftUI_UDF_Binary",
+                    "genericSig": "<τ_0_0 where τ_0_0 : SwiftUI_UDF_Binary.Form>",
+                    "sugared_genericSig": "<F where F : SwiftUI_UDF_Binary.Form>",
+                    "implicit": true,
+                    "accessorKind": "_modify"
+                  }
+                ]
+              },
+              {
+                "kind": "Constructor",
+                "name": "init",
+                "printedName": "init(keyPath:value:)",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "UpdateFormField",
+                    "printedName": "SwiftUI_UDF_Binary.Actions.UpdateFormField<τ_0_0>",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "GenericTypeParam",
+                        "printedName": "τ_0_0"
+                      }
+                    ],
+                    "usr": "s:18SwiftUI_UDF_Binary7ActionsO15UpdateFormFieldV"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "WritableKeyPath",
+                    "printedName": "Swift.WritableKeyPath<τ_0_0, τ_1_0>",
                     "children": [
                       {
                         "kind": "TypeNominal",
@@ -7566,29 +7134,35 @@
                       {
                         "kind": "TypeNominal",
                         "name": "GenericTypeParam",
-                        "printedName": "τ_0_1"
+                        "printedName": "τ_1_0"
                       }
                     ],
-                    "usr": "s:18SwiftUI_UDF_Binary7ActionsO15UpdateFormFieldV"
+                    "usr": "s:s15WritableKeyPathC"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "GenericTypeParam",
+                    "printedName": "τ_1_0"
                   }
                 ],
-                "declKind": "Func",
-                "usr": "s:18SwiftUI_UDF_Binary7ActionsO15UpdateFormFieldV2eeoiySbAEy_xq_G_AGtFZ",
-                "mangledName": "$s18SwiftUI_UDF_Binary7ActionsO15UpdateFormFieldV2eeoiySbAEy_xq_G_AGtFZ",
+                "declKind": "Constructor",
+                "usr": "s:18SwiftUI_UDF_Binary7ActionsO15UpdateFormFieldV7keyPath5valueAEy_xGs011WritableKeyJ0Cyxqd__G_qd__tcSQRd__lufc",
+                "mangledName": "$s18SwiftUI_UDF_Binary7ActionsO15UpdateFormFieldV7keyPath5valueAEy_xGs011WritableKeyJ0Cyxqd__G_qd__tcSQRd__lufc",
                 "moduleName": "SwiftUI_UDF_Binary",
-                "genericSig": "<τ_0_0, τ_0_1 where τ_0_0 : SwiftUI_UDF_Binary.Form, τ_0_1 : Swift.Equatable>",
+                "genericSig": "<τ_0_0, τ_1_0 where τ_0_0 : SwiftUI_UDF_Binary.Form, τ_1_0 : Swift.Equatable>",
                 "sugared_genericSig": "<F, V where F : SwiftUI_UDF_Binary.Form, V : Swift.Equatable>",
-                "static": true,
-                "implicit": true,
-                "funcSelfKind": "NonMutating"
+                "declAttributes": [
+                  "AccessControl"
+                ],
+                "init_kind": "Designated"
               }
             ],
             "declKind": "Struct",
             "usr": "s:18SwiftUI_UDF_Binary7ActionsO15UpdateFormFieldV",
             "mangledName": "$s18SwiftUI_UDF_Binary7ActionsO15UpdateFormFieldV",
             "moduleName": "SwiftUI_UDF_Binary",
-            "genericSig": "<τ_0_0, τ_0_1 where τ_0_0 : SwiftUI_UDF_Binary.Form, τ_0_1 : Swift.Equatable>",
-            "sugared_genericSig": "<F, V where F : SwiftUI_UDF_Binary.Form, V : Swift.Equatable>",
+            "genericSig": "<τ_0_0 where τ_0_0 : SwiftUI_UDF_Binary.Form>",
+            "sugared_genericSig": "<F where F : SwiftUI_UDF_Binary.Form>",
             "isFromExtension": true,
             "conformances": [
               {
@@ -24464,35 +24038,35 @@
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/Action\/Actions.swift",
       "kind": "BooleanLiteral",
-      "offset": 2801,
+      "offset": 3175,
       "length": 4,
       "value": "true"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/Action\/Actions.swift",
       "kind": "BooleanLiteral",
-      "offset": 4974,
+      "offset": 5348,
       "length": 4,
       "value": "true"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/Action\/Actions.swift",
       "kind": "BooleanLiteral",
-      "offset": 5218,
+      "offset": 5592,
       "length": 4,
       "value": "true"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/Action\/Actions.swift",
       "kind": "BooleanLiteral",
-      "offset": 6241,
+      "offset": 6615,
       "length": 4,
       "value": "true"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/Action\/Actions.swift",
       "kind": "BooleanLiteral",
-      "offset": 6455,
+      "offset": 6829,
       "length": 4,
       "value": "true"
     },

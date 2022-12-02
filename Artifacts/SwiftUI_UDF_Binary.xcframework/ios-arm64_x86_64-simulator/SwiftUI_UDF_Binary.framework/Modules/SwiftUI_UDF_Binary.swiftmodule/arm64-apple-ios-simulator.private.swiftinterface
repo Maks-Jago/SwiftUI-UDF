@@ -175,17 +175,6 @@ extension Swift.Dictionary where Key == Value.ID, Value : Swift.Identifiable, Va
   public mutating func insert(items: [Value])
   public mutating func insert(item: Value)
 }
-@propertyWrapper public struct FormField<F, Value> : SwiftUI_UDF_Binary.Reducible where F : SwiftUI_UDF_Binary.Form, Value : Swift.Equatable {
-  public init()
-  public var wrappedValue: Value
-  public init(wrappedValue value: Value, _ formType: F.Type)
-  public mutating func reduce(_ action: some Action)
-  public static func == (a: SwiftUI_UDF_Binary.FormField<F, Value>, b: SwiftUI_UDF_Binary.FormField<F, Value>) -> Swift.Bool
-}
-extension SwiftUI_UDF_Binary.FormField : Swift.Codable where Value : Swift.Decodable, Value : Swift.Encodable {
-  public func encode(to encoder: Swift.Encoder) throws
-  public init(from decoder: Swift.Decoder) throws
-}
 public protocol AppReducer : Swift.Equatable, SwiftUI_UDF_Binary.Scope {
   mutating func preReduce(_ action: some Action)
   mutating func postReduce(_ action: some Action)
@@ -297,11 +286,11 @@ public enum Actions {
   }
 }
 extension SwiftUI_UDF_Binary.Actions {
-  public struct UpdateFormField<F, V> : SwiftUI_UDF_Binary.Action where F : SwiftUI_UDF_Binary.Form, V : Swift.Equatable {
-    public var keyPath: Swift.WritableKeyPath<F, V>
-    public var value: V
-    public init(keyPath: Swift.WritableKeyPath<F, V>, value: V)
-    public static func == (a: SwiftUI_UDF_Binary.Actions.UpdateFormField<F, V>, b: SwiftUI_UDF_Binary.Actions.UpdateFormField<F, V>) -> Swift.Bool
+  public struct UpdateFormField<F> : SwiftUI_UDF_Binary.Action where F : SwiftUI_UDF_Binary.Form {
+    public static func == (lhs: SwiftUI_UDF_Binary.Actions.UpdateFormField<F>, rhs: SwiftUI_UDF_Binary.Actions.UpdateFormField<F>) -> Swift.Bool
+    public var value: Swift.Equatable
+    public var keyPath: Swift.PartialKeyPath<F>
+    public init<V>(keyPath: Swift.WritableKeyPath<F, V>, value: V) where V : Swift.Equatable
   }
   public struct ResetForm<F> : SwiftUI_UDF_Binary.Action where F : SwiftUI_UDF_Binary.Form {
     public init()
