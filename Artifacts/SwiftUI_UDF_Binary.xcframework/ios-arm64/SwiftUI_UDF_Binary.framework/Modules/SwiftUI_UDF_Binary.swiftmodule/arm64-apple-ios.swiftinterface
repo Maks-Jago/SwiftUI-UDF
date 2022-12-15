@@ -746,7 +746,7 @@ open class BaseConcurrencyMiddleware<State> : SwiftUI_UDF_Binary.Middleware wher
   public func execute<TaskId>(id: TaskId, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line, _ task: @escaping (TaskId) async throws -> SwiftUI_UDF_Binary.Action) where TaskId : Swift.Hashable
   #endif
   #if compiler(>=5.3) && $AsyncAwait
-  public func execute<TaskId, Cancelation>(id: TaskId, cancelation: Cancelation, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line, _ task: @escaping (TaskId) async throws -> SwiftUI_UDF_Binary.Action) where TaskId : Swift.Hashable, Cancelation : Swift.Hashable
+  public func execute<TaskId>(id: TaskId, cancelation: some Hashable, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line, _ task: @escaping (TaskId) async throws -> SwiftUI_UDF_Binary.Action) where TaskId : Swift.Hashable
   #endif
   public func execute(_ effect: some ConcurrencyEffect, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line)
   public func execute<Id>(_ effect: some ConcurrencyEffect, cancelation: Id, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) where Id : Swift.Hashable
