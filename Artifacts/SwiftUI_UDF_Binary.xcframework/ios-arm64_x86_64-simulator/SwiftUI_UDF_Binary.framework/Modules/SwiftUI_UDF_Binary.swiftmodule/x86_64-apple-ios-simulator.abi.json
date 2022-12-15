@@ -11046,6 +11046,7 @@
             "mangledName": "$s18SwiftUI_UDF_Binary6RouterC7routingxvp",
             "moduleName": "SwiftUI_UDF_Binary",
             "declAttributes": [
+              "Final",
               "HasStorage",
               "AccessControl"
             ],
@@ -11069,6 +11070,9 @@
                 "genericSig": "<τ_0_0 where τ_0_0 : SwiftUI_UDF_Binary.Routing>",
                 "sugared_genericSig": "<R where R : SwiftUI_UDF_Binary.Routing>",
                 "implicit": true,
+                "declAttributes": [
+                  "Final"
+                ],
                 "accessorKind": "get"
               },
               {
@@ -11094,6 +11098,9 @@
                 "genericSig": "<τ_0_0 where τ_0_0 : SwiftUI_UDF_Binary.Routing>",
                 "sugared_genericSig": "<R where R : SwiftUI_UDF_Binary.Routing>",
                 "implicit": true,
+                "declAttributes": [
+                  "Final"
+                ],
                 "accessorKind": "set"
               },
               {
@@ -11114,6 +11121,9 @@
                 "genericSig": "<τ_0_0 where τ_0_0 : SwiftUI_UDF_Binary.Routing>",
                 "sugared_genericSig": "<R where R : SwiftUI_UDF_Binary.Routing>",
                 "implicit": true,
+                "declAttributes": [
+                  "Final"
+                ],
                 "accessorKind": "_modify"
               }
             ]
@@ -11278,6 +11288,7 @@
             "genericSig": "<τ_0_0 where τ_0_0 : SwiftUI_UDF_Binary.Routing>",
             "sugared_genericSig": "<R where R : SwiftUI_UDF_Binary.Routing>",
             "declAttributes": [
+              "Final",
               "AccessControl",
               "Custom"
             ],
@@ -11291,6 +11302,7 @@
         "genericSig": "<τ_0_0 where τ_0_0 : SwiftUI_UDF_Binary.Routing>",
         "sugared_genericSig": "<R where R : SwiftUI_UDF_Binary.Routing>",
         "declAttributes": [
+          "Final",
           "AccessControl"
         ]
       },
@@ -18088,200 +18100,6 @@
         ]
       },
       {
-        "kind": "Import",
-        "name": "SwiftUI",
-        "printedName": "SwiftUI",
-        "declKind": "Import",
-        "moduleName": "SwiftUI_UDF_Binary"
-      },
-      {
-        "kind": "TypeDecl",
-        "name": "ContainerBuilder",
-        "printedName": "ContainerBuilder",
-        "children": [
-          {
-            "kind": "Function",
-            "name": "buildBlock",
-            "printedName": "buildBlock()",
-            "children": [
-              {
-                "kind": "TypeNominal",
-                "name": "RenderContainer",
-                "printedName": "SwiftUI_UDF_Binary.RenderContainer<SwiftUI.EmptyView, SwiftUI_UDF_Binary.EmptyReducer>",
-                "children": [
-                  {
-                    "kind": "TypeNominal",
-                    "name": "EmptyView",
-                    "printedName": "SwiftUI.EmptyView",
-                    "usr": "s:7SwiftUI9EmptyViewV"
-                  },
-                  {
-                    "kind": "TypeNominal",
-                    "name": "EmptyReducer",
-                    "printedName": "SwiftUI_UDF_Binary.EmptyReducer",
-                    "usr": "s:18SwiftUI_UDF_Binary12EmptyReducerV"
-                  }
-                ],
-                "usr": "s:18SwiftUI_UDF_Binary15RenderContainerV"
-              }
-            ],
-            "declKind": "Func",
-            "usr": "s:18SwiftUI_UDF_Binary16ContainerBuilderO10buildBlockAA06RenderE0Vy0aB09EmptyViewVAA0J7ReducerVGyFZ",
-            "mangledName": "$s18SwiftUI_UDF_Binary16ContainerBuilderO10buildBlockAA06RenderE0Vy0aB09EmptyViewVAA0J7ReducerVGyFZ",
-            "moduleName": "SwiftUI_UDF_Binary",
-            "static": true,
-            "declAttributes": [
-              "AccessControl"
-            ],
-            "funcSelfKind": "NonMutating"
-          },
-          {
-            "kind": "Function",
-            "name": "buildBlock",
-            "printedName": "buildBlock(_:)",
-            "children": [
-              {
-                "kind": "TypeNominal",
-                "name": "GenericTypeParam",
-                "printedName": "τ_0_0"
-              },
-              {
-                "kind": "TypeNominal",
-                "name": "GenericTypeParam",
-                "printedName": "τ_0_0"
-              }
-            ],
-            "declKind": "Func",
-            "usr": "s:18SwiftUI_UDF_Binary16ContainerBuilderO10buildBlockyxxAA0E0RzlFZ",
-            "mangledName": "$s18SwiftUI_UDF_Binary16ContainerBuilderO10buildBlockyxxAA0E0RzlFZ",
-            "moduleName": "SwiftUI_UDF_Binary",
-            "genericSig": "<τ_0_0 where τ_0_0 : SwiftUI_UDF_Binary.Container>",
-            "sugared_genericSig": "<C where C : SwiftUI_UDF_Binary.Container>",
-            "static": true,
-            "declAttributes": [
-              "AccessControl"
-            ],
-            "funcSelfKind": "NonMutating"
-          },
-          {
-            "kind": "Function",
-            "name": "buildEither",
-            "printedName": "buildEither(first:)",
-            "children": [
-              {
-                "kind": "TypeNominal",
-                "name": "GenericTypeParam",
-                "printedName": "τ_0_0"
-              },
-              {
-                "kind": "TypeNominal",
-                "name": "GenericTypeParam",
-                "printedName": "τ_0_0"
-              }
-            ],
-            "declKind": "Func",
-            "usr": "s:18SwiftUI_UDF_Binary16ContainerBuilderO11buildEither5firstxx_tAA0E0RzlFZ",
-            "mangledName": "$s18SwiftUI_UDF_Binary16ContainerBuilderO11buildEither5firstxx_tAA0E0RzlFZ",
-            "moduleName": "SwiftUI_UDF_Binary",
-            "genericSig": "<τ_0_0 where τ_0_0 : SwiftUI_UDF_Binary.Container>",
-            "sugared_genericSig": "<C where C : SwiftUI_UDF_Binary.Container>",
-            "static": true,
-            "declAttributes": [
-              "AccessControl"
-            ],
-            "funcSelfKind": "NonMutating"
-          },
-          {
-            "kind": "Function",
-            "name": "buildEither",
-            "printedName": "buildEither(second:)",
-            "children": [
-              {
-                "kind": "TypeNominal",
-                "name": "GenericTypeParam",
-                "printedName": "τ_0_0"
-              },
-              {
-                "kind": "TypeNominal",
-                "name": "GenericTypeParam",
-                "printedName": "τ_0_0"
-              }
-            ],
-            "declKind": "Func",
-            "usr": "s:18SwiftUI_UDF_Binary16ContainerBuilderO11buildEither6secondxx_tAA0E0RzlFZ",
-            "mangledName": "$s18SwiftUI_UDF_Binary16ContainerBuilderO11buildEither6secondxx_tAA0E0RzlFZ",
-            "moduleName": "SwiftUI_UDF_Binary",
-            "genericSig": "<τ_0_0 where τ_0_0 : SwiftUI_UDF_Binary.Container>",
-            "sugared_genericSig": "<C where C : SwiftUI_UDF_Binary.Container>",
-            "static": true,
-            "declAttributes": [
-              "AccessControl"
-            ],
-            "funcSelfKind": "NonMutating"
-          },
-          {
-            "kind": "Function",
-            "name": "buildExpression",
-            "printedName": "buildExpression(_:)",
-            "children": [
-              {
-                "kind": "TypeNominal",
-                "name": "RenderContainer",
-                "printedName": "SwiftUI_UDF_Binary.RenderContainer<τ_0_0, SwiftUI_UDF_Binary.EmptyReducer>",
-                "children": [
-                  {
-                    "kind": "TypeNominal",
-                    "name": "GenericTypeParam",
-                    "printedName": "τ_0_0"
-                  },
-                  {
-                    "kind": "TypeNominal",
-                    "name": "EmptyReducer",
-                    "printedName": "SwiftUI_UDF_Binary.EmptyReducer",
-                    "usr": "s:18SwiftUI_UDF_Binary12EmptyReducerV"
-                  }
-                ],
-                "usr": "s:18SwiftUI_UDF_Binary15RenderContainerV"
-              },
-              {
-                "kind": "TypeNominal",
-                "name": "GenericTypeParam",
-                "printedName": "τ_0_0"
-              }
-            ],
-            "declKind": "Func",
-            "usr": "s:18SwiftUI_UDF_Binary16ContainerBuilderO15buildExpressionyAA06RenderE0VyxAA12EmptyReducerVGx0aB04ViewRzlFZ",
-            "mangledName": "$s18SwiftUI_UDF_Binary16ContainerBuilderO15buildExpressionyAA06RenderE0VyxAA12EmptyReducerVGx0aB04ViewRzlFZ",
-            "moduleName": "SwiftUI_UDF_Binary",
-            "genericSig": "<τ_0_0 where τ_0_0 : SwiftUI.View>",
-            "sugared_genericSig": "<V where V : SwiftUI.View>",
-            "static": true,
-            "declAttributes": [
-              "AccessControl"
-            ],
-            "funcSelfKind": "NonMutating"
-          }
-        ],
-        "declKind": "Enum",
-        "usr": "s:18SwiftUI_UDF_Binary16ContainerBuilderO",
-        "mangledName": "$s18SwiftUI_UDF_Binary16ContainerBuilderO",
-        "moduleName": "SwiftUI_UDF_Binary",
-        "declAttributes": [
-          "AccessControl",
-          "ResultBuilder"
-        ]
-      },
-      {
-        "kind": "Import",
-        "name": "Foundation",
-        "printedName": "Foundation",
-        "declKind": "Import",
-        "moduleName": "SwiftUI_UDF_Binary",
-        "declAttributes": [
-          "RawDocComment"
-        ]
-      },
-      {
         "kind": "TypeDecl",
         "name": "ReducibleMiddleware",
         "printedName": "ReducibleMiddleware",
@@ -19970,6 +19788,77 @@
             "moduleName": "SwiftUI_UDF_Binary",
             "genericSig": "<τ_0_0, τ_1_0 where τ_0_0 : SwiftUI_UDF_Binary.AppReducer, τ_1_0 : Swift.Hashable>",
             "sugared_genericSig": "<State, TaskId where State : SwiftUI_UDF_Binary.AppReducer, TaskId : Swift.Hashable>",
+            "declAttributes": [
+              "AccessControl"
+            ],
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "execute",
+            "printedName": "execute(id:cancelation:fileName:functionName:lineNumber:_:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "GenericTypeParam",
+                "printedName": "τ_1_0"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "GenericTypeParam",
+                "printedName": "τ_1_1"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "hasDefaultArg": true,
+                "usr": "s:SS"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "hasDefaultArg": true,
+                "usr": "s:SS"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Int",
+                "printedName": "Swift.Int",
+                "hasDefaultArg": true,
+                "usr": "s:Si"
+              },
+              {
+                "kind": "TypeFunc",
+                "name": "Function",
+                "printedName": "(τ_1_0) async throws -> SwiftUI_UDF_Binary.Action",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Action",
+                    "printedName": "SwiftUI_UDF_Binary.Action",
+                    "usr": "s:18SwiftUI_UDF_Binary6ActionP"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "GenericTypeParam",
+                    "printedName": "τ_1_0"
+                  }
+                ]
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:18SwiftUI_UDF_Binary25BaseConcurrencyMiddlewareC7execute2id11cancelation8fileName08functionL010lineNumber_yqd___qd_0_S2SSiAA6Action_pqd__YaKctSHRd__SHRd_0_r0_lF",
+            "mangledName": "$s18SwiftUI_UDF_Binary25BaseConcurrencyMiddlewareC7execute2id11cancelation8fileName08functionL010lineNumber_yqd___qd_0_S2SSiAA6Action_pqd__YaKctSHRd__SHRd_0_r0_lF",
+            "moduleName": "SwiftUI_UDF_Binary",
+            "genericSig": "<τ_0_0, τ_1_0, τ_1_1 where τ_0_0 : SwiftUI_UDF_Binary.AppReducer, τ_1_0 : Swift.Hashable, τ_1_1 : Swift.Hashable>",
+            "sugared_genericSig": "<State, TaskId, Cancelation where State : SwiftUI_UDF_Binary.AppReducer, TaskId : Swift.Hashable, Cancelation : Swift.Hashable>",
             "declAttributes": [
               "AccessControl"
             ],

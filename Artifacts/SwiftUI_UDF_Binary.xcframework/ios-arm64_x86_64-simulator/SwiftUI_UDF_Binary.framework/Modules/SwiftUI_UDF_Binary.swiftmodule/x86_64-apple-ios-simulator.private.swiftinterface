@@ -371,12 +371,12 @@ public protocol Routing : SwiftUI_UDF_Binary.Initable {
   func view(for route: Self.Route) -> Self.Destination
 }
 #endif
-public class Router<R> where R : SwiftUI_UDF_Binary.Routing {
-  public var routing: R
+final public class Router<R> where R : SwiftUI_UDF_Binary.Routing {
+  final public var routing: R
   public init(routing: R)
   public init()
   public init<MockView>(routing: R, @SwiftUI.ViewBuilder mocked: @escaping (_ routing: R, _ route: R.Route) -> MockView) where MockView : SwiftUI.View
-  public func view(for route: R.Route) -> some SwiftUI.View
+  final public func view(for route: R.Route) -> some SwiftUI.View
   
   @objc deinit
 }
@@ -668,13 +668,6 @@ public enum ActionPriority {
     get
   }
 }
-@_functionBuilder public enum ContainerBuilder {
-  public static func buildBlock() -> SwiftUI_UDF_Binary.RenderContainer<SwiftUI.EmptyView, SwiftUI_UDF_Binary.EmptyReducer>
-  public static func buildBlock<C>(_ container: C) -> C where C : SwiftUI_UDF_Binary.Container
-  public static func buildEither<C>(first container: C) -> C where C : SwiftUI_UDF_Binary.Container
-  public static func buildEither<C>(second container: C) -> C where C : SwiftUI_UDF_Binary.Container
-  public static func buildExpression<V>(_ expression: V) -> SwiftUI_UDF_Binary.RenderContainer<V, SwiftUI_UDF_Binary.EmptyReducer> where V : SwiftUI.View
-}
 public protocol ReducibleMiddleware : SwiftUI_UDF_Binary.Middleware {
   func reduce(_ action: some Action, for state: Self.State)
 }
@@ -751,6 +744,9 @@ open class BaseConcurrencyMiddleware<State> : SwiftUI_UDF_Binary.Middleware wher
   required public init(store: some Store<State>, queue: Dispatch.DispatchQueue)
   #if compiler(>=5.3) && $AsyncAwait
   public func execute<TaskId>(id: TaskId, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line, _ task: @escaping (TaskId) async throws -> SwiftUI_UDF_Binary.Action) where TaskId : Swift.Hashable
+  #endif
+  #if compiler(>=5.3) && $AsyncAwait
+  public func execute<TaskId, Cancelation>(id: TaskId, cancelation: Cancelation, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line, _ task: @escaping (TaskId) async throws -> SwiftUI_UDF_Binary.Action) where TaskId : Swift.Hashable, Cancelation : Swift.Hashable
   #endif
   public func execute(_ effect: some ConcurrencyEffect, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line)
   public func execute<Id>(_ effect: some ConcurrencyEffect, cancelation: Id, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) where Id : Swift.Hashable
