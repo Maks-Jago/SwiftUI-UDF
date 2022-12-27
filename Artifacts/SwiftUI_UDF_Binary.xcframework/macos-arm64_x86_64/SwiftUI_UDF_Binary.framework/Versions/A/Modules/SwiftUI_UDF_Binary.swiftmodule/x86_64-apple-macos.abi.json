@@ -2975,9 +2975,66 @@
         ]
       },
       {
+        "kind": "Import",
+        "name": "SwiftUI",
+        "printedName": "SwiftUI",
+        "declKind": "Import",
+        "moduleName": "SwiftUI_UDF_Binary"
+      },
+      {
         "kind": "TypeDecl",
         "name": "Action",
         "printedName": "Action",
+        "children": [
+          {
+            "kind": "Function",
+            "name": "with",
+            "printedName": "with(animation:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "OpaqueTypeArchetype",
+                "printedName": "some SwiftUI_UDF_Binary.Action",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Action",
+                    "printedName": "SwiftUI_UDF_Binary.Action",
+                    "usr": "s:18SwiftUI_UDF_Binary6ActionP"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Equatable",
+                    "printedName": "Swift.Equatable",
+                    "usr": "s:SQ"
+                  }
+                ]
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "SwiftUI.Animation?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Animation",
+                    "printedName": "SwiftUI.Animation",
+                    "usr": "s:7SwiftUI9AnimationV"
+                  }
+                ],
+                "usr": "s:Sq"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:18SwiftUI_UDF_Binary6ActionPAAE4with9animationQr0aB09AnimationVSg_tF",
+            "mangledName": "$s18SwiftUI_UDF_Binary6ActionPAAE4with9animationQr0aB09AnimationVSg_tF",
+            "moduleName": "SwiftUI_UDF_Binary",
+            "genericSig": "<τ_0_0 where τ_0_0 : SwiftUI_UDF_Binary.Action>",
+            "sugared_genericSig": "<Self where Self : SwiftUI_UDF_Binary.Action>",
+            "isFromExtension": true,
+            "funcSelfKind": "NonMutating"
+          }
+        ],
         "declKind": "Protocol",
         "usr": "s:18SwiftUI_UDF_Binary6ActionP",
         "mangledName": "$s18SwiftUI_UDF_Binary6ActionP",
@@ -16861,7 +16918,7 @@
           {
             "kind": "Function",
             "name": "dispatch",
-            "printedName": "dispatch(_:priority:animation:fileName:functionName:lineNumber:)",
+            "printedName": "dispatch(_:priority:fileName:functionName:lineNumber:)",
             "children": [
               {
                 "kind": "TypeNominal",
@@ -16879,21 +16936,6 @@
                 "printedName": "SwiftUI_UDF_Binary.ActionPriority",
                 "hasDefaultArg": true,
                 "usr": "s:18SwiftUI_UDF_Binary14ActionPriorityO"
-              },
-              {
-                "kind": "TypeNominal",
-                "name": "Optional",
-                "printedName": "SwiftUI.Animation?",
-                "children": [
-                  {
-                    "kind": "TypeNominal",
-                    "name": "Animation",
-                    "printedName": "SwiftUI.Animation",
-                    "usr": "s:7SwiftUI9AnimationV"
-                  }
-                ],
-                "hasDefaultArg": true,
-                "usr": "s:Sq"
               },
               {
                 "kind": "TypeNominal",
@@ -16918,8 +16960,8 @@
               }
             ],
             "declKind": "Func",
-            "usr": "s:18SwiftUI_UDF_Binary16EnvironmentStoreC8dispatch_8priority9animation8fileName08functionK010lineNumberyqd___AA14ActionPriorityO0aB09AnimationVSgS2SSitAA0O0Rd__lF",
-            "mangledName": "$s18SwiftUI_UDF_Binary16EnvironmentStoreC8dispatch_8priority9animation8fileName08functionK010lineNumberyqd___AA14ActionPriorityO0aB09AnimationVSgS2SSitAA0O0Rd__lF",
+            "usr": "s:18SwiftUI_UDF_Binary16EnvironmentStoreC8dispatch_8priority8fileName08functionJ010lineNumberyqd___AA14ActionPriorityOS2SSitAA0N0Rd__lF",
+            "mangledName": "$s18SwiftUI_UDF_Binary16EnvironmentStoreC8dispatch_8priority8fileName08functionJ010lineNumberyqd___AA14ActionPriorityOS2SSitAA0N0Rd__lF",
             "moduleName": "SwiftUI_UDF_Binary",
             "genericSig": "<τ_0_0, τ_1_0 where τ_0_0 : SwiftUI_UDF_Binary.AppReducer, τ_1_0 : SwiftUI_UDF_Binary.Action>",
             "sugared_genericSig": "<State where State : SwiftUI_UDF_Binary.AppReducer>",
@@ -17514,7 +17556,7 @@
           {
             "kind": "Function",
             "name": "dispatch",
-            "printedName": "dispatch(_:priority:animation:fileName:functionName:lineNumber:)",
+            "printedName": "dispatch(_:priority:fileName:functionName:lineNumber:)",
             "children": [
               {
                 "kind": "TypeNominal",
@@ -17531,20 +17573,6 @@
                 "name": "ActionPriority",
                 "printedName": "SwiftUI_UDF_Binary.ActionPriority",
                 "usr": "s:18SwiftUI_UDF_Binary14ActionPriorityO"
-              },
-              {
-                "kind": "TypeNominal",
-                "name": "Optional",
-                "printedName": "SwiftUI.Animation?",
-                "children": [
-                  {
-                    "kind": "TypeNominal",
-                    "name": "Animation",
-                    "printedName": "SwiftUI.Animation",
-                    "usr": "s:7SwiftUI9AnimationV"
-                  }
-                ],
-                "usr": "s:Sq"
               },
               {
                 "kind": "TypeNominal",
@@ -17566,8 +17594,8 @@
               }
             ],
             "declKind": "Func",
-            "usr": "s:18SwiftUI_UDF_Binary5StoreP8dispatch_8priority9animation8fileName08functionJ010lineNumberyqd___AA14ActionPriorityO0aB09AnimationVSgS2SSitAA0N0Rd__lF",
-            "mangledName": "$s18SwiftUI_UDF_Binary5StoreP8dispatch_8priority9animation8fileName08functionJ010lineNumberyqd___AA14ActionPriorityO0aB09AnimationVSgS2SSitAA0N0Rd__lF",
+            "usr": "s:18SwiftUI_UDF_Binary5StoreP8dispatch_8priority8fileName08functionI010lineNumberyqd___AA14ActionPriorityOS2SSitAA0M0Rd__lF",
+            "mangledName": "$s18SwiftUI_UDF_Binary5StoreP8dispatch_8priority8fileName08functionI010lineNumberyqd___AA14ActionPriorityOS2SSitAA0M0Rd__lF",
             "moduleName": "SwiftUI_UDF_Binary",
             "genericSig": "<τ_0_0, τ_1_0 where τ_0_0 : SwiftUI_UDF_Binary.Store, τ_1_0 : SwiftUI_UDF_Binary.Action>",
             "sugared_genericSig": "<Self where Self : SwiftUI_UDF_Binary.Store>",
@@ -17581,7 +17609,7 @@
           {
             "kind": "Function",
             "name": "dispatch",
-            "printedName": "dispatch(_:priority:animation:fileName:functionName:lineNumber:)",
+            "printedName": "dispatch(_:priority:fileName:functionName:lineNumber:)",
             "children": [
               {
                 "kind": "TypeNominal",
@@ -17599,21 +17627,6 @@
                 "printedName": "SwiftUI_UDF_Binary.ActionPriority",
                 "hasDefaultArg": true,
                 "usr": "s:18SwiftUI_UDF_Binary14ActionPriorityO"
-              },
-              {
-                "kind": "TypeNominal",
-                "name": "Optional",
-                "printedName": "SwiftUI.Animation?",
-                "children": [
-                  {
-                    "kind": "TypeNominal",
-                    "name": "Animation",
-                    "printedName": "SwiftUI.Animation",
-                    "usr": "s:7SwiftUI9AnimationV"
-                  }
-                ],
-                "hasDefaultArg": true,
-                "usr": "s:Sq"
               },
               {
                 "kind": "TypeNominal",
@@ -17638,8 +17651,8 @@
               }
             ],
             "declKind": "Func",
-            "usr": "s:18SwiftUI_UDF_Binary5StorePAAE8dispatch_8priority9animation8fileName08functionJ010lineNumberyqd___AA14ActionPriorityO0aB09AnimationVSgS2SSitAA0N0Rd__lF",
-            "mangledName": "$s18SwiftUI_UDF_Binary5StorePAAE8dispatch_8priority9animation8fileName08functionJ010lineNumberyqd___AA14ActionPriorityO0aB09AnimationVSgS2SSitAA0N0Rd__lF",
+            "usr": "s:18SwiftUI_UDF_Binary5StorePAAE8dispatch_8priority8fileName08functionI010lineNumberyqd___AA14ActionPriorityOS2SSitAA0M0Rd__lF",
+            "mangledName": "$s18SwiftUI_UDF_Binary5StorePAAE8dispatch_8priority8fileName08functionI010lineNumberyqd___AA14ActionPriorityOS2SSitAA0M0Rd__lF",
             "moduleName": "SwiftUI_UDF_Binary",
             "genericSig": "<τ_0_0, τ_1_0 where τ_0_0 : SwiftUI_UDF_Binary.Store, τ_1_0 : SwiftUI_UDF_Binary.Action>",
             "sugared_genericSig": "<Self where Self : SwiftUI_UDF_Binary.Store>",
@@ -17652,7 +17665,7 @@
           {
             "kind": "Function",
             "name": "bind",
-            "printedName": "bind(_:priority:animation:fileName:functionName:lineNumber:)",
+            "printedName": "bind(_:priority:fileName:functionName:lineNumber:)",
             "children": [
               {
                 "kind": "TypeFunc",
@@ -17685,21 +17698,6 @@
               },
               {
                 "kind": "TypeNominal",
-                "name": "Optional",
-                "printedName": "SwiftUI.Animation?",
-                "children": [
-                  {
-                    "kind": "TypeNominal",
-                    "name": "Animation",
-                    "printedName": "SwiftUI.Animation",
-                    "usr": "s:7SwiftUI9AnimationV"
-                  }
-                ],
-                "hasDefaultArg": true,
-                "usr": "s:Sq"
-              },
-              {
-                "kind": "TypeNominal",
                 "name": "String",
                 "printedName": "Swift.String",
                 "hasDefaultArg": true,
@@ -17721,8 +17719,8 @@
               }
             ],
             "declKind": "Func",
-            "usr": "s:18SwiftUI_UDF_Binary5StorePAAE4bind_8priority9animation8fileName08functionJ010lineNumberyycqd___AA14ActionPriorityO0aB09AnimationVSgS2SSitAA0N0Rd__lF",
-            "mangledName": "$s18SwiftUI_UDF_Binary5StorePAAE4bind_8priority9animation8fileName08functionJ010lineNumberyycqd___AA14ActionPriorityO0aB09AnimationVSgS2SSitAA0N0Rd__lF",
+            "usr": "s:18SwiftUI_UDF_Binary5StorePAAE4bind_8priority8fileName08functionI010lineNumberyycqd___AA14ActionPriorityOS2SSitAA0M0Rd__lF",
+            "mangledName": "$s18SwiftUI_UDF_Binary5StorePAAE4bind_8priority8fileName08functionI010lineNumberyycqd___AA14ActionPriorityOS2SSitAA0M0Rd__lF",
             "moduleName": "SwiftUI_UDF_Binary",
             "genericSig": "<τ_0_0, τ_1_0 where τ_0_0 : SwiftUI_UDF_Binary.Store, τ_1_0 : SwiftUI_UDF_Binary.Action>",
             "sugared_genericSig": "<Self where Self : SwiftUI_UDF_Binary.Store>",
@@ -17732,7 +17730,7 @@
           {
             "kind": "Function",
             "name": "bind",
-            "printedName": "bind(_:priority:animation:fileName:functionName:lineNumber:)",
+            "printedName": "bind(_:priority:fileName:functionName:lineNumber:)",
             "children": [
               {
                 "kind": "TypeFunc",
@@ -17777,21 +17775,6 @@
               },
               {
                 "kind": "TypeNominal",
-                "name": "Optional",
-                "printedName": "SwiftUI.Animation?",
-                "children": [
-                  {
-                    "kind": "TypeNominal",
-                    "name": "Animation",
-                    "printedName": "SwiftUI.Animation",
-                    "usr": "s:7SwiftUI9AnimationV"
-                  }
-                ],
-                "hasDefaultArg": true,
-                "usr": "s:Sq"
-              },
-              {
-                "kind": "TypeNominal",
                 "name": "String",
                 "printedName": "Swift.String",
                 "hasDefaultArg": true,
@@ -17813,8 +17796,8 @@
               }
             ],
             "declKind": "Func",
-            "usr": "s:18SwiftUI_UDF_Binary5StorePAAE4bind_8priority9animation8fileName08functionJ010lineNumberyqd__cqd_0_qd__c_AA14ActionPriorityO0aB09AnimationVSgS2SSitAA0N0Rd_0_r0_lF",
-            "mangledName": "$s18SwiftUI_UDF_Binary5StorePAAE4bind_8priority9animation8fileName08functionJ010lineNumberyqd__cqd_0_qd__c_AA14ActionPriorityO0aB09AnimationVSgS2SSitAA0N0Rd_0_r0_lF",
+            "usr": "s:18SwiftUI_UDF_Binary5StorePAAE4bind_8priority8fileName08functionI010lineNumberyqd__cqd_0_qd__c_AA14ActionPriorityOS2SSitAA0M0Rd_0_r0_lF",
+            "mangledName": "$s18SwiftUI_UDF_Binary5StorePAAE4bind_8priority8fileName08functionI010lineNumberyqd__cqd_0_qd__c_AA14ActionPriorityOS2SSitAA0M0Rd_0_r0_lF",
             "moduleName": "SwiftUI_UDF_Binary",
             "genericSig": "<τ_0_0, τ_1_0, τ_1_1 where τ_0_0 : SwiftUI_UDF_Binary.Store, τ_1_1 : SwiftUI_UDF_Binary.Action>",
             "sugared_genericSig": "<Self, T where Self : SwiftUI_UDF_Binary.Store>",

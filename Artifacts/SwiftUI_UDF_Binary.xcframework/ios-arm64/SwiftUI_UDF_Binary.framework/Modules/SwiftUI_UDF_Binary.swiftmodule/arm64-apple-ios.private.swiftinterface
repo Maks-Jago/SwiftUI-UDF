@@ -154,6 +154,10 @@ extension SwiftUI_UDF_Binary.IsEquatable where Self : Swift.Equatable {
 }
 public protocol Action : Swift.Equatable {
 }
+extension SwiftUI_UDF_Binary.Action {
+  public func with(animation: SwiftUI.Animation?) -> some SwiftUI_UDF_Binary.Action
+  
+}
 extension SwiftUI_UDF_Binary.Effects {
   public struct Delay : SwiftUI_UDF_Binary.Effectable {
     public var upstream: Combine.AnyPublisher<SwiftUI_UDF_Binary.Action, Swift.Never>
@@ -609,7 +613,7 @@ final public class EnvironmentStore<State> where State : SwiftUI_UDF_Binary.AppR
   }
   public init(initial state: State, accessToken: Swift.String, loggers: [SwiftUI_UDF_Binary.ActionLogger]) throws
   convenience public init(initial state: State, accessToken: Swift.String, logger: SwiftUI_UDF_Binary.ActionLogger) throws
-  final public func dispatch(_ action: some Action, priority: SwiftUI_UDF_Binary.ActionPriority = .default, animation: SwiftUI.Animation? = nil, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line)
+  final public func dispatch(_ action: some Action, priority: SwiftUI_UDF_Binary.ActionPriority = .default, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line)
   @objc deinit
 }
 extension SwiftUI_UDF_Binary.EnvironmentStore {
@@ -645,19 +649,19 @@ public protocol ConcurrencyEffect {
 public protocol Store<State> : _Concurrency.Actor {
   associatedtype State : SwiftUI_UDF_Binary.AppReducer
   var state: Self.State { get }
-  nonisolated func dispatch(_ action: some Action, priority: SwiftUI_UDF_Binary.ActionPriority, animation: SwiftUI.Animation?, fileName: Swift.String, functionName: Swift.String, lineNumber: Swift.Int)
+  nonisolated func dispatch(_ action: some Action, priority: SwiftUI_UDF_Binary.ActionPriority, fileName: Swift.String, functionName: Swift.String, lineNumber: Swift.Int)
 }
 #else
 public protocol Store : _Concurrency.Actor {
   associatedtype State : SwiftUI_UDF_Binary.AppReducer
   var state: Self.State { get }
-  nonisolated func dispatch(_ action: some Action, priority: SwiftUI_UDF_Binary.ActionPriority, animation: SwiftUI.Animation?, fileName: Swift.String, functionName: Swift.String, lineNumber: Swift.Int)
+  nonisolated func dispatch(_ action: some Action, priority: SwiftUI_UDF_Binary.ActionPriority, fileName: Swift.String, functionName: Swift.String, lineNumber: Swift.Int)
 }
 #endif
 extension SwiftUI_UDF_Binary.Store {
-  nonisolated public func dispatch(_ action: some Action, priority: SwiftUI_UDF_Binary.ActionPriority = .default, animation: SwiftUI.Animation? = nil, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line)
-  public func bind(_ action: some Action, priority: SwiftUI_UDF_Binary.ActionPriority = .default, animation: SwiftUI.Animation? = nil, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) -> SwiftUI_UDF_Binary.Command
-  public func bind<T>(_ action: @escaping (T) -> some Action, priority: SwiftUI_UDF_Binary.ActionPriority = .default, animation: SwiftUI.Animation? = nil, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) -> SwiftUI_UDF_Binary.CommandWith<T>
+  nonisolated public func dispatch(_ action: some Action, priority: SwiftUI_UDF_Binary.ActionPriority = .default, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line)
+  public func bind(_ action: some Action, priority: SwiftUI_UDF_Binary.ActionPriority = .default, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) -> SwiftUI_UDF_Binary.Command
+  public func bind<T>(_ action: @escaping (T) -> some Action, priority: SwiftUI_UDF_Binary.ActionPriority = .default, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) -> SwiftUI_UDF_Binary.CommandWith<T>
 }
 public enum ActionPriority {
   case `default`
