@@ -101,8 +101,8 @@ public enum AlertBuilder {
             case customDismiss(title: () -> String, text: () -> String, dismissButton: Alert.Button)
         }
 
-        public init(validationError text: @autoclosure @escaping () -> String) {
-            self.init(validationError: text)
+        public init(validationError text: String) {
+            self.init(validationError: { text })
         }
 
         public init(validationError text: @escaping () -> String) {
@@ -110,8 +110,8 @@ public enum AlertBuilder {
             type = .validationError(text: text)
         }
 
-        public init(failure text: @autoclosure @escaping () -> String) {
-            self.init(failure: text)
+        public init(failure text: String) {
+            self.init(failure: { text })
         }
 
         public init(failure text: @escaping () -> String) {
@@ -119,8 +119,8 @@ public enum AlertBuilder {
             type = .failure(text: text)
         }
 
-        public init(success text: @autoclosure @escaping () -> String) {
-            self.init(success: text)
+        public init(success text: String) {
+            self.init(success: { text })
         }
 
         public init(success text: @escaping () -> String) {
@@ -128,8 +128,8 @@ public enum AlertBuilder {
             type = .success(text: text)
         }
 
-        public init(message text: @autoclosure @escaping () -> String) {
-            self.init(message: text)
+        public init(message text: String) {
+            self.init(message: { text })
         }
 
         public init(message text: @escaping () -> String) {
@@ -137,8 +137,8 @@ public enum AlertBuilder {
             type = .message(text: text)
         }
 
-        public init(title: @autoclosure @escaping () -> String, message: @autoclosure @escaping () -> String) {
-            self.init(title: title, message: message)
+        public init(title: String, message: String) {
+            self.init(title: { title }, message: { message })
         }
 
         public init(title: @escaping () -> String, message: @escaping () -> String) {
@@ -146,8 +146,8 @@ public enum AlertBuilder {
             type = .messageTitle(title: title, message: message)
         }
 
-        public init(title: @autoclosure @escaping () -> String, text: @autoclosure @escaping () -> String, primaryButton: Alert.Button, secondaryButton: Alert.Button) {
-            self.init(title: title, text: text, primaryButton: primaryButton, secondaryButton: secondaryButton)
+        public init(title: String, text: String, primaryButton: Alert.Button, secondaryButton: Alert.Button) {
+            self.init(title: { title }, text: { text }, primaryButton: primaryButton, secondaryButton: secondaryButton)
         }
 
         public init(title: @escaping () -> String, text: @escaping () -> String, primaryButton: Alert.Button, secondaryButton: Alert.Button) {
@@ -155,8 +155,8 @@ public enum AlertBuilder {
             type = .custom(title: title, text: text, primaryButton: primaryButton, secondaryButton: secondaryButton)
         }
 
-        public init(title: @autoclosure @escaping () -> String, text: @autoclosure @escaping () -> String, dismissButton: Alert.Button) {
-            self.init(title: title, text: text, dismissButton: dismissButton)
+        public init(title: String, text: String, dismissButton: Alert.Button) {
+            self.init(title: { title }, text: { text }, dismissButton: dismissButton)
         }
 
         public init(title: @escaping () -> String, text: @escaping () -> String, dismissButton: Alert.Button) {
