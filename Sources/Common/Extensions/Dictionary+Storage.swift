@@ -16,9 +16,7 @@ public extension Dictionary {
 
     mutating func append<V>(_ values: [V], by key: Key) where Value == OrderedSet<V> {
         var set = self[key] ?? []
-        values.forEach {
-            set.append($0)
-        }
+        set.append(contentsOf: values)
         self[key] = set
     }
 
