@@ -384,6 +384,9 @@ final public class Router<R> where R : SwiftUI_UDF_Binary.Routing {
   
   @objc deinit
 }
+extension Combine.Publishers {
+  public static func IsolatedState<State>(from store: some Store<State>) -> Combine.AnyPublisher<State, Swift.Never>
+}
 extension SwiftUI.Binding {
   public init(_ bind: @autoclosure @escaping () -> SwiftUI.Binding<Value>)
 }

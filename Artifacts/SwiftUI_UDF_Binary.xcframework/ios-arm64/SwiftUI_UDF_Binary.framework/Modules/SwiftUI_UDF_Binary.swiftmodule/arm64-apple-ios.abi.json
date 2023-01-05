@@ -21002,6 +21002,68 @@
       },
       {
         "kind": "TypeDecl",
+        "name": "Publishers",
+        "printedName": "Publishers",
+        "children": [
+          {
+            "kind": "Function",
+            "name": "IsolatedState",
+            "printedName": "IsolatedState(from:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "AnyPublisher",
+                "printedName": "Combine.AnyPublisher<τ_0_0, Swift.Never>",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "GenericTypeParam",
+                    "printedName": "τ_0_0"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Never",
+                    "printedName": "Swift.Never",
+                    "usr": "s:s5NeverO"
+                  }
+                ],
+                "usr": "s:7Combine12AnyPublisherV"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "GenericTypeParam",
+                "printedName": "τ_0_1"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:7Combine10PublishersO18SwiftUI_UDF_BinaryE13IsolatedState4fromAA12AnyPublisherVyxs5NeverOGq__t0H0Qy_RszAD5StoreR_r0_lFZ",
+            "mangledName": "$s7Combine10PublishersO18SwiftUI_UDF_BinaryE13IsolatedState4fromAA12AnyPublisherVyxs5NeverOGq__t0H0Qy_RszAD5StoreR_r0_lFZ",
+            "moduleName": "SwiftUI_UDF_Binary",
+            "genericSig": "<τ_0_0, τ_0_1 where τ_0_0 == τ_0_1.State, τ_0_1 : SwiftUI_UDF_Binary.Store>",
+            "sugared_genericSig": "<State>",
+            "static": true,
+            "isFromExtension": true,
+            "funcSelfKind": "NonMutating"
+          }
+        ],
+        "declKind": "Enum",
+        "usr": "s:7Combine10PublishersO",
+        "mangledName": "$s7Combine10PublishersO",
+        "moduleName": "Combine",
+        "intro_Macosx": "10.15",
+        "intro_iOS": "13.0",
+        "intro_tvOS": "13.0",
+        "intro_watchOS": "6.0",
+        "declAttributes": [
+          "Available",
+          "Available",
+          "Available",
+          "Available"
+        ],
+        "isExternal": true
+      },
+      {
+        "kind": "TypeDecl",
         "name": "Binding",
         "printedName": "Binding",
         "children": [
