@@ -24211,48 +24211,6 @@
           },
           {
             "kind": "Conformance",
-            "name": "EncodableWithConfiguration",
-            "printedName": "EncodableWithConfiguration",
-            "children": [
-              {
-                "kind": "TypeWitness",
-                "name": "EncodingConfiguration",
-                "printedName": "EncodingConfiguration",
-                "children": [
-                  {
-                    "kind": "TypeNominal",
-                    "name": "DependentMember",
-                    "printedName": "τ_0_0.EncodingConfiguration"
-                  }
-                ]
-              }
-            ],
-            "usr": "s:10Foundation26EncodableWithConfigurationP",
-            "mangledName": "$s10Foundation26EncodableWithConfigurationP"
-          },
-          {
-            "kind": "Conformance",
-            "name": "DecodableWithConfiguration",
-            "printedName": "DecodableWithConfiguration",
-            "children": [
-              {
-                "kind": "TypeWitness",
-                "name": "DecodingConfiguration",
-                "printedName": "DecodingConfiguration",
-                "children": [
-                  {
-                    "kind": "TypeNominal",
-                    "name": "DependentMember",
-                    "printedName": "τ_0_0.DecodingConfiguration"
-                  }
-                ]
-              }
-            ],
-            "usr": "s:10Foundation26DecodableWithConfigurationP",
-            "mangledName": "$s10Foundation26DecodableWithConfigurationP"
-          },
-          {
-            "kind": "Conformance",
             "name": "DataProtocol",
             "printedName": "DataProtocol",
             "children": [
@@ -24295,6 +24253,48 @@
             "printedName": "MutableDataProtocol",
             "usr": "s:10Foundation19MutableDataProtocolP",
             "mangledName": "$s10Foundation19MutableDataProtocolP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "EncodableWithConfiguration",
+            "printedName": "EncodableWithConfiguration",
+            "children": [
+              {
+                "kind": "TypeWitness",
+                "name": "EncodingConfiguration",
+                "printedName": "EncodingConfiguration",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "DependentMember",
+                    "printedName": "τ_0_0.EncodingConfiguration"
+                  }
+                ]
+              }
+            ],
+            "usr": "s:10Foundation26EncodableWithConfigurationP",
+            "mangledName": "$s10Foundation26EncodableWithConfigurationP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "DecodableWithConfiguration",
+            "printedName": "DecodableWithConfiguration",
+            "children": [
+              {
+                "kind": "TypeWitness",
+                "name": "DecodingConfiguration",
+                "printedName": "DecodingConfiguration",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "DependentMember",
+                    "printedName": "τ_0_0.DecodingConfiguration"
+                  }
+                ]
+              }
+            ],
+            "usr": "s:10Foundation26DecodableWithConfigurationP",
+            "mangledName": "$s10Foundation26DecodableWithConfigurationP"
           },
           {
             "kind": "Conformance",
