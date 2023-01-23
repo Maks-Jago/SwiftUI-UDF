@@ -533,18 +533,20 @@ open class BaseMiddleware<State> : SwiftUI_UDF_Binary.Middleware where State : S
   public var store: any SwiftUI_UDF_Binary.Store<State>
   public var queue: Dispatch.DispatchQueue
   required public init(store: some Store<State>, queue: Dispatch.DispatchQueue)
-  public func status(for state: State) -> SwiftUI_UDF_Binary.MiddlewareStatus
+  open func status(for state: State) -> SwiftUI_UDF_Binary.MiddlewareStatus
   public typealias DispatchFilter<Output> = (_ state: State, _ output: Output) -> Swift.Bool
   public var cancelations: [Swift.AnyHashable : Combine.AnyCancellable]
-  public func execute<E, Id>(_ effect: E, cancelation: Id, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) where E : SwiftUI_UDF_Binary.PureEffect, Id : Swift.Hashable, E.Failure == Swift.Never, E.Output == SwiftUI_UDF_Binary.Action
-  public func execute<E, Id>(_ effect: E, cancelation: Id, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) where E : SwiftUI_UDF_Binary.ErasableToEffect, E : SwiftUI_UDF_Binary.PureEffect, Id : Swift.Hashable
-  public func run<E, Id>(_ effect: E, cancelation: Id, dispatchFilter: @escaping SwiftUI_UDF_Binary.BaseMiddleware<State>.DispatchFilter<SwiftUI_UDF_Binary.Action>, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) where E : SwiftUI_UDF_Binary.PureEffect, Id : Swift.Hashable, E.Failure == Swift.Never, E.Output == SwiftUI_UDF_Binary.Action
-  public func run<E, Id>(_ effect: E, cancelation: Id, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) where E : SwiftUI_UDF_Binary.PureEffect, Id : Swift.Hashable, E.Failure == Swift.Never, E.Output == SwiftUI_UDF_Binary.Action
+  open func execute<E, Id>(_ effect: E, cancelation: Id, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) where E : SwiftUI_UDF_Binary.PureEffect, Id : Swift.Hashable, E.Failure == Swift.Never, E.Output == SwiftUI_UDF_Binary.Action
+  open func execute<E, Id>(_ effect: E, cancelation: Id, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) where E : SwiftUI_UDF_Binary.ErasableToEffect, E : SwiftUI_UDF_Binary.PureEffect, Id : Swift.Hashable
+  open func run<E, Id>(_ effect: E, cancelation: Id, dispatchFilter: @escaping SwiftUI_UDF_Binary.BaseMiddleware<State>.DispatchFilter<SwiftUI_UDF_Binary.Action>, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) where E : SwiftUI_UDF_Binary.PureEffect, Id : Swift.Hashable, E.Failure == Swift.Never, E.Output == SwiftUI_UDF_Binary.Action
+  open func run<E, Id>(_ effect: E, cancelation: Id, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) where E : SwiftUI_UDF_Binary.PureEffect, Id : Swift.Hashable, E.Failure == Swift.Never, E.Output == SwiftUI_UDF_Binary.Action
   @discardableResult
-  public func cancel<Id>(by cancelation: Id) -> Swift.Bool where Id : Swift.Hashable
-  public func cancelAll()
-  public func execute<E>(_ effect: E, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) where E : SwiftUI_UDF_Binary.PureEffect, E.Failure == Swift.Never, E.Output == SwiftUI_UDF_Binary.Action
-  public func execute<E>(_ effect: E, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) where E : SwiftUI_UDF_Binary.ErasableToEffect, E : SwiftUI_UDF_Binary.PureEffect
+  open func cancel<Id>(by cancelation: Id) -> Swift.Bool where Id : Swift.Hashable
+  open func cancelAll()
+  @discardableResult
+  open func cancel() -> Swift.Bool
+  open func execute<E>(_ effect: E, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) where E : SwiftUI_UDF_Binary.PureEffect, E.Failure == Swift.Never, E.Output == SwiftUI_UDF_Binary.Action
+  open func execute<E>(_ effect: E, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) where E : SwiftUI_UDF_Binary.ErasableToEffect, E : SwiftUI_UDF_Binary.PureEffect
   @objc deinit
 }
 @_hasMissingDesignatedInitializers @dynamicMemberLookup final public class ReducerReference<AppState, Reducer> where AppState : SwiftUI_UDF_Binary.AppReducer, Reducer : Swift.Equatable, Reducer : SwiftUI_UDF_Binary.Reducing {

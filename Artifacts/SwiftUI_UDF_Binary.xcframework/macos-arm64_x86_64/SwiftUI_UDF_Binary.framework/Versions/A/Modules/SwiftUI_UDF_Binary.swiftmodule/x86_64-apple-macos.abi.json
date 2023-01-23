@@ -15027,6 +15027,7 @@
             "moduleName": "SwiftUI_UDF_Binary",
             "genericSig": "<τ_0_0 where τ_0_0 : SwiftUI_UDF_Binary.AppReducer>",
             "sugared_genericSig": "<State where State : SwiftUI_UDF_Binary.AppReducer>",
+            "isOpen": true,
             "declAttributes": [
               "AccessControl"
             ],
@@ -15214,6 +15215,7 @@
             "moduleName": "SwiftUI_UDF_Binary",
             "genericSig": "<τ_0_0, τ_1_0, τ_1_1 where τ_0_0 : SwiftUI_UDF_Binary.AppReducer, τ_1_0 : SwiftUI_UDF_Binary.PureEffect, τ_1_1 : Swift.Hashable, τ_1_0.Failure == Swift.Never, τ_1_0.Output == SwiftUI_UDF_Binary.Action>",
             "sugared_genericSig": "<State, E, Id where State : SwiftUI_UDF_Binary.AppReducer, E : SwiftUI_UDF_Binary.PureEffect, Id : Swift.Hashable, E.Failure == Swift.Never, E.Output == SwiftUI_UDF_Binary.Action>",
+            "isOpen": true,
             "declAttributes": [
               "AccessControl"
             ],
@@ -15267,6 +15269,7 @@
             "moduleName": "SwiftUI_UDF_Binary",
             "genericSig": "<τ_0_0, τ_1_0, τ_1_1 where τ_0_0 : SwiftUI_UDF_Binary.AppReducer, τ_1_0 : SwiftUI_UDF_Binary.ErasableToEffect, τ_1_0 : SwiftUI_UDF_Binary.PureEffect, τ_1_1 : Swift.Hashable>",
             "sugared_genericSig": "<State, E, Id where State : SwiftUI_UDF_Binary.AppReducer, E : SwiftUI_UDF_Binary.ErasableToEffect, E : SwiftUI_UDF_Binary.PureEffect, Id : Swift.Hashable>",
+            "isOpen": true,
             "declAttributes": [
               "AccessControl"
             ],
@@ -15351,6 +15354,7 @@
             "moduleName": "SwiftUI_UDF_Binary",
             "genericSig": "<τ_0_0, τ_1_0, τ_1_1 where τ_0_0 : SwiftUI_UDF_Binary.AppReducer, τ_1_0 : SwiftUI_UDF_Binary.PureEffect, τ_1_1 : Swift.Hashable, τ_1_0.Failure == Swift.Never, τ_1_0.Output == SwiftUI_UDF_Binary.Action>",
             "sugared_genericSig": "<State, E, Id where State : SwiftUI_UDF_Binary.AppReducer, E : SwiftUI_UDF_Binary.PureEffect, Id : Swift.Hashable, E.Failure == Swift.Never, E.Output == SwiftUI_UDF_Binary.Action>",
+            "isOpen": true,
             "declAttributes": [
               "AccessControl"
             ],
@@ -15404,6 +15408,7 @@
             "moduleName": "SwiftUI_UDF_Binary",
             "genericSig": "<τ_0_0, τ_1_0, τ_1_1 where τ_0_0 : SwiftUI_UDF_Binary.AppReducer, τ_1_0 : SwiftUI_UDF_Binary.PureEffect, τ_1_1 : Swift.Hashable, τ_1_0.Failure == Swift.Never, τ_1_0.Output == SwiftUI_UDF_Binary.Action>",
             "sugared_genericSig": "<State, E, Id where State : SwiftUI_UDF_Binary.AppReducer, E : SwiftUI_UDF_Binary.PureEffect, Id : Swift.Hashable, E.Failure == Swift.Never, E.Output == SwiftUI_UDF_Binary.Action>",
+            "isOpen": true,
             "declAttributes": [
               "AccessControl"
             ],
@@ -15432,6 +15437,7 @@
             "moduleName": "SwiftUI_UDF_Binary",
             "genericSig": "<τ_0_0, τ_1_0 where τ_0_0 : SwiftUI_UDF_Binary.AppReducer, τ_1_0 : Swift.Hashable>",
             "sugared_genericSig": "<State, Id where State : SwiftUI_UDF_Binary.AppReducer, Id : Swift.Hashable>",
+            "isOpen": true,
             "declAttributes": [
               "AccessControl",
               "DiscardableResult"
@@ -15455,8 +15461,34 @@
             "moduleName": "SwiftUI_UDF_Binary",
             "genericSig": "<τ_0_0 where τ_0_0 : SwiftUI_UDF_Binary.AppReducer>",
             "sugared_genericSig": "<State where State : SwiftUI_UDF_Binary.AppReducer>",
+            "isOpen": true,
             "declAttributes": [
               "AccessControl"
+            ],
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "cancel",
+            "printedName": "cancel()",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Bool",
+                "printedName": "Swift.Bool",
+                "usr": "s:Sb"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:18SwiftUI_UDF_Binary14BaseMiddlewareC6cancelSbyF",
+            "mangledName": "$s18SwiftUI_UDF_Binary14BaseMiddlewareC6cancelSbyF",
+            "moduleName": "SwiftUI_UDF_Binary",
+            "genericSig": "<τ_0_0 where τ_0_0 : SwiftUI_UDF_Binary.AppReducer>",
+            "sugared_genericSig": "<State where State : SwiftUI_UDF_Binary.AppReducer>",
+            "isOpen": true,
+            "declAttributes": [
+              "AccessControl",
+              "DiscardableResult"
             ],
             "funcSelfKind": "NonMutating"
           },
@@ -15503,6 +15535,7 @@
             "moduleName": "SwiftUI_UDF_Binary",
             "genericSig": "<τ_0_0, τ_1_0 where τ_0_0 : SwiftUI_UDF_Binary.AppReducer, τ_1_0 : SwiftUI_UDF_Binary.PureEffect, τ_1_0.Failure == Swift.Never, τ_1_0.Output == SwiftUI_UDF_Binary.Action>",
             "sugared_genericSig": "<State, E where State : SwiftUI_UDF_Binary.AppReducer, E : SwiftUI_UDF_Binary.PureEffect, E.Failure == Swift.Never, E.Output == SwiftUI_UDF_Binary.Action>",
+            "isOpen": true,
             "declAttributes": [
               "AccessControl"
             ],
@@ -15551,6 +15584,7 @@
             "moduleName": "SwiftUI_UDF_Binary",
             "genericSig": "<τ_0_0, τ_1_0 where τ_0_0 : SwiftUI_UDF_Binary.AppReducer, τ_1_0 : SwiftUI_UDF_Binary.ErasableToEffect, τ_1_0 : SwiftUI_UDF_Binary.PureEffect>",
             "sugared_genericSig": "<State, E where State : SwiftUI_UDF_Binary.AppReducer, E : SwiftUI_UDF_Binary.ErasableToEffect, E : SwiftUI_UDF_Binary.PureEffect>",
+            "isOpen": true,
             "declAttributes": [
               "AccessControl"
             ],
@@ -23068,14 +23102,14 @@
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Middleware\/Combine\/BaseMiddleware.swift",
       "kind": "Dictionary",
-      "offset": 632,
+      "offset": 630,
       "length": 3,
       "value": "[]"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Middleware\/Combine\/BaseMiddleware.swift",
       "kind": "StringLiteral",
-      "offset": 672,
+      "offset": 670,
       "length": 10,
       "value": "\"DCF2012E\""
     },
