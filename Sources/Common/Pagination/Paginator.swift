@@ -23,7 +23,7 @@ public struct Paginator<Item: Hashable & Identifiable, FlowId: Hashable>: Reduci
         page.pageNumber == initialPage && isLoading
     }
 
-    public init(flowId: FlowId, perPage: Int, usePrefixForFirstPage: Bool = true, initialPage: Int = 1) {
+    public init(flowId: FlowId, perPage: Int, usePrefixForFirstPage: Bool = false, initialPage: Int = 1) {
         self.flowId = flowId
         self.perPage = perPage
         self.usePrefixForFirstPage = usePrefixForFirstPage

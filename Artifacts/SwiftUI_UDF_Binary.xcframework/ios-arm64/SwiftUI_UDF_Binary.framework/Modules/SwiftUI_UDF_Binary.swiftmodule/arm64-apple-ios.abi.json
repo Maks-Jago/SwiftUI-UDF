@@ -13424,32 +13424,6 @@
             "funcSelfKind": "NonMutating"
           },
           {
-            "kind": "Function",
-            "name": "status",
-            "printedName": "status(for:)",
-            "children": [
-              {
-                "kind": "TypeNominal",
-                "name": "MiddlewareStatus",
-                "printedName": "SwiftUI_UDF_Binary.MiddlewareStatus",
-                "usr": "s:18SwiftUI_UDF_Binary16MiddlewareStatusO"
-              },
-              {
-                "kind": "TypeNominal",
-                "name": "DependentMember",
-                "printedName": "τ_0_0.State"
-              }
-            ],
-            "declKind": "Func",
-            "usr": "s:18SwiftUI_UDF_Binary10MiddlewarePAAE6status3forAA0E6StatusO5StateQz_tF",
-            "mangledName": "$s18SwiftUI_UDF_Binary10MiddlewarePAAE6status3forAA0E6StatusO5StateQz_tF",
-            "moduleName": "SwiftUI_UDF_Binary",
-            "genericSig": "<τ_0_0 where τ_0_0 : SwiftUI_UDF_Binary.Middleware>",
-            "sugared_genericSig": "<Self where Self : SwiftUI_UDF_Binary.Middleware>",
-            "isFromExtension": true,
-            "funcSelfKind": "NonMutating"
-          },
-          {
             "kind": "Constructor",
             "name": "init",
             "printedName": "init(store:)",
@@ -15029,6 +15003,34 @@
               "Required"
             ],
             "init_kind": "Designated"
+          },
+          {
+            "kind": "Function",
+            "name": "status",
+            "printedName": "status(for:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "MiddlewareStatus",
+                "printedName": "SwiftUI_UDF_Binary.MiddlewareStatus",
+                "usr": "s:18SwiftUI_UDF_Binary16MiddlewareStatusO"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "GenericTypeParam",
+                "printedName": "τ_0_0"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:18SwiftUI_UDF_Binary14BaseMiddlewareC6status3forAA0F6StatusOx_tF",
+            "mangledName": "$s18SwiftUI_UDF_Binary14BaseMiddlewareC6status3forAA0F6StatusOx_tF",
+            "moduleName": "SwiftUI_UDF_Binary",
+            "genericSig": "<τ_0_0 where τ_0_0 : SwiftUI_UDF_Binary.AppReducer>",
+            "sugared_genericSig": "<State where State : SwiftUI_UDF_Binary.AppReducer>",
+            "declAttributes": [
+              "AccessControl"
+            ],
+            "funcSelfKind": "NonMutating"
           },
           {
             "kind": "Var",
@@ -19802,6 +19804,34 @@
           },
           {
             "kind": "Function",
+            "name": "status",
+            "printedName": "status(for:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "MiddlewareStatus",
+                "printedName": "SwiftUI_UDF_Binary.MiddlewareStatus",
+                "usr": "s:18SwiftUI_UDF_Binary16MiddlewareStatusO"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "GenericTypeParam",
+                "printedName": "τ_0_0"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:18SwiftUI_UDF_Binary25BaseConcurrencyMiddlewareC6status3forAA0G6StatusOx_tF",
+            "mangledName": "$s18SwiftUI_UDF_Binary25BaseConcurrencyMiddlewareC6status3forAA0G6StatusOx_tF",
+            "moduleName": "SwiftUI_UDF_Binary",
+            "genericSig": "<τ_0_0 where τ_0_0 : SwiftUI_UDF_Binary.AppReducer>",
+            "sugared_genericSig": "<State where State : SwiftUI_UDF_Binary.AppReducer>",
+            "declAttributes": [
+              "AccessControl"
+            ],
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
             "name": "execute",
             "printedName": "execute(id:fileName:functionName:lineNumber:_:)",
             "children": [
@@ -23038,14 +23068,14 @@
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Middleware\/Combine\/BaseMiddleware.swift",
       "kind": "Dictionary",
-      "offset": 558,
+      "offset": 632,
       "length": 3,
       "value": "[]"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Middleware\/Combine\/BaseMiddleware.swift",
       "kind": "StringLiteral",
-      "offset": 598,
+      "offset": 672,
       "length": 10,
       "value": "\"DCF2012E\""
     },
