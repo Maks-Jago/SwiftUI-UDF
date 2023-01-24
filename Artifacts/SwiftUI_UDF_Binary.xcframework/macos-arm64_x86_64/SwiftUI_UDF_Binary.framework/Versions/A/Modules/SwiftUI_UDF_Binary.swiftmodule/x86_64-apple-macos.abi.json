@@ -19859,6 +19859,7 @@
             "moduleName": "SwiftUI_UDF_Binary",
             "genericSig": "<τ_0_0 where τ_0_0 : SwiftUI_UDF_Binary.AppReducer>",
             "sugared_genericSig": "<State where State : SwiftUI_UDF_Binary.AppReducer>",
+            "isOpen": true,
             "declAttributes": [
               "AccessControl"
             ],
@@ -19925,6 +19926,7 @@
             "moduleName": "SwiftUI_UDF_Binary",
             "genericSig": "<τ_0_0, τ_1_0 where τ_0_0 : SwiftUI_UDF_Binary.AppReducer, τ_1_0 : Swift.Hashable>",
             "sugared_genericSig": "<State, TaskId where State : SwiftUI_UDF_Binary.AppReducer, TaskId : Swift.Hashable>",
+            "isOpen": true,
             "declAttributes": [
               "AccessControl"
             ],
@@ -19996,6 +19998,7 @@
             "moduleName": "SwiftUI_UDF_Binary",
             "genericSig": "<τ_0_0, τ_1_0, τ_1_1 where τ_0_0 : SwiftUI_UDF_Binary.AppReducer, τ_1_0 : Swift.Hashable, τ_1_1 : Swift.Hashable>",
             "sugared_genericSig": "<State, TaskId where State : SwiftUI_UDF_Binary.AppReducer, TaskId : Swift.Hashable>",
+            "isOpen": true,
             "declAttributes": [
               "AccessControl"
             ],
@@ -20044,6 +20047,7 @@
             "moduleName": "SwiftUI_UDF_Binary",
             "genericSig": "<τ_0_0, τ_1_0 where τ_0_0 : SwiftUI_UDF_Binary.AppReducer, τ_1_0 : SwiftUI_UDF_Binary.ConcurrencyEffect>",
             "sugared_genericSig": "<State where State : SwiftUI_UDF_Binary.AppReducer>",
+            "isOpen": true,
             "declAttributes": [
               "AccessControl"
             ],
@@ -20097,6 +20101,7 @@
             "moduleName": "SwiftUI_UDF_Binary",
             "genericSig": "<τ_0_0, τ_1_0, τ_1_1 where τ_0_0 : SwiftUI_UDF_Binary.AppReducer, τ_1_0 : Swift.Hashable, τ_1_1 : SwiftUI_UDF_Binary.ConcurrencyEffect>",
             "sugared_genericSig": "<State, Id where State : SwiftUI_UDF_Binary.AppReducer, Id : Swift.Hashable>",
+            "isOpen": true,
             "declAttributes": [
               "AccessControl"
             ],
@@ -20125,6 +20130,7 @@
             "moduleName": "SwiftUI_UDF_Binary",
             "genericSig": "<τ_0_0, τ_1_0 where τ_0_0 : SwiftUI_UDF_Binary.AppReducer, τ_1_0 : Swift.Hashable>",
             "sugared_genericSig": "<State, Id where State : SwiftUI_UDF_Binary.AppReducer, Id : Swift.Hashable>",
+            "isOpen": true,
             "declAttributes": [
               "AccessControl",
               "DiscardableResult"
@@ -20148,6 +20154,7 @@
             "moduleName": "SwiftUI_UDF_Binary",
             "genericSig": "<τ_0_0 where τ_0_0 : SwiftUI_UDF_Binary.AppReducer>",
             "sugared_genericSig": "<State where State : SwiftUI_UDF_Binary.AppReducer>",
+            "isOpen": true,
             "declAttributes": [
               "AccessControl"
             ],
