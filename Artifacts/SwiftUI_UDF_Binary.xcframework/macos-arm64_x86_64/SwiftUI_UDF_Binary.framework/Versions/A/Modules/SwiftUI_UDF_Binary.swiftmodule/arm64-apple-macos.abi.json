@@ -4438,20 +4438,6 @@
         "moduleName": "SwiftUI_UDF_Binary"
       },
       {
-        "kind": "Import",
-        "name": "CoreLocation",
-        "printedName": "CoreLocation",
-        "declKind": "Import",
-        "moduleName": "SwiftUI_UDF_Binary"
-      },
-      {
-        "kind": "Import",
-        "name": "CoreLocation",
-        "printedName": "CoreLocation",
-        "declKind": "Import",
-        "moduleName": "SwiftUI_UDF_Binary"
-      },
-      {
         "kind": "TypeDecl",
         "name": "Actions",
         "printedName": "Actions",
@@ -10532,431 +10518,6 @@
             "moduleName": "SwiftUI_UDF_Binary",
             "genericSig": "<τ_0_0, τ_0_1 where τ_0_0 : Swift.Hashable, τ_0_1 : Swift.Equatable>",
             "sugared_genericSig": "<ParentId, Nested where ParentId : Swift.Hashable, Nested : Swift.Equatable>",
-            "isFromExtension": true,
-            "conformances": [
-              {
-                "kind": "Conformance",
-                "name": "Action",
-                "printedName": "Action",
-                "usr": "s:18SwiftUI_UDF_Binary6ActionP",
-                "mangledName": "$s18SwiftUI_UDF_Binary6ActionP"
-              },
-              {
-                "kind": "Conformance",
-                "name": "Equatable",
-                "printedName": "Equatable",
-                "usr": "s:SQ",
-                "mangledName": "$sSQ"
-              }
-            ]
-          },
-          {
-            "kind": "TypeDecl",
-            "name": "RequestLocationAccess",
-            "printedName": "RequestLocationAccess",
-            "children": [
-              {
-                "kind": "Constructor",
-                "name": "init",
-                "printedName": "init()",
-                "children": [
-                  {
-                    "kind": "TypeNominal",
-                    "name": "RequestLocationAccess",
-                    "printedName": "SwiftUI_UDF_Binary.Actions.RequestLocationAccess",
-                    "usr": "s:18SwiftUI_UDF_Binary7ActionsO21RequestLocationAccessV"
-                  }
-                ],
-                "declKind": "Constructor",
-                "usr": "s:18SwiftUI_UDF_Binary7ActionsO21RequestLocationAccessVAEycfc",
-                "mangledName": "$s18SwiftUI_UDF_Binary7ActionsO21RequestLocationAccessVAEycfc",
-                "moduleName": "SwiftUI_UDF_Binary",
-                "declAttributes": [
-                  "AccessControl"
-                ],
-                "init_kind": "Designated"
-              },
-              {
-                "kind": "Function",
-                "name": "==",
-                "printedName": "==(_:_:)",
-                "children": [
-                  {
-                    "kind": "TypeNominal",
-                    "name": "Bool",
-                    "printedName": "Swift.Bool",
-                    "usr": "s:Sb"
-                  },
-                  {
-                    "kind": "TypeNominal",
-                    "name": "RequestLocationAccess",
-                    "printedName": "SwiftUI_UDF_Binary.Actions.RequestLocationAccess",
-                    "usr": "s:18SwiftUI_UDF_Binary7ActionsO21RequestLocationAccessV"
-                  },
-                  {
-                    "kind": "TypeNominal",
-                    "name": "RequestLocationAccess",
-                    "printedName": "SwiftUI_UDF_Binary.Actions.RequestLocationAccess",
-                    "usr": "s:18SwiftUI_UDF_Binary7ActionsO21RequestLocationAccessV"
-                  }
-                ],
-                "declKind": "Func",
-                "usr": "s:18SwiftUI_UDF_Binary7ActionsO21RequestLocationAccessV2eeoiySbAE_AEtFZ",
-                "mangledName": "$s18SwiftUI_UDF_Binary7ActionsO21RequestLocationAccessV2eeoiySbAE_AEtFZ",
-                "moduleName": "SwiftUI_UDF_Binary",
-                "static": true,
-                "implicit": true,
-                "funcSelfKind": "NonMutating"
-              }
-            ],
-            "declKind": "Struct",
-            "usr": "s:18SwiftUI_UDF_Binary7ActionsO21RequestLocationAccessV",
-            "mangledName": "$s18SwiftUI_UDF_Binary7ActionsO21RequestLocationAccessV",
-            "moduleName": "SwiftUI_UDF_Binary",
-            "isFromExtension": true,
-            "conformances": [
-              {
-                "kind": "Conformance",
-                "name": "Action",
-                "printedName": "Action",
-                "usr": "s:18SwiftUI_UDF_Binary6ActionP",
-                "mangledName": "$s18SwiftUI_UDF_Binary6ActionP"
-              },
-              {
-                "kind": "Conformance",
-                "name": "Equatable",
-                "printedName": "Equatable",
-                "usr": "s:SQ",
-                "mangledName": "$sSQ"
-              }
-            ]
-          },
-          {
-            "kind": "TypeDecl",
-            "name": "DidUpdateLocationAccess",
-            "printedName": "DidUpdateLocationAccess",
-            "children": [
-              {
-                "kind": "Var",
-                "name": "access",
-                "printedName": "access",
-                "children": [
-                  {
-                    "kind": "TypeNominal",
-                    "name": "CLAuthorizationStatus",
-                    "printedName": "CoreLocation.CLAuthorizationStatus",
-                    "usr": "c:@E@CLAuthorizationStatus"
-                  }
-                ],
-                "declKind": "Var",
-                "usr": "s:18SwiftUI_UDF_Binary7ActionsO23DidUpdateLocationAccessV6accessSo21CLAuthorizationStatusVvp",
-                "mangledName": "$s18SwiftUI_UDF_Binary7ActionsO23DidUpdateLocationAccessV6accessSo21CLAuthorizationStatusVvp",
-                "moduleName": "SwiftUI_UDF_Binary",
-                "declAttributes": [
-                  "HasStorage",
-                  "AccessControl"
-                ],
-                "hasStorage": true,
-                "accessors": [
-                  {
-                    "kind": "Accessor",
-                    "name": "Get",
-                    "printedName": "Get()",
-                    "children": [
-                      {
-                        "kind": "TypeNominal",
-                        "name": "CLAuthorizationStatus",
-                        "printedName": "CoreLocation.CLAuthorizationStatus",
-                        "usr": "c:@E@CLAuthorizationStatus"
-                      }
-                    ],
-                    "declKind": "Accessor",
-                    "usr": "s:18SwiftUI_UDF_Binary7ActionsO23DidUpdateLocationAccessV6accessSo21CLAuthorizationStatusVvg",
-                    "mangledName": "$s18SwiftUI_UDF_Binary7ActionsO23DidUpdateLocationAccessV6accessSo21CLAuthorizationStatusVvg",
-                    "moduleName": "SwiftUI_UDF_Binary",
-                    "implicit": true,
-                    "accessorKind": "get"
-                  },
-                  {
-                    "kind": "Accessor",
-                    "name": "Set",
-                    "printedName": "Set()",
-                    "children": [
-                      {
-                        "kind": "TypeNominal",
-                        "name": "Void",
-                        "printedName": "()"
-                      },
-                      {
-                        "kind": "TypeNominal",
-                        "name": "CLAuthorizationStatus",
-                        "printedName": "CoreLocation.CLAuthorizationStatus",
-                        "usr": "c:@E@CLAuthorizationStatus"
-                      }
-                    ],
-                    "declKind": "Accessor",
-                    "usr": "s:18SwiftUI_UDF_Binary7ActionsO23DidUpdateLocationAccessV6accessSo21CLAuthorizationStatusVvs",
-                    "mangledName": "$s18SwiftUI_UDF_Binary7ActionsO23DidUpdateLocationAccessV6accessSo21CLAuthorizationStatusVvs",
-                    "moduleName": "SwiftUI_UDF_Binary",
-                    "implicit": true,
-                    "accessorKind": "set"
-                  },
-                  {
-                    "kind": "Accessor",
-                    "name": "Modify",
-                    "printedName": "Modify()",
-                    "children": [
-                      {
-                        "kind": "TypeNominal",
-                        "name": "Void",
-                        "printedName": "()"
-                      }
-                    ],
-                    "declKind": "Accessor",
-                    "usr": "s:18SwiftUI_UDF_Binary7ActionsO23DidUpdateLocationAccessV6accessSo21CLAuthorizationStatusVvM",
-                    "mangledName": "$s18SwiftUI_UDF_Binary7ActionsO23DidUpdateLocationAccessV6accessSo21CLAuthorizationStatusVvM",
-                    "moduleName": "SwiftUI_UDF_Binary",
-                    "implicit": true,
-                    "accessorKind": "_modify"
-                  }
-                ]
-              },
-              {
-                "kind": "Constructor",
-                "name": "init",
-                "printedName": "init(access:)",
-                "children": [
-                  {
-                    "kind": "TypeNominal",
-                    "name": "DidUpdateLocationAccess",
-                    "printedName": "SwiftUI_UDF_Binary.Actions.DidUpdateLocationAccess",
-                    "usr": "s:18SwiftUI_UDF_Binary7ActionsO23DidUpdateLocationAccessV"
-                  },
-                  {
-                    "kind": "TypeNominal",
-                    "name": "CLAuthorizationStatus",
-                    "printedName": "CoreLocation.CLAuthorizationStatus",
-                    "usr": "c:@E@CLAuthorizationStatus"
-                  }
-                ],
-                "declKind": "Constructor",
-                "usr": "s:18SwiftUI_UDF_Binary7ActionsO23DidUpdateLocationAccessV6accessAESo21CLAuthorizationStatusV_tcfc",
-                "mangledName": "$s18SwiftUI_UDF_Binary7ActionsO23DidUpdateLocationAccessV6accessAESo21CLAuthorizationStatusV_tcfc",
-                "moduleName": "SwiftUI_UDF_Binary",
-                "declAttributes": [
-                  "AccessControl"
-                ],
-                "init_kind": "Designated"
-              },
-              {
-                "kind": "Function",
-                "name": "==",
-                "printedName": "==(_:_:)",
-                "children": [
-                  {
-                    "kind": "TypeNominal",
-                    "name": "Bool",
-                    "printedName": "Swift.Bool",
-                    "usr": "s:Sb"
-                  },
-                  {
-                    "kind": "TypeNominal",
-                    "name": "DidUpdateLocationAccess",
-                    "printedName": "SwiftUI_UDF_Binary.Actions.DidUpdateLocationAccess",
-                    "usr": "s:18SwiftUI_UDF_Binary7ActionsO23DidUpdateLocationAccessV"
-                  },
-                  {
-                    "kind": "TypeNominal",
-                    "name": "DidUpdateLocationAccess",
-                    "printedName": "SwiftUI_UDF_Binary.Actions.DidUpdateLocationAccess",
-                    "usr": "s:18SwiftUI_UDF_Binary7ActionsO23DidUpdateLocationAccessV"
-                  }
-                ],
-                "declKind": "Func",
-                "usr": "s:18SwiftUI_UDF_Binary7ActionsO23DidUpdateLocationAccessV2eeoiySbAE_AEtFZ",
-                "mangledName": "$s18SwiftUI_UDF_Binary7ActionsO23DidUpdateLocationAccessV2eeoiySbAE_AEtFZ",
-                "moduleName": "SwiftUI_UDF_Binary",
-                "static": true,
-                "implicit": true,
-                "funcSelfKind": "NonMutating"
-              }
-            ],
-            "declKind": "Struct",
-            "usr": "s:18SwiftUI_UDF_Binary7ActionsO23DidUpdateLocationAccessV",
-            "mangledName": "$s18SwiftUI_UDF_Binary7ActionsO23DidUpdateLocationAccessV",
-            "moduleName": "SwiftUI_UDF_Binary",
-            "isFromExtension": true,
-            "conformances": [
-              {
-                "kind": "Conformance",
-                "name": "Action",
-                "printedName": "Action",
-                "usr": "s:18SwiftUI_UDF_Binary6ActionP",
-                "mangledName": "$s18SwiftUI_UDF_Binary6ActionP"
-              },
-              {
-                "kind": "Conformance",
-                "name": "Equatable",
-                "printedName": "Equatable",
-                "usr": "s:SQ",
-                "mangledName": "$sSQ"
-              }
-            ]
-          },
-          {
-            "kind": "TypeDecl",
-            "name": "DidUpdateUserLocation",
-            "printedName": "DidUpdateUserLocation",
-            "children": [
-              {
-                "kind": "Var",
-                "name": "location",
-                "printedName": "location",
-                "children": [
-                  {
-                    "kind": "TypeNominal",
-                    "name": "CLLocation",
-                    "printedName": "CoreLocation.CLLocation",
-                    "usr": "c:objc(cs)CLLocation"
-                  }
-                ],
-                "declKind": "Var",
-                "usr": "s:18SwiftUI_UDF_Binary7ActionsO21DidUpdateUserLocationV8locationSo10CLLocationCvp",
-                "mangledName": "$s18SwiftUI_UDF_Binary7ActionsO21DidUpdateUserLocationV8locationSo10CLLocationCvp",
-                "moduleName": "SwiftUI_UDF_Binary",
-                "declAttributes": [
-                  "HasStorage",
-                  "AccessControl"
-                ],
-                "hasStorage": true,
-                "accessors": [
-                  {
-                    "kind": "Accessor",
-                    "name": "Get",
-                    "printedName": "Get()",
-                    "children": [
-                      {
-                        "kind": "TypeNominal",
-                        "name": "CLLocation",
-                        "printedName": "CoreLocation.CLLocation",
-                        "usr": "c:objc(cs)CLLocation"
-                      }
-                    ],
-                    "declKind": "Accessor",
-                    "usr": "s:18SwiftUI_UDF_Binary7ActionsO21DidUpdateUserLocationV8locationSo10CLLocationCvg",
-                    "mangledName": "$s18SwiftUI_UDF_Binary7ActionsO21DidUpdateUserLocationV8locationSo10CLLocationCvg",
-                    "moduleName": "SwiftUI_UDF_Binary",
-                    "implicit": true,
-                    "accessorKind": "get"
-                  },
-                  {
-                    "kind": "Accessor",
-                    "name": "Set",
-                    "printedName": "Set()",
-                    "children": [
-                      {
-                        "kind": "TypeNominal",
-                        "name": "Void",
-                        "printedName": "()"
-                      },
-                      {
-                        "kind": "TypeNominal",
-                        "name": "CLLocation",
-                        "printedName": "CoreLocation.CLLocation",
-                        "usr": "c:objc(cs)CLLocation"
-                      }
-                    ],
-                    "declKind": "Accessor",
-                    "usr": "s:18SwiftUI_UDF_Binary7ActionsO21DidUpdateUserLocationV8locationSo10CLLocationCvs",
-                    "mangledName": "$s18SwiftUI_UDF_Binary7ActionsO21DidUpdateUserLocationV8locationSo10CLLocationCvs",
-                    "moduleName": "SwiftUI_UDF_Binary",
-                    "implicit": true,
-                    "accessorKind": "set"
-                  },
-                  {
-                    "kind": "Accessor",
-                    "name": "Modify",
-                    "printedName": "Modify()",
-                    "children": [
-                      {
-                        "kind": "TypeNominal",
-                        "name": "Void",
-                        "printedName": "()"
-                      }
-                    ],
-                    "declKind": "Accessor",
-                    "usr": "s:18SwiftUI_UDF_Binary7ActionsO21DidUpdateUserLocationV8locationSo10CLLocationCvM",
-                    "mangledName": "$s18SwiftUI_UDF_Binary7ActionsO21DidUpdateUserLocationV8locationSo10CLLocationCvM",
-                    "moduleName": "SwiftUI_UDF_Binary",
-                    "implicit": true,
-                    "accessorKind": "_modify"
-                  }
-                ]
-              },
-              {
-                "kind": "Constructor",
-                "name": "init",
-                "printedName": "init(location:)",
-                "children": [
-                  {
-                    "kind": "TypeNominal",
-                    "name": "DidUpdateUserLocation",
-                    "printedName": "SwiftUI_UDF_Binary.Actions.DidUpdateUserLocation",
-                    "usr": "s:18SwiftUI_UDF_Binary7ActionsO21DidUpdateUserLocationV"
-                  },
-                  {
-                    "kind": "TypeNominal",
-                    "name": "CLLocation",
-                    "printedName": "CoreLocation.CLLocation",
-                    "usr": "c:objc(cs)CLLocation"
-                  }
-                ],
-                "declKind": "Constructor",
-                "usr": "s:18SwiftUI_UDF_Binary7ActionsO21DidUpdateUserLocationV8locationAESo10CLLocationC_tcfc",
-                "mangledName": "$s18SwiftUI_UDF_Binary7ActionsO21DidUpdateUserLocationV8locationAESo10CLLocationC_tcfc",
-                "moduleName": "SwiftUI_UDF_Binary",
-                "declAttributes": [
-                  "AccessControl"
-                ],
-                "init_kind": "Designated"
-              },
-              {
-                "kind": "Function",
-                "name": "==",
-                "printedName": "==(_:_:)",
-                "children": [
-                  {
-                    "kind": "TypeNominal",
-                    "name": "Bool",
-                    "printedName": "Swift.Bool",
-                    "usr": "s:Sb"
-                  },
-                  {
-                    "kind": "TypeNominal",
-                    "name": "DidUpdateUserLocation",
-                    "printedName": "SwiftUI_UDF_Binary.Actions.DidUpdateUserLocation",
-                    "usr": "s:18SwiftUI_UDF_Binary7ActionsO21DidUpdateUserLocationV"
-                  },
-                  {
-                    "kind": "TypeNominal",
-                    "name": "DidUpdateUserLocation",
-                    "printedName": "SwiftUI_UDF_Binary.Actions.DidUpdateUserLocation",
-                    "usr": "s:18SwiftUI_UDF_Binary7ActionsO21DidUpdateUserLocationV"
-                  }
-                ],
-                "declKind": "Func",
-                "usr": "s:18SwiftUI_UDF_Binary7ActionsO21DidUpdateUserLocationV2eeoiySbAE_AEtFZ",
-                "mangledName": "$s18SwiftUI_UDF_Binary7ActionsO21DidUpdateUserLocationV2eeoiySbAE_AEtFZ",
-                "moduleName": "SwiftUI_UDF_Binary",
-                "static": true,
-                "implicit": true,
-                "funcSelfKind": "NonMutating"
-              }
-            ],
-            "declKind": "Struct",
-            "usr": "s:18SwiftUI_UDF_Binary7ActionsO21DidUpdateUserLocationV",
-            "mangledName": "$s18SwiftUI_UDF_Binary7ActionsO21DidUpdateUserLocationV",
-            "moduleName": "SwiftUI_UDF_Binary",
             "isFromExtension": true,
             "conformances": [
               {
@@ -23053,42 +22614,42 @@
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/Action\/Actions.swift",
       "kind": "IntegerLiteral",
-      "offset": 905,
+      "offset": 821,
       "length": 1,
       "value": "1"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/Action\/Actions.swift",
       "kind": "BooleanLiteral",
-      "offset": 3175,
+      "offset": 3091,
       "length": 4,
       "value": "true"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/Action\/Actions.swift",
       "kind": "BooleanLiteral",
-      "offset": 5348,
+      "offset": 5264,
       "length": 4,
       "value": "true"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/Action\/Actions.swift",
       "kind": "BooleanLiteral",
-      "offset": 5592,
+      "offset": 5508,
       "length": 4,
       "value": "true"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/Action\/Actions.swift",
       "kind": "BooleanLiteral",
-      "offset": 6615,
+      "offset": 6531,
       "length": 4,
       "value": "true"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/Action\/Actions.swift",
       "kind": "BooleanLiteral",
-      "offset": 6829,
+      "offset": 6745,
       "length": 4,
       "value": "true"
     },

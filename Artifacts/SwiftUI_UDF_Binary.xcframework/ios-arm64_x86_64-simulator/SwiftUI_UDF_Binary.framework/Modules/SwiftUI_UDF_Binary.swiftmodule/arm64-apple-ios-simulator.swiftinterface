@@ -4,7 +4,6 @@
 // swift-module-flags-ignorable: -enable-bare-slash-regex
 import Combine
 import CoreLocation/*.CLAuthorizationStatus*/
-import CoreLocation/*.CLLocation*/
 import Foundation
 import Swift
 import SwiftUI
@@ -344,22 +343,6 @@ extension SwiftUI_UDF_Binary.Actions {
     public init(parentId: ParentId, item: Nested)
     public init<Id>(parentId: ParentId, item: Nested, id: Id) where Id : Swift.Hashable
     public static func == (a: SwiftUI_UDF_Binary.Actions.DeleteNestedItem<ParentId, Nested>, b: SwiftUI_UDF_Binary.Actions.DeleteNestedItem<ParentId, Nested>) -> Swift.Bool
-  }
-}
-extension SwiftUI_UDF_Binary.Actions {
-  public struct RequestLocationAccess : SwiftUI_UDF_Binary.Action {
-    public init()
-    public static func == (a: SwiftUI_UDF_Binary.Actions.RequestLocationAccess, b: SwiftUI_UDF_Binary.Actions.RequestLocationAccess) -> Swift.Bool
-  }
-  public struct DidUpdateLocationAccess : SwiftUI_UDF_Binary.Action {
-    public var access: CoreLocation.CLAuthorizationStatus
-    public init(access: CoreLocation.CLAuthorizationStatus)
-    public static func == (a: SwiftUI_UDF_Binary.Actions.DidUpdateLocationAccess, b: SwiftUI_UDF_Binary.Actions.DidUpdateLocationAccess) -> Swift.Bool
-  }
-  public struct DidUpdateUserLocation : SwiftUI_UDF_Binary.Action {
-    public var location: CoreLocation.CLLocation
-    public init(location: CoreLocation.CLLocation)
-    public static func == (a: SwiftUI_UDF_Binary.Actions.DidUpdateUserLocation, b: SwiftUI_UDF_Binary.Actions.DidUpdateUserLocation) -> Swift.Bool
   }
 }
 #if compiler(>=5.3) && $PrimaryAssociatedTypes2

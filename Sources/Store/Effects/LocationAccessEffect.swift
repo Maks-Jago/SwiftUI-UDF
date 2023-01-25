@@ -39,7 +39,7 @@ public extension Effects {
                     return
                 }
 
-                send(status: locationManager.authorizationStatus)
+                send(status: locationManager.authorizationStatus, accuracyAuthorization: locationManager.accuracyAuthorization)
             }
 
             func cancel() {
@@ -47,11 +47,11 @@ public extension Effects {
             }
 
             func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
-                send(status: manager.authorizationStatus)
+                send(status: manager.authorizationStatus, accuracyAuthorization: manager.accuracyAuthorization)
             }
 
-            private func send(status: CLAuthorizationStatus) {
-                let action = Actions.DidUpdateLocationAccess(access: status)
+            private func send(status: CLAuthorizationStatus, accuracyAuthorization: CLAccuracyAuthorization) {
+                let action = Actions.DidUpdateLocationAccess(access: status, accuracyAuthorization: accuracyAuthorization)
                 _ = subscriber?.receive(action)
             }
         }
