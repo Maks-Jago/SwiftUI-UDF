@@ -16570,6 +16570,154 @@
           },
           {
             "kind": "Function",
+            "name": "bind",
+            "printedName": "bind(_:priority:fileName:functionName:lineNumber:)",
+            "children": [
+              {
+                "kind": "TypeFunc",
+                "name": "Function",
+                "printedName": "() -> ()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  }
+                ]
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "GenericTypeParam",
+                "printedName": "τ_1_0"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "ActionPriority",
+                "printedName": "SwiftUI_UDF_Binary.ActionPriority",
+                "hasDefaultArg": true,
+                "usr": "s:18SwiftUI_UDF_Binary14ActionPriorityO"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "hasDefaultArg": true,
+                "usr": "s:SS"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "hasDefaultArg": true,
+                "usr": "s:SS"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Int",
+                "printedName": "Swift.Int",
+                "hasDefaultArg": true,
+                "usr": "s:Si"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:18SwiftUI_UDF_Binary16EnvironmentStoreC4bind_8priority8fileName08functionJ010lineNumberyycqd___AA14ActionPriorityOS2SSitAA0N0Rd__lF",
+            "mangledName": "$s18SwiftUI_UDF_Binary16EnvironmentStoreC4bind_8priority8fileName08functionJ010lineNumberyycqd___AA14ActionPriorityOS2SSitAA0N0Rd__lF",
+            "moduleName": "SwiftUI_UDF_Binary",
+            "genericSig": "<τ_0_0, τ_1_0 where τ_0_0 : SwiftUI_UDF_Binary.AppReducer, τ_1_0 : SwiftUI_UDF_Binary.Action>",
+            "sugared_genericSig": "<State where State : SwiftUI_UDF_Binary.AppReducer>",
+            "declAttributes": [
+              "Final",
+              "AccessControl"
+            ],
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "bind",
+            "printedName": "bind(_:priority:fileName:functionName:lineNumber:)",
+            "children": [
+              {
+                "kind": "TypeFunc",
+                "name": "Function",
+                "printedName": "(τ_1_0) -> ()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "GenericTypeParam",
+                    "printedName": "τ_1_0"
+                  }
+                ]
+              },
+              {
+                "kind": "TypeFunc",
+                "name": "Function",
+                "printedName": "(τ_1_0) -> τ_1_1",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "GenericTypeParam",
+                    "printedName": "τ_1_1"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "GenericTypeParam",
+                    "printedName": "τ_1_0"
+                  }
+                ]
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "ActionPriority",
+                "printedName": "SwiftUI_UDF_Binary.ActionPriority",
+                "hasDefaultArg": true,
+                "usr": "s:18SwiftUI_UDF_Binary14ActionPriorityO"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "hasDefaultArg": true,
+                "usr": "s:SS"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "hasDefaultArg": true,
+                "usr": "s:SS"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Int",
+                "printedName": "Swift.Int",
+                "hasDefaultArg": true,
+                "usr": "s:Si"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:18SwiftUI_UDF_Binary16EnvironmentStoreC4bind_8priority8fileName08functionJ010lineNumberyqd__cqd_0_qd__c_AA14ActionPriorityOS2SSitAA0N0Rd_0_r0_lF",
+            "mangledName": "$s18SwiftUI_UDF_Binary16EnvironmentStoreC4bind_8priority8fileName08functionJ010lineNumberyqd__cqd_0_qd__c_AA14ActionPriorityOS2SSitAA0N0Rd_0_r0_lF",
+            "moduleName": "SwiftUI_UDF_Binary",
+            "genericSig": "<τ_0_0, τ_1_0, τ_1_1 where τ_0_0 : SwiftUI_UDF_Binary.AppReducer, τ_1_1 : SwiftUI_UDF_Binary.Action>",
+            "sugared_genericSig": "<State, T where State : SwiftUI_UDF_Binary.AppReducer>",
+            "declAttributes": [
+              "Final",
+              "AccessControl"
+            ],
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
             "name": "subscribe",
             "printedName": "subscribe(_:)",
             "children": [
@@ -22187,6 +22335,119 @@
             "printedName": "DefaultConstructor",
             "usr": "s:7Runtime18DefaultConstructorP",
             "mangledName": "$s7Runtime18DefaultConstructorP"
+          }
+        ]
+      },
+      {
+        "kind": "TypeDecl",
+        "name": "ProcessInfo",
+        "printedName": "ProcessInfo",
+        "children": [
+          {
+            "kind": "Var",
+            "name": "xcTest",
+            "printedName": "xcTest",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Bool",
+                "printedName": "Swift.Bool",
+                "usr": "s:Sb"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:So13NSProcessInfoC18SwiftUI_UDF_BinaryE6xcTestSbvp",
+            "mangledName": "$sSo13NSProcessInfoC18SwiftUI_UDF_BinaryE6xcTestSbvp",
+            "moduleName": "SwiftUI_UDF_Binary",
+            "isFromExtension": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Bool",
+                    "printedName": "Swift.Bool",
+                    "usr": "s:Sb"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:So13NSProcessInfoC18SwiftUI_UDF_BinaryE6xcTestSbvg",
+                "mangledName": "$sSo13NSProcessInfoC18SwiftUI_UDF_BinaryE6xcTestSbvg",
+                "moduleName": "SwiftUI_UDF_Binary",
+                "isFromExtension": true,
+                "accessorKind": "get"
+              }
+            ]
+          }
+        ],
+        "declKind": "Class",
+        "usr": "c:objc(cs)NSProcessInfo",
+        "moduleName": "Foundation",
+        "isOpen": true,
+        "objc_name": "NSProcessInfo",
+        "declAttributes": [
+          "ObjC",
+          "NonSendable",
+          "Dynamic"
+        ],
+        "superclassUsr": "c:objc(cs)NSObject",
+        "isExternal": true,
+        "inheritsConvenienceInitializers": true,
+        "superclassNames": [
+          "ObjectiveC.NSObject"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Equatable",
+            "printedName": "Equatable",
+            "usr": "s:SQ",
+            "mangledName": "$sSQ"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Hashable",
+            "printedName": "Hashable",
+            "usr": "s:SH",
+            "mangledName": "$sSH"
+          },
+          {
+            "kind": "Conformance",
+            "name": "CVarArg",
+            "printedName": "CVarArg",
+            "usr": "s:s7CVarArgP",
+            "mangledName": "$ss7CVarArgP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "_KeyValueCodingAndObservingPublishing",
+            "printedName": "_KeyValueCodingAndObservingPublishing",
+            "usr": "s:10Foundation37_KeyValueCodingAndObservingPublishingP",
+            "mangledName": "$s10Foundation37_KeyValueCodingAndObservingPublishingP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "_KeyValueCodingAndObserving",
+            "printedName": "_KeyValueCodingAndObserving",
+            "usr": "s:10Foundation27_KeyValueCodingAndObservingP",
+            "mangledName": "$s10Foundation27_KeyValueCodingAndObservingP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "CustomStringConvertible",
+            "printedName": "CustomStringConvertible",
+            "usr": "s:s23CustomStringConvertibleP",
+            "mangledName": "$ss23CustomStringConvertibleP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "CustomDebugStringConvertible",
+            "printedName": "CustomDebugStringConvertible",
+            "usr": "s:s28CustomDebugStringConvertibleP",
+            "mangledName": "$ss28CustomDebugStringConvertibleP"
           }
         ]
       },
