@@ -16857,6 +16857,41 @@
           {
             "kind": "Function",
             "name": "subscribe",
+            "printedName": "subscribe(_:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Metatype",
+                "printedName": "τ_1_0.Type",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "GenericTypeParam",
+                    "printedName": "τ_1_0"
+                  }
+                ]
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:18SwiftUI_UDF_Binary16EnvironmentStoreC9subscribeyyqd__mYa5StateQyd__RszAA10MiddlewareRd__lF",
+            "mangledName": "$s18SwiftUI_UDF_Binary16EnvironmentStoreC9subscribeyyqd__mYa5StateQyd__RszAA10MiddlewareRd__lF",
+            "moduleName": "SwiftUI_UDF_Binary",
+            "genericSig": "<τ_0_0, τ_1_0 where τ_0_0 == τ_1_0.State, τ_1_0 : SwiftUI_UDF_Binary.Middleware>",
+            "sugared_genericSig": "<State, M where State == M.State, M : SwiftUI_UDF_Binary.Middleware>",
+            "declAttributes": [
+              "Final"
+            ],
+            "isFromExtension": true,
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "subscribe",
             "printedName": "subscribe(_:environment:)",
             "children": [
               {
@@ -16929,6 +16964,47 @@
             "moduleName": "SwiftUI_UDF_Binary",
             "genericSig": "<τ_0_0, τ_1_0 where τ_0_0 == τ_1_0.State, τ_1_0 : SwiftUI_UDF_Binary.EnvironmentMiddleware, τ_1_0 : SwiftUI_UDF_Binary.Middleware>",
             "sugared_genericSig": "<State, M where State == M.State, M : SwiftUI_UDF_Binary.EnvironmentMiddleware, M : SwiftUI_UDF_Binary.Middleware>",
+            "declAttributes": [
+              "Final"
+            ],
+            "isFromExtension": true,
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "subscribe",
+            "printedName": "subscribe(_:on:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Metatype",
+                "printedName": "τ_1_0.Type",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "GenericTypeParam",
+                    "printedName": "τ_1_0"
+                  }
+                ]
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "DispatchQueue",
+                "printedName": "Dispatch.DispatchQueue",
+                "usr": "c:objc(cs)OS_dispatch_queue"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:18SwiftUI_UDF_Binary16EnvironmentStoreC9subscribe_2onyqd__m_So17OS_dispatch_queueCtYa5StateQyd__RszAA10MiddlewareRd__lF",
+            "mangledName": "$s18SwiftUI_UDF_Binary16EnvironmentStoreC9subscribe_2onyqd__m_So17OS_dispatch_queueCtYa5StateQyd__RszAA10MiddlewareRd__lF",
+            "moduleName": "SwiftUI_UDF_Binary",
+            "genericSig": "<τ_0_0, τ_1_0 where τ_0_0 == τ_1_0.State, τ_1_0 : SwiftUI_UDF_Binary.Middleware>",
+            "sugared_genericSig": "<State, M where State == M.State, M : SwiftUI_UDF_Binary.Middleware>",
             "declAttributes": [
               "Final"
             ],
@@ -17028,6 +17104,59 @@
             "moduleName": "SwiftUI_UDF_Binary",
             "genericSig": "<τ_0_0, τ_1_0 where τ_0_0 == τ_1_0.State, τ_1_0 : SwiftUI_UDF_Binary.EnvironmentMiddleware, τ_1_0 : SwiftUI_UDF_Binary.Middleware>",
             "sugared_genericSig": "<State, M where State == M.State, M : SwiftUI_UDF_Binary.EnvironmentMiddleware, M : SwiftUI_UDF_Binary.Middleware>",
+            "declAttributes": [
+              "Final"
+            ],
+            "isFromExtension": true,
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "subscribeAsync",
+            "printedName": "subscribeAsync(_:onSubscribe:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Metatype",
+                "printedName": "τ_1_0.Type",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "GenericTypeParam",
+                    "printedName": "τ_1_0"
+                  }
+                ]
+              },
+              {
+                "kind": "TypeFunc",
+                "name": "Function",
+                "printedName": "() -> ()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  }
+                ],
+                "hasDefaultArg": true
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:18SwiftUI_UDF_Binary16EnvironmentStoreC14subscribeAsync_11onSubscribeyqd__m_yyct5StateQyd__RszAA10MiddlewareRd__lF",
+            "mangledName": "$s18SwiftUI_UDF_Binary16EnvironmentStoreC14subscribeAsync_11onSubscribeyqd__m_yyct5StateQyd__RszAA10MiddlewareRd__lF",
+            "moduleName": "SwiftUI_UDF_Binary",
+            "genericSig": "<τ_0_0, τ_1_0 where τ_0_0 == τ_1_0.State, τ_1_0 : SwiftUI_UDF_Binary.Middleware>",
+            "sugared_genericSig": "<State, M where State == M.State, M : SwiftUI_UDF_Binary.Middleware>",
             "declAttributes": [
               "Final"
             ],
@@ -17140,11 +17269,11 @@
               }
             ],
             "declKind": "Func",
-            "usr": "s:18SwiftUI_UDF_Binary16EnvironmentStoreC14subscribeAsync_2on0I9Subscribeyqd__m_So17OS_dispatch_queueCyyct5StateAA0E10MiddlewarePQyd__RszAaJRd__AA0O0Rd__lF",
-            "mangledName": "$s18SwiftUI_UDF_Binary16EnvironmentStoreC14subscribeAsync_2on0I9Subscribeyqd__m_So17OS_dispatch_queueCyyct5StateAA0E10MiddlewarePQyd__RszAaJRd__AA0O0Rd__lF",
+            "usr": "s:18SwiftUI_UDF_Binary16EnvironmentStoreC14subscribeAsync_2on0I9Subscribeyqd__m_So17OS_dispatch_queueCyyct5StateQyd__RszAA10MiddlewareRd__lF",
+            "mangledName": "$s18SwiftUI_UDF_Binary16EnvironmentStoreC14subscribeAsync_2on0I9Subscribeyqd__m_So17OS_dispatch_queueCyyct5StateQyd__RszAA10MiddlewareRd__lF",
             "moduleName": "SwiftUI_UDF_Binary",
-            "genericSig": "<τ_0_0, τ_1_0 where τ_0_0 == τ_1_0.State, τ_1_0 : SwiftUI_UDF_Binary.EnvironmentMiddleware, τ_1_0 : SwiftUI_UDF_Binary.Middleware>",
-            "sugared_genericSig": "<State, M where State == M.State, M : SwiftUI_UDF_Binary.EnvironmentMiddleware, M : SwiftUI_UDF_Binary.Middleware>",
+            "genericSig": "<τ_0_0, τ_1_0 where τ_0_0 == τ_1_0.State, τ_1_0 : SwiftUI_UDF_Binary.Middleware>",
+            "sugared_genericSig": "<State, M where State == M.State, M : SwiftUI_UDF_Binary.Middleware>",
             "declAttributes": [
               "Final"
             ],

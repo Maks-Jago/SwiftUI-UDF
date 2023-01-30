@@ -620,17 +620,24 @@ extension SwiftUI_UDF_Binary.EnvironmentStore {
   final public func subscribe<M>(_ middlewareType: M.Type) async where State == M.State, M : SwiftUI_UDF_Binary.EnvironmentMiddleware, M : SwiftUI_UDF_Binary.Middleware
   #endif
   #if compiler(>=5.3) && $AsyncAwait
+  final public func subscribe<M>(_ middlewareType: M.Type) async where State == M.State, M : SwiftUI_UDF_Binary.Middleware
+  #endif
+  #if compiler(>=5.3) && $AsyncAwait
   final public func subscribe<M>(_ middlewareType: M.Type, environment: M.Environment) async where State == M.State, M : SwiftUI_UDF_Binary.EnvironmentMiddleware, M : SwiftUI_UDF_Binary.Middleware
   #endif
   #if compiler(>=5.3) && $AsyncAwait
   final public func subscribe<M>(_ middlewareType: M.Type, on queue: Dispatch.DispatchQueue) async where State == M.State, M : SwiftUI_UDF_Binary.EnvironmentMiddleware, M : SwiftUI_UDF_Binary.Middleware
   #endif
   #if compiler(>=5.3) && $AsyncAwait
+  final public func subscribe<M>(_ middlewareType: M.Type, on queue: Dispatch.DispatchQueue) async where State == M.State, M : SwiftUI_UDF_Binary.Middleware
+  #endif
+  #if compiler(>=5.3) && $AsyncAwait
   final public func subscribe<M>(_ middlewareType: M.Type, environment: M.Environment, on queue: Dispatch.DispatchQueue) async where State == M.State, M : SwiftUI_UDF_Binary.EnvironmentMiddleware, M : SwiftUI_UDF_Binary.Middleware
   #endif
   final public func subscribeAsync<M>(_ middlewareType: M.Type, onSubscribe: @escaping () -> Swift.Void = {}) where State == M.State, M : SwiftUI_UDF_Binary.EnvironmentMiddleware, M : SwiftUI_UDF_Binary.Middleware
+  final public func subscribeAsync<M>(_ middlewareType: M.Type, onSubscribe: @escaping () -> Swift.Void = {}) where State == M.State, M : SwiftUI_UDF_Binary.Middleware
   final public func subscribeAsync<M>(_ middlewareType: M.Type, environment: M.Environment, onSubscribe: @escaping () -> Swift.Void = {}) where State == M.State, M : SwiftUI_UDF_Binary.EnvironmentMiddleware, M : SwiftUI_UDF_Binary.Middleware
-  final public func subscribeAsync<M>(_ middlewareType: M.Type, on queue: Dispatch.DispatchQueue, onSubscribe: @escaping () -> Swift.Void = {}) where State == M.State, M : SwiftUI_UDF_Binary.EnvironmentMiddleware, M : SwiftUI_UDF_Binary.Middleware
+  final public func subscribeAsync<M>(_ middlewareType: M.Type, on queue: Dispatch.DispatchQueue, onSubscribe: @escaping () -> Swift.Void = {}) where State == M.State, M : SwiftUI_UDF_Binary.Middleware
   final public func subscribeAsync<M>(_ middlewareType: M.Type, environment: M.Environment, on queue: Dispatch.DispatchQueue, onSubscribe: @escaping () -> Swift.Void = {}) where State == M.State, M : SwiftUI_UDF_Binary.EnvironmentMiddleware, M : SwiftUI_UDF_Binary.Middleware
 }
 public protocol ConcurrencyEffect {
