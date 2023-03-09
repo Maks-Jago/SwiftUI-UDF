@@ -51,8 +51,14 @@ public extension Effects {
             }
 
             private func send(status: CLAuthorizationStatus, accuracyAuthorization: CLAccuracyAuthorization) {
-                let action = Actions.DidUpdateLocationAccess(access: status, accuracyAuthorization: accuracyAuthorization)
-                _ = subscriber?.receive(action)
+                DispatchQueue.global().async { [weak self] in
+                    let action = Actions.DidUpdateLocationAccess(
+                        locationServicesEnabled: CLLocationManager.locationServicesEnabled(),
+                        access: status,
+                        accuracyAuthorization: accuracyAuthorization
+                    )
+                    _ = self?.subscriber?.receive(action)
+                }
             }
         }
     }

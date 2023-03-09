@@ -30,10 +30,12 @@ public extension Actions {
     }
 
     struct DidUpdateLocationAccess: Action {
+        public var locationServicesEnabled: Bool
         public var access: CLAuthorizationStatus
         public var accuracyAuthorization: CLAccuracyAuthorization
 
-        public init(access: CLAuthorizationStatus, accuracyAuthorization: CLAccuracyAuthorization) {
+        public init(locationServicesEnabled: Bool, access: CLAuthorizationStatus, accuracyAuthorization: CLAccuracyAuthorization) {
+            self.locationServicesEnabled = locationServicesEnabled
             self.access = access
             self.accuracyAuthorization = accuracyAuthorization
         }

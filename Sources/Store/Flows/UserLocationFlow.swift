@@ -13,12 +13,12 @@ import enum CoreLocation.CLAccuracyAuthorization
 public enum UserLocationFlow: Reducible {
     case none
     case requestPermissions
-    case locationStatus(CLAuthorizationStatus, CLAccuracyAuthorization)
+    case locationStatus(locationServicesEnabled: Bool, authorizationStatus: CLAuthorizationStatus, accuracy: CLAccuracyAuthorization)
 
     public init() { self = .none }
 
     public var notDetermined: Bool {
-        if case .locationStatus(let status, _) = self, status == .notDetermined {
+        if case .locationStatus(_, let status, _) = self, status == .notDetermined {
             return true
         }
 
@@ -31,7 +31,11 @@ public enum UserLocationFlow: Reducible {
             self = .requestPermissions
 
         case let action as Actions.DidUpdateLocationAccess:
-            self = .locationStatus(action.access, action.accuracyAuthorization)
+            self = .locationStatus(
+                locationServicesEnabled: action.locationServicesEnabled,
+                authorizationStatus: action.access,
+                accuracy: action.accuracyAuthorization
+            )
 
         default:
             break
