@@ -4482,6 +4482,40 @@
             "printedName": "Error",
             "children": [
               {
+                "kind": "Function",
+                "name": "==",
+                "printedName": "==(_:_:)",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Bool",
+                    "printedName": "Swift.Bool",
+                    "usr": "s:Sb"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Error",
+                    "printedName": "SwiftUI_UDF_Binary.Actions.Error",
+                    "usr": "s:18SwiftUI_UDF_Binary7ActionsO5ErrorV"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Error",
+                    "printedName": "SwiftUI_UDF_Binary.Actions.Error",
+                    "usr": "s:18SwiftUI_UDF_Binary7ActionsO5ErrorV"
+                  }
+                ],
+                "declKind": "Func",
+                "usr": "s:18SwiftUI_UDF_Binary7ActionsO5ErrorV2eeoiySbAE_AEtFZ",
+                "mangledName": "$s18SwiftUI_UDF_Binary7ActionsO5ErrorV2eeoiySbAE_AEtFZ",
+                "moduleName": "SwiftUI_UDF_Binary",
+                "static": true,
+                "declAttributes": [
+                  "AccessControl"
+                ],
+                "funcSelfKind": "NonMutating"
+              },
+              {
                 "kind": "Var",
                 "name": "error",
                 "printedName": "error",
@@ -4677,9 +4711,158 @@
                 ]
               },
               {
+                "kind": "Var",
+                "name": "meta",
+                "printedName": "meta",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Optional",
+                    "printedName": "[Swift.String : Any]?",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "Dictionary",
+                        "printedName": "[Swift.String : Any]",
+                        "children": [
+                          {
+                            "kind": "TypeNominal",
+                            "name": "String",
+                            "printedName": "Swift.String",
+                            "usr": "s:SS"
+                          },
+                          {
+                            "kind": "TypeNominal",
+                            "name": "ProtocolComposition",
+                            "printedName": "Any"
+                          }
+                        ],
+                        "usr": "s:SD"
+                      }
+                    ],
+                    "usr": "s:Sq"
+                  }
+                ],
+                "declKind": "Var",
+                "usr": "s:18SwiftUI_UDF_Binary7ActionsO5ErrorV4metaSDySSypGSgvp",
+                "mangledName": "$s18SwiftUI_UDF_Binary7ActionsO5ErrorV4metaSDySSypGSgvp",
+                "moduleName": "SwiftUI_UDF_Binary",
+                "declAttributes": [
+                  "HasInitialValue",
+                  "HasStorage",
+                  "AccessControl"
+                ],
+                "hasStorage": true,
+                "accessors": [
+                  {
+                    "kind": "Accessor",
+                    "name": "Get",
+                    "printedName": "Get()",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "Optional",
+                        "printedName": "[Swift.String : Any]?",
+                        "children": [
+                          {
+                            "kind": "TypeNominal",
+                            "name": "Dictionary",
+                            "printedName": "[Swift.String : Any]",
+                            "children": [
+                              {
+                                "kind": "TypeNominal",
+                                "name": "String",
+                                "printedName": "Swift.String",
+                                "usr": "s:SS"
+                              },
+                              {
+                                "kind": "TypeNominal",
+                                "name": "ProtocolComposition",
+                                "printedName": "Any"
+                              }
+                            ],
+                            "usr": "s:SD"
+                          }
+                        ],
+                        "usr": "s:Sq"
+                      }
+                    ],
+                    "declKind": "Accessor",
+                    "usr": "s:18SwiftUI_UDF_Binary7ActionsO5ErrorV4metaSDySSypGSgvg",
+                    "mangledName": "$s18SwiftUI_UDF_Binary7ActionsO5ErrorV4metaSDySSypGSgvg",
+                    "moduleName": "SwiftUI_UDF_Binary",
+                    "implicit": true,
+                    "accessorKind": "get"
+                  },
+                  {
+                    "kind": "Accessor",
+                    "name": "Set",
+                    "printedName": "Set()",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "Void",
+                        "printedName": "()"
+                      },
+                      {
+                        "kind": "TypeNominal",
+                        "name": "Optional",
+                        "printedName": "[Swift.String : Any]?",
+                        "children": [
+                          {
+                            "kind": "TypeNominal",
+                            "name": "Dictionary",
+                            "printedName": "[Swift.String : Any]",
+                            "children": [
+                              {
+                                "kind": "TypeNominal",
+                                "name": "String",
+                                "printedName": "Swift.String",
+                                "usr": "s:SS"
+                              },
+                              {
+                                "kind": "TypeNominal",
+                                "name": "ProtocolComposition",
+                                "printedName": "Any"
+                              }
+                            ],
+                            "usr": "s:SD"
+                          }
+                        ],
+                        "usr": "s:Sq"
+                      }
+                    ],
+                    "declKind": "Accessor",
+                    "usr": "s:18SwiftUI_UDF_Binary7ActionsO5ErrorV4metaSDySSypGSgvs",
+                    "mangledName": "$s18SwiftUI_UDF_Binary7ActionsO5ErrorV4metaSDySSypGSgvs",
+                    "moduleName": "SwiftUI_UDF_Binary",
+                    "implicit": true,
+                    "accessorKind": "set"
+                  },
+                  {
+                    "kind": "Accessor",
+                    "name": "Modify",
+                    "printedName": "Modify()",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "Void",
+                        "printedName": "()"
+                      }
+                    ],
+                    "declKind": "Accessor",
+                    "usr": "s:18SwiftUI_UDF_Binary7ActionsO5ErrorV4metaSDySSypGSgvM",
+                    "mangledName": "$s18SwiftUI_UDF_Binary7ActionsO5ErrorV4metaSDySSypGSgvM",
+                    "moduleName": "SwiftUI_UDF_Binary",
+                    "implicit": true,
+                    "accessorKind": "_modify"
+                  }
+                ]
+              },
+              {
                 "kind": "Constructor",
                 "name": "init",
-                "printedName": "init(error:id:)",
+                "printedName": "init(error:id:meta:)",
                 "children": [
                   {
                     "kind": "TypeNominal",
@@ -4706,11 +4889,39 @@
                     "kind": "TypeNominal",
                     "name": "GenericTypeParam",
                     "printedName": "τ_0_0"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Optional",
+                    "printedName": "[Swift.String : Any]?",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "Dictionary",
+                        "printedName": "[Swift.String : Any]",
+                        "children": [
+                          {
+                            "kind": "TypeNominal",
+                            "name": "String",
+                            "printedName": "Swift.String",
+                            "usr": "s:SS"
+                          },
+                          {
+                            "kind": "TypeNominal",
+                            "name": "ProtocolComposition",
+                            "printedName": "Any"
+                          }
+                        ],
+                        "usr": "s:SD"
+                      }
+                    ],
+                    "hasDefaultArg": true,
+                    "usr": "s:Sq"
                   }
                 ],
                 "declKind": "Constructor",
-                "usr": "s:18SwiftUI_UDF_Binary7ActionsO5ErrorV5error2idAESSSg_xtcSHRzlufc",
-                "mangledName": "$s18SwiftUI_UDF_Binary7ActionsO5ErrorV5error2idAESSSg_xtcSHRzlufc",
+                "usr": "s:18SwiftUI_UDF_Binary7ActionsO5ErrorV5error2id4metaAESSSg_xSDySSypGSgtcSHRzlufc",
+                "mangledName": "$s18SwiftUI_UDF_Binary7ActionsO5ErrorV5error2id4metaAESSSg_xSDySSypGSgtcSHRzlufc",
                 "moduleName": "SwiftUI_UDF_Binary",
                 "genericSig": "<τ_0_0 where τ_0_0 : Swift.Hashable>",
                 "sugared_genericSig": "<Id where Id : Swift.Hashable>",
@@ -4718,38 +4929,6 @@
                   "AccessControl"
                 ],
                 "init_kind": "Designated"
-              },
-              {
-                "kind": "Function",
-                "name": "==",
-                "printedName": "==(_:_:)",
-                "children": [
-                  {
-                    "kind": "TypeNominal",
-                    "name": "Bool",
-                    "printedName": "Swift.Bool",
-                    "usr": "s:Sb"
-                  },
-                  {
-                    "kind": "TypeNominal",
-                    "name": "Error",
-                    "printedName": "SwiftUI_UDF_Binary.Actions.Error",
-                    "usr": "s:18SwiftUI_UDF_Binary7ActionsO5ErrorV"
-                  },
-                  {
-                    "kind": "TypeNominal",
-                    "name": "Error",
-                    "printedName": "SwiftUI_UDF_Binary.Actions.Error",
-                    "usr": "s:18SwiftUI_UDF_Binary7ActionsO5ErrorV"
-                  }
-                ],
-                "declKind": "Func",
-                "usr": "s:18SwiftUI_UDF_Binary7ActionsO5ErrorV2eeoiySbAE_AEtFZ",
-                "mangledName": "$s18SwiftUI_UDF_Binary7ActionsO5ErrorV2eeoiySbAE_AEtFZ",
-                "moduleName": "SwiftUI_UDF_Binary",
-                "static": true,
-                "implicit": true,
-                "funcSelfKind": "NonMutating"
               }
             ],
             "declKind": "Struct",
@@ -23449,21 +23628,14 @@
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/Action\/Actions.swift",
       "kind": "IntegerLiteral",
-      "offset": 821,
+      "offset": 1065,
       "length": 1,
       "value": "1"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/Action\/Actions.swift",
       "kind": "BooleanLiteral",
-      "offset": 3091,
-      "length": 4,
-      "value": "true"
-    },
-    {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/Action\/Actions.swift",
-      "kind": "BooleanLiteral",
-      "offset": 5264,
+      "offset": 3335,
       "length": 4,
       "value": "true"
     },
@@ -23477,14 +23649,21 @@
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/Action\/Actions.swift",
       "kind": "BooleanLiteral",
-      "offset": 6531,
+      "offset": 5752,
       "length": 4,
       "value": "true"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/Action\/Actions.swift",
       "kind": "BooleanLiteral",
-      "offset": 6745,
+      "offset": 6775,
+      "length": 4,
+      "value": "true"
+    },
+    {
+      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/Action\/Actions.swift",
+      "kind": "BooleanLiteral",
+      "offset": 6989,
       "length": 4,
       "value": "true"
     },
@@ -23554,7 +23733,7 @@
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Common\/SubscribersCoordinator.swift",
       "kind": "Dictionary",
-      "offset": 237,
+      "offset": 231,
       "length": 3,
       "value": "[]"
     },

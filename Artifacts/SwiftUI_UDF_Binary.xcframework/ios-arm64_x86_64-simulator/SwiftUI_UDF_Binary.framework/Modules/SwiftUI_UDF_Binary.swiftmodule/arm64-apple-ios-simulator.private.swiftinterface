@@ -226,10 +226,11 @@ public protocol Form : Swift.Equatable, SwiftUI_UDF_Binary.Reducing {
 }
 public enum Actions {
   public struct Error : SwiftUI_UDF_Binary.Action {
+    public static func == (lhs: SwiftUI_UDF_Binary.Actions.Error, rhs: SwiftUI_UDF_Binary.Actions.Error) -> Swift.Bool
     public var error: Swift.String?
     public var id: Swift.AnyHashable
-    public init<Id>(error: Swift.String? = nil, id: Id) where Id : Swift.Hashable
-    public static func == (a: SwiftUI_UDF_Binary.Actions.Error, b: SwiftUI_UDF_Binary.Actions.Error) -> Swift.Bool
+    public var meta: [Swift.String : Any]?
+    public init<Id>(error: Swift.String? = nil, id: Id, meta: [Swift.String : Any]? = nil) where Id : Swift.Hashable
   }
   public struct Message : SwiftUI_UDF_Binary.Action {
     public var message: Swift.String?
