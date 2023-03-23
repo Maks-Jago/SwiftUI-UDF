@@ -8,7 +8,7 @@
 import Foundation
 
 @propertyWrapper
-public final class Cached<T: Codable>: Initable {
+public struct Cached<T: Codable>: Initable {
     public var key: String
     public var defaultValue: T
     public var intervalToSync: TimeInterval
@@ -18,8 +18,8 @@ public final class Cached<T: Codable>: Initable {
     
     private lazy var debouncer: Debouncer<T> = {
         let debouncer = Debouncer<T>(intervalToSync, on: .global(qos: .background))
-        debouncer.on { [weak self] value in
-            self?.storage.save(value)
+        debouncer.on { [self] value in
+            storage.save(value)
         }
         
         return debouncer
@@ -37,7 +37,7 @@ public final class Cached<T: Codable>: Initable {
         self.inMemoryValue = storage.load() ?? defaultValue
     }
     
-    public convenience init(key: String, defaultValue: T, intervalToSync: TimeInterval = 1) {
+    public init(key: String, defaultValue: T, intervalToSync: TimeInterval = 1) {
         self.init(key: key, defaultValue: defaultValue, intervalToSync: intervalToSync, storage: FileCache(key: key))
     }
     
@@ -49,7 +49,7 @@ public final class Cached<T: Codable>: Initable {
         self.inMemoryValue = storage.load() ?? defaultValue
     }
     
-    public convenience init(key: String, defaultValue: T = .init(), intervalToSync: TimeInterval = 1) where T: Initable {
+    public init(key: String, defaultValue: T = .init(), intervalToSync: TimeInterval = 1) where T: Initable {
         self.init(key: key, defaultValue: defaultValue, intervalToSync: intervalToSync, storage: FileCache(key: key))
     }
 
@@ -63,7 +63,7 @@ public final class Cached<T: Codable>: Initable {
         }
     }
 
-    public func reset() {
+    public mutating func reset() {
         storage.remove()
         wrappedValue = defaultValue
     }
