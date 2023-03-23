@@ -78,41 +78,6 @@ public struct LoggingAction : Swift.CustomDebugStringConvertible {
 public protocol ActionLogger : Swift.Sendable {
   func log(_ action: SwiftUI_UDF_Binary.LoggingAction)
 }
-@propertyWrapper final public class Cached<T> : SwiftUI_UDF_Binary.Initable where T : Swift.Decodable, T : Swift.Encodable {
-  final public var key: Swift.String
-  final public var defaultValue: T
-  final public var intervalToSync: Foundation.TimeInterval
-  public init()
-  public init(key: Swift.String, defaultValue: T, intervalToSync: Foundation.TimeInterval = 1, storage: SwiftUI_UDF_Binary.CacheSource)
-  convenience public init(key: Swift.String, defaultValue: T, intervalToSync: Foundation.TimeInterval = 1)
-  public init(key: Swift.String, defaultValue: T = .init(), intervalToSync: Foundation.TimeInterval = 1, storage: SwiftUI_UDF_Binary.CacheSource) where T : SwiftUI_UDF_Binary.Initable
-  convenience public init(key: Swift.String, defaultValue: T = .init(), intervalToSync: Foundation.TimeInterval = 1) where T : SwiftUI_UDF_Binary.Initable
-  final public var wrappedValue: T {
-    get
-    set
-  }
-  final public func reset()
-  @objc deinit
-}
-extension SwiftUI_UDF_Binary.Cached : SwiftUI_UDF_Binary.IsEquatable where T : Swift.Equatable, T : SwiftUI_UDF_Binary.Reducing {
-}
-extension SwiftUI_UDF_Binary.Cached : SwiftUI_UDF_Binary.Reducing where T : Swift.Equatable, T : SwiftUI_UDF_Binary.Reducing {
-}
-extension SwiftUI_UDF_Binary.Cached : SwiftUI_UDF_Binary.WrappedReducer where T : Swift.Equatable, T : SwiftUI_UDF_Binary.Reducing {
-  final public var reducer: SwiftUI_UDF_Binary.Reducing {
-    get
-    set
-  }
-}
-extension SwiftUI_UDF_Binary.Cached : Swift.Equatable where T : Swift.Equatable {
-  public static func == (lhs: SwiftUI_UDF_Binary.Cached<T>, rhs: SwiftUI_UDF_Binary.Cached<T>) -> Swift.Bool
-}
-extension SwiftUI_UDF_Binary.Cached : Swift.Hashable where T : Swift.Hashable {
-  final public func hash(into hasher: inout Swift.Hasher)
-  final public var hashValue: Swift.Int {
-    get
-  }
-}
 public struct EmptyReducer : SwiftUI_UDF_Binary.AppReducer {
   public init()
   public mutating func reduce(_ action: some Action) -> Swift.Bool
@@ -393,12 +358,6 @@ extension Foundation.ProcessInfo {
   public var xcTest: Swift.Bool {
     get
   }
-}
-public protocol CacheSource {
-  init(key: Swift.String)
-  func save<T>(_ value: T) where T : Swift.Encodable
-  func load<T>() -> T? where T : Swift.Decodable
-  func remove()
 }
 public enum Effects {
 }
@@ -743,18 +702,6 @@ extension _Concurrency.Task where Success == Swift.Never, Failure == Swift.Never
   @_Concurrency.MainActor final public func dispatch(_ action: some Action, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) async
   #endif
   @objc deinit
-}
-public struct FileCache {
-  public var fileManager: Foundation.FileManager
-  public var directoryName: Swift.String
-  public var key: Swift.String
-  public init(key: Swift.String)
-  public init(key: Swift.String, fileManager: Foundation.FileManager = .default, directoryName: Swift.String = "StateData")
-}
-extension SwiftUI_UDF_Binary.FileCache : SwiftUI_UDF_Binary.CacheSource {
-  public func save<T>(_ value: T) where T : Swift.Encodable
-  public func load<T>() -> T? where T : Swift.Decodable
-  public func remove()
 }
 public protocol ObservableMiddleware : SwiftUI_UDF_Binary.Middleware {
   @SwiftUI_UDF_Binary.ScopesBuilder func scope(for state: Self.State) -> SwiftUI_UDF_Binary.Scope
