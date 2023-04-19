@@ -6,7 +6,7 @@
 //
 
 import XCTest
-@testable import SwiftUI_UDF
+@testable import UDF
 
 class PaginatorTests: XCTestCase {
 

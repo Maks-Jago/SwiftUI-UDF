@@ -10,6 +10,6 @@ extension XCTestCase {
             exp.fulfill()
         }
 
-        await waitForExpectations(timeout: sleep + 1)
+        await fulfillment(of: [exp], timeout: sleep + 1)
     }
 }

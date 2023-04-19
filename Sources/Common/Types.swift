@@ -6,4 +6,4 @@
 //
 
 @_exported import OrderedCollections
-@_exported import SwiftUI_UDF_Binary
+@_exported import UDFCore
