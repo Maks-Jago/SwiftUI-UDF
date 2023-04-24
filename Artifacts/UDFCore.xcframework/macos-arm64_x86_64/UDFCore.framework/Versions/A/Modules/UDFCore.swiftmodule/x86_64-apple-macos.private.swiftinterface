@@ -149,6 +149,9 @@ public protocol _Container : SwiftUI.View {
 }
 #endif
 extension UDFCore._Container {
+  public var store: UDFCore.EnvironmentStore<Self.ContainerState> {
+    get
+  }
   @_Concurrency.MainActor public var body: some SwiftUI.View {
     get
   }
@@ -312,9 +315,15 @@ public enum ActionPriority {
     get
   }
 }
+#if compiler(>=5.3) && $PrimaryAssociatedTypes2
+public protocol _ReducibleMiddleware<State> : UDFCore.Middleware {
+  func reduce(_ action: some Action, for state: Self.State)
+}
+#else
 public protocol _ReducibleMiddleware : UDFCore.Middleware {
   func reduce(_ action: some Action, for state: Self.State)
 }
+#endif
 extension _Concurrency.Task where Success == Swift.Never, Failure == Swift.Never {
   #if compiler(>=5.3) && $AsyncAwait
   public static func sleep(seconds: Foundation.TimeInterval) async throws
@@ -338,10 +347,17 @@ extension _Concurrency.Task where Success == Swift.Never, Failure == Swift.Never
   #endif
   @objc deinit
 }
+#if compiler(>=5.3) && $PrimaryAssociatedTypes2
+public protocol _ObservableMiddleware<State> : UDFCore.Middleware {
+  @UDFCore.ScopeBuilder func scope(for state: Self.State) -> any UDFCore.Scope
+  func observe(state: Self.State)
+}
+#else
 public protocol _ObservableMiddleware : UDFCore.Middleware {
   @UDFCore.ScopeBuilder func scope(for state: Self.State) -> any UDFCore.Scope
   func observe(state: Self.State)
 }
+#endif
 public protocol Reducing : UDFCore.Initable, UDFCore.IsEquatable {
   mutating func reduce(_ action: some Action)
 }

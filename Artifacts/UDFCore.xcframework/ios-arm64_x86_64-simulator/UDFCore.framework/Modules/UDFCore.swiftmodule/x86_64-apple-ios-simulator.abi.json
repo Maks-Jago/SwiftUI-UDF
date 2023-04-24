@@ -2546,6 +2546,61 @@
           },
           {
             "kind": "Var",
+            "name": "store",
+            "printedName": "store",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "EnvironmentStore",
+                "printedName": "UDFCore.EnvironmentStore<τ_0_0.ContainerState>",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "DependentMember",
+                    "printedName": "τ_0_0.ContainerState"
+                  }
+                ],
+                "usr": "s:7UDFCore16EnvironmentStoreC"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:7UDFCore10_ContainerPAAE5storeAA16EnvironmentStoreCy0B5StateQzGvp",
+            "mangledName": "$s7UDFCore10_ContainerPAAE5storeAA16EnvironmentStoreCy0B5StateQzGvp",
+            "moduleName": "UDFCore",
+            "isFromExtension": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "EnvironmentStore",
+                    "printedName": "UDFCore.EnvironmentStore<τ_0_0.ContainerState>",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "DependentMember",
+                        "printedName": "τ_0_0.ContainerState"
+                      }
+                    ],
+                    "usr": "s:7UDFCore16EnvironmentStoreC"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:7UDFCore10_ContainerPAAE5storeAA16EnvironmentStoreCy0B5StateQzGvg",
+                "mangledName": "$s7UDFCore10_ContainerPAAE5storeAA16EnvironmentStoreCy0B5StateQzGvg",
+                "moduleName": "UDFCore",
+                "genericSig": "<τ_0_0 where τ_0_0 : UDFCore._Container>",
+                "sugared_genericSig": "<Self where Self : UDFCore._Container>",
+                "isFromExtension": true,
+                "accessorKind": "get"
+              }
+            ]
+          },
+          {
+            "kind": "Var",
             "name": "body",
             "printedName": "body",
             "children": [
@@ -8777,14 +8832,14 @@
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/View\/Container\/Container.swift",
       "kind": "BooleanLiteral",
-      "offset": 2352,
+      "offset": 2413,
       "length": 4,
       "value": "true"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/View\/Container\/Container.swift",
       "kind": "BooleanLiteral",
-      "offset": 2638,
+      "offset": 2699,
       "length": 5,
       "value": "false"
     },
@@ -8868,70 +8923,70 @@
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/InternalStore.swift",
       "kind": "BooleanLiteral",
-      "offset": 3136,
+      "offset": 3174,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/InternalStore.swift",
       "kind": "BooleanLiteral",
-      "offset": 3661,
+      "offset": 3699,
       "length": 4,
       "value": "true"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/InternalStore.swift",
       "kind": "BooleanLiteral",
-      "offset": 3775,
+      "offset": 3813,
       "length": 4,
       "value": "true"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/InternalStore.swift",
       "kind": "BooleanLiteral",
-      "offset": 3930,
+      "offset": 3968,
       "length": 4,
       "value": "true"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/InternalStore.swift",
       "kind": "BooleanLiteral",
-      "offset": 4225,
+      "offset": 4263,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/InternalStore.swift",
       "kind": "BooleanLiteral",
-      "offset": 4329,
+      "offset": 4367,
       "length": 4,
       "value": "true"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/InternalStore.swift",
       "kind": "BooleanLiteral",
-      "offset": 4410,
+      "offset": 4448,
       "length": 4,
       "value": "true"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/InternalStore.swift",
       "kind": "BooleanLiteral",
-      "offset": 4524,
+      "offset": 4562,
       "length": 4,
       "value": "true"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/InternalStore.swift",
       "kind": "BooleanLiteral",
-      "offset": 6585,
+      "offset": 6605,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/InternalStore.swift",
       "kind": "BooleanLiteral",
-      "offset": 6677,
+      "offset": 6697,
       "length": 4,
       "value": "true"
     },
