@@ -8,7 +8,7 @@
 import Foundation
 import Combine
 import CoreLocation
-import SwiftUI_UDF_Binary
+import UDFCore
 
 public extension Effects {
 

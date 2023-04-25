@@ -34,6 +34,20 @@
                ReferencedContainer = "container:">
             </BuildableReference>
          </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "UDF"
+               BuildableName = "UDF"
+               BlueprintName = "UDF"
+               ReferencedContainer = "container:">
+            </BuildableReference>
+         </BuildActionEntry>
       </BuildActionEntries>
    </BuildAction>
    <TestAction
@@ -49,6 +63,16 @@
                BlueprintIdentifier = "SwiftUI-UDF-Tests"
                BuildableName = "SwiftUI-UDF-Tests"
                BlueprintName = "SwiftUI-UDF-Tests"
+               ReferencedContainer = "container:">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "SwiftUI-UDF-ConcurrencyTests"
+               BuildableName = "SwiftUI-UDF-ConcurrencyTests"
+               BlueprintName = "SwiftUI-UDF-ConcurrencyTests"
                ReferencedContainer = "container:">
             </BuildableReference>
          </TestableReference>

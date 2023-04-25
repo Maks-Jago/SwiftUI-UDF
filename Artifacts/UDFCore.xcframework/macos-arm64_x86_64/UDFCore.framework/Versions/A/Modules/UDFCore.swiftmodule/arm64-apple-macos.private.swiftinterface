@@ -1,0 +1,378 @@
+// swift-interface-format-version: 1.0
+// swift-compiler-version: Apple Swift version 5.8 (swiftlang-5.8.0.124.2 clang-1403.0.22.11.100)
+// swift-module-flags: -target arm64-apple-macos11.0 -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -O -module-name UDFCore
+// swift-module-flags-ignorable: -enable-bare-slash-regex
+import Combine
+import Foundation
+import Swift
+import SwiftUI
+import _Concurrency
+import _StringProcessing
+public protocol WrappedReducer : UDFCore.Reducing {
+  var reducer: any UDFCore.Reducing { get set }
+}
+extension UDFCore.WrappedReducer {
+  public mutating func reduce(_ action: some Action)
+}
+public protocol _Component : SwiftUI.View {
+  associatedtype Props
+  var props: Self.Props { get }
+  init(props: Self.Props)
+}
+public struct LoggingAction : Swift.CustomDebugStringConvertible {
+  public let value: any UDFCore.Action
+  public let fileName: Swift.String
+  public let functionName: Swift.String
+  public let lineNumber: Swift.Int
+  public var debugDescription: Swift.String {
+    get
+  }
+}
+public protocol ActionLogger : Swift.Sendable {
+  func log(_ action: UDFCore.LoggingAction)
+}
+public protocol _Mergeable {
+  func merging(_ newValue: Self) -> Self
+  func filled(from value: Self, mutate: (_ filled: inout Self, _ old: Self) -> Swift.Void) -> Self
+}
+public protocol AppReducer : Swift.Equatable, UDFCore.Scope {
+  mutating func preReduce(_ action: some Action)
+  mutating func postReduce(_ action: some Action)
+}
+extension UDFCore.AppReducer {
+  public func preReduce(_ action: some Action)
+  public func postReduce(_ action: some Action)
+}
+public protocol IsEquatable {
+  func isEqual(_ rhs: any UDFCore.IsEquatable) -> Swift.Bool
+}
+extension UDFCore.IsEquatable where Self : Swift.Equatable {
+  public func isEqual(_ rhs: any UDFCore.IsEquatable) -> Swift.Bool
+}
+public protocol Action : Swift.Equatable {
+}
+extension UDFCore.Action {
+  public func with(animation: SwiftUI.Animation?) -> some UDFCore.Action
+  
+}
+extension UDFCore.Action {
+  public func silent() -> some UDFCore.Action
+  
+}
+public protocol Scope : UDFCore.IsEquatable {
+}
+public typealias EquatableScope = Swift.Equatable & UDFCore.Scope
+@_functionBuilder public enum ScopeBuilder {
+  public static func buildExpression<S>(_ expression: S) -> some Swift.Equatable & UDFCore.Scope where S : Swift.Equatable, S : UDFCore.Scope
+  
+  public static func buildExpression<R>(_ expression: R) -> some Swift.Equatable & UDFCore.Scope where R : Swift.Equatable, R : UDFCore.Reducing
+  
+  public static func buildExpression<R>(_ expression: R) -> some Swift.Equatable & UDFCore.Scope where R : UDFCore.AppReducer
+  
+  public static func buildPartialBlock<S>(first scope: S) -> some Swift.Equatable & UDFCore.Scope where S : Swift.Equatable, S : UDFCore.Scope
+  
+  public static func buildPartialBlock<S1, S2>(accumulated: S1, next: S2) -> some Swift.Equatable & UDFCore.Scope where S1 : Swift.Equatable, S1 : UDFCore.Scope, S2 : Swift.Equatable, S2 : UDFCore.Scope
+  
+}
+public func Scopes(@UDFCore.ScopeBuilder _ builder: () -> some EquatableScope) -> some Swift.Equatable & UDFCore.Scope
+
+extension UDFCore._Mergeable {
+  public func filled(from value: Self, mutate: (_ filledValue: inout Self, _ oldValue: Self) -> Swift.Void) -> Self
+}
+public enum MiddlewareStatus {
+  case active
+  case suspend
+  public static func == (a: UDFCore.MiddlewareStatus, b: UDFCore.MiddlewareStatus) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+public protocol _Form : Swift.Equatable, UDFCore.Reducing {
+}
+public enum Actions {
+  public struct UpdateFormField<F> : UDFCore.Action where F : UDFCore._Form {
+    public static func == (lhs: UDFCore.Actions.UpdateFormField<F>, rhs: UDFCore.Actions.UpdateFormField<F>) -> Swift.Bool
+    public var value: any Swift.Equatable
+    public var keyPath: Swift.PartialKeyPath<F>
+    public init<V>(keyPath: Swift.WritableKeyPath<F, V>, value: V) where V : Swift.Equatable
+  }
+}
+public protocol Initable {
+  init()
+}
+extension Swift.Dictionary : UDFCore.Initable {
+}
+extension Swift.Set : UDFCore.Initable {
+}
+extension Swift.Array : UDFCore.Initable {
+}
+public typealias Command = () -> ()
+public typealias CommandWith<T> = (T) -> ()
+extension Foundation.ProcessInfo {
+  public var xcTest: Swift.Bool {
+    get
+  }
+}
+public struct LogDistributor {
+}
+extension UDFCore.LogDistributor {
+  public enum Options {
+    case `default`
+    case verbose
+    public static func == (a: UDFCore.LogDistributor.Options, b: UDFCore.LogDistributor.Options) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+}
+#if compiler(>=5.3) && $PrimaryAssociatedTypes2
+public protocol _Container<ContainerState> : SwiftUI.View {
+  associatedtype ContainerState : UDFCore.AppReducer
+  associatedtype ContainerComponent : UDFCore._Component
+  func map(store: UDFCore.EnvironmentStore<Self.ContainerState>) -> Self.ContainerComponent.Props
+  @UDFCore.ScopeBuilder func scope(for state: Self.ContainerState) -> any UDFCore.Scope
+  func onContainerAppear(store: UDFCore.EnvironmentStore<Self.ContainerState>)
+  func onContainerDisappear(store: UDFCore.EnvironmentStore<Self.ContainerState>)
+  func onContainerDidLoad(store: UDFCore.EnvironmentStore<Self.ContainerState>)
+}
+#else
+public protocol _Container : SwiftUI.View {
+  associatedtype ContainerState : UDFCore.AppReducer
+  associatedtype ContainerComponent : UDFCore._Component
+  func map(store: UDFCore.EnvironmentStore<Self.ContainerState>) -> Self.ContainerComponent.Props
+  @UDFCore.ScopeBuilder func scope(for state: Self.ContainerState) -> any UDFCore.Scope
+  func onContainerAppear(store: UDFCore.EnvironmentStore<Self.ContainerState>)
+  func onContainerDisappear(store: UDFCore.EnvironmentStore<Self.ContainerState>)
+  func onContainerDidLoad(store: UDFCore.EnvironmentStore<Self.ContainerState>)
+}
+#endif
+extension UDFCore._Container {
+  public var store: UDFCore.EnvironmentStore<Self.ContainerState> {
+    get
+  }
+  public var body: some SwiftUI.View {
+    get
+  }
+}
+@_functionBuilder public enum ActionGroupBuilder {
+  public static func buildArray(_ components: [[any Swift.Equatable]], fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) -> [any Swift.Equatable]
+  public static func buildBlock(_ components: [any Swift.Equatable]..., fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) -> [any Swift.Equatable]
+  public static func buildExpression(_ expression: some Action, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) -> [any Swift.Equatable]
+  public static func buildExpression(_ expression: Swift.Void) -> [any Swift.Equatable]
+  public static func buildOptional(_ component: [any Swift.Equatable]?) -> [any Swift.Equatable]
+  public static func buildEither(first component: [any Swift.Equatable]) -> [any Swift.Equatable]
+  public static func buildEither(second component: [any Swift.Equatable]) -> [any Swift.Equatable]
+  public static func buildLimitedAvailability(_ component: [any Swift.Equatable]) -> [any Swift.Equatable]
+  public static func buildFinalResult(_ component: [any Swift.Equatable], fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) -> UDFCore.ActionGroup
+}
+#if compiler(>=5.3) && $PrimaryAssociatedTypes2
+public protocol Middleware<State> {
+  associatedtype State : UDFCore.AppReducer
+  var store: any UDFCore.Store<Self.State> { get }
+  var queue: Dispatch.DispatchQueue { get set }
+  init(store: some Store<State>)
+  init(store: some Store<State>, queue: Dispatch.DispatchQueue)
+  func status(for state: Self.State) -> UDFCore.MiddlewareStatus
+  @discardableResult
+  func cancel<Id>(by cancelation: Id) -> Swift.Bool where Id : Swift.Hashable
+  func cancelAll()
+}
+#else
+public protocol Middleware {
+  associatedtype State : UDFCore.AppReducer
+  var store: any UDFCore.Store<Self.State> { get }
+  var queue: Dispatch.DispatchQueue { get set }
+  init(store: some Store<State>)
+  init(store: some Store<State>, queue: Dispatch.DispatchQueue)
+  func status(for state: Self.State) -> UDFCore.MiddlewareStatus
+  @discardableResult
+  func cancel<Id>(by cancelation: Id) -> Swift.Bool where Id : Swift.Hashable
+  func cancelAll()
+}
+#endif
+@_hasMissingDesignatedInitializers @propertyWrapper @dynamicMemberLookup final public class SourceOfTruth<AppState> where AppState : UDFCore.AppReducer {
+  final public var wrappedValue: AppState
+  final public var projectedValue: UDFCore.SourceOfTruth<AppState> {
+    get
+  }
+  final public subscript<R>(dynamicMember keyPath: Swift.KeyPath<AppState, R>) -> UDFCore.ReducerReference<AppState, R> where R : Swift.Equatable, R : UDFCore.Reducing {
+    get
+  }
+  final public subscript<R>(dynamicMember keyPath: Swift.KeyPath<AppState, R>) -> UDFCore.ReducerScope<R> where R : Swift.Equatable, R : UDFCore.Reducing {
+    get
+  }
+  @objc deinit
+}
+extension UDFCore.SourceOfTruth : Swift.Equatable {
+  public static func == (lhs: UDFCore.SourceOfTruth<AppState>, rhs: UDFCore.SourceOfTruth<AppState>) -> Swift.Bool
+}
+@_hasMissingDesignatedInitializers @dynamicMemberLookup final public class ReducerReference<AppState, Reducer> where AppState : UDFCore.AppReducer, Reducer : Swift.Equatable, Reducer : UDFCore.Reducing {
+  final public var projectedValue: Reducer {
+    get
+    set
+  }
+  final public subscript<R>(dynamicMember keyPath: Swift.KeyPath<Reducer, R>) -> UDFCore.ReducerReference<AppState, R> where R : Swift.Equatable, R : UDFCore.Reducing {
+    get
+  }
+  final public subscript<R>(dynamicMember keyPath: Swift.KeyPath<Reducer, R>) -> UDFCore.ReducerScope<R> where R : Swift.Equatable, R : UDFCore.Reducing {
+    get
+  }
+  @objc deinit
+}
+extension UDFCore.ReducerReference where Reducer : UDFCore._Form {
+  final public subscript<T>(dynamicMember keyPath: Swift.WritableKeyPath<Reducer, T>) -> SwiftUI.Binding<T> where T : Swift.Equatable {
+    get
+  }
+}
+public struct ActionGroup : UDFCore.Action {
+  public var actions: [any UDFCore.Action] {
+    get
+  }
+  public init(action: some Action, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line)
+  public init(actions: [any UDFCore.Action], fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line)
+  public init(@UDFCore.ActionGroupBuilder _ builder: () -> UDFCore.ActionGroup)
+  public init()
+}
+extension UDFCore.ActionGroup : Swift.CustomDebugStringConvertible {
+  public var debugDescription: Swift.String {
+    get
+  }
+}
+extension UDFCore.ActionGroup {
+  public static func == (lhs: UDFCore.ActionGroup, rhs: UDFCore.ActionGroup) -> Swift.Bool
+}
+extension UDFCore.ActionGroup {
+  public mutating func append(action: some Action, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line)
+  public mutating func append(actions: [any UDFCore.Action], fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line)
+}
+extension UDFCore.ActionGroup {
+  public mutating func insert(action: some Action, at: Swift.Int = 0, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line)
+}
+public protocol InitialSetup : UDFCore.Reducing {
+  associatedtype AppState : UDFCore.AppReducer
+  mutating func initialSetup(with state: Self.AppState)
+}
+extension Swift.Hashable {
+  public static func == (lhs: Swift.AnyHashable, rhs: Self) -> Swift.Bool
+}
+extension Swift.Hashable {
+  public static func == (lhs: Self, rhs: Swift.AnyHashable) -> Swift.Bool
+}
+extension Swift.Hashable {
+  public static func == (lhs: Swift.AnyHashable?, rhs: Self) -> Swift.Bool
+}
+extension Swift.Hashable {
+  public static func == (lhs: Self, rhs: Swift.AnyHashable?) -> Swift.Bool
+}
+final public class EnvironmentStore<State> where State : UDFCore.AppReducer {
+  @UDFCore.SourceOfTruth @_projectedValueProperty($state) final public var state: State {
+    get
+    set
+    _modify
+  }
+  final public var $state: UDFCore.SourceOfTruth<State> {
+    get
+  }
+  public init(initial state: State, accessToken: Swift.String, loggers: [any UDFCore.ActionLogger], logOptions: UDFCore.LogDistributor.Options) throws
+  convenience public init(initial state: State, accessToken: Swift.String, logger: any UDFCore.ActionLogger, logOptions: UDFCore.LogDistributor.Options) throws
+  final public func dispatch(_ action: some Action, priority: UDFCore.ActionPriority = .default, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line)
+  final public func bind(_ action: some Action, priority: UDFCore.ActionPriority = .default, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) -> UDFCore.Command
+  final public func bind<T>(_ action: @escaping (T) -> some Action, priority: UDFCore.ActionPriority = .default, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) -> UDFCore.CommandWith<T>
+  @objc deinit
+}
+extension UDFCore.EnvironmentStore {
+  #if compiler(>=5.3) && $AsyncAwait
+  final public func subscribe(_ middlewareBuilder: (_ store: any UDFCore.Store<State>) -> some Middleware<State>) async
+  #endif
+  final public func subscribeAsync(_ middlewareBuilder: @escaping (_ store: any UDFCore.Store<State>) -> some Middleware<State>, onSubscribe: @escaping () -> Swift.Void = {})
+}
+#if compiler(>=5.3) && $PrimaryAssociatedTypes2
+public protocol Store<State> : _Concurrency.Actor {
+  associatedtype State : UDFCore.AppReducer
+  var state: Self.State { get }
+  nonisolated func dispatch(_ action: some Action, priority: UDFCore.ActionPriority, fileName: Swift.String, functionName: Swift.String, lineNumber: Swift.Int)
+}
+#else
+public protocol Store : _Concurrency.Actor {
+  associatedtype State : UDFCore.AppReducer
+  var state: Self.State { get }
+  nonisolated func dispatch(_ action: some Action, priority: UDFCore.ActionPriority, fileName: Swift.String, functionName: Swift.String, lineNumber: Swift.Int)
+}
+#endif
+extension UDFCore.Store {
+  nonisolated public func dispatch(_ action: some Action, priority: UDFCore.ActionPriority = .default, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line)
+  public func bind(_ action: some Action, priority: UDFCore.ActionPriority = .default, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) -> UDFCore.Command
+  public func bind<T>(_ action: @escaping (T) -> some Action, priority: UDFCore.ActionPriority = .default, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) -> UDFCore.CommandWith<T>
+}
+public enum ActionPriority {
+  case `default`
+  case userInteractive
+  public static func == (a: UDFCore.ActionPriority, b: UDFCore.ActionPriority) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+#if compiler(>=5.3) && $PrimaryAssociatedTypes2
+public protocol _ReducibleMiddleware<State> : UDFCore.Middleware {
+  func reduce(_ action: some Action, for state: Self.State)
+}
+#else
+public protocol _ReducibleMiddleware : UDFCore.Middleware {
+  func reduce(_ action: some Action, for state: Self.State)
+}
+#endif
+extension _Concurrency.Task where Success == Swift.Never, Failure == Swift.Never {
+  #if compiler(>=5.3) && $AsyncAwait
+  public static func sleep(seconds: Foundation.TimeInterval) async throws
+  #endif
+}
+@_Concurrency.MainActor final public class XCTestStore<State> where State : UDFCore.AppReducer {
+  @UDFCore.SourceOfTruth @_projectedValueProperty($state) @_Concurrency.MainActor final public var state: State {
+    get
+    set
+    _modify
+  }
+  @_Concurrency.MainActor final public var $state: UDFCore.SourceOfTruth<State> {
+    get
+  }
+  @_Concurrency.MainActor public init(initial state: State, logOptions: UDFCore.LogDistributor.Options = .verbose) throws
+  #if compiler(>=5.3) && $AsyncAwait
+  @_Concurrency.MainActor final public func subscribe(_ middlewareBuilder: (_ store: any UDFCore.Store<State>) -> some Middleware<State>) async
+  #endif
+  #if compiler(>=5.3) && $AsyncAwait
+  @_Concurrency.MainActor final public func dispatch(_ action: some Action, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) async
+  #endif
+  @objc deinit
+}
+#if compiler(>=5.3) && $PrimaryAssociatedTypes2
+public protocol _ObservableMiddleware<State> : UDFCore.Middleware {
+  @UDFCore.ScopeBuilder func scope(for state: Self.State) -> any UDFCore.Scope
+  func observe(state: Self.State)
+}
+#else
+public protocol _ObservableMiddleware : UDFCore.Middleware {
+  @UDFCore.ScopeBuilder func scope(for state: Self.State) -> any UDFCore.Scope
+  func observe(state: Self.State)
+}
+#endif
+public protocol Reducing : UDFCore.Initable, UDFCore.IsEquatable {
+  mutating func reduce(_ action: some Action)
+}
+extension UDFCore.Reducing {
+  public mutating func reduce(_ action: some Action)
+}
+public typealias Reducible = Swift.Equatable & UDFCore.Reducing
+@_hasMissingDesignatedInitializers final public class ReducerScope<R> : UDFCore.EquatableScope where R : Swift.Equatable, R : UDFCore.Reducing {
+  public static func == (lhs: UDFCore.ReducerScope<R>, rhs: UDFCore.ReducerScope<R>) -> Swift.Bool
+  @objc deinit
+}
+extension UDFCore.MiddlewareStatus : Swift.Equatable {}
+extension UDFCore.MiddlewareStatus : Swift.Hashable {}
+extension UDFCore.LogDistributor.Options : Swift.Equatable {}
+extension UDFCore.LogDistributor.Options : Swift.Hashable {}
+extension UDFCore.ActionPriority : Swift.Equatable {}
+extension UDFCore.ActionPriority : Swift.Hashable {}
+extension UDFCore.XCTestStore : Swift.Sendable {}

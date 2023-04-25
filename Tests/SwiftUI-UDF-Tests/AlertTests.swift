@@ -1,5 +1,5 @@
 import XCTest
-@testable import SwiftUI_UDF
+@testable import UDF
 import SwiftUI
 
 fileprivate extension Actions {
@@ -23,7 +23,7 @@ final class AlertTests: XCTestCase {
         var form = FormWithAlert()
     }
 
-    struct FormWithAlert: SwiftUI_UDF_Binary.Form {
+    struct FormWithAlert: UDF.Form {
         enum AlertId: Hashable {
             case alertWithAction
         }
