@@ -2397,9 +2397,6 @@
             "genericSig": "<τ_0_0 where τ_0_0 : UDFCore._Container>",
             "sugared_genericSig": "<Self where Self : UDFCore._Container>",
             "protocolReq": true,
-            "declAttributes": [
-              "Custom"
-            ],
             "reqNewWitnessTableEntry": true,
             "funcSelfKind": "NonMutating"
           },
@@ -2464,9 +2461,6 @@
             "genericSig": "<τ_0_0 where τ_0_0 : UDFCore._Container>",
             "sugared_genericSig": "<Self where Self : UDFCore._Container>",
             "protocolReq": true,
-            "declAttributes": [
-              "Custom"
-            ],
             "reqNewWitnessTableEntry": true,
             "funcSelfKind": "NonMutating"
           },
@@ -2501,9 +2495,6 @@
             "genericSig": "<τ_0_0 where τ_0_0 : UDFCore._Container>",
             "sugared_genericSig": "<Self where Self : UDFCore._Container>",
             "protocolReq": true,
-            "declAttributes": [
-              "Custom"
-            ],
             "reqNewWitnessTableEntry": true,
             "funcSelfKind": "NonMutating"
           },
@@ -2538,9 +2529,6 @@
             "genericSig": "<τ_0_0 where τ_0_0 : UDFCore._Container>",
             "sugared_genericSig": "<Self where Self : UDFCore._Container>",
             "protocolReq": true,
-            "declAttributes": [
-              "Custom"
-            ],
             "reqNewWitnessTableEntry": true,
             "funcSelfKind": "NonMutating"
           },
@@ -2627,9 +2615,6 @@
             "usr": "s:7UDFCore10_ContainerPAAE4bodyQrvp",
             "mangledName": "$s7UDFCore10_ContainerPAAE4bodyQrvp",
             "moduleName": "UDFCore",
-            "declAttributes": [
-              "Custom"
-            ],
             "isFromExtension": true,
             "accessors": [
               {
@@ -8832,14 +8817,14 @@
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/View\/Container\/Container.swift",
       "kind": "BooleanLiteral",
-      "offset": 2413,
+      "offset": 2354,
       "length": 4,
       "value": "true"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/View\/Container\/Container.swift",
       "kind": "BooleanLiteral",
-      "offset": 2699,
+      "offset": 2640,
       "length": 5,
       "value": "false"
     },

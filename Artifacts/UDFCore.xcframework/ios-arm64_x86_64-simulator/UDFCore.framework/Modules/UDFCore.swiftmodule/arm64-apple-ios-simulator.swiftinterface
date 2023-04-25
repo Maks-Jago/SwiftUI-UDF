@@ -131,28 +131,28 @@ extension UDFCore.LogDistributor {
 public protocol _Container<ContainerState> : SwiftUI.View {
   associatedtype ContainerState : UDFCore.AppReducer
   associatedtype ContainerComponent : UDFCore._Component
-  @_Concurrency.MainActor func map(store: UDFCore.EnvironmentStore<Self.ContainerState>) -> Self.ContainerComponent.Props
+  func map(store: UDFCore.EnvironmentStore<Self.ContainerState>) -> Self.ContainerComponent.Props
   @UDFCore.ScopeBuilder func scope(for state: Self.ContainerState) -> any UDFCore.Scope
-  @_Concurrency.MainActor func onContainerAppear(store: UDFCore.EnvironmentStore<Self.ContainerState>)
-  @_Concurrency.MainActor func onContainerDisappear(store: UDFCore.EnvironmentStore<Self.ContainerState>)
-  @_Concurrency.MainActor func onContainerDidLoad(store: UDFCore.EnvironmentStore<Self.ContainerState>)
+  func onContainerAppear(store: UDFCore.EnvironmentStore<Self.ContainerState>)
+  func onContainerDisappear(store: UDFCore.EnvironmentStore<Self.ContainerState>)
+  func onContainerDidLoad(store: UDFCore.EnvironmentStore<Self.ContainerState>)
 }
 #else
 public protocol _Container : SwiftUI.View {
   associatedtype ContainerState : UDFCore.AppReducer
   associatedtype ContainerComponent : UDFCore._Component
-  @_Concurrency.MainActor func map(store: UDFCore.EnvironmentStore<Self.ContainerState>) -> Self.ContainerComponent.Props
+  func map(store: UDFCore.EnvironmentStore<Self.ContainerState>) -> Self.ContainerComponent.Props
   @UDFCore.ScopeBuilder func scope(for state: Self.ContainerState) -> any UDFCore.Scope
-  @_Concurrency.MainActor func onContainerAppear(store: UDFCore.EnvironmentStore<Self.ContainerState>)
-  @_Concurrency.MainActor func onContainerDisappear(store: UDFCore.EnvironmentStore<Self.ContainerState>)
-  @_Concurrency.MainActor func onContainerDidLoad(store: UDFCore.EnvironmentStore<Self.ContainerState>)
+  func onContainerAppear(store: UDFCore.EnvironmentStore<Self.ContainerState>)
+  func onContainerDisappear(store: UDFCore.EnvironmentStore<Self.ContainerState>)
+  func onContainerDidLoad(store: UDFCore.EnvironmentStore<Self.ContainerState>)
 }
 #endif
 extension UDFCore._Container {
   public var store: UDFCore.EnvironmentStore<Self.ContainerState> {
     get
   }
-  @_Concurrency.MainActor public var body: some SwiftUI.View {
+  public var body: some SwiftUI.View {
     get
   }
 }
