@@ -10,13 +10,7 @@ fileprivate extension Actions {
 }
 
 final class NewReducibleMiddlewareTests: XCTestCase {
-
-    struct ConsoleLogger: ActionLogger {
-        func log(_ action: LoggingAction) {
-            print(action)
-        }
-    }
-
+    
     struct AppState: AppReducer {
         var testForm = TestForm()
     }

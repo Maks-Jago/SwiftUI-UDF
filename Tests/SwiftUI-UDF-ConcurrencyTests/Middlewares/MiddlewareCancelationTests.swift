@@ -4,12 +4,6 @@ import Combine
 
 final class MiddlewareCancelationTests: XCTestCase {
 
-    struct ConsoleLogger: ActionLogger {
-        func log(_ action: LoggingAction) {
-            print(action)
-        }
-    }
-
     struct AppState: AppReducer {
         var middlewareFlow = MiddlewareFlow()
         var runForm = RunForm()
