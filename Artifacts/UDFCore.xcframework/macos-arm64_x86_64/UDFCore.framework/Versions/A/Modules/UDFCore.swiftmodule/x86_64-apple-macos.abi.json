@@ -23,6 +23,94 @@
         "name": "Foundation",
         "printedName": "Foundation",
         "declKind": "Import",
+        "moduleName": "UDFCore",
+        "declAttributes": [
+          "RawDocComment"
+        ]
+      },
+      {
+        "kind": "TypeDecl",
+        "name": "DefaultActionFilter",
+        "printedName": "DefaultActionFilter",
+        "children": [
+          {
+            "kind": "Constructor",
+            "name": "init",
+            "printedName": "init()",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "DefaultActionFilter",
+                "printedName": "UDFCore.DefaultActionFilter",
+                "usr": "s:7UDFCore19DefaultActionFilterV"
+              }
+            ],
+            "declKind": "Constructor",
+            "usr": "s:7UDFCore19DefaultActionFilterVACycfc",
+            "mangledName": "$s7UDFCore19DefaultActionFilterVACycfc",
+            "moduleName": "UDFCore",
+            "declAttributes": [
+              "AccessControl"
+            ],
+            "init_kind": "Designated"
+          },
+          {
+            "kind": "Function",
+            "name": "include",
+            "printedName": "include(action:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Bool",
+                "printedName": "Swift.Bool",
+                "usr": "s:Sb"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "LoggingAction",
+                "printedName": "UDFCore.LoggingAction",
+                "usr": "s:7UDFCore13LoggingActionV"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:7UDFCore19DefaultActionFilterV7include6actionSbAA07LoggingC0V_tF",
+            "mangledName": "$s7UDFCore19DefaultActionFilterV7include6actionSbAA07LoggingC0V_tF",
+            "moduleName": "UDFCore",
+            "declAttributes": [
+              "AccessControl"
+            ],
+            "funcSelfKind": "NonMutating"
+          }
+        ],
+        "declKind": "Struct",
+        "usr": "s:7UDFCore19DefaultActionFilterV",
+        "mangledName": "$s7UDFCore19DefaultActionFilterV",
+        "moduleName": "UDFCore",
+        "declAttributes": [
+          "AccessControl"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "ActionFilter",
+            "printedName": "ActionFilter",
+            "usr": "s:7UDFCore12ActionFilterP",
+            "mangledName": "$s7UDFCore12ActionFilterP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Sendable",
+            "printedName": "Sendable",
+            "usr": "s:s8SendableP",
+            "mangledName": "$ss8SendableP"
+          }
+        ]
+      },
+      {
+        "kind": "Import",
+        "name": "Foundation",
+        "printedName": "Foundation",
+        "declKind": "Import",
         "moduleName": "UDFCore"
       },
       {
@@ -307,31 +395,55 @@
       },
       {
         "kind": "TypeDecl",
-        "name": "LoggingAction",
-        "printedName": "LoggingAction",
+        "name": "ActionFilter",
+        "printedName": "ActionFilter",
         "children": [
           {
-            "kind": "Var",
-            "name": "value",
-            "printedName": "value",
+            "kind": "Function",
+            "name": "include",
+            "printedName": "include(action:)",
             "children": [
               {
                 "kind": "TypeNominal",
-                "name": "Action",
-                "printedName": "UDFCore.Action",
-                "usr": "s:7UDFCore6ActionP"
+                "name": "Bool",
+                "printedName": "Swift.Bool",
+                "usr": "s:Sb"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "LoggingAction",
+                "printedName": "UDFCore.LoggingAction",
+                "usr": "s:7UDFCore13LoggingActionV"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:7UDFCore12ActionFilterP7include6actionSbAA07LoggingB0V_tF",
+            "mangledName": "$s7UDFCore12ActionFilterP7include6actionSbAA07LoggingB0V_tF",
+            "moduleName": "UDFCore",
+            "genericSig": "<τ_0_0 where τ_0_0 : UDFCore.ActionFilter>",
+            "sugared_genericSig": "<Self where Self : UDFCore.ActionFilter>",
+            "protocolReq": true,
+            "reqNewWitnessTableEntry": true,
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Var",
+            "name": "default",
+            "printedName": "default",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "ActionFilter",
+                "printedName": "UDFCore.ActionFilter",
+                "usr": "s:7UDFCore12ActionFilterP"
               }
             ],
             "declKind": "Var",
-            "usr": "s:7UDFCore13LoggingActionV5valueAA0C0_pvp",
-            "mangledName": "$s7UDFCore13LoggingActionV5valueAA0C0_pvp",
+            "usr": "s:7UDFCore12ActionFilterPA2A07DefaultbC0VRszrlE7defaultAaB_pvpZ",
+            "mangledName": "$s7UDFCore12ActionFilterPA2A07DefaultbC0VRszrlE7defaultAaB_pvpZ",
             "moduleName": "UDFCore",
-            "declAttributes": [
-              "HasStorage",
-              "AccessControl"
-            ],
-            "isLet": true,
-            "hasStorage": true,
+            "static": true,
+            "isFromExtension": true,
             "accessors": [
               {
                 "kind": "Accessor",
@@ -340,42 +452,41 @@
                 "children": [
                   {
                     "kind": "TypeNominal",
-                    "name": "Action",
-                    "printedName": "UDFCore.Action",
-                    "usr": "s:7UDFCore6ActionP"
+                    "name": "ActionFilter",
+                    "printedName": "UDFCore.ActionFilter",
+                    "usr": "s:7UDFCore12ActionFilterP"
                   }
                 ],
                 "declKind": "Accessor",
-                "usr": "s:7UDFCore13LoggingActionV5valueAA0C0_pvg",
-                "mangledName": "$s7UDFCore13LoggingActionV5valueAA0C0_pvg",
+                "usr": "s:7UDFCore12ActionFilterPA2A07DefaultbC0VRszrlE7defaultAaB_pvgZ",
+                "mangledName": "$s7UDFCore12ActionFilterPA2A07DefaultbC0VRszrlE7defaultAaB_pvgZ",
                 "moduleName": "UDFCore",
-                "implicit": true,
+                "genericSig": "<τ_0_0 where τ_0_0 == UDFCore.DefaultActionFilter>",
+                "sugared_genericSig": "<Self where Self == UDFCore.DefaultActionFilter>",
+                "static": true,
+                "isFromExtension": true,
                 "accessorKind": "get"
               }
             ]
           },
           {
             "kind": "Var",
-            "name": "fileName",
-            "printedName": "fileName",
+            "name": "verbose",
+            "printedName": "verbose",
             "children": [
               {
                 "kind": "TypeNominal",
-                "name": "String",
-                "printedName": "Swift.String",
-                "usr": "s:SS"
+                "name": "ActionFilter",
+                "printedName": "UDFCore.ActionFilter",
+                "usr": "s:7UDFCore12ActionFilterP"
               }
             ],
             "declKind": "Var",
-            "usr": "s:7UDFCore13LoggingActionV8fileNameSSvp",
-            "mangledName": "$s7UDFCore13LoggingActionV8fileNameSSvp",
+            "usr": "s:7UDFCore12ActionFilterPA2A07VerbosebC0VRszrlE7verboseAaB_pvpZ",
+            "mangledName": "$s7UDFCore12ActionFilterPA2A07VerbosebC0VRszrlE7verboseAaB_pvpZ",
             "moduleName": "UDFCore",
-            "declAttributes": [
-              "HasStorage",
-              "AccessControl"
-            ],
-            "isLet": true,
-            "hasStorage": true,
+            "static": true,
+            "isFromExtension": true,
             "accessors": [
               {
                 "kind": "Accessor",
@@ -384,163 +495,93 @@
                 "children": [
                   {
                     "kind": "TypeNominal",
-                    "name": "String",
-                    "printedName": "Swift.String",
-                    "usr": "s:SS"
+                    "name": "ActionFilter",
+                    "printedName": "UDFCore.ActionFilter",
+                    "usr": "s:7UDFCore12ActionFilterP"
                   }
                 ],
                 "declKind": "Accessor",
-                "usr": "s:7UDFCore13LoggingActionV8fileNameSSvg",
-                "mangledName": "$s7UDFCore13LoggingActionV8fileNameSSvg",
+                "usr": "s:7UDFCore12ActionFilterPA2A07VerbosebC0VRszrlE7verboseAaB_pvgZ",
+                "mangledName": "$s7UDFCore12ActionFilterPA2A07VerbosebC0VRszrlE7verboseAaB_pvgZ",
                 "moduleName": "UDFCore",
-                "implicit": true,
-                "accessorKind": "get"
-              }
-            ]
-          },
-          {
-            "kind": "Var",
-            "name": "functionName",
-            "printedName": "functionName",
-            "children": [
-              {
-                "kind": "TypeNominal",
-                "name": "String",
-                "printedName": "Swift.String",
-                "usr": "s:SS"
-              }
-            ],
-            "declKind": "Var",
-            "usr": "s:7UDFCore13LoggingActionV12functionNameSSvp",
-            "mangledName": "$s7UDFCore13LoggingActionV12functionNameSSvp",
-            "moduleName": "UDFCore",
-            "declAttributes": [
-              "HasStorage",
-              "AccessControl"
-            ],
-            "isLet": true,
-            "hasStorage": true,
-            "accessors": [
-              {
-                "kind": "Accessor",
-                "name": "Get",
-                "printedName": "Get()",
-                "children": [
-                  {
-                    "kind": "TypeNominal",
-                    "name": "String",
-                    "printedName": "Swift.String",
-                    "usr": "s:SS"
-                  }
-                ],
-                "declKind": "Accessor",
-                "usr": "s:7UDFCore13LoggingActionV12functionNameSSvg",
-                "mangledName": "$s7UDFCore13LoggingActionV12functionNameSSvg",
-                "moduleName": "UDFCore",
-                "implicit": true,
-                "accessorKind": "get"
-              }
-            ]
-          },
-          {
-            "kind": "Var",
-            "name": "lineNumber",
-            "printedName": "lineNumber",
-            "children": [
-              {
-                "kind": "TypeNominal",
-                "name": "Int",
-                "printedName": "Swift.Int",
-                "usr": "s:Si"
-              }
-            ],
-            "declKind": "Var",
-            "usr": "s:7UDFCore13LoggingActionV10lineNumberSivp",
-            "mangledName": "$s7UDFCore13LoggingActionV10lineNumberSivp",
-            "moduleName": "UDFCore",
-            "declAttributes": [
-              "HasStorage",
-              "AccessControl"
-            ],
-            "isLet": true,
-            "hasStorage": true,
-            "accessors": [
-              {
-                "kind": "Accessor",
-                "name": "Get",
-                "printedName": "Get()",
-                "children": [
-                  {
-                    "kind": "TypeNominal",
-                    "name": "Int",
-                    "printedName": "Swift.Int",
-                    "usr": "s:Si"
-                  }
-                ],
-                "declKind": "Accessor",
-                "usr": "s:7UDFCore13LoggingActionV10lineNumberSivg",
-                "mangledName": "$s7UDFCore13LoggingActionV10lineNumberSivg",
-                "moduleName": "UDFCore",
-                "implicit": true,
-                "accessorKind": "get"
-              }
-            ]
-          },
-          {
-            "kind": "Var",
-            "name": "debugDescription",
-            "printedName": "debugDescription",
-            "children": [
-              {
-                "kind": "TypeNominal",
-                "name": "String",
-                "printedName": "Swift.String",
-                "usr": "s:SS"
-              }
-            ],
-            "declKind": "Var",
-            "usr": "s:7UDFCore13LoggingActionV16debugDescriptionSSvp",
-            "mangledName": "$s7UDFCore13LoggingActionV16debugDescriptionSSvp",
-            "moduleName": "UDFCore",
-            "declAttributes": [
-              "AccessControl"
-            ],
-            "accessors": [
-              {
-                "kind": "Accessor",
-                "name": "Get",
-                "printedName": "Get()",
-                "children": [
-                  {
-                    "kind": "TypeNominal",
-                    "name": "String",
-                    "printedName": "Swift.String",
-                    "usr": "s:SS"
-                  }
-                ],
-                "declKind": "Accessor",
-                "usr": "s:7UDFCore13LoggingActionV16debugDescriptionSSvg",
-                "mangledName": "$s7UDFCore13LoggingActionV16debugDescriptionSSvg",
-                "moduleName": "UDFCore",
+                "genericSig": "<τ_0_0 where τ_0_0 == UDFCore.VerboseActionFilter>",
+                "sugared_genericSig": "<Self where Self == UDFCore.VerboseActionFilter>",
+                "static": true,
+                "isFromExtension": true,
                 "accessorKind": "get"
               }
             ]
           }
         ],
-        "declKind": "Struct",
-        "usr": "s:7UDFCore13LoggingActionV",
-        "mangledName": "$s7UDFCore13LoggingActionV",
+        "declKind": "Protocol",
+        "usr": "s:7UDFCore12ActionFilterP",
+        "mangledName": "$s7UDFCore12ActionFilterP",
         "moduleName": "UDFCore",
+        "genericSig": "<τ_0_0 : Swift.Sendable>",
+        "sugared_genericSig": "<Self : Swift.Sendable>",
         "declAttributes": [
           "AccessControl"
         ],
         "conformances": [
           {
             "kind": "Conformance",
-            "name": "CustomDebugStringConvertible",
-            "printedName": "CustomDebugStringConvertible",
-            "usr": "s:s28CustomDebugStringConvertibleP",
-            "mangledName": "$ss28CustomDebugStringConvertibleP"
+            "name": "Sendable",
+            "printedName": "Sendable",
+            "usr": "s:s8SendableP",
+            "mangledName": "$ss8SendableP"
+          }
+        ]
+      },
+      {
+        "kind": "TypeDecl",
+        "name": "ActionDescriptor",
+        "printedName": "ActionDescriptor",
+        "children": [
+          {
+            "kind": "Function",
+            "name": "description",
+            "printedName": "description(for:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "LoggingAction",
+                "printedName": "UDFCore.LoggingAction",
+                "usr": "s:7UDFCore13LoggingActionV"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:7UDFCore16ActionDescriptorP11description3forSSAA07LoggingB0V_tF",
+            "mangledName": "$s7UDFCore16ActionDescriptorP11description3forSSAA07LoggingB0V_tF",
+            "moduleName": "UDFCore",
+            "genericSig": "<τ_0_0 where τ_0_0 : UDFCore.ActionDescriptor>",
+            "sugared_genericSig": "<Self where Self : UDFCore.ActionDescriptor>",
+            "protocolReq": true,
+            "reqNewWitnessTableEntry": true,
+            "funcSelfKind": "NonMutating"
+          }
+        ],
+        "declKind": "Protocol",
+        "usr": "s:7UDFCore16ActionDescriptorP",
+        "mangledName": "$s7UDFCore16ActionDescriptorP",
+        "moduleName": "UDFCore",
+        "genericSig": "<τ_0_0 : Swift.Sendable>",
+        "sugared_genericSig": "<Self : Swift.Sendable>",
+        "declAttributes": [
+          "AccessControl"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Sendable",
+            "printedName": "Sendable",
+            "usr": "s:s8SendableP",
+            "mangledName": "$ss8SendableP"
           }
         ]
       },
@@ -550,9 +591,109 @@
         "printedName": "ActionLogger",
         "children": [
           {
+            "kind": "Var",
+            "name": "actionFilters",
+            "printedName": "actionFilters",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Array",
+                "printedName": "[UDFCore.ActionFilter]",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "ActionFilter",
+                    "printedName": "UDFCore.ActionFilter",
+                    "usr": "s:7UDFCore12ActionFilterP"
+                  }
+                ],
+                "usr": "s:Sa"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:7UDFCore12ActionLoggerP13actionFiltersSayAA0B6Filter_pGvp",
+            "mangledName": "$s7UDFCore12ActionLoggerP13actionFiltersSayAA0B6Filter_pGvp",
+            "moduleName": "UDFCore",
+            "protocolReq": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Array",
+                    "printedName": "[UDFCore.ActionFilter]",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "ActionFilter",
+                        "printedName": "UDFCore.ActionFilter",
+                        "usr": "s:7UDFCore12ActionFilterP"
+                      }
+                    ],
+                    "usr": "s:Sa"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:7UDFCore12ActionLoggerP13actionFiltersSayAA0B6Filter_pGvg",
+                "mangledName": "$s7UDFCore12ActionLoggerP13actionFiltersSayAA0B6Filter_pGvg",
+                "moduleName": "UDFCore",
+                "genericSig": "<τ_0_0 where τ_0_0 : UDFCore.ActionLogger>",
+                "sugared_genericSig": "<Self where Self : UDFCore.ActionLogger>",
+                "protocolReq": true,
+                "reqNewWitnessTableEntry": true,
+                "accessorKind": "get"
+              }
+            ]
+          },
+          {
+            "kind": "Var",
+            "name": "actionDescriptor",
+            "printedName": "actionDescriptor",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "ActionDescriptor",
+                "printedName": "UDFCore.ActionDescriptor",
+                "usr": "s:7UDFCore16ActionDescriptorP"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:7UDFCore12ActionLoggerP16actionDescriptorAA0bE0_pvp",
+            "mangledName": "$s7UDFCore12ActionLoggerP16actionDescriptorAA0bE0_pvp",
+            "moduleName": "UDFCore",
+            "protocolReq": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "ActionDescriptor",
+                    "printedName": "UDFCore.ActionDescriptor",
+                    "usr": "s:7UDFCore16ActionDescriptorP"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:7UDFCore12ActionLoggerP16actionDescriptorAA0bE0_pvg",
+                "mangledName": "$s7UDFCore12ActionLoggerP16actionDescriptorAA0bE0_pvg",
+                "moduleName": "UDFCore",
+                "genericSig": "<τ_0_0 where τ_0_0 : UDFCore.ActionLogger>",
+                "sugared_genericSig": "<Self where Self : UDFCore.ActionLogger>",
+                "protocolReq": true,
+                "reqNewWitnessTableEntry": true,
+                "accessorKind": "get"
+              }
+            ]
+          },
+          {
             "kind": "Function",
             "name": "log",
-            "printedName": "log(_:)",
+            "printedName": "log(_:description:)",
             "children": [
               {
                 "kind": "TypeNominal",
@@ -564,11 +705,17 @@
                 "name": "LoggingAction",
                 "printedName": "UDFCore.LoggingAction",
                 "usr": "s:7UDFCore13LoggingActionV"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
               }
             ],
             "declKind": "Func",
-            "usr": "s:7UDFCore12ActionLoggerP3logyyAA07LoggingB0VF",
-            "mangledName": "$s7UDFCore12ActionLoggerP3logyyAA07LoggingB0VF",
+            "usr": "s:7UDFCore12ActionLoggerP3log_11descriptionyAA07LoggingB0V_SStF",
+            "mangledName": "$s7UDFCore12ActionLoggerP3log_11descriptionyAA07LoggingB0V_SStF",
             "moduleName": "UDFCore",
             "genericSig": "<τ_0_0 where τ_0_0 : UDFCore.ActionLogger>",
             "sugared_genericSig": "<Self where Self : UDFCore.ActionLogger>",
@@ -593,6 +740,96 @@
             "printedName": "Sendable",
             "usr": "s:s8SendableP",
             "mangledName": "$ss8SendableP"
+          }
+        ]
+      },
+      {
+        "kind": "Import",
+        "name": "Foundation",
+        "printedName": "Foundation",
+        "declKind": "Import",
+        "moduleName": "UDFCore",
+        "declAttributes": [
+          "RawDocComment"
+        ]
+      },
+      {
+        "kind": "TypeDecl",
+        "name": "StringDescribingActionDescriptor",
+        "printedName": "StringDescribingActionDescriptor",
+        "children": [
+          {
+            "kind": "Constructor",
+            "name": "init",
+            "printedName": "init()",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "StringDescribingActionDescriptor",
+                "printedName": "UDFCore.StringDescribingActionDescriptor",
+                "usr": "s:7UDFCore32StringDescribingActionDescriptorC"
+              }
+            ],
+            "declKind": "Constructor",
+            "usr": "s:7UDFCore32StringDescribingActionDescriptorCACycfc",
+            "mangledName": "$s7UDFCore32StringDescribingActionDescriptorCACycfc",
+            "moduleName": "UDFCore",
+            "declAttributes": [
+              "AccessControl"
+            ],
+            "init_kind": "Designated"
+          },
+          {
+            "kind": "Function",
+            "name": "description",
+            "printedName": "description(for:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "LoggingAction",
+                "printedName": "UDFCore.LoggingAction",
+                "usr": "s:7UDFCore13LoggingActionV"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:7UDFCore32StringDescribingActionDescriptorC11description3forSSAA07LoggingD0V_tF",
+            "mangledName": "$s7UDFCore32StringDescribingActionDescriptorC11description3forSSAA07LoggingD0V_tF",
+            "moduleName": "UDFCore",
+            "isOpen": true,
+            "declAttributes": [
+              "AccessControl"
+            ],
+            "funcSelfKind": "NonMutating"
+          }
+        ],
+        "declKind": "Class",
+        "usr": "s:7UDFCore32StringDescribingActionDescriptorC",
+        "mangledName": "$s7UDFCore32StringDescribingActionDescriptorC",
+        "moduleName": "UDFCore",
+        "isOpen": true,
+        "declAttributes": [
+          "AccessControl"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Sendable",
+            "printedName": "Sendable",
+            "usr": "s:s8SendableP",
+            "mangledName": "$ss8SendableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "ActionDescriptor",
+            "printedName": "ActionDescriptor",
+            "usr": "s:7UDFCore16ActionDescriptorP",
+            "mangledName": "$s7UDFCore16ActionDescriptorP"
           }
         ]
       },
@@ -2114,221 +2351,6 @@
         "moduleName": "UDFCore",
         "declAttributes": [
           "RawDocComment"
-        ]
-      },
-      {
-        "kind": "TypeDecl",
-        "name": "LogDistributor",
-        "printedName": "LogDistributor",
-        "children": [
-          {
-            "kind": "TypeDecl",
-            "name": "Options",
-            "printedName": "Options",
-            "children": [
-              {
-                "kind": "Var",
-                "name": "default",
-                "printedName": "default",
-                "children": [
-                  {
-                    "kind": "TypeFunc",
-                    "name": "Function",
-                    "printedName": "(UDFCore.LogDistributor.Options.Type) -> UDFCore.LogDistributor.Options",
-                    "children": [
-                      {
-                        "kind": "TypeNominal",
-                        "name": "Options",
-                        "printedName": "UDFCore.LogDistributor.Options",
-                        "usr": "s:7UDFCore14LogDistributorV7OptionsO"
-                      },
-                      {
-                        "kind": "TypeNominal",
-                        "name": "Metatype",
-                        "printedName": "UDFCore.LogDistributor.Options.Type",
-                        "children": [
-                          {
-                            "kind": "TypeNominal",
-                            "name": "Options",
-                            "printedName": "UDFCore.LogDistributor.Options",
-                            "usr": "s:7UDFCore14LogDistributorV7OptionsO"
-                          }
-                        ]
-                      }
-                    ]
-                  }
-                ],
-                "declKind": "EnumElement",
-                "usr": "s:7UDFCore14LogDistributorV7OptionsO7defaultyA2EmF",
-                "mangledName": "$s7UDFCore14LogDistributorV7OptionsO7defaultyA2EmF",
-                "moduleName": "UDFCore"
-              },
-              {
-                "kind": "Var",
-                "name": "verbose",
-                "printedName": "verbose",
-                "children": [
-                  {
-                    "kind": "TypeFunc",
-                    "name": "Function",
-                    "printedName": "(UDFCore.LogDistributor.Options.Type) -> UDFCore.LogDistributor.Options",
-                    "children": [
-                      {
-                        "kind": "TypeNominal",
-                        "name": "Options",
-                        "printedName": "UDFCore.LogDistributor.Options",
-                        "usr": "s:7UDFCore14LogDistributorV7OptionsO"
-                      },
-                      {
-                        "kind": "TypeNominal",
-                        "name": "Metatype",
-                        "printedName": "UDFCore.LogDistributor.Options.Type",
-                        "children": [
-                          {
-                            "kind": "TypeNominal",
-                            "name": "Options",
-                            "printedName": "UDFCore.LogDistributor.Options",
-                            "usr": "s:7UDFCore14LogDistributorV7OptionsO"
-                          }
-                        ]
-                      }
-                    ]
-                  }
-                ],
-                "declKind": "EnumElement",
-                "usr": "s:7UDFCore14LogDistributorV7OptionsO7verboseyA2EmF",
-                "mangledName": "$s7UDFCore14LogDistributorV7OptionsO7verboseyA2EmF",
-                "moduleName": "UDFCore",
-                "declAttributes": [
-                  "RawDocComment"
-                ]
-              },
-              {
-                "kind": "Function",
-                "name": "==",
-                "printedName": "==(_:_:)",
-                "children": [
-                  {
-                    "kind": "TypeNominal",
-                    "name": "Bool",
-                    "printedName": "Swift.Bool",
-                    "usr": "s:Sb"
-                  },
-                  {
-                    "kind": "TypeNominal",
-                    "name": "Options",
-                    "printedName": "UDFCore.LogDistributor.Options",
-                    "usr": "s:7UDFCore14LogDistributorV7OptionsO"
-                  },
-                  {
-                    "kind": "TypeNominal",
-                    "name": "Options",
-                    "printedName": "UDFCore.LogDistributor.Options",
-                    "usr": "s:7UDFCore14LogDistributorV7OptionsO"
-                  }
-                ],
-                "declKind": "Func",
-                "usr": "s:7UDFCore14LogDistributorV7OptionsO2eeoiySbAE_AEtFZ",
-                "mangledName": "$s7UDFCore14LogDistributorV7OptionsO2eeoiySbAE_AEtFZ",
-                "moduleName": "UDFCore",
-                "static": true,
-                "implicit": true,
-                "funcSelfKind": "NonMutating"
-              },
-              {
-                "kind": "Var",
-                "name": "hashValue",
-                "printedName": "hashValue",
-                "children": [
-                  {
-                    "kind": "TypeNominal",
-                    "name": "Int",
-                    "printedName": "Swift.Int",
-                    "usr": "s:Si"
-                  }
-                ],
-                "declKind": "Var",
-                "usr": "s:7UDFCore14LogDistributorV7OptionsO9hashValueSivp",
-                "mangledName": "$s7UDFCore14LogDistributorV7OptionsO9hashValueSivp",
-                "moduleName": "UDFCore",
-                "implicit": true,
-                "accessors": [
-                  {
-                    "kind": "Accessor",
-                    "name": "Get",
-                    "printedName": "Get()",
-                    "children": [
-                      {
-                        "kind": "TypeNominal",
-                        "name": "Int",
-                        "printedName": "Swift.Int",
-                        "usr": "s:Si"
-                      }
-                    ],
-                    "declKind": "Accessor",
-                    "usr": "s:7UDFCore14LogDistributorV7OptionsO9hashValueSivg",
-                    "mangledName": "$s7UDFCore14LogDistributorV7OptionsO9hashValueSivg",
-                    "moduleName": "UDFCore",
-                    "implicit": true,
-                    "accessorKind": "get"
-                  }
-                ]
-              },
-              {
-                "kind": "Function",
-                "name": "hash",
-                "printedName": "hash(into:)",
-                "children": [
-                  {
-                    "kind": "TypeNominal",
-                    "name": "Void",
-                    "printedName": "()"
-                  },
-                  {
-                    "kind": "TypeNominal",
-                    "name": "Hasher",
-                    "printedName": "Swift.Hasher",
-                    "paramValueOwnership": "InOut",
-                    "usr": "s:s6HasherV"
-                  }
-                ],
-                "declKind": "Func",
-                "usr": "s:7UDFCore14LogDistributorV7OptionsO4hash4intoys6HasherVz_tF",
-                "mangledName": "$s7UDFCore14LogDistributorV7OptionsO4hash4intoys6HasherVz_tF",
-                "moduleName": "UDFCore",
-                "implicit": true,
-                "funcSelfKind": "NonMutating"
-              }
-            ],
-            "declKind": "Enum",
-            "usr": "s:7UDFCore14LogDistributorV7OptionsO",
-            "mangledName": "$s7UDFCore14LogDistributorV7OptionsO",
-            "moduleName": "UDFCore",
-            "isFromExtension": true,
-            "conformances": [
-              {
-                "kind": "Conformance",
-                "name": "Equatable",
-                "printedName": "Equatable",
-                "usr": "s:SQ",
-                "mangledName": "$sSQ"
-              },
-              {
-                "kind": "Conformance",
-                "name": "Hashable",
-                "printedName": "Hashable",
-                "usr": "s:SH",
-                "mangledName": "$sSH"
-              }
-            ]
-          }
-        ],
-        "declKind": "Struct",
-        "usr": "s:7UDFCore14LogDistributorV",
-        "mangledName": "$s7UDFCore14LogDistributorV",
-        "moduleName": "UDFCore",
-        "declAttributes": [
-          "AccessControl"
         ]
       },
       {
@@ -4984,6 +5006,255 @@
         ]
       },
       {
+        "kind": "TypeDecl",
+        "name": "LoggingAction",
+        "printedName": "LoggingAction",
+        "children": [
+          {
+            "kind": "Var",
+            "name": "value",
+            "printedName": "value",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Action",
+                "printedName": "UDFCore.Action",
+                "usr": "s:7UDFCore6ActionP"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:7UDFCore13LoggingActionV5valueAA0C0_pvp",
+            "mangledName": "$s7UDFCore13LoggingActionV5valueAA0C0_pvp",
+            "moduleName": "UDFCore",
+            "declAttributes": [
+              "HasStorage",
+              "AccessControl"
+            ],
+            "isLet": true,
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Action",
+                    "printedName": "UDFCore.Action",
+                    "usr": "s:7UDFCore6ActionP"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:7UDFCore13LoggingActionV5valueAA0C0_pvg",
+                "mangledName": "$s7UDFCore13LoggingActionV5valueAA0C0_pvg",
+                "moduleName": "UDFCore",
+                "implicit": true,
+                "accessorKind": "get"
+              }
+            ]
+          },
+          {
+            "kind": "Var",
+            "name": "fileName",
+            "printedName": "fileName",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:7UDFCore13LoggingActionV8fileNameSSvp",
+            "mangledName": "$s7UDFCore13LoggingActionV8fileNameSSvp",
+            "moduleName": "UDFCore",
+            "declAttributes": [
+              "HasStorage",
+              "AccessControl"
+            ],
+            "isLet": true,
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:7UDFCore13LoggingActionV8fileNameSSvg",
+                "mangledName": "$s7UDFCore13LoggingActionV8fileNameSSvg",
+                "moduleName": "UDFCore",
+                "implicit": true,
+                "accessorKind": "get"
+              }
+            ]
+          },
+          {
+            "kind": "Var",
+            "name": "functionName",
+            "printedName": "functionName",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:7UDFCore13LoggingActionV12functionNameSSvp",
+            "mangledName": "$s7UDFCore13LoggingActionV12functionNameSSvp",
+            "moduleName": "UDFCore",
+            "declAttributes": [
+              "HasStorage",
+              "AccessControl"
+            ],
+            "isLet": true,
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:7UDFCore13LoggingActionV12functionNameSSvg",
+                "mangledName": "$s7UDFCore13LoggingActionV12functionNameSSvg",
+                "moduleName": "UDFCore",
+                "implicit": true,
+                "accessorKind": "get"
+              }
+            ]
+          },
+          {
+            "kind": "Var",
+            "name": "lineNumber",
+            "printedName": "lineNumber",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Int",
+                "printedName": "Swift.Int",
+                "usr": "s:Si"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:7UDFCore13LoggingActionV10lineNumberSivp",
+            "mangledName": "$s7UDFCore13LoggingActionV10lineNumberSivp",
+            "moduleName": "UDFCore",
+            "declAttributes": [
+              "HasStorage",
+              "AccessControl"
+            ],
+            "isLet": true,
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Int",
+                    "printedName": "Swift.Int",
+                    "usr": "s:Si"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:7UDFCore13LoggingActionV10lineNumberSivg",
+                "mangledName": "$s7UDFCore13LoggingActionV10lineNumberSivg",
+                "moduleName": "UDFCore",
+                "implicit": true,
+                "accessorKind": "get"
+              }
+            ]
+          },
+          {
+            "kind": "Var",
+            "name": "debugDescription",
+            "printedName": "debugDescription",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:7UDFCore13LoggingActionV16debugDescriptionSSvp",
+            "mangledName": "$s7UDFCore13LoggingActionV16debugDescriptionSSvp",
+            "moduleName": "UDFCore",
+            "declAttributes": [
+              "AccessControl"
+            ],
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:7UDFCore13LoggingActionV16debugDescriptionSSvg",
+                "mangledName": "$s7UDFCore13LoggingActionV16debugDescriptionSSvg",
+                "moduleName": "UDFCore",
+                "accessorKind": "get"
+              }
+            ]
+          }
+        ],
+        "declKind": "Struct",
+        "usr": "s:7UDFCore13LoggingActionV",
+        "mangledName": "$s7UDFCore13LoggingActionV",
+        "moduleName": "UDFCore",
+        "declAttributes": [
+          "AccessControl"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "CustomDebugStringConvertible",
+            "printedName": "CustomDebugStringConvertible",
+            "usr": "s:s28CustomDebugStringConvertibleP",
+            "mangledName": "$ss28CustomDebugStringConvertibleP"
+          }
+        ]
+      },
+      {
+        "kind": "Import",
+        "name": "Foundation",
+        "printedName": "Foundation",
+        "declKind": "Import",
+        "moduleName": "UDFCore",
+        "declAttributes": [
+          "RawDocComment"
+        ]
+      },
+      {
         "kind": "Import",
         "name": "SwiftUI",
         "printedName": "SwiftUI",
@@ -5167,7 +5438,7 @@
           {
             "kind": "Constructor",
             "name": "init",
-            "printedName": "init(initial:accessToken:loggers:logOptions:)",
+            "printedName": "init(initial:accessToken:loggers:)",
             "children": [
               {
                 "kind": "TypeNominal",
@@ -5206,17 +5477,11 @@
                   }
                 ],
                 "usr": "s:Sa"
-              },
-              {
-                "kind": "TypeNominal",
-                "name": "Options",
-                "printedName": "UDFCore.LogDistributor.Options",
-                "usr": "s:7UDFCore14LogDistributorV7OptionsO"
               }
             ],
             "declKind": "Constructor",
-            "usr": "s:7UDFCore16EnvironmentStoreC7initial11accessToken7loggers10logOptionsACyxGx_SSSayAA12ActionLogger_pGAA14LogDistributorV0I0OtKcfc",
-            "mangledName": "$s7UDFCore16EnvironmentStoreC7initial11accessToken7loggers10logOptionsACyxGx_SSSayAA12ActionLogger_pGAA14LogDistributorV0I0OtKcfc",
+            "usr": "s:7UDFCore16EnvironmentStoreC7initial11accessToken7loggersACyxGx_SSSayAA12ActionLogger_pGtKcfc",
+            "mangledName": "$s7UDFCore16EnvironmentStoreC7initial11accessToken7loggersACyxGx_SSSayAA12ActionLogger_pGtKcfc",
             "moduleName": "UDFCore",
             "genericSig": "<τ_0_0 where τ_0_0 : UDFCore.AppReducer>",
             "sugared_genericSig": "<State where State : UDFCore.AppReducer>",
@@ -5229,7 +5494,7 @@
           {
             "kind": "Constructor",
             "name": "init",
-            "printedName": "init(initial:accessToken:logger:logOptions:)",
+            "printedName": "init(initial:accessToken:logger:)",
             "children": [
               {
                 "kind": "TypeNominal",
@@ -5260,17 +5525,11 @@
                 "name": "ActionLogger",
                 "printedName": "UDFCore.ActionLogger",
                 "usr": "s:7UDFCore12ActionLoggerP"
-              },
-              {
-                "kind": "TypeNominal",
-                "name": "Options",
-                "printedName": "UDFCore.LogDistributor.Options",
-                "usr": "s:7UDFCore14LogDistributorV7OptionsO"
               }
             ],
             "declKind": "Constructor",
-            "usr": "s:7UDFCore16EnvironmentStoreC7initial11accessToken6logger10logOptionsACyxGx_SSAA12ActionLogger_pAA14LogDistributorV0I0OtKcfc",
-            "mangledName": "$s7UDFCore16EnvironmentStoreC7initial11accessToken6logger10logOptionsACyxGx_SSAA12ActionLogger_pAA14LogDistributorV0I0OtKcfc",
+            "usr": "s:7UDFCore16EnvironmentStoreC7initial11accessToken6loggerACyxGx_SSAA12ActionLogger_ptKcfc",
+            "mangledName": "$s7UDFCore16EnvironmentStoreC7initial11accessToken6loggerACyxGx_SSAA12ActionLogger_ptKcfc",
             "moduleName": "UDFCore",
             "genericSig": "<τ_0_0 where τ_0_0 : UDFCore.AppReducer>",
             "sugared_genericSig": "<State where State : UDFCore.AppReducer>",
@@ -6262,6 +6521,94 @@
       },
       {
         "kind": "Import",
+        "name": "Foundation",
+        "printedName": "Foundation",
+        "declKind": "Import",
+        "moduleName": "UDFCore",
+        "declAttributes": [
+          "RawDocComment"
+        ]
+      },
+      {
+        "kind": "TypeDecl",
+        "name": "VerboseActionFilter",
+        "printedName": "VerboseActionFilter",
+        "children": [
+          {
+            "kind": "Constructor",
+            "name": "init",
+            "printedName": "init()",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "VerboseActionFilter",
+                "printedName": "UDFCore.VerboseActionFilter",
+                "usr": "s:7UDFCore19VerboseActionFilterV"
+              }
+            ],
+            "declKind": "Constructor",
+            "usr": "s:7UDFCore19VerboseActionFilterVACycfc",
+            "mangledName": "$s7UDFCore19VerboseActionFilterVACycfc",
+            "moduleName": "UDFCore",
+            "declAttributes": [
+              "AccessControl"
+            ],
+            "init_kind": "Designated"
+          },
+          {
+            "kind": "Function",
+            "name": "include",
+            "printedName": "include(action:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Bool",
+                "printedName": "Swift.Bool",
+                "usr": "s:Sb"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "LoggingAction",
+                "printedName": "UDFCore.LoggingAction",
+                "usr": "s:7UDFCore13LoggingActionV"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:7UDFCore19VerboseActionFilterV7include6actionSbAA07LoggingC0V_tF",
+            "mangledName": "$s7UDFCore19VerboseActionFilterV7include6actionSbAA07LoggingC0V_tF",
+            "moduleName": "UDFCore",
+            "declAttributes": [
+              "AccessControl"
+            ],
+            "funcSelfKind": "NonMutating"
+          }
+        ],
+        "declKind": "Struct",
+        "usr": "s:7UDFCore19VerboseActionFilterV",
+        "mangledName": "$s7UDFCore19VerboseActionFilterV",
+        "moduleName": "UDFCore",
+        "declAttributes": [
+          "AccessControl"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "ActionFilter",
+            "printedName": "ActionFilter",
+            "usr": "s:7UDFCore12ActionFilterP",
+            "mangledName": "$s7UDFCore12ActionFilterP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Sendable",
+            "printedName": "Sendable",
+            "usr": "s:s8SendableP",
+            "mangledName": "$ss8SendableP"
+          }
+        ]
+      },
+      {
+        "kind": "Import",
         "name": "SwiftUI",
         "printedName": "SwiftUI",
         "declKind": "Import",
@@ -6446,7 +6793,7 @@
           {
             "kind": "Constructor",
             "name": "init",
-            "printedName": "init(initial:logOptions:)",
+            "printedName": "init(initial:)",
             "children": [
               {
                 "kind": "TypeNominal",
@@ -6465,18 +6812,11 @@
                 "kind": "TypeNominal",
                 "name": "GenericTypeParam",
                 "printedName": "τ_0_0"
-              },
-              {
-                "kind": "TypeNominal",
-                "name": "Options",
-                "printedName": "UDFCore.LogDistributor.Options",
-                "hasDefaultArg": true,
-                "usr": "s:7UDFCore14LogDistributorV7OptionsO"
               }
             ],
             "declKind": "Constructor",
-            "usr": "s:7UDFCore11XCTestStoreC7initial10logOptionsACyxGx_AA14LogDistributorV0F0OtKcfc",
-            "mangledName": "$s7UDFCore11XCTestStoreC7initial10logOptionsACyxGx_AA14LogDistributorV0F0OtKcfc",
+            "usr": "s:7UDFCore11XCTestStoreC7initialACyxGx_tKcfc",
+            "mangledName": "$s7UDFCore11XCTestStoreC7initialACyxGx_tKcfc",
             "moduleName": "UDFCore",
             "genericSig": "<τ_0_0 where τ_0_0 : UDFCore.AppReducer>",
             "sugared_genericSig": "<State where State : UDFCore.AppReducer>",
@@ -8682,30 +9022,37 @@
       "value": "\"\""
     },
     {
+      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/Logger\/Filters\/DefaultActionFilter.swift",
+      "kind": "BooleanLiteral",
+      "offset": 284,
+      "length": 5,
+      "value": "false"
+    },
+    {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Common\/Verification\/AccessToken.swift",
       "kind": "StringLiteral",
-      "offset": 182,
+      "offset": 171,
       "length": 38,
       "value": "\"6846B623-4491-4308-B803-D9D23D39FC43\""
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Common\/Verification\/AccessToken.swift",
       "kind": "StringLiteral",
-      "offset": 329,
+      "offset": 318,
       "length": 12,
       "value": "\"bundle_ids\""
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Common\/Verification\/AccessToken.swift",
       "kind": "StringLiteral",
-      "offset": 329,
+      "offset": 318,
       "length": 12,
       "value": "\"bundle_ids\""
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Common\/Protocols\/IsEquatable.swift",
       "kind": "BooleanLiteral",
-      "offset": 359,
+      "offset": 348,
       "length": 5,
       "value": "false"
     },
@@ -8733,56 +9080,56 @@
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/Reducer\/AppReducer\/RuntimeReducing.swift",
       "kind": "BooleanLiteral",
-      "offset": 2258,
+      "offset": 2247,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/Reducer\/AppReducer\/RuntimeReducing.swift",
       "kind": "BooleanLiteral",
-      "offset": 2297,
+      "offset": 2286,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/Reducer\/AppReducer\/RuntimeReducing.swift",
       "kind": "BooleanLiteral",
-      "offset": 2837,
+      "offset": 2826,
       "length": 4,
       "value": "true"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/Reducer\/AppReducer\/RuntimeReducing.swift",
       "kind": "BooleanLiteral",
-      "offset": 3008,
+      "offset": 2997,
       "length": 4,
       "value": "true"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/Reducer\/AppReducer\/RuntimeReducing.swift",
       "kind": "BooleanLiteral",
-      "offset": 3240,
+      "offset": 3229,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/Reducer\/AppReducer\/RuntimeReducing.swift",
       "kind": "BooleanLiteral",
-      "offset": 3278,
+      "offset": 3267,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/Reducer\/AppReducer\/RuntimeReducing.swift",
       "kind": "BooleanLiteral",
-      "offset": 3773,
+      "offset": 3762,
       "length": 4,
       "value": "true"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/Reducer\/AppReducer\/RuntimeReducing.swift",
       "kind": "BooleanLiteral",
-      "offset": 4249,
+      "offset": 4238,
       "length": 4,
       "value": "true"
     },
@@ -8803,16 +9150,9 @@
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Common\/Extensions\/ProcessInfo.swift",
       "kind": "StringLiteral",
-      "offset": 192,
+      "offset": 181,
       "length": 29,
       "value": "\"XCTestConfigurationFilePath\""
-    },
-    {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/Logger\/LogDistributor.swift",
-      "kind": "BooleanLiteral",
-      "offset": 326,
-      "length": 5,
-      "value": "false"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/View\/Container\/Container.swift",
@@ -8901,77 +9241,77 @@
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/InternalStore.swift",
       "kind": "Array",
-      "offset": 368,
+      "offset": 357,
       "length": 2,
       "value": "[]"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/InternalStore.swift",
       "kind": "BooleanLiteral",
-      "offset": 3174,
+      "offset": 3124,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/InternalStore.swift",
       "kind": "BooleanLiteral",
-      "offset": 3699,
+      "offset": 3554,
       "length": 4,
       "value": "true"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/InternalStore.swift",
       "kind": "BooleanLiteral",
-      "offset": 3813,
+      "offset": 3668,
       "length": 4,
       "value": "true"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/InternalStore.swift",
       "kind": "BooleanLiteral",
-      "offset": 3968,
+      "offset": 3823,
       "length": 4,
       "value": "true"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/InternalStore.swift",
       "kind": "BooleanLiteral",
-      "offset": 4263,
+      "offset": 4118,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/InternalStore.swift",
       "kind": "BooleanLiteral",
-      "offset": 4367,
+      "offset": 4222,
       "length": 4,
       "value": "true"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/InternalStore.swift",
       "kind": "BooleanLiteral",
-      "offset": 4448,
+      "offset": 4303,
       "length": 4,
       "value": "true"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/InternalStore.swift",
       "kind": "BooleanLiteral",
-      "offset": 4562,
+      "offset": 4417,
       "length": 4,
       "value": "true"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/InternalStore.swift",
       "kind": "BooleanLiteral",
-      "offset": 6605,
+      "offset": 6460,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/InternalStore.swift",
       "kind": "BooleanLiteral",
-      "offset": 6697,
+      "offset": 6552,
       "length": 4,
       "value": "true"
     },
@@ -8983,23 +9323,30 @@
       "value": "1000000000"
     },
     {
+      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/Logger\/Filters\/VerboseActionFilter.swift",
+      "kind": "BooleanLiteral",
+      "offset": 252,
+      "length": 4,
+      "value": "true"
+    },
+    {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/XCTestStore.swift",
       "kind": "StringLiteral",
-      "offset": 307,
+      "offset": 470,
       "length": 12,
       "value": "\"Reduce\t\t\""
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/XCTestStore.swift",
       "kind": "StringLiteral",
-      "offset": 347,
+      "offset": 515,
       "length": 173,
       "value": "\"---------------------------------------------------------------------------------------------------------------------------------------------------------------------------\""
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/XCTestStore.swift",
       "kind": "StringLiteral",
-      "offset": 845,
+      "offset": 966,
       "length": 47,
       "value": "\"XCTestStore is only for using in Test targets\""
     },
@@ -9013,70 +9360,70 @@
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Common\/Verification\/Verifier.swift",
       "kind": "IntegerLiteral",
-      "offset": 314,
+      "offset": 303,
       "length": 1,
       "value": "1"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Common\/Verification\/Verifier.swift",
       "kind": "StringLiteral",
-      "offset": 356,
+      "offset": 345,
       "length": 8,
       "value": "\"XCTest\""
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/StoreQueue.swift",
       "kind": "IntegerLiteral",
-      "offset": 240,
+      "offset": 229,
       "length": 1,
       "value": "1"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/StoreQueue.swift",
       "kind": "StringLiteral",
-      "offset": 257,
+      "offset": 246,
       "length": 18,
       "value": "\"EnvironmentStore\""
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/StoreQueue.swift",
       "kind": "Array",
-      "offset": 379,
+      "offset": 368,
       "length": 2,
       "value": "[]"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/StoreQueue.swift",
       "kind": "IntegerLiteral",
-      "offset": 495,
+      "offset": 484,
       "length": 1,
       "value": "0"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/StoreQueue.swift",
       "kind": "IntegerLiteral",
-      "offset": 431,
+      "offset": 420,
       "length": 1,
       "value": "0"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/StoreQueue.swift",
       "kind": "IntegerLiteral",
-      "offset": 824,
+      "offset": 813,
       "length": 1,
       "value": "1"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/StoreQueue.swift",
       "kind": "IntegerLiteral",
-      "offset": 961,
+      "offset": 950,
       "length": 1,
       "value": "0"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/StoreQueue.swift",
       "kind": "IntegerLiteral",
-      "offset": 991,
+      "offset": 980,
       "length": 1,
       "value": "1"
     }

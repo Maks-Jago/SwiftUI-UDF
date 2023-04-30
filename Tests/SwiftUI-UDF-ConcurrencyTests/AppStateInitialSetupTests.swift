@@ -4,12 +4,6 @@ import XCTest
 
 final class AppStateInitialSetupTests: XCTestCase {
 
-    struct ConsoleLogger: ActionLogger {
-        func log(_ action: LoggingAction) {
-            print(action)
-        }
-    }
-
     struct AppState: AppReducer {
         var form1 = Form1()
         var form2 = Form2()

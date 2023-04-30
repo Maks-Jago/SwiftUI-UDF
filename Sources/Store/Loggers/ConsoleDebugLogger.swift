@@ -8,34 +8,24 @@
 import Foundation
 
 public struct ConsoleDebugLogger: ActionLogger {
-    var options: Options
+    public var actionFilters: [ActionFilter] = []
+    public var actionDescriptor: ActionDescriptor
 
-    public init(options: ConsoleDebugLogger.Options) {
-        self.options = options
+    public init(filters: [ActionFilter], descriptor: ActionDescriptor = StringDescribingActionDescriptor()) {
+        self.actionFilters = filters
+        self.actionDescriptor = descriptor
     }
 
-    public func log(_ action: LoggingAction) {
-        #if DEBUG
-        switch options {
-        case .error where action.value is Actions.Error:
-            printAction(action)
-
-        case .all:
-            printAction(action)
-
-        default:
-            break
-        }
-        #endif
-    }
-
-    private func printAction(_ action: LoggingAction) {
-        print("Reduce\t\t \(action)\n---------------------------------------------------------------------------------------------------------------------------------------------------------------------------")
+    public func log(_ action: LoggingAction, description: String) {
+        print("Reduce\t\t \(description)\n---------------------------------------------------------------------------------------------------------------------------------------------------------------------------")
     }
 }
 
-public extension ConsoleDebugLogger {
-    enum Options: Sendable {
-        case none, error, all
+public extension ActionLogger where Self == ConsoleDebugLogger {
+    static var consoleDebug: ActionLogger { ConsoleDebugLogger(filters: [.verbose]) }
+    static var consoleDebugOnlyErrors: ActionLogger { ConsoleDebugLogger(filters: [.errorOnly]) }
+
+    static func consoleDebug(extraFilters: [ActionFilter]) -> ActionLogger {
+        ConsoleDebugLogger(filters: [.debugOnly] + extraFilters)
     }
 }

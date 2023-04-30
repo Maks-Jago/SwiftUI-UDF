@@ -12,12 +12,6 @@ fileprivate extension Actions {
 
 class ObservableMiddlewareTests: XCTestCase {
 
-    struct ConsoleLogger: ActionLogger {
-        func log(_ action: LoggingAction) {
-            print(action)
-        }
-    }
-
     struct AppState: AppReducer {
         var testForm = TestForm()
         var testFlow = TestFlow()

@@ -8,6 +8,15 @@ import Swift
 import SwiftUI
 import _Concurrency
 import _StringProcessing
+public struct DefaultActionFilter : UDFCore.ActionFilter {
+  public init()
+  public func include(action: UDFCore.LoggingAction) -> Swift.Bool
+}
+extension UDFCore.ActionFilter where Self == UDFCore.DefaultActionFilter {
+  public static var `default`: any UDFCore.ActionFilter {
+    get
+  }
+}
 public protocol WrappedReducer : UDFCore.Reducing {
   var reducer: any UDFCore.Reducing { get set }
 }
@@ -19,17 +28,21 @@ public protocol _Component : SwiftUI.View {
   var props: Self.Props { get }
   init(props: Self.Props)
 }
-public struct LoggingAction : Swift.CustomDebugStringConvertible {
-  public let value: any UDFCore.Action
-  public let fileName: Swift.String
-  public let functionName: Swift.String
-  public let lineNumber: Swift.Int
-  public var debugDescription: Swift.String {
-    get
-  }
+public protocol ActionFilter : Swift.Sendable {
+  func include(action: UDFCore.LoggingAction) -> Swift.Bool
+}
+public protocol ActionDescriptor : Swift.Sendable {
+  func description(for action: UDFCore.LoggingAction) -> Swift.String
 }
 public protocol ActionLogger : Swift.Sendable {
-  func log(_ action: UDFCore.LoggingAction)
+  var actionFilters: [any UDFCore.ActionFilter] { get }
+  var actionDescriptor: any UDFCore.ActionDescriptor { get }
+  func log(_ action: UDFCore.LoggingAction, description: Swift.String)
+}
+open class StringDescribingActionDescriptor : @unchecked Swift.Sendable, UDFCore.ActionDescriptor {
+  public init()
+  open func description(for action: UDFCore.LoggingAction) -> Swift.String
+  @objc deinit
 }
 public protocol _Mergeable {
   func merging(_ newValue: Self) -> Self
@@ -112,19 +125,6 @@ public typealias CommandWith<T> = (T) -> ()
 extension Foundation.ProcessInfo {
   public var xcTest: Swift.Bool {
     get
-  }
-}
-public struct LogDistributor {
-}
-extension UDFCore.LogDistributor {
-  public enum Options {
-    case `default`
-    case verbose
-    public static func == (a: UDFCore.LogDistributor.Options, b: UDFCore.LogDistributor.Options) -> Swift.Bool
-    public func hash(into hasher: inout Swift.Hasher)
-    public var hashValue: Swift.Int {
-      get
-    }
   }
 }
 #if compiler(>=5.3) && $PrimaryAssociatedTypes2
@@ -254,6 +254,15 @@ public protocol InitialSetup : UDFCore.Reducing {
   associatedtype AppState : UDFCore.AppReducer
   mutating func initialSetup(with state: Self.AppState)
 }
+public struct LoggingAction : Swift.CustomDebugStringConvertible {
+  public let value: any UDFCore.Action
+  public let fileName: Swift.String
+  public let functionName: Swift.String
+  public let lineNumber: Swift.Int
+  public var debugDescription: Swift.String {
+    get
+  }
+}
 extension Swift.Hashable {
   public static func == (lhs: Swift.AnyHashable, rhs: Self) -> Swift.Bool
 }
@@ -275,8 +284,8 @@ final public class EnvironmentStore<State> where State : UDFCore.AppReducer {
   final public var $state: UDFCore.SourceOfTruth<State> {
     get
   }
-  public init(initial state: State, accessToken: Swift.String, loggers: [any UDFCore.ActionLogger], logOptions: UDFCore.LogDistributor.Options) throws
-  convenience public init(initial state: State, accessToken: Swift.String, logger: any UDFCore.ActionLogger, logOptions: UDFCore.LogDistributor.Options) throws
+  public init(initial state: State, accessToken: Swift.String, loggers: [any UDFCore.ActionLogger]) throws
+  convenience public init(initial state: State, accessToken: Swift.String, logger: any UDFCore.ActionLogger) throws
   final public func dispatch(_ action: some Action, priority: UDFCore.ActionPriority = .default, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line)
   final public func bind(_ action: some Action, priority: UDFCore.ActionPriority = .default, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) -> UDFCore.Command
   final public func bind<T>(_ action: @escaping (T) -> some Action, priority: UDFCore.ActionPriority = .default, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) -> UDFCore.CommandWith<T>
@@ -329,6 +338,15 @@ extension _Concurrency.Task where Success == Swift.Never, Failure == Swift.Never
   public static func sleep(seconds: Foundation.TimeInterval) async throws
   #endif
 }
+public struct VerboseActionFilter : UDFCore.ActionFilter {
+  public init()
+  public func include(action: UDFCore.LoggingAction) -> Swift.Bool
+}
+extension UDFCore.ActionFilter where Self == UDFCore.VerboseActionFilter {
+  public static var verbose: any UDFCore.ActionFilter {
+    get
+  }
+}
 @_Concurrency.MainActor final public class XCTestStore<State> where State : UDFCore.AppReducer {
   @UDFCore.SourceOfTruth @_projectedValueProperty($state) @_Concurrency.MainActor final public var state: State {
     get
@@ -338,7 +356,7 @@ extension _Concurrency.Task where Success == Swift.Never, Failure == Swift.Never
   @_Concurrency.MainActor final public var $state: UDFCore.SourceOfTruth<State> {
     get
   }
-  @_Concurrency.MainActor public init(initial state: State, logOptions: UDFCore.LogDistributor.Options = .verbose) throws
+  @_Concurrency.MainActor public init(initial state: State) throws
   #if compiler(>=5.3) && $AsyncAwait
   @_Concurrency.MainActor final public func subscribe(_ middlewareBuilder: (_ store: any UDFCore.Store<State>) -> some Middleware<State>) async
   #endif
@@ -371,8 +389,6 @@ public typealias Reducible = Swift.Equatable & UDFCore.Reducing
 }
 extension UDFCore.MiddlewareStatus : Swift.Equatable {}
 extension UDFCore.MiddlewareStatus : Swift.Hashable {}
-extension UDFCore.LogDistributor.Options : Swift.Equatable {}
-extension UDFCore.LogDistributor.Options : Swift.Hashable {}
 extension UDFCore.ActionPriority : Swift.Equatable {}
 extension UDFCore.ActionPriority : Swift.Hashable {}
 extension UDFCore.XCTestStore : Swift.Sendable {}
