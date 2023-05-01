@@ -22,7 +22,8 @@ public struct ConsoleDebugLogger: ActionLogger {
 }
 
 public extension ActionLogger where Self == ConsoleDebugLogger {
-    static var consoleDebug: ActionLogger { ConsoleDebugLogger(filters: [.verbose]) }
+    static var consoleDebug: ActionLogger { ConsoleDebugLogger(filters: [.default]) }
+    static var consoleDebugVerbose: ActionLogger { ConsoleDebugLogger(filters: [.verbose]) }
     static var consoleDebugOnlyErrors: ActionLogger { ConsoleDebugLogger(filters: [.errorOnly]) }
 
     static func consoleDebug(extraFilters: [ActionFilter]) -> ActionLogger {
