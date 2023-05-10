@@ -1,7 +1,12 @@
 <p align="center">
-  <img width="80%" src="https://github.com/Maks-Jago/SwiftUI-UDF/blob/main/Resources/SwiftUI-UDF-Logo.svg" alt="SwiftUI UDF Logo"/>
+  <img width="80%" src="Resources/SwiftUI-UDF-Logo.svg" alt="SwiftUI UDF Logo"/>
 </p>
 
+## Architecture overview
+
+<p align="center">
+  <img width="80%" src="Resources/udf-overview-diagram.png" alt="SwiftUI UDF Diagram"/>
+</p>
 
 ## The license
 
