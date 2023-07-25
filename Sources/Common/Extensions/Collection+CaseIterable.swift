@@ -1,6 +1,6 @@
 import Foundation
 
-public extension Collection where Self: CaseIterable, Self.Element: Hashable {
+public extension Collection where Self.Element: Hashable {
 
     func contains(_ element: AnyHashable) -> Bool {
         contains { elem  in
