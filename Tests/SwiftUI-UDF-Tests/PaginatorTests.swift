@@ -157,12 +157,10 @@ class PaginatorTests: XCTestCase {
         
         paginator.reduce(Actions.SetPaginationItems<Item>(items: items, id: ItemFlow.id))
         
-        let item = paginator.items.elements[0]
-        paginator.moveItem(fromIndex: 0, toIndex: 5)
-        XCTAssertEqual(paginator.items.elements[5], item)
+        let isSuccess = paginator.moveItem(fromIndex: 0, toIndex: 13)
+        XCTAssertTrue(isSuccess)
         
-        let item2 = paginator.items.elements[11]
-        paginator.moveItem(fromIndex: 11, toIndex: 13)
-        XCTAssertEqual(paginator.items.elements[13], item2)
+        let isFailure = paginator.moveItem(fromIndex: 0, toIndex: 14) // toIndex >= items.count
+        XCTAssertFalse(isFailure)
     }
 }

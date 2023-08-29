@@ -78,10 +78,14 @@ public struct Paginator<Item: Hashable & Identifiable, FlowId: Hashable>: Reduci
         items.removeAll()
     }
     
-    public mutating func moveItem(fromIndex: Int, toIndex: Int) {
-        if toIndex <= items.count && toIndex >= 0 {
-            items.elements.move(fromOffsets: IndexSet(integer: fromIndex), toOffset: toIndex > fromIndex ? (toIndex + 1) : toIndex)
+    @discardableResult
+    public mutating func moveItem(fromIndex: Int, toIndex: Int) -> Bool {
+        guard toIndex < items.count && toIndex >= 0, items.count > 0 else {
+            return false
         }
+        let item = items.elements[fromIndex]
+        items.elements.move(fromOffsets: IndexSet(integer: fromIndex), toOffset: toIndex > fromIndex ? (toIndex + 1) : toIndex)
+        return item == items.elements[toIndex]
     }
 
     public mutating func reduce(_ action: some Action) {
