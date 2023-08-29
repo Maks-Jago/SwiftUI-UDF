@@ -151,19 +151,23 @@ class PaginatorTests: XCTestCase {
         XCTAssertEqual(itemsCount, 10)
     }
     
-    func testMoveItem() {
+    func testMoveItem() throws {
         var paginator = Paginator<Item, ItemFlow.FlowId>(flowId: ItemFlow.id, perPage: 10)
         let items = Item.fakeItems(count: 14)
+        let firstItem = try XCTUnwrap(items.first)
         
         paginator.reduce(Actions.SetPaginationItems<Item>(items: items, id: ItemFlow.id))
         
         let isSuccess = paginator.moveItem(fromIndex: 0, toIndex: 13)
         XCTAssertTrue(isSuccess)
+        XCTAssertEqual(firstItem.id, try XCTUnwrap(paginator.items.last))
         
         let isFailure = paginator.moveItem(fromIndex: 0, toIndex: 14) // toIndex >= items.count
         XCTAssertFalse(isFailure)
         
+        let itemAt10Index = try XCTUnwrap(paginator.elements[10])
         let isMovedIntoBeginning = paginator.moveItem(fromIndex: 10, toIndex: 0)
         XCTAssertTrue(isMovedIntoBeginning)
+        XCTAssertEqual(itemAt10Index, try XCTUnwrap(paginator.items.first))
     }
 }
