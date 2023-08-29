@@ -78,6 +78,7 @@ public struct Paginator<Item: Hashable & Identifiable, FlowId: Hashable>: Reduci
         items.removeAll()
     }
     
+    // move item in to reorder elements
     public mutating func moveItem(fromIndex: Int, toIndex: Int) {
         if toIndex <= items.count && toIndex >= 0 {
             items.elements.move(fromOffsets: IndexSet(integer: fromIndex), toOffset: toIndex)
