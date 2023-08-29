@@ -163,7 +163,7 @@ class PaginatorTests: XCTestCase {
         let isFailure = paginator.moveItem(fromIndex: 0, toIndex: 14) // toIndex >= items.count
         XCTAssertFalse(isFailure)
         
-        let isMovedIntoBeginning = paginator.moveItem(fromIndex: 10, toIndex: 3)
+        let isMovedIntoBeginning = paginator.moveItem(fromIndex: 10, toIndex: 0)
         XCTAssertTrue(isMovedIntoBeginning)
     }
 }
