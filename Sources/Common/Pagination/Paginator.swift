@@ -77,6 +77,12 @@ public struct Paginator<Item: Hashable & Identifiable, FlowId: Hashable>: Reduci
         self.page = .number(initialPage)
         items.removeAll()
     }
+    
+    public mutating func moveItem(fromIndex: Int, toIndex: Int) {
+        if toIndex <= items.count && toIndex >= 0 {
+            items.elements.move(fromOffsets: IndexSet(integer: fromIndex), toOffset: toIndex)
+        }
+    }
 
     public mutating func reduce(_ action: some Action) {
         switch action {
