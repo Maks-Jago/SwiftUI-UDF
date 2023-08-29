@@ -80,7 +80,7 @@ public struct Paginator<Item: Hashable & Identifiable, FlowId: Hashable>: Reduci
     
     public mutating func moveItem(fromIndex: Int, toIndex: Int) {
         if toIndex <= items.count && toIndex >= 0 {
-            items.elements.move(fromOffsets: IndexSet(integer: fromIndex), toOffset: toIndex)
+            items.elements.move(fromOffsets: IndexSet(integer: fromIndex), toOffset: toIndex > fromIndex ? (toIndex + 1) : toIndex)
         }
     }
 

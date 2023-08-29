@@ -150,4 +150,19 @@ class PaginatorTests: XCTestCase {
         let itemsCount = await store.state.itemsForm.paginator.items.count
         XCTAssertEqual(itemsCount, 10)
     }
+    
+    func testMoveItem() {
+        var paginator = Paginator<Item, ItemFlow.FlowId>(flowId: ItemFlow.id, perPage: 10)
+        let items = Item.fakeItems(count: 14)
+        
+        paginator.reduce(Actions.SetPaginationItems<Item>(items: items, id: ItemFlow.id))
+        
+        let item = paginator.items.elements[0]
+        paginator.moveItem(fromIndex: 0, toIndex: 5)
+        XCTAssertEqual(paginator.items.elements[5], item)
+        
+        let item2 = paginator.items.elements[11]
+        paginator.moveItem(fromIndex: 11, toIndex: 13)
+        XCTAssertEqual(paginator.items.elements[13], item2)
+    }
 }
