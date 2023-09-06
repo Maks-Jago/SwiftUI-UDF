@@ -8,7 +8,6 @@
 import SwiftUI
 
 public extension View {
-    @available(iOS 16.0, *)
     func navigationDestination<R: Routing>(router: Router<R>, selectedRoute: Binding<R.Route?>) -> some View {
         self.navigationDestination(isPresented: selectedRoute.isPresented()) {
             if let route = selectedRoute.wrappedValue {
