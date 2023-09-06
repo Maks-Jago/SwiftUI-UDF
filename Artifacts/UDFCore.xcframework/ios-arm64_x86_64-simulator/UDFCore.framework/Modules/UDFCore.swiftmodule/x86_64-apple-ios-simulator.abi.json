@@ -844,26 +844,6 @@
         ]
       },
       {
-        "kind": "Import",
-        "name": "JWTKit",
-        "printedName": "JWTKit",
-        "declKind": "Import",
-        "moduleName": "UDFCore",
-        "declAttributes": [
-          "ImplementationOnly"
-        ]
-      },
-      {
-        "kind": "Import",
-        "name": "Foundation",
-        "printedName": "Foundation",
-        "declKind": "Import",
-        "moduleName": "UDFCore",
-        "declAttributes": [
-          "RawDocComment"
-        ]
-      },
-      {
         "kind": "TypeDecl",
         "name": "_Mergeable",
         "printedName": "_Mergeable",
@@ -1383,6 +1363,51 @@
         "kind": "TypeDecl",
         "name": "Scope",
         "printedName": "Scope",
+        "children": [
+          {
+            "kind": "Var",
+            "name": "none",
+            "printedName": "none",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "NoneScope",
+                "printedName": "UDFCore.NoneScope",
+                "usr": "s:7UDFCore9NoneScopeV"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:7UDFCore5ScopePA2A04NoneB0VRszrlE4noneAEvpZ",
+            "mangledName": "$s7UDFCore5ScopePA2A04NoneB0VRszrlE4noneAEvpZ",
+            "moduleName": "UDFCore",
+            "static": true,
+            "isFromExtension": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "NoneScope",
+                    "printedName": "UDFCore.NoneScope",
+                    "usr": "s:7UDFCore9NoneScopeV"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:7UDFCore5ScopePA2A04NoneB0VRszrlE4noneAEvgZ",
+                "mangledName": "$s7UDFCore5ScopePA2A04NoneB0VRszrlE4noneAEvgZ",
+                "moduleName": "UDFCore",
+                "genericSig": "<τ_0_0 where τ_0_0 == UDFCore.NoneScope>",
+                "sugared_genericSig": "<Self where Self == UDFCore.NoneScope>",
+                "static": true,
+                "isFromExtension": true,
+                "accessorKind": "get"
+              }
+            ]
+          }
+        ],
         "declKind": "Protocol",
         "usr": "s:7UDFCore5ScopeP",
         "mangledName": "$s7UDFCore5ScopeP",
@@ -1582,47 +1607,6 @@
           "AccessControl",
           "ResultBuilder"
         ]
-      },
-      {
-        "kind": "Function",
-        "name": "Scopes",
-        "printedName": "Scopes(_:)",
-        "children": [
-          {
-            "kind": "TypeNominal",
-            "name": "GenericTypeParam",
-            "printedName": "τ_0_0"
-          },
-          {
-            "kind": "TypeFunc",
-            "name": "Function",
-            "printedName": "() -> τ_0_0",
-            "children": [
-              {
-                "kind": "TypeNominal",
-                "name": "GenericTypeParam",
-                "printedName": "τ_0_0"
-              },
-              {
-                "kind": "TypeNominal",
-                "name": "Void",
-                "printedName": "()"
-              }
-            ],
-            "typeAttributes": [
-              "noescape"
-            ]
-          }
-        ],
-        "declKind": "Func",
-        "usr": "s:7UDFCore6ScopesyQrxyXESQRzAA5ScopeRzlF",
-        "mangledName": "$s7UDFCore6ScopesyQrxyXESQRzAA5ScopeRzlF",
-        "moduleName": "UDFCore",
-        "genericSig": "<τ_0_0 where τ_0_0 : Swift.Equatable, τ_0_0 : UDFCore.Scope>",
-        "declAttributes": [
-          "AccessControl"
-        ],
-        "funcSelfKind": "NonMutating"
       },
       {
         "kind": "Import",
@@ -5485,6 +5469,59 @@
             "moduleName": "UDFCore",
             "genericSig": "<τ_0_0 where τ_0_0 : UDFCore.AppReducer>",
             "sugared_genericSig": "<State where State : UDFCore.AppReducer>",
+            "deprecated": true,
+            "declAttributes": [
+              "Convenience",
+              "AccessControl",
+              "Available"
+            ],
+            "throwing": true,
+            "init_kind": "Convenience"
+          },
+          {
+            "kind": "Constructor",
+            "name": "init",
+            "printedName": "init(initial:loggers:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "EnvironmentStore",
+                "printedName": "UDFCore.EnvironmentStore<τ_0_0>",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "GenericTypeParam",
+                    "printedName": "τ_0_0"
+                  }
+                ],
+                "usr": "s:7UDFCore16EnvironmentStoreC"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "GenericTypeParam",
+                "printedName": "τ_0_0"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Array",
+                "printedName": "[UDFCore.ActionLogger]",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "ActionLogger",
+                    "printedName": "UDFCore.ActionLogger",
+                    "usr": "s:7UDFCore12ActionLoggerP"
+                  }
+                ],
+                "usr": "s:Sa"
+              }
+            ],
+            "declKind": "Constructor",
+            "usr": "s:7UDFCore16EnvironmentStoreC7initial7loggersACyxGx_SayAA12ActionLogger_pGtKcfc",
+            "mangledName": "$s7UDFCore16EnvironmentStoreC7initial7loggersACyxGx_SayAA12ActionLogger_pGtKcfc",
+            "moduleName": "UDFCore",
+            "genericSig": "<τ_0_0 where τ_0_0 : UDFCore.AppReducer>",
+            "sugared_genericSig": "<State where State : UDFCore.AppReducer>",
             "declAttributes": [
               "AccessControl"
             ],
@@ -5530,6 +5567,51 @@
             "declKind": "Constructor",
             "usr": "s:7UDFCore16EnvironmentStoreC7initial11accessToken6loggerACyxGx_SSAA12ActionLogger_ptKcfc",
             "mangledName": "$s7UDFCore16EnvironmentStoreC7initial11accessToken6loggerACyxGx_SSAA12ActionLogger_ptKcfc",
+            "moduleName": "UDFCore",
+            "genericSig": "<τ_0_0 where τ_0_0 : UDFCore.AppReducer>",
+            "sugared_genericSig": "<State where State : UDFCore.AppReducer>",
+            "deprecated": true,
+            "declAttributes": [
+              "Convenience",
+              "AccessControl",
+              "Available"
+            ],
+            "throwing": true,
+            "init_kind": "Convenience"
+          },
+          {
+            "kind": "Constructor",
+            "name": "init",
+            "printedName": "init(initial:logger:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "EnvironmentStore",
+                "printedName": "UDFCore.EnvironmentStore<τ_0_0>",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "GenericTypeParam",
+                    "printedName": "τ_0_0"
+                  }
+                ],
+                "usr": "s:7UDFCore16EnvironmentStoreC"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "GenericTypeParam",
+                "printedName": "τ_0_0"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "ActionLogger",
+                "printedName": "UDFCore.ActionLogger",
+                "usr": "s:7UDFCore12ActionLoggerP"
+              }
+            ],
+            "declKind": "Constructor",
+            "usr": "s:7UDFCore16EnvironmentStoreC7initial6loggerACyxGx_AA12ActionLogger_ptKcfc",
+            "mangledName": "$s7UDFCore16EnvironmentStoreC7initial6loggerACyxGx_AA12ActionLogger_ptKcfc",
             "moduleName": "UDFCore",
             "genericSig": "<τ_0_0 where τ_0_0 : UDFCore.AppReducer>",
             "sugared_genericSig": "<State where State : UDFCore.AppReducer>",
@@ -7060,16 +7142,6 @@
         ]
       },
       {
-        "kind": "Import",
-        "name": "Foundation",
-        "printedName": "Foundation",
-        "declKind": "Import",
-        "moduleName": "UDFCore",
-        "declAttributes": [
-          "RawDocComment"
-        ]
-      },
-      {
         "kind": "TypeDecl",
         "name": "Reducing",
         "printedName": "Reducing",
@@ -7156,6 +7228,112 @@
             "printedName": "Initable",
             "usr": "s:7UDFCore8InitableP",
             "mangledName": "$s7UDFCore8InitableP"
+          }
+        ]
+      },
+      {
+        "kind": "Import",
+        "name": "Foundation",
+        "printedName": "Foundation",
+        "declKind": "Import",
+        "moduleName": "UDFCore",
+        "declAttributes": [
+          "RawDocComment"
+        ]
+      },
+      {
+        "kind": "TypeDecl",
+        "name": "NoneScope",
+        "printedName": "NoneScope",
+        "children": [
+          {
+            "kind": "Function",
+            "name": "isEqual",
+            "printedName": "isEqual(_:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Bool",
+                "printedName": "Swift.Bool",
+                "usr": "s:Sb"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "IsEquatable",
+                "printedName": "UDFCore.IsEquatable",
+                "usr": "s:7UDFCore11IsEquatableP"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:7UDFCore9NoneScopeV7isEqualySbAA11IsEquatable_pF",
+            "mangledName": "$s7UDFCore9NoneScopeV7isEqualySbAA11IsEquatable_pF",
+            "moduleName": "UDFCore",
+            "declAttributes": [
+              "AccessControl"
+            ],
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "==",
+            "printedName": "==(_:_:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Bool",
+                "printedName": "Swift.Bool",
+                "usr": "s:Sb"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "NoneScope",
+                "printedName": "UDFCore.NoneScope",
+                "usr": "s:7UDFCore9NoneScopeV"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "NoneScope",
+                "printedName": "UDFCore.NoneScope",
+                "usr": "s:7UDFCore9NoneScopeV"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:7UDFCore9NoneScopeV2eeoiySbAC_ACtFZ",
+            "mangledName": "$s7UDFCore9NoneScopeV2eeoiySbAC_ACtFZ",
+            "moduleName": "UDFCore",
+            "static": true,
+            "implicit": true,
+            "funcSelfKind": "NonMutating"
+          }
+        ],
+        "declKind": "Struct",
+        "usr": "s:7UDFCore9NoneScopeV",
+        "mangledName": "$s7UDFCore9NoneScopeV",
+        "moduleName": "UDFCore",
+        "declAttributes": [
+          "AccessControl"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Scope",
+            "printedName": "Scope",
+            "usr": "s:7UDFCore5ScopeP",
+            "mangledName": "$s7UDFCore5ScopeP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Equatable",
+            "printedName": "Equatable",
+            "usr": "s:SQ",
+            "mangledName": "$sSQ"
+          },
+          {
+            "kind": "Conformance",
+            "name": "IsEquatable",
+            "printedName": "IsEquatable",
+            "usr": "s:7UDFCore11IsEquatableP",
+            "mangledName": "$s7UDFCore11IsEquatableP"
           }
         ]
       },
@@ -9029,27 +9207,6 @@
       "value": "false"
     },
     {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Common\/Verification\/AccessToken.swift",
-      "kind": "StringLiteral",
-      "offset": 171,
-      "length": 38,
-      "value": "\"6846B623-4491-4308-B803-D9D23D39FC43\""
-    },
-    {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Common\/Verification\/AccessToken.swift",
-      "kind": "StringLiteral",
-      "offset": 318,
-      "length": 12,
-      "value": "\"bundle_ids\""
-    },
-    {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Common\/Verification\/AccessToken.swift",
-      "kind": "StringLiteral",
-      "offset": 318,
-      "length": 12,
-      "value": "\"bundle_ids\""
-    },
-    {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Common\/Protocols\/IsEquatable.swift",
       "kind": "BooleanLiteral",
       "offset": 348,
@@ -9135,15 +9292,8 @@
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Common\/Types.swift",
-      "kind": "StringLiteral",
-      "offset": 198,
-      "length": 117,
-      "value": "\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJidW5kbGVfaWRzIjpbIlhDVGVzdCJdfQ.IOu3Pc33k4KJGYvs7c9dU7JQCzqERjaOhT0cYOpzo5c\""
-    },
-    {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Common\/Types.swift",
       "kind": "BooleanLiteral",
-      "offset": 453,
+      "offset": 311,
       "length": 5,
       "value": "false"
     },
@@ -9248,70 +9398,70 @@
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/InternalStore.swift",
       "kind": "BooleanLiteral",
-      "offset": 3124,
+      "offset": 2874,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/InternalStore.swift",
       "kind": "BooleanLiteral",
-      "offset": 3554,
+      "offset": 3304,
       "length": 4,
       "value": "true"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/InternalStore.swift",
       "kind": "BooleanLiteral",
-      "offset": 3668,
+      "offset": 3418,
       "length": 4,
       "value": "true"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/InternalStore.swift",
       "kind": "BooleanLiteral",
-      "offset": 3823,
+      "offset": 3573,
       "length": 4,
       "value": "true"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/InternalStore.swift",
       "kind": "BooleanLiteral",
-      "offset": 4118,
+      "offset": 3825,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/InternalStore.swift",
       "kind": "BooleanLiteral",
-      "offset": 4222,
+      "offset": 3929,
       "length": 4,
       "value": "true"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/InternalStore.swift",
       "kind": "BooleanLiteral",
-      "offset": 4303,
+      "offset": 4010,
       "length": 4,
       "value": "true"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/InternalStore.swift",
       "kind": "BooleanLiteral",
-      "offset": 4417,
+      "offset": 4124,
       "length": 4,
       "value": "true"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/InternalStore.swift",
       "kind": "BooleanLiteral",
-      "offset": 6460,
+      "offset": 6167,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/InternalStore.swift",
       "kind": "BooleanLiteral",
-      "offset": 6552,
+      "offset": 6259,
       "length": 4,
       "value": "true"
     },
@@ -9358,18 +9508,11 @@
       "value": "[]"
     },
     {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Common\/Verification\/Verifier.swift",
-      "kind": "IntegerLiteral",
-      "offset": 303,
-      "length": 1,
-      "value": "1"
-    },
-    {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Common\/Verification\/Verifier.swift",
-      "kind": "StringLiteral",
-      "offset": 345,
-      "length": 8,
-      "value": "\"XCTest\""
+      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Common\/Scope\/Scope+None.swift",
+      "kind": "BooleanLiteral",
+      "offset": 314,
+      "length": 4,
+      "value": "true"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/StoreQueue.swift",

@@ -94,11 +94,9 @@ class ReducibleMiddlewareTests: XCTestCase {
         }
 
         func scope(for state: ReducibleMiddlewareTests.AppState) -> Scope {
-            Scopes {
-                state.testFlow
-                state.testForm
-                state.formToCombine
-            }
+            state.testFlow
+            state.testForm
+            state.formToCombine
         }
 
         func observe(state: AppState) {

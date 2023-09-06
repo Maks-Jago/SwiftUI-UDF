@@ -169,9 +169,7 @@ private extension MiddlewareCancelationTests {
         }
 
         func scope(for state: MiddlewareCancelationTests.AppState) -> Scope {
-            Scopes {
-                state.middlewareFlow
-            }
+            state.middlewareFlow
         }
 
         func observe(state: MiddlewareCancelationTests.AppState) {

@@ -69,10 +69,8 @@ class ObservableMiddlewareTests: XCTestCase {
 
 
         func scope(for state: ObservableMiddlewareTests.AppState) -> Scope {
-            Scopes {
-                state.testFlow
-                state.testForm
-            }
+            state.testFlow
+            state.testForm
         }
 
         var observeCount = 0
