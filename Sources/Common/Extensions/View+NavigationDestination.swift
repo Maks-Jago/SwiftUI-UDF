@@ -9,9 +9,20 @@ import SwiftUI
 
 public extension View {
     func navigationDestination<R: Routing>(router: Router<R>, selectedRoute: Binding<R.Route?>) -> some View {
-        self.navigationDestination(isPresented: selectedRoute.isPresented()) {
-            if let route = selectedRoute.wrappedValue {
-                router.view(for: route)
+        if #available(iOS 16.0, *) {
+            return self.navigationDestination(isPresented: selectedRoute.isPresented()) {
+                if let route = selectedRoute.wrappedValue {
+                    router.view(for: route)
+                }
+            }
+        } else {
+            return ZStack {
+                NavigationLink("", isActive: selectedRoute.isPresented()) {
+                    if let route = selectedRoute.wrappedValue {
+                        router.view(for: route)
+                    }
+                }
+                self
             }
         }
     }
