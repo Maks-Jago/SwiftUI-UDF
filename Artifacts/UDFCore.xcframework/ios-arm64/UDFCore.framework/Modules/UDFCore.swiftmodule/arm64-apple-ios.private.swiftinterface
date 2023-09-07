@@ -109,6 +109,7 @@ public enum Actions {
     public init<V>(keyPath: Swift.WritableKeyPath<F, V>, value: V) where V : Swift.Equatable
   }
 }
+public func useStore<State>(_ stateType: State.Type, _ useBlock: @escaping (_ store: UDFCore.EnvironmentStore<State>) -> Swift.Void) where State : UDFCore.AppReducer
 public protocol Initable {
   init()
 }

@@ -43,11 +43,11 @@ class PaginatorTests: XCTestCase {
     }
 
     struct ItemsForm: Form, Codable {
-        var paginator: Paginator<Item, ItemFlow.FlowId> = .init(flowId: ItemFlow.id, perPage: 10, usePrefixForFirstPage: false)
+        var paginator: Paginator = .init(Item.self, flowId: ItemFlow.id, perPage: 10)
     }
 
     func testPaginatorPagesRemoving() throws {
-        var paginator = Paginator<Item, ItemFlow.FlowId>(flowId: ItemFlow.id, perPage: 10)
+        var paginator = Paginator(Item.self, flowId: ItemFlow.id, perPage: 10)
         let firstPageItems = Item.fakeItems(count: 10)
         let secondPageItems = Item.fakeItems(count: 10)
         let thirdPageItems = Item.fakeItems(count: 4)
@@ -85,7 +85,7 @@ class PaginatorTests: XCTestCase {
     }
 
     func testPaginatorSetItems() {
-        var paginator = Paginator<Item, ItemFlow.FlowId>(flowId: ItemFlow.id, perPage: 10)
+        var paginator = Paginator(Item.self, flowId: ItemFlow.id, perPage: 10)
         let items = Item.fakeItems(count: 24)
 
         paginator.set(items: items)
@@ -94,7 +94,7 @@ class PaginatorTests: XCTestCase {
     }
 
     func testPaginatorSetItemsAction() {
-        var paginator = Paginator<Item, ItemFlow.FlowId>(flowId: ItemFlow.id, perPage: 10)
+        var paginator = Paginator(Item.self, flowId: ItemFlow.id, perPage: 10)
         let items = Item.fakeItems(count: 24)
 
         paginator.reduce(Actions.SetPaginationItems<Item>(items: items, id: ItemFlow.id))
@@ -108,7 +108,7 @@ class PaginatorTests: XCTestCase {
     }
 
     func testPaginatorLoadingMiddlePage() throws {
-        var paginator = Paginator<Item, ItemFlow.FlowId>(flowId: ItemFlow.id, perPage: 10)
+        var paginator = Paginator(Item.self, flowId: ItemFlow.id, perPage: 10)
         let items = Item.fakeItems(count: 44)
 
         paginator.reduce(Actions.SetPaginationItems<Item>(items: items, id: ItemFlow.id))
@@ -122,7 +122,7 @@ class PaginatorTests: XCTestCase {
     }
 
     func testPaginatorLoadingFirstPage() throws {
-        var paginator = Paginator<Item, ItemFlow.FlowId>(flowId: ItemFlow.id, perPage: 10)
+        var paginator = Paginator(Item.self, flowId: ItemFlow.id, perPage: 10)
         let items = Item.fakeItems(count: 44)
 
         paginator.reduce(Actions.SetPaginationItems<Item>(items: items, id: ItemFlow.id))
@@ -152,7 +152,7 @@ class PaginatorTests: XCTestCase {
     }
     
     func testMoveItem() throws {
-        var paginator = Paginator<Item, ItemFlow.FlowId>(flowId: ItemFlow.id, perPage: 10)
+        var paginator = Paginator(Item.self, flowId: ItemFlow.id, perPage: 10)
         let items = Item.fakeItems(count: 14)
         let firstItem = try XCTUnwrap(items.first)
         

@@ -2263,6 +2263,75 @@
         ]
       },
       {
+        "kind": "Function",
+        "name": "useStore",
+        "printedName": "useStore(_:_:)",
+        "children": [
+          {
+            "kind": "TypeNominal",
+            "name": "Void",
+            "printedName": "()"
+          },
+          {
+            "kind": "TypeNominal",
+            "name": "Metatype",
+            "printedName": "τ_0_0.Type",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "GenericTypeParam",
+                "printedName": "τ_0_0"
+              }
+            ]
+          },
+          {
+            "kind": "TypeFunc",
+            "name": "Function",
+            "printedName": "(UDFCore.EnvironmentStore<τ_0_0>) -> ()",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "EnvironmentStore",
+                "printedName": "UDFCore.EnvironmentStore<τ_0_0>",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "GenericTypeParam",
+                    "printedName": "τ_0_0"
+                  }
+                ],
+                "usr": "s:7UDFCore16EnvironmentStoreC"
+              }
+            ]
+          }
+        ],
+        "declKind": "Func",
+        "usr": "s:7UDFCore8useStoreyyxm_yAA011EnvironmentC0CyxGctAA10AppReducerRzlF",
+        "mangledName": "$s7UDFCore8useStoreyyxm_yAA011EnvironmentC0CyxGctAA10AppReducerRzlF",
+        "moduleName": "UDFCore",
+        "genericSig": "<τ_0_0 where τ_0_0 : UDFCore.AppReducer>",
+        "sugared_genericSig": "<State where State : UDFCore.AppReducer>",
+        "declAttributes": [
+          "AccessControl"
+        ],
+        "funcSelfKind": "NonMutating"
+      },
+      {
+        "kind": "Import",
+        "name": "Foundation",
+        "printedName": "Foundation",
+        "declKind": "Import",
+        "moduleName": "UDFCore",
+        "declAttributes": [
+          "RawDocComment"
+        ]
+      },
+      {
         "kind": "Import",
         "name": "Foundation",
         "printedName": "Foundation",
