@@ -74,6 +74,13 @@ public extension EnvironmentStore {
         }
     }
 
+    func subscribeAsync<M>(_ middlewareType: M.Type, on queue: DispatchQueue, onSubscribe: @escaping () -> Void = {}) where M: Middleware, State == M.State, M: EnvironmentMiddleware {
+        Task(priority: .userInitiated) {
+            await subscribe(middlewareType, on: queue)
+            onSubscribe()
+        }
+    }
+
     func subscribeAsync<M>(_ middlewareType: M.Type, on queue: DispatchQueue, onSubscribe: @escaping () -> Void = {}) where M: Middleware, State == M.State {
         Task(priority: .userInitiated) {
             await subscribe(middlewareType, on: queue)
