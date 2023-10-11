@@ -35,6 +35,17 @@ open class BaseConcurrencyMiddleware<State: AppReducer>: Middleware {
         )
     }
 
+    private func dispatch(action: any Action, filePosition: FileFunctionLineDescription) {
+        queue.sync { [weak self] in
+            self?.store.dispatch(
+                action,
+                fileName: filePosition.fileName,
+                functionName: filePosition.functionName,
+                lineNumber: filePosition.lineNumber
+            )
+        }
+    }
+
     open func execute<Id: Hashable>(
         _ effect: some ConcurrencyEffect,
         cancelation: Id,
@@ -55,37 +66,18 @@ open class BaseConcurrencyMiddleware<State: AppReducer>: Middleware {
             do {
                 let action = try await effect.task()
                 if Task.isCancelled {
-                    self?.store.dispatch(
-                        Actions.DidCancelEffect(by: cancelation),
-                        fileName: filePosition.fileName,
-                        functionName: filePosition.functionName,
-                        lineNumber: filePosition.lineNumber
-                    )
+                    self?.dispatch(action: Actions.DidCancelEffect(by: cancelation), filePosition: filePosition)
+                    
                 } else {
-                    self?.store.dispatch(
-                        mapAction(action),
-                        fileName: filePosition.fileName,
-                        functionName: filePosition.functionName,
-                        lineNumber: filePosition.lineNumber
-                    )
+                    self?.dispatch(action: mapAction(action), filePosition: filePosition)
                 }
 
             } catch let error {
                 if error is CancellationError {
-                    self?.store.dispatch(
-                        Actions.DidCancelEffect(by: cancelation),
-                        fileName: filePosition.fileName,
-                        functionName: filePosition.functionName,
-                        lineNumber: filePosition.lineNumber
-                    )
+                    self?.dispatch(action: Actions.DidCancelEffect(by: cancelation), filePosition: filePosition)
 
                 } else if !Task.isCancelled {
-                    self?.store.dispatch(
-                        Actions.Error(error: error.localizedDescription, id: effect.id),
-                        fileName: filePosition.fileName,
-                        functionName: filePosition.functionName,
-                        lineNumber: filePosition.lineNumber
-                    )
+                    self?.dispatch(action: Actions.Error(error: error.localizedDescription, id: effect.id), filePosition: filePosition)
                 }
             }
 
