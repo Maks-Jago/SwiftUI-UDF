@@ -7202,6 +7202,658 @@
       },
       {
         "kind": "TypeDecl",
+        "name": "AsynchronousOperation",
+        "printedName": "AsynchronousOperation",
+        "children": [
+          {
+            "kind": "Var",
+            "name": "isAsynchronous",
+            "printedName": "isAsynchronous",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Bool",
+                "printedName": "Swift.Bool",
+                "usr": "s:Sb"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "c:@M@UDFCore@objc(cs)AsynchronousOperation(py)asynchronous",
+            "mangledName": "$s7UDFCore21AsynchronousOperationC02isB0Sbvp",
+            "moduleName": "UDFCore",
+            "overriding": true,
+            "objc_name": "asynchronous",
+            "declAttributes": [
+              "Dynamic",
+              "ObjC",
+              "Override",
+              "AccessControl"
+            ],
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Bool",
+                    "printedName": "Swift.Bool",
+                    "usr": "s:Sb"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "c:@M@UDFCore@objc(cs)AsynchronousOperation(im)isAsynchronous",
+                "mangledName": "$s7UDFCore21AsynchronousOperationC02isB0Sbvg",
+                "moduleName": "UDFCore",
+                "overriding": true,
+                "objc_name": "isAsynchronous",
+                "declAttributes": [
+                  "Dynamic",
+                  "ObjC"
+                ],
+                "accessorKind": "get"
+              }
+            ]
+          },
+          {
+            "kind": "Var",
+            "name": "isExecuting",
+            "printedName": "isExecuting",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Bool",
+                "printedName": "Swift.Bool",
+                "usr": "s:Sb"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "c:@M@UDFCore@objc(cs)AsynchronousOperation(py)executing",
+            "mangledName": "$s7UDFCore21AsynchronousOperationC11isExecutingSbvp",
+            "moduleName": "UDFCore",
+            "overriding": true,
+            "objc_name": "executing",
+            "declAttributes": [
+              "Dynamic",
+              "ObjC",
+              "Override",
+              "AccessControl"
+            ],
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Bool",
+                    "printedName": "Swift.Bool",
+                    "usr": "s:Sb"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "c:@M@UDFCore@objc(cs)AsynchronousOperation(im)isExecuting",
+                "mangledName": "$s7UDFCore21AsynchronousOperationC11isExecutingSbvg",
+                "moduleName": "UDFCore",
+                "overriding": true,
+                "objc_name": "isExecuting",
+                "declAttributes": [
+                  "Dynamic",
+                  "ObjC"
+                ],
+                "accessorKind": "get"
+              }
+            ]
+          },
+          {
+            "kind": "Var",
+            "name": "isFinished",
+            "printedName": "isFinished",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Bool",
+                "printedName": "Swift.Bool",
+                "usr": "s:Sb"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "c:@M@UDFCore@objc(cs)AsynchronousOperation(py)finished",
+            "mangledName": "$s7UDFCore21AsynchronousOperationC10isFinishedSbvp",
+            "moduleName": "UDFCore",
+            "overriding": true,
+            "objc_name": "finished",
+            "declAttributes": [
+              "Dynamic",
+              "ObjC",
+              "Override",
+              "AccessControl"
+            ],
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Bool",
+                    "printedName": "Swift.Bool",
+                    "usr": "s:Sb"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "c:@M@UDFCore@objc(cs)AsynchronousOperation(im)isFinished",
+                "mangledName": "$s7UDFCore21AsynchronousOperationC10isFinishedSbvg",
+                "moduleName": "UDFCore",
+                "overriding": true,
+                "objc_name": "isFinished",
+                "declAttributes": [
+                  "Dynamic",
+                  "ObjC"
+                ],
+                "accessorKind": "get"
+              }
+            ]
+          },
+          {
+            "kind": "Function",
+            "name": "start",
+            "printedName": "start()",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "c:@M@UDFCore@objc(cs)AsynchronousOperation(im)start",
+            "mangledName": "$s7UDFCore21AsynchronousOperationC5startyyF",
+            "moduleName": "UDFCore",
+            "overriding": true,
+            "objc_name": "start",
+            "declAttributes": [
+              "Dynamic",
+              "ObjC",
+              "Override",
+              "AccessControl"
+            ],
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "main",
+            "printedName": "main()",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "c:@M@UDFCore@objc(cs)AsynchronousOperation(im)main",
+            "mangledName": "$s7UDFCore21AsynchronousOperationC4mainyyF",
+            "moduleName": "UDFCore",
+            "overriding": true,
+            "isOpen": true,
+            "objc_name": "main",
+            "declAttributes": [
+              "Dynamic",
+              "ObjC",
+              "Override",
+              "AccessControl"
+            ],
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "finish",
+            "printedName": "finish()",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:7UDFCore21AsynchronousOperationC6finishyyF",
+            "mangledName": "$s7UDFCore21AsynchronousOperationC6finishyyF",
+            "moduleName": "UDFCore",
+            "declAttributes": [
+              "AccessControl"
+            ],
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "TypeDecl",
+            "name": "State",
+            "printedName": "State",
+            "children": [
+              {
+                "kind": "Var",
+                "name": "ready",
+                "printedName": "ready",
+                "children": [
+                  {
+                    "kind": "TypeFunc",
+                    "name": "Function",
+                    "printedName": "(UDFCore.AsynchronousOperation.State.Type) -> UDFCore.AsynchronousOperation.State",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "State",
+                        "printedName": "UDFCore.AsynchronousOperation.State",
+                        "usr": "s:7UDFCore21AsynchronousOperationC5StateO"
+                      },
+                      {
+                        "kind": "TypeNominal",
+                        "name": "Metatype",
+                        "printedName": "UDFCore.AsynchronousOperation.State.Type",
+                        "children": [
+                          {
+                            "kind": "TypeNominal",
+                            "name": "State",
+                            "printedName": "UDFCore.AsynchronousOperation.State",
+                            "usr": "s:7UDFCore21AsynchronousOperationC5StateO"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "declKind": "EnumElement",
+                "usr": "s:7UDFCore21AsynchronousOperationC5StateO5readyyA2EmF",
+                "mangledName": "$s7UDFCore21AsynchronousOperationC5StateO5readyyA2EmF",
+                "moduleName": "UDFCore"
+              },
+              {
+                "kind": "Var",
+                "name": "executing",
+                "printedName": "executing",
+                "children": [
+                  {
+                    "kind": "TypeFunc",
+                    "name": "Function",
+                    "printedName": "(UDFCore.AsynchronousOperation.State.Type) -> UDFCore.AsynchronousOperation.State",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "State",
+                        "printedName": "UDFCore.AsynchronousOperation.State",
+                        "usr": "s:7UDFCore21AsynchronousOperationC5StateO"
+                      },
+                      {
+                        "kind": "TypeNominal",
+                        "name": "Metatype",
+                        "printedName": "UDFCore.AsynchronousOperation.State.Type",
+                        "children": [
+                          {
+                            "kind": "TypeNominal",
+                            "name": "State",
+                            "printedName": "UDFCore.AsynchronousOperation.State",
+                            "usr": "s:7UDFCore21AsynchronousOperationC5StateO"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "declKind": "EnumElement",
+                "usr": "s:7UDFCore21AsynchronousOperationC5StateO9executingyA2EmF",
+                "mangledName": "$s7UDFCore21AsynchronousOperationC5StateO9executingyA2EmF",
+                "moduleName": "UDFCore"
+              },
+              {
+                "kind": "Var",
+                "name": "finished",
+                "printedName": "finished",
+                "children": [
+                  {
+                    "kind": "TypeFunc",
+                    "name": "Function",
+                    "printedName": "(UDFCore.AsynchronousOperation.State.Type) -> UDFCore.AsynchronousOperation.State",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "State",
+                        "printedName": "UDFCore.AsynchronousOperation.State",
+                        "usr": "s:7UDFCore21AsynchronousOperationC5StateO"
+                      },
+                      {
+                        "kind": "TypeNominal",
+                        "name": "Metatype",
+                        "printedName": "UDFCore.AsynchronousOperation.State.Type",
+                        "children": [
+                          {
+                            "kind": "TypeNominal",
+                            "name": "State",
+                            "printedName": "UDFCore.AsynchronousOperation.State",
+                            "usr": "s:7UDFCore21AsynchronousOperationC5StateO"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ],
+                "declKind": "EnumElement",
+                "usr": "s:7UDFCore21AsynchronousOperationC5StateO8finishedyA2EmF",
+                "mangledName": "$s7UDFCore21AsynchronousOperationC5StateO8finishedyA2EmF",
+                "moduleName": "UDFCore"
+              },
+              {
+                "kind": "Constructor",
+                "name": "init",
+                "printedName": "init(rawValue:)",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Optional",
+                    "printedName": "UDFCore.AsynchronousOperation.State?",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "State",
+                        "printedName": "UDFCore.AsynchronousOperation.State",
+                        "usr": "s:7UDFCore21AsynchronousOperationC5StateO"
+                      }
+                    ],
+                    "usr": "s:Sq"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "declKind": "Constructor",
+                "usr": "s:7UDFCore21AsynchronousOperationC5StateO8rawValueAESgSS_tcfc",
+                "mangledName": "$s7UDFCore21AsynchronousOperationC5StateO8rawValueAESgSS_tcfc",
+                "moduleName": "UDFCore",
+                "implicit": true,
+                "init_kind": "Designated"
+              },
+              {
+                "kind": "Var",
+                "name": "rawValue",
+                "printedName": "rawValue",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "declKind": "Var",
+                "usr": "s:7UDFCore21AsynchronousOperationC5StateO8rawValueSSvp",
+                "mangledName": "$s7UDFCore21AsynchronousOperationC5StateO8rawValueSSvp",
+                "moduleName": "UDFCore",
+                "implicit": true,
+                "accessors": [
+                  {
+                    "kind": "Accessor",
+                    "name": "Get",
+                    "printedName": "Get()",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "String",
+                        "printedName": "Swift.String",
+                        "usr": "s:SS"
+                      }
+                    ],
+                    "declKind": "Accessor",
+                    "usr": "s:7UDFCore21AsynchronousOperationC5StateO8rawValueSSvg",
+                    "mangledName": "$s7UDFCore21AsynchronousOperationC5StateO8rawValueSSvg",
+                    "moduleName": "UDFCore",
+                    "implicit": true,
+                    "accessorKind": "get"
+                  }
+                ]
+              }
+            ],
+            "declKind": "Enum",
+            "usr": "s:7UDFCore21AsynchronousOperationC5StateO",
+            "mangledName": "$s7UDFCore21AsynchronousOperationC5StateO",
+            "moduleName": "UDFCore",
+            "declAttributes": [
+              "AccessControl",
+              "RawDocComment"
+            ],
+            "enumRawTypeName": "String",
+            "conformances": [
+              {
+                "kind": "Conformance",
+                "name": "Equatable",
+                "printedName": "Equatable",
+                "usr": "s:SQ",
+                "mangledName": "$sSQ"
+              },
+              {
+                "kind": "Conformance",
+                "name": "Hashable",
+                "printedName": "Hashable",
+                "usr": "s:SH",
+                "mangledName": "$sSH"
+              },
+              {
+                "kind": "Conformance",
+                "name": "RawRepresentable",
+                "printedName": "RawRepresentable",
+                "children": [
+                  {
+                    "kind": "TypeWitness",
+                    "name": "RawValue",
+                    "printedName": "RawValue",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "String",
+                        "printedName": "Swift.String",
+                        "usr": "s:SS"
+                      }
+                    ]
+                  }
+                ],
+                "usr": "s:SY",
+                "mangledName": "$sSY"
+              }
+            ]
+          },
+          {
+            "kind": "Var",
+            "name": "state",
+            "printedName": "state",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "State",
+                "printedName": "UDFCore.AsynchronousOperation.State",
+                "usr": "s:7UDFCore21AsynchronousOperationC5StateO"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:7UDFCore21AsynchronousOperationC5stateAC5StateOvp",
+            "mangledName": "$s7UDFCore21AsynchronousOperationC5stateAC5StateOvp",
+            "moduleName": "UDFCore",
+            "declAttributes": [
+              "AccessControl",
+              "RawDocComment"
+            ],
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "State",
+                    "printedName": "UDFCore.AsynchronousOperation.State",
+                    "usr": "s:7UDFCore21AsynchronousOperationC5StateO"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:7UDFCore21AsynchronousOperationC5stateAC5StateOvg",
+                "mangledName": "$s7UDFCore21AsynchronousOperationC5stateAC5StateOvg",
+                "moduleName": "UDFCore",
+                "accessorKind": "get"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Set",
+                "printedName": "Set()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "State",
+                    "printedName": "UDFCore.AsynchronousOperation.State",
+                    "usr": "s:7UDFCore21AsynchronousOperationC5StateO"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:7UDFCore21AsynchronousOperationC5stateAC5StateOvs",
+                "mangledName": "$s7UDFCore21AsynchronousOperationC5stateAC5StateOvs",
+                "moduleName": "UDFCore",
+                "accessorKind": "set"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Modify",
+                "printedName": "Modify()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:7UDFCore21AsynchronousOperationC5stateAC5StateOvM",
+                "mangledName": "$s7UDFCore21AsynchronousOperationC5stateAC5StateOvM",
+                "moduleName": "UDFCore",
+                "implicit": true,
+                "accessorKind": "_modify"
+              }
+            ]
+          },
+          {
+            "kind": "Constructor",
+            "name": "init",
+            "printedName": "init()",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "AsynchronousOperation",
+                "printedName": "UDFCore.AsynchronousOperation",
+                "usr": "c:@M@UDFCore@objc(cs)AsynchronousOperation"
+              }
+            ],
+            "declKind": "Constructor",
+            "usr": "c:@M@UDFCore@objc(cs)AsynchronousOperation(im)init",
+            "mangledName": "$s7UDFCore21AsynchronousOperationCACycfc",
+            "moduleName": "UDFCore",
+            "overriding": true,
+            "implicit": true,
+            "objc_name": "init",
+            "declAttributes": [
+              "Dynamic",
+              "ObjC",
+              "Override"
+            ],
+            "init_kind": "Designated"
+          }
+        ],
+        "declKind": "Class",
+        "usr": "c:@M@UDFCore@objc(cs)AsynchronousOperation",
+        "mangledName": "$s7UDFCore21AsynchronousOperationC",
+        "moduleName": "UDFCore",
+        "isOpen": true,
+        "declAttributes": [
+          "AccessControl",
+          "ObjC"
+        ],
+        "superclassUsr": "c:objc(cs)NSOperation",
+        "inheritsConvenienceInitializers": true,
+        "superclassNames": [
+          "Foundation.Operation",
+          "ObjectiveC.NSObject"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Equatable",
+            "printedName": "Equatable",
+            "usr": "s:SQ",
+            "mangledName": "$sSQ"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Hashable",
+            "printedName": "Hashable",
+            "usr": "s:SH",
+            "mangledName": "$sSH"
+          },
+          {
+            "kind": "Conformance",
+            "name": "CVarArg",
+            "printedName": "CVarArg",
+            "usr": "s:s7CVarArgP",
+            "mangledName": "$ss7CVarArgP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "_KeyValueCodingAndObservingPublishing",
+            "printedName": "_KeyValueCodingAndObservingPublishing",
+            "usr": "s:10Foundation37_KeyValueCodingAndObservingPublishingP",
+            "mangledName": "$s10Foundation37_KeyValueCodingAndObservingPublishingP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "_KeyValueCodingAndObserving",
+            "printedName": "_KeyValueCodingAndObserving",
+            "usr": "s:10Foundation27_KeyValueCodingAndObservingP",
+            "mangledName": "$s10Foundation27_KeyValueCodingAndObservingP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "CustomStringConvertible",
+            "printedName": "CustomStringConvertible",
+            "usr": "s:s23CustomStringConvertibleP",
+            "mangledName": "$ss23CustomStringConvertibleP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "CustomDebugStringConvertible",
+            "printedName": "CustomDebugStringConvertible",
+            "usr": "s:s28CustomDebugStringConvertibleP",
+            "mangledName": "$ss28CustomDebugStringConvertibleP"
+          }
+        ]
+      },
+      {
+        "kind": "Import",
+        "name": "Foundation",
+        "printedName": "Foundation",
+        "declKind": "Import",
+        "moduleName": "UDFCore",
+        "declAttributes": [
+          "RawDocComment"
+        ]
+      },
+      {
+        "kind": "TypeDecl",
         "name": "NoneScope",
         "printedName": "NoneScope",
         "children": [
@@ -9354,28 +10006,28 @@
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/InternalStore.swift",
       "kind": "BooleanLiteral",
-      "offset": 2531,
+      "offset": 2707,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/InternalStore.swift",
       "kind": "BooleanLiteral",
-      "offset": 3085,
+      "offset": 3261,
       "length": 4,
       "value": "true"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/InternalStore.swift",
       "kind": "BooleanLiteral",
-      "offset": 5114,
+      "offset": 5290,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/InternalStore.swift",
       "kind": "BooleanLiteral",
-      "offset": 5206,
+      "offset": 5382,
       "length": 4,
       "value": "true"
     },
@@ -9420,6 +10072,90 @@
       "offset": 231,
       "length": 3,
       "value": "[]"
+    },
+    {
+      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/StoreQueue.swift",
+      "kind": "IntegerLiteral",
+      "offset": 229,
+      "length": 1,
+      "value": "1"
+    },
+    {
+      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/StoreQueue.swift",
+      "kind": "StringLiteral",
+      "offset": 246,
+      "length": 12,
+      "value": "\"StoreQueue\""
+    },
+    {
+      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/StoreQueue.swift",
+      "kind": "BooleanLiteral",
+      "offset": 420,
+      "length": 4,
+      "value": "true"
+    },
+    {
+      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/StoreQueue.swift",
+      "kind": "StringLiteral",
+      "offset": 1080,
+      "length": 7,
+      "value": "\"Ready\""
+    },
+    {
+      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/StoreQueue.swift",
+      "kind": "StringLiteral",
+      "offset": 1113,
+      "length": 11,
+      "value": "\"Executing\""
+    },
+    {
+      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/StoreQueue.swift",
+      "kind": "StringLiteral",
+      "offset": 1149,
+      "length": 10,
+      "value": "\"Finished\""
+    },
+    {
+      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/StoreQueue.swift",
+      "kind": "StringLiteral",
+      "offset": 1209,
+      "length": 4,
+      "value": "\"is\""
+    },
+    {
+      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/StoreQueue.swift",
+      "kind": "StringLiteral",
+      "offset": 1080,
+      "length": 7,
+      "value": "\"Ready\""
+    },
+    {
+      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/StoreQueue.swift",
+      "kind": "StringLiteral",
+      "offset": 1113,
+      "length": 11,
+      "value": "\"Executing\""
+    },
+    {
+      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/StoreQueue.swift",
+      "kind": "StringLiteral",
+      "offset": 1149,
+      "length": 10,
+      "value": "\"Finished\""
+    },
+    {
+      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/StoreQueue.swift",
+      "kind": "StringLiteral",
+      "offset": 1833,
+      "length": 35,
+      "value": "\"AsynchronousOperation State Queue\""
+    },
+    {
+      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/StoreQueue.swift",
+      "kind": "StringLiteral",
+      "offset": 2014,
+      "length": 14,
+      "value": "\"UDFCore.StoreOperation\""
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Common\/Scope\/Scope+None.swift",

@@ -380,6 +380,36 @@ extension UDFCore.Reducing {
   public mutating func reduce(_ action: some Action)
 }
 public typealias Reducible = Swift.Equatable & UDFCore.Reducing
+@objc @_inheritsConvenienceInitializers open class AsynchronousOperation : Foundation.Operation {
+  @objc override dynamic public var isAsynchronous: Swift.Bool {
+    @objc get
+  }
+  @objc override dynamic public var isExecuting: Swift.Bool {
+    @objc get
+  }
+  @objc override dynamic public var isFinished: Swift.Bool {
+    @objc get
+  }
+  @objc override dynamic public func start()
+  @objc override dynamic open func main()
+  public func finish()
+  public enum State : Swift.String {
+    case ready
+    case executing
+    case finished
+    public init?(rawValue: Swift.String)
+    public typealias RawValue = Swift.String
+    public var rawValue: Swift.String {
+      get
+    }
+  }
+  public var state: UDFCore.AsynchronousOperation.State {
+    get
+    set
+  }
+  @objc override dynamic public init()
+  @objc deinit
+}
 extension UDFCore.Scope where Self == UDFCore.NoneScope {
   public static var none: UDFCore.NoneScope {
     get
@@ -398,3 +428,6 @@ extension UDFCore.MiddlewareStatus : Swift.Hashable {}
 extension UDFCore.ActionPriority : Swift.Equatable {}
 extension UDFCore.ActionPriority : Swift.Hashable {}
 extension UDFCore.XCTestStore : Swift.Sendable {}
+extension UDFCore.AsynchronousOperation.State : Swift.Equatable {}
+extension UDFCore.AsynchronousOperation.State : Swift.Hashable {}
+extension UDFCore.AsynchronousOperation.State : Swift.RawRepresentable {}
