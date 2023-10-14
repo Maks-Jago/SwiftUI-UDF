@@ -1015,116 +1015,6 @@
         "kind": "TypeDecl",
         "name": "AppReducer",
         "printedName": "AppReducer",
-        "children": [
-          {
-            "kind": "Function",
-            "name": "preReduce",
-            "printedName": "preReduce(_:)",
-            "children": [
-              {
-                "kind": "TypeNominal",
-                "name": "Void",
-                "printedName": "()"
-              },
-              {
-                "kind": "TypeNominal",
-                "name": "GenericTypeParam",
-                "printedName": "τ_1_0"
-              }
-            ],
-            "declKind": "Func",
-            "usr": "s:7UDFCore10AppReducerP9preReduceyyqd__AA6ActionRd__lF",
-            "mangledName": "$s7UDFCore10AppReducerP9preReduceyyqd__AA6ActionRd__lF",
-            "moduleName": "UDFCore",
-            "genericSig": "<τ_0_0, τ_1_0 where τ_0_0 : UDFCore.AppReducer, τ_1_0 : UDFCore.Action>",
-            "sugared_genericSig": "<Self where Self : UDFCore.AppReducer>",
-            "protocolReq": true,
-            "declAttributes": [
-              "Mutating"
-            ],
-            "reqNewWitnessTableEntry": true,
-            "funcSelfKind": "Mutating"
-          },
-          {
-            "kind": "Function",
-            "name": "postReduce",
-            "printedName": "postReduce(_:)",
-            "children": [
-              {
-                "kind": "TypeNominal",
-                "name": "Void",
-                "printedName": "()"
-              },
-              {
-                "kind": "TypeNominal",
-                "name": "GenericTypeParam",
-                "printedName": "τ_1_0"
-              }
-            ],
-            "declKind": "Func",
-            "usr": "s:7UDFCore10AppReducerP10postReduceyyqd__AA6ActionRd__lF",
-            "mangledName": "$s7UDFCore10AppReducerP10postReduceyyqd__AA6ActionRd__lF",
-            "moduleName": "UDFCore",
-            "genericSig": "<τ_0_0, τ_1_0 where τ_0_0 : UDFCore.AppReducer, τ_1_0 : UDFCore.Action>",
-            "sugared_genericSig": "<Self where Self : UDFCore.AppReducer>",
-            "protocolReq": true,
-            "declAttributes": [
-              "Mutating"
-            ],
-            "reqNewWitnessTableEntry": true,
-            "funcSelfKind": "Mutating"
-          },
-          {
-            "kind": "Function",
-            "name": "preReduce",
-            "printedName": "preReduce(_:)",
-            "children": [
-              {
-                "kind": "TypeNominal",
-                "name": "Void",
-                "printedName": "()"
-              },
-              {
-                "kind": "TypeNominal",
-                "name": "GenericTypeParam",
-                "printedName": "τ_1_0"
-              }
-            ],
-            "declKind": "Func",
-            "usr": "s:7UDFCore10AppReducerPAAE9preReduceyyqd__AA6ActionRd__lF",
-            "mangledName": "$s7UDFCore10AppReducerPAAE9preReduceyyqd__AA6ActionRd__lF",
-            "moduleName": "UDFCore",
-            "genericSig": "<τ_0_0, τ_1_0 where τ_0_0 : UDFCore.AppReducer, τ_1_0 : UDFCore.Action>",
-            "sugared_genericSig": "<Self where Self : UDFCore.AppReducer>",
-            "isFromExtension": true,
-            "funcSelfKind": "NonMutating"
-          },
-          {
-            "kind": "Function",
-            "name": "postReduce",
-            "printedName": "postReduce(_:)",
-            "children": [
-              {
-                "kind": "TypeNominal",
-                "name": "Void",
-                "printedName": "()"
-              },
-              {
-                "kind": "TypeNominal",
-                "name": "GenericTypeParam",
-                "printedName": "τ_1_0"
-              }
-            ],
-            "declKind": "Func",
-            "usr": "s:7UDFCore10AppReducerPAAE10postReduceyyqd__AA6ActionRd__lF",
-            "mangledName": "$s7UDFCore10AppReducerPAAE10postReduceyyqd__AA6ActionRd__lF",
-            "moduleName": "UDFCore",
-            "genericSig": "<τ_0_0, τ_1_0 where τ_0_0 : UDFCore.AppReducer, τ_1_0 : UDFCore.Action>",
-            "sugared_genericSig": "<Self where Self : UDFCore.AppReducer>",
-            "isFromExtension": true,
-            "funcSelfKind": "NonMutating"
-          }
-        ],
         "declKind": "Protocol",
         "usr": "s:7UDFCore10AppReducerP",
         "mangledName": "$s7UDFCore10AppReducerP",
@@ -7509,16 +7399,6 @@
         ]
       },
       {
-        "kind": "Import",
-        "name": "Foundation",
-        "printedName": "Foundation",
-        "declKind": "Import",
-        "moduleName": "UDFCore",
-        "declAttributes": [
-          "RawDocComment"
-        ]
-      },
-      {
         "kind": "TypeDecl",
         "name": "Dictionary",
         "printedName": "Dictionary",
@@ -9458,79 +9338,44 @@
       "value": "false"
     },
     {
+      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/EnvironmentStore.swift",
+      "kind": "StringLiteral",
+      "offset": 543,
+      "length": 18,
+      "value": "\"EnvironmentStore\""
+    },
+    {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/InternalStore.swift",
       "kind": "Array",
-      "offset": 357,
+      "offset": 364,
       "length": 2,
       "value": "[]"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/InternalStore.swift",
       "kind": "BooleanLiteral",
-      "offset": 2874,
+      "offset": 2531,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/InternalStore.swift",
       "kind": "BooleanLiteral",
-      "offset": 3304,
+      "offset": 3085,
       "length": 4,
       "value": "true"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/InternalStore.swift",
       "kind": "BooleanLiteral",
-      "offset": 3418,
-      "length": 4,
-      "value": "true"
-    },
-    {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/InternalStore.swift",
-      "kind": "BooleanLiteral",
-      "offset": 3573,
-      "length": 4,
-      "value": "true"
-    },
-    {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/InternalStore.swift",
-      "kind": "BooleanLiteral",
-      "offset": 3825,
+      "offset": 5114,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/InternalStore.swift",
       "kind": "BooleanLiteral",
-      "offset": 3929,
-      "length": 4,
-      "value": "true"
-    },
-    {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/InternalStore.swift",
-      "kind": "BooleanLiteral",
-      "offset": 4010,
-      "length": 4,
-      "value": "true"
-    },
-    {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/InternalStore.swift",
-      "kind": "BooleanLiteral",
-      "offset": 4124,
-      "length": 4,
-      "value": "true"
-    },
-    {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/InternalStore.swift",
-      "kind": "BooleanLiteral",
-      "offset": 6167,
-      "length": 5,
-      "value": "false"
-    },
-    {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/InternalStore.swift",
-      "kind": "BooleanLiteral",
-      "offset": 6259,
+      "offset": 5206,
       "length": 4,
       "value": "true"
     },
@@ -9582,62 +9427,6 @@
       "offset": 314,
       "length": 4,
       "value": "true"
-    },
-    {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/StoreQueue.swift",
-      "kind": "IntegerLiteral",
-      "offset": 229,
-      "length": 1,
-      "value": "1"
-    },
-    {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/StoreQueue.swift",
-      "kind": "StringLiteral",
-      "offset": 246,
-      "length": 18,
-      "value": "\"EnvironmentStore\""
-    },
-    {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/StoreQueue.swift",
-      "kind": "Array",
-      "offset": 368,
-      "length": 2,
-      "value": "[]"
-    },
-    {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/StoreQueue.swift",
-      "kind": "IntegerLiteral",
-      "offset": 484,
-      "length": 1,
-      "value": "0"
-    },
-    {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/StoreQueue.swift",
-      "kind": "IntegerLiteral",
-      "offset": 420,
-      "length": 1,
-      "value": "0"
-    },
-    {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/StoreQueue.swift",
-      "kind": "IntegerLiteral",
-      "offset": 813,
-      "length": 1,
-      "value": "1"
-    },
-    {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/StoreQueue.swift",
-      "kind": "IntegerLiteral",
-      "offset": 950,
-      "length": 1,
-      "value": "0"
-    },
-    {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/StoreQueue.swift",
-      "kind": "IntegerLiteral",
-      "offset": 980,
-      "length": 1,
-      "value": "1"
     }
   ]
 }

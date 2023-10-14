@@ -49,12 +49,6 @@ public protocol _Mergeable {
   func filled(from value: Self, mutate: (_ filled: inout Self, _ old: Self) -> Swift.Void) -> Self
 }
 public protocol AppReducer : Swift.Equatable, UDFCore.Scope {
-  mutating func preReduce(_ action: some Action)
-  mutating func postReduce(_ action: some Action)
-}
-extension UDFCore.AppReducer {
-  public func preReduce(_ action: some Action)
-  public func postReduce(_ action: some Action)
 }
 public protocol IsEquatable {
   func isEqual(_ rhs: any UDFCore.IsEquatable) -> Swift.Bool
