@@ -8,11 +8,6 @@ open class BaseConcurrencyMiddleware<State: AppReducer>: Middleware {
 
     public var cancelations: [AnyHashable: Task<Void, Never>] = [:]
 
-    public required convenience init(store: some Store<State>) {
-        let queueLabel = String(describing: Self.self)
-        self.init(store: store, queue: DispatchQueue(label: queueLabel))
-    }
-
     required public init(store: some Store<State>, queue: DispatchQueue) {
         self.store = store
         self.queue = queue
