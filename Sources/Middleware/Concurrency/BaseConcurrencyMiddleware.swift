@@ -36,7 +36,7 @@ open class BaseConcurrencyMiddleware<State: AppReducer>: Middleware {
     }
 
     private func dispatch(action: any Action, filePosition: FileFunctionLineDescription) {
-        queue.sync { [weak self] in
+        queue.async { [weak self] in
             self?.store.dispatch(
                 action,
                 fileName: filePosition.fileName,
@@ -67,7 +67,7 @@ open class BaseConcurrencyMiddleware<State: AppReducer>: Middleware {
                 let action = try await effect.task()
                 if Task.isCancelled {
                     self?.dispatch(action: Actions.DidCancelEffect(by: cancelation), filePosition: filePosition)
-                    
+
                 } else {
                     self?.dispatch(action: mapAction(action), filePosition: filePosition)
                 }

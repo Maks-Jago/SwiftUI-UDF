@@ -11,11 +11,19 @@ public extension Middleware {
 
 public extension Middleware where Self: EnvironmentMiddleware {
     init(store: some Store<State>) {
-        self.init(store: store, environment: Self.buildLiveEnvironment(for: store))
+        if ProcessInfo.processInfo.xcTest {
+            self.init(store: store, environment: Self.buildTestEnvironment(for: store))
+        } else {
+            self.init(store: store, environment: Self.buildLiveEnvironment(for: store))
+        }
     }
 
     init(store: some Store<State>, queue: DispatchQueue) {
-        self.init(store: store, environment: Self.buildLiveEnvironment(for: store), queue: queue)
+        if ProcessInfo.processInfo.xcTest {
+            self.init(store: store, environment: Self.buildTestEnvironment(for: store), queue: queue)
+        } else {
+            self.init(store: store, environment: Self.buildLiveEnvironment(for: store), queue: queue)
+        }
     }
 
     init(store: some Store<State>, environment: Environment) {
