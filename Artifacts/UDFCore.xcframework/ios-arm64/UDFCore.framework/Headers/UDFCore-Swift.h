@@ -260,6 +260,7 @@ typedef unsigned int swift_uint4  __attribute__((__ext_vector_type__(4)));
 #if __has_warning("-Watimport-in-framework-header")
 #pragma clang diagnostic ignored "-Watimport-in-framework-header"
 #endif
+@import Foundation;
 #endif
 
 #endif
@@ -280,6 +281,17 @@ typedef unsigned int swift_uint4  __attribute__((__ext_vector_type__(4)));
 #endif
 
 #if defined(__OBJC__)
+
+SWIFT_CLASS("_TtC7UDFCore21AsynchronousOperation")
+@interface AsynchronousOperation : NSOperation
+@property (nonatomic, readonly, getter=isAsynchronous) BOOL asynchronous;
+@property (nonatomic, readonly, getter=isExecuting) BOOL executing;
+@property (nonatomic, readonly, getter=isFinished) BOOL finished;
+- (void)start;
+- (void)main;
+- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
+@end
+
 
 #endif
 #if defined(__cplusplus)

@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+#if os(iOS)
 public extension View {
     @available(iOS 16.0, *)
     func navigationDestination<R: Routing>(router: Router<R>, selectedRoute: Binding<R.Route?>) -> some View {
@@ -17,6 +18,7 @@ public extension View {
         }
     }
 }
+#endif
 
 fileprivate extension Binding {
     func isPresented<T>() -> Binding<Bool> where Value == Optional<T> {

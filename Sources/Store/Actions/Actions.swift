@@ -33,12 +33,14 @@ public extension Actions {
 
         public var error: String?
         public var id: AnyHashable
+        public var code: Int
         public var meta: [String: Any]?
 
-        public init<Id: Hashable>(error: String? = nil, id: Id, meta: [String: Any]? = nil) {
+        public init<Id: Hashable>(error: String? = nil, id: Id, code: Int = -1001, meta: [String: Any]? = nil) {
             self.error = error?.isEmpty == true ? nil : error
             self.id = AnyHashable(id)
             self.meta = meta
+            self.code = code
         }
     }
 

@@ -1,6 +1,7 @@
 import Foundation
 import SwiftUI
 
+#if os(iOS)
 @available(iOS 16.0, *)
 public extension View {
     func navigationDestination<R: Routing>(router: Router<R>) -> some View where R.Route: Hashable {
@@ -11,3 +12,4 @@ public extension View {
             )
     }
 }
+#endif
