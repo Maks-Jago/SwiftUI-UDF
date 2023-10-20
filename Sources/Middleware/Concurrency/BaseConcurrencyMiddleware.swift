@@ -36,7 +36,7 @@ open class BaseConcurrencyMiddleware<State: AppReducer>: Middleware {
     }
 
     private func dispatch(action: any Action, filePosition: FileFunctionLineDescription) {
-        queue.async { [weak self] in
+        queue.sync { [weak self] in
             self?.store.dispatch(
                 action,
                 fileName: filePosition.fileName,
