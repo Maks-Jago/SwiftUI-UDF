@@ -67,7 +67,7 @@ open class BaseConcurrencyMiddleware<State: AppReducer>: Middleware {
                 let action = try await effect.task()
                 if Task.isCancelled {
                     self?.dispatch(action: Actions.DidCancelEffect(by: cancelation), filePosition: filePosition)
-                    
+
                 } else {
                     self?.dispatch(action: mapAction(action), filePosition: filePosition)
                 }

@@ -20,4 +20,3 @@ public extension EnvironmentMiddleware where Environment == Void {
     static func buildLiveEnvironment(for store: some Store<State>) -> Environment { () }
     static func buildTestEnvironment(for store: some Store<State>) -> Environment { () }
 }
-

@@ -106,12 +106,12 @@ open class BaseMiddleware<State: AppReducer>: Middleware {
                     lineNumber: filePosition.lineNumber
                 )
             })
-            .flatMap { [store] action in
-                Publishers.IsolatedState(from: store)
-                    .map { state in
-                        (state: state, action: action)
+            .flatMap { action in
+                Future { promise in
+                    useStore(State.self) { store in
+                        promise(.success((state: store.state, action: action)))
                     }
-                    .eraseToAnyPublisher()
+                }
             }
             .sink(receiveCompletion: { [weak self] _ in
                 self?.cancelations[anyId] = nil
