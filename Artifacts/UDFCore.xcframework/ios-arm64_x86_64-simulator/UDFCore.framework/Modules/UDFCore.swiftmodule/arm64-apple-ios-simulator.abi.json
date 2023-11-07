@@ -1019,12 +1019,19 @@
         "usr": "s:7UDFCore10AppReducerP",
         "mangledName": "$s7UDFCore10AppReducerP",
         "moduleName": "UDFCore",
-        "genericSig": "<τ_0_0 : Swift.Equatable, τ_0_0 : UDFCore.Scope>",
-        "sugared_genericSig": "<Self : Swift.Equatable, Self : UDFCore.Scope>",
+        "genericSig": "<τ_0_0 : Swift.Equatable, τ_0_0 : Swift.Sendable, τ_0_0 : UDFCore.Scope>",
+        "sugared_genericSig": "<Self : Swift.Equatable, Self : Swift.Sendable, Self : UDFCore.Scope>",
         "declAttributes": [
           "AccessControl"
         ],
         "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Sendable",
+            "printedName": "Sendable",
+            "usr": "s:s8SendableP",
+            "mangledName": "$ss8SendableP"
+          },
           {
             "kind": "Conformance",
             "name": "Scope",
@@ -1224,12 +1231,19 @@
         "usr": "s:7UDFCore6ActionP",
         "mangledName": "$s7UDFCore6ActionP",
         "moduleName": "UDFCore",
-        "genericSig": "<τ_0_0 : Swift.Equatable>",
-        "sugared_genericSig": "<Self : Swift.Equatable>",
+        "genericSig": "<τ_0_0 : Swift.Equatable, τ_0_0 : Swift.Sendable>",
+        "sugared_genericSig": "<Self : Swift.Equatable, Self : Swift.Sendable>",
         "declAttributes": [
           "AccessControl"
         ],
         "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Sendable",
+            "printedName": "Sendable",
+            "usr": "s:s8SendableP",
+            "mangledName": "$ss8SendableP"
+          },
           {
             "kind": "Conformance",
             "name": "Equatable",
@@ -1568,10 +1582,7 @@
             "declKind": "EnumElement",
             "usr": "s:7UDFCore16MiddlewareStatusO6activeyA2CmF",
             "mangledName": "$s7UDFCore16MiddlewareStatusO6activeyA2CmF",
-            "moduleName": "UDFCore",
-            "declAttributes": [
-              "RawDocComment"
-            ]
+            "moduleName": "UDFCore"
           },
           {
             "kind": "Var",
@@ -1728,6 +1739,13 @@
             "printedName": "Hashable",
             "usr": "s:SH",
             "mangledName": "$sSH"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Sendable",
+            "printedName": "Sendable",
+            "usr": "s:s8SendableP",
+            "mangledName": "$ss8SendableP"
           }
         ]
       },
@@ -2133,6 +2151,13 @@
                 "printedName": "Equatable",
                 "usr": "s:SQ",
                 "mangledName": "$sSQ"
+              },
+              {
+                "kind": "Conformance",
+                "name": "Sendable",
+                "printedName": "Sendable",
+                "usr": "s:s8SendableP",
+                "mangledName": "$ss8SendableP"
               }
             ]
           }
@@ -3144,7 +3169,8 @@
         "moduleName": "UDFCore",
         "declAttributes": [
           "AccessControl",
-          "ResultBuilder"
+          "ResultBuilder",
+          "RawDocComment"
         ]
       },
       {
@@ -4852,6 +4878,13 @@
           },
           {
             "kind": "Conformance",
+            "name": "Sendable",
+            "printedName": "Sendable",
+            "usr": "s:s8SendableP",
+            "mangledName": "$ss8SendableP"
+          },
+          {
+            "kind": "Conformance",
             "name": "CustomDebugStringConvertible",
             "printedName": "CustomDebugStringConvertible",
             "usr": "s:s28CustomDebugStringConvertibleP",
@@ -6306,10 +6339,7 @@
             "declKind": "EnumElement",
             "usr": "s:7UDFCore14ActionPriorityO7defaultyA2CmF",
             "mangledName": "$s7UDFCore14ActionPriorityO7defaultyA2CmF",
-            "moduleName": "UDFCore",
-            "declAttributes": [
-              "RawDocComment"
-            ]
+            "moduleName": "UDFCore"
           },
           {
             "kind": "Var",
@@ -6466,6 +6496,13 @@
             "printedName": "Hashable",
             "usr": "s:SH",
             "mangledName": "$sSH"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Sendable",
+            "printedName": "Sendable",
+            "usr": "s:s8SendableP",
+            "mangledName": "$ss8SendableP"
           }
         ]
       },
@@ -9833,14 +9870,14 @@
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/Action\/Action.swift",
       "kind": "BooleanLiteral",
-      "offset": 963,
+      "offset": 973,
       "length": 4,
       "value": "true"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/Action\/Action.swift",
       "kind": "BooleanLiteral",
-      "offset": 1115,
+      "offset": 1125,
       "length": 4,
       "value": "true"
     },
@@ -9931,14 +9968,14 @@
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/Action\/ActionGroup\/ActionGroupBuilder.swift",
       "kind": "Array",
-      "offset": 2234,
+      "offset": 3285,
       "length": 2,
       "value": "[]"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/Action\/ActionGroup\/ActionGroupBuilder.swift",
       "kind": "Array",
-      "offset": 2354,
+      "offset": 3405,
       "length": 2,
       "value": "[]"
     },
@@ -10015,28 +10052,28 @@
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/InternalStore.swift",
       "kind": "BooleanLiteral",
-      "offset": 2754,
+      "offset": 2880,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/InternalStore.swift",
       "kind": "BooleanLiteral",
-      "offset": 3295,
+      "offset": 3421,
       "length": 4,
       "value": "true"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/InternalStore.swift",
       "kind": "BooleanLiteral",
-      "offset": 5408,
+      "offset": 5534,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/InternalStore.swift",
       "kind": "BooleanLiteral",
-      "offset": 5500,
+      "offset": 5626,
       "length": 4,
       "value": "true"
     },

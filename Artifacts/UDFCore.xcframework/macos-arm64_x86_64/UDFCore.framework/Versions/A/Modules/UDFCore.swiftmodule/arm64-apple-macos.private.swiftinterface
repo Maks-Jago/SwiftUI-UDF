@@ -48,7 +48,7 @@ public protocol _Mergeable {
   func merging(_ newValue: Self) -> Self
   func filled(from value: Self, mutate: (_ filled: inout Self, _ old: Self) -> Swift.Void) -> Self
 }
-public protocol AppReducer : Swift.Equatable, UDFCore.Scope {
+public protocol AppReducer : Swift.Equatable, Swift.Sendable, UDFCore.Scope {
 }
 public protocol IsEquatable {
   func isEqual(_ rhs: any UDFCore.IsEquatable) -> Swift.Bool
@@ -56,7 +56,7 @@ public protocol IsEquatable {
 extension UDFCore.IsEquatable where Self : Swift.Equatable {
   public func isEqual(_ rhs: any UDFCore.IsEquatable) -> Swift.Bool
 }
-public protocol Action : Swift.Equatable {
+public protocol Action : Swift.Equatable, Swift.Sendable {
 }
 extension UDFCore.Action {
   public func with(animation: SwiftUI.Animation?) -> some UDFCore.Action
@@ -84,7 +84,7 @@ public typealias EquatableScope = Swift.Equatable & UDFCore.Scope
 extension UDFCore._Mergeable {
   public func filled(from value: Self, mutate: (_ filledValue: inout Self, _ oldValue: Self) -> Swift.Void) -> Self
 }
-public enum MiddlewareStatus {
+public enum MiddlewareStatus : Swift.Sendable {
   case active
   case suspend
   public static func == (a: UDFCore.MiddlewareStatus, b: UDFCore.MiddlewareStatus) -> Swift.Bool
@@ -312,7 +312,7 @@ extension UDFCore.Store {
   public func bind(_ action: some Action, priority: UDFCore.ActionPriority = .default, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) -> UDFCore.Command
   public func bind<T>(_ action: @escaping (T) -> some Action, priority: UDFCore.ActionPriority = .default, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) -> UDFCore.CommandWith<T>
 }
-public enum ActionPriority {
+public enum ActionPriority : Swift.Sendable {
   case `default`
   case userInteractive
   public static func == (a: UDFCore.ActionPriority, b: UDFCore.ActionPriority) -> Swift.Bool
