@@ -1231,19 +1231,12 @@
         "usr": "s:7UDFCore6ActionP",
         "mangledName": "$s7UDFCore6ActionP",
         "moduleName": "UDFCore",
-        "genericSig": "<τ_0_0 : Swift.Equatable, τ_0_0 : Swift.Sendable>",
-        "sugared_genericSig": "<Self : Swift.Equatable, Self : Swift.Sendable>",
+        "genericSig": "<τ_0_0 : Swift.Equatable>",
+        "sugared_genericSig": "<Self : Swift.Equatable>",
         "declAttributes": [
           "AccessControl"
         ],
         "conformances": [
-          {
-            "kind": "Conformance",
-            "name": "Sendable",
-            "printedName": "Sendable",
-            "usr": "s:s8SendableP",
-            "mangledName": "$ss8SendableP"
-          },
           {
             "kind": "Conformance",
             "name": "Equatable",
@@ -2151,13 +2144,6 @@
                 "printedName": "Equatable",
                 "usr": "s:SQ",
                 "mangledName": "$sSQ"
-              },
-              {
-                "kind": "Conformance",
-                "name": "Sendable",
-                "printedName": "Sendable",
-                "usr": "s:s8SendableP",
-                "mangledName": "$ss8SendableP"
               }
             ]
           }
@@ -4878,13 +4864,6 @@
           },
           {
             "kind": "Conformance",
-            "name": "Sendable",
-            "printedName": "Sendable",
-            "usr": "s:s8SendableP",
-            "mangledName": "$ss8SendableP"
-          },
-          {
-            "kind": "Conformance",
             "name": "CustomDebugStringConvertible",
             "printedName": "CustomDebugStringConvertible",
             "usr": "s:s28CustomDebugStringConvertibleP",
@@ -5243,6 +5222,7 @@
         "declKind": "Import",
         "moduleName": "UDFCore",
         "declAttributes": [
+          "Preconcurrency",
           "RawDocComment"
         ]
       },
@@ -6513,6 +6493,7 @@
         "declKind": "Import",
         "moduleName": "UDFCore",
         "declAttributes": [
+          "Preconcurrency",
           "RawDocComment"
         ]
       },
@@ -6709,7 +6690,10 @@
         "name": "Combine",
         "printedName": "Combine",
         "declKind": "Import",
-        "moduleName": "UDFCore"
+        "moduleName": "UDFCore",
+        "declAttributes": [
+          "Preconcurrency"
+        ]
       },
       {
         "kind": "TypeDecl",
@@ -9870,14 +9854,14 @@
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/Action\/Action.swift",
       "kind": "BooleanLiteral",
-      "offset": 973,
+      "offset": 963,
       "length": 4,
       "value": "true"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/Action\/Action.swift",
       "kind": "BooleanLiteral",
-      "offset": 1125,
+      "offset": 1115,
       "length": 4,
       "value": "true"
     },
@@ -10038,42 +10022,42 @@
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/EnvironmentStore.swift",
       "kind": "StringLiteral",
-      "offset": 543,
+      "offset": 559,
       "length": 18,
       "value": "\"EnvironmentStore\""
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/InternalStore.swift",
       "kind": "Array",
-      "offset": 364,
+      "offset": 380,
       "length": 2,
       "value": "[]"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/InternalStore.swift",
       "kind": "BooleanLiteral",
-      "offset": 2880,
+      "offset": 2896,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/InternalStore.swift",
       "kind": "BooleanLiteral",
-      "offset": 3421,
+      "offset": 3437,
       "length": 4,
       "value": "true"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/InternalStore.swift",
       "kind": "BooleanLiteral",
-      "offset": 5534,
+      "offset": 5550,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/InternalStore.swift",
       "kind": "BooleanLiteral",
-      "offset": 5626,
+      "offset": 5642,
       "length": 4,
       "value": "true"
     },
@@ -10094,21 +10078,21 @@
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/XCTestStore.swift",
       "kind": "StringLiteral",
-      "offset": 470,
+      "offset": 486,
       "length": 12,
       "value": "\"Reduce\t\t\""
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/XCTestStore.swift",
       "kind": "StringLiteral",
-      "offset": 515,
+      "offset": 531,
       "length": 173,
       "value": "\"---------------------------------------------------------------------------------------------------------------------------------------------------------------------------\""
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/XCTestStore.swift",
       "kind": "StringLiteral",
-      "offset": 966,
+      "offset": 982,
       "length": 47,
       "value": "\"XCTestStore is only for using in Test targets\""
     },

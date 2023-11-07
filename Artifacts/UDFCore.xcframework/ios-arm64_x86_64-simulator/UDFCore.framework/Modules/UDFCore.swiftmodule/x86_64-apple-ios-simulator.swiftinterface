@@ -56,7 +56,7 @@ public protocol IsEquatable {
 extension UDFCore.IsEquatable where Self : Swift.Equatable {
   public func isEqual(_ rhs: any UDFCore.IsEquatable) -> Swift.Bool
 }
-public protocol Action : Swift.Equatable, Swift.Sendable {
+public protocol Action : Swift.Equatable {
 }
 extension UDFCore.Action {
   public func with(animation: SwiftUI.Animation?) -> some UDFCore.Action
