@@ -1019,19 +1019,12 @@
         "usr": "s:7UDFCore10AppReducerP",
         "mangledName": "$s7UDFCore10AppReducerP",
         "moduleName": "UDFCore",
-        "genericSig": "<τ_0_0 : Swift.Equatable, τ_0_0 : Swift.Sendable, τ_0_0 : UDFCore.Scope>",
-        "sugared_genericSig": "<Self : Swift.Equatable, Self : Swift.Sendable, Self : UDFCore.Scope>",
+        "genericSig": "<τ_0_0 : Swift.Equatable, τ_0_0 : UDFCore.Scope>",
+        "sugared_genericSig": "<Self : Swift.Equatable, Self : UDFCore.Scope>",
         "declAttributes": [
           "AccessControl"
         ],
         "conformances": [
-          {
-            "kind": "Conformance",
-            "name": "Sendable",
-            "printedName": "Sendable",
-            "usr": "s:s8SendableP",
-            "mangledName": "$ss8SendableP"
-          },
           {
             "kind": "Conformance",
             "name": "Scope",
@@ -5256,6 +5249,7 @@
             "declAttributes": [
               "Final",
               "ProjectedValueProperty",
+              "SetterAccess",
               "AccessControl",
               "Custom"
             ],
@@ -5282,57 +5276,6 @@
                   "Final"
                 ],
                 "accessorKind": "get"
-              },
-              {
-                "kind": "Accessor",
-                "name": "Set",
-                "printedName": "Set()",
-                "children": [
-                  {
-                    "kind": "TypeNominal",
-                    "name": "Void",
-                    "printedName": "()"
-                  },
-                  {
-                    "kind": "TypeNominal",
-                    "name": "GenericTypeParam",
-                    "printedName": "τ_0_0"
-                  }
-                ],
-                "declKind": "Accessor",
-                "usr": "s:7UDFCore16EnvironmentStoreC5statexvs",
-                "mangledName": "$s7UDFCore16EnvironmentStoreC5statexvs",
-                "moduleName": "UDFCore",
-                "genericSig": "<τ_0_0 where τ_0_0 : UDFCore.AppReducer>",
-                "sugared_genericSig": "<State where State : UDFCore.AppReducer>",
-                "implicit": true,
-                "declAttributes": [
-                  "Final"
-                ],
-                "accessorKind": "set"
-              },
-              {
-                "kind": "Accessor",
-                "name": "Modify",
-                "printedName": "Modify()",
-                "children": [
-                  {
-                    "kind": "TypeNominal",
-                    "name": "Void",
-                    "printedName": "()"
-                  }
-                ],
-                "declKind": "Accessor",
-                "usr": "s:7UDFCore16EnvironmentStoreC5statexvM",
-                "mangledName": "$s7UDFCore16EnvironmentStoreC5statexvM",
-                "moduleName": "UDFCore",
-                "genericSig": "<τ_0_0 where τ_0_0 : UDFCore.AppReducer>",
-                "sugared_genericSig": "<State where State : UDFCore.AppReducer>",
-                "implicit": true,
-                "declAttributes": [
-                  "Final"
-                ],
-                "accessorKind": "_modify"
               }
             ]
           },
@@ -10022,7 +9965,7 @@
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/EnvironmentStore.swift",
       "kind": "StringLiteral",
-      "offset": 559,
+      "offset": 572,
       "length": 18,
       "value": "\"EnvironmentStore\""
     },
@@ -10036,28 +9979,28 @@
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/InternalStore.swift",
       "kind": "BooleanLiteral",
-      "offset": 2898,
+      "offset": 3114,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/InternalStore.swift",
       "kind": "BooleanLiteral",
-      "offset": 3439,
+      "offset": 3655,
       "length": 4,
       "value": "true"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/InternalStore.swift",
       "kind": "BooleanLiteral",
-      "offset": 5552,
+      "offset": 5768,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/InternalStore.swift",
       "kind": "BooleanLiteral",
-      "offset": 5644,
+      "offset": 5860,
       "length": 4,
       "value": "true"
     },
