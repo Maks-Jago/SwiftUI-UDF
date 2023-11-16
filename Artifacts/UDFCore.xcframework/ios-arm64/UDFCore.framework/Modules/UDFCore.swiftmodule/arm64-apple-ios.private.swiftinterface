@@ -48,7 +48,7 @@ public protocol _Mergeable {
   func merging(_ newValue: Self) -> Self
   func filled(from value: Self, mutate: (_ filled: inout Self, _ old: Self) -> Swift.Void) -> Self
 }
-public protocol AppReducer : Swift.Equatable, Swift.Sendable, UDFCore.Scope {
+public protocol AppReducer : Swift.Equatable, UDFCore.Scope {
 }
 public protocol IsEquatable {
   func isEqual(_ rhs: any UDFCore.IsEquatable) -> Swift.Bool
@@ -56,7 +56,7 @@ public protocol IsEquatable {
 extension UDFCore.IsEquatable where Self : Swift.Equatable {
   public func isEqual(_ rhs: any UDFCore.IsEquatable) -> Swift.Bool
 }
-public protocol Action : Swift.Equatable, Swift.Sendable {
+public protocol Action : Swift.Equatable {
 }
 extension UDFCore.Action {
   public func with(animation: SwiftUI.Animation?) -> some UDFCore.Action
@@ -271,8 +271,6 @@ extension Swift.Hashable {
 final public class EnvironmentStore<State> where State : UDFCore.AppReducer {
   @UDFCore.SourceOfTruth @_projectedValueProperty($state) final public var state: State {
     get
-    set
-    _modify
   }
   final public var $state: UDFCore.SourceOfTruth<State> {
     get

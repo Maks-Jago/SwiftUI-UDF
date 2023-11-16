@@ -1019,19 +1019,12 @@
         "usr": "s:7UDFCore10AppReducerP",
         "mangledName": "$s7UDFCore10AppReducerP",
         "moduleName": "UDFCore",
-        "genericSig": "<τ_0_0 : Swift.Equatable, τ_0_0 : Swift.Sendable, τ_0_0 : UDFCore.Scope>",
-        "sugared_genericSig": "<Self : Swift.Equatable, Self : Swift.Sendable, Self : UDFCore.Scope>",
+        "genericSig": "<τ_0_0 : Swift.Equatable, τ_0_0 : UDFCore.Scope>",
+        "sugared_genericSig": "<Self : Swift.Equatable, Self : UDFCore.Scope>",
         "declAttributes": [
           "AccessControl"
         ],
         "conformances": [
-          {
-            "kind": "Conformance",
-            "name": "Sendable",
-            "printedName": "Sendable",
-            "usr": "s:s8SendableP",
-            "mangledName": "$ss8SendableP"
-          },
           {
             "kind": "Conformance",
             "name": "Scope",
@@ -1231,19 +1224,12 @@
         "usr": "s:7UDFCore6ActionP",
         "mangledName": "$s7UDFCore6ActionP",
         "moduleName": "UDFCore",
-        "genericSig": "<τ_0_0 : Swift.Equatable, τ_0_0 : Swift.Sendable>",
-        "sugared_genericSig": "<Self : Swift.Equatable, Self : Swift.Sendable>",
+        "genericSig": "<τ_0_0 : Swift.Equatable>",
+        "sugared_genericSig": "<Self : Swift.Equatable>",
         "declAttributes": [
           "AccessControl"
         ],
         "conformances": [
-          {
-            "kind": "Conformance",
-            "name": "Sendable",
-            "printedName": "Sendable",
-            "usr": "s:s8SendableP",
-            "mangledName": "$ss8SendableP"
-          },
           {
             "kind": "Conformance",
             "name": "Equatable",
@@ -2151,13 +2137,6 @@
                 "printedName": "Equatable",
                 "usr": "s:SQ",
                 "mangledName": "$sSQ"
-              },
-              {
-                "kind": "Conformance",
-                "name": "Sendable",
-                "printedName": "Sendable",
-                "usr": "s:s8SendableP",
-                "mangledName": "$ss8SendableP"
               }
             ]
           }
@@ -3169,7 +3148,8 @@
         "moduleName": "UDFCore",
         "declAttributes": [
           "AccessControl",
-          "ResultBuilder"
+          "ResultBuilder",
+          "RawDocComment"
         ]
       },
       {
@@ -4877,13 +4857,6 @@
           },
           {
             "kind": "Conformance",
-            "name": "Sendable",
-            "printedName": "Sendable",
-            "usr": "s:s8SendableP",
-            "mangledName": "$ss8SendableP"
-          },
-          {
-            "kind": "Conformance",
             "name": "CustomDebugStringConvertible",
             "printedName": "CustomDebugStringConvertible",
             "usr": "s:s28CustomDebugStringConvertibleP",
@@ -5242,6 +5215,7 @@
         "declKind": "Import",
         "moduleName": "UDFCore",
         "declAttributes": [
+          "Preconcurrency",
           "RawDocComment"
         ]
       },
@@ -5275,6 +5249,7 @@
             "declAttributes": [
               "Final",
               "ProjectedValueProperty",
+              "SetterAccess",
               "AccessControl",
               "Custom"
             ],
@@ -5301,57 +5276,6 @@
                   "Final"
                 ],
                 "accessorKind": "get"
-              },
-              {
-                "kind": "Accessor",
-                "name": "Set",
-                "printedName": "Set()",
-                "children": [
-                  {
-                    "kind": "TypeNominal",
-                    "name": "Void",
-                    "printedName": "()"
-                  },
-                  {
-                    "kind": "TypeNominal",
-                    "name": "GenericTypeParam",
-                    "printedName": "τ_0_0"
-                  }
-                ],
-                "declKind": "Accessor",
-                "usr": "s:7UDFCore16EnvironmentStoreC5statexvs",
-                "mangledName": "$s7UDFCore16EnvironmentStoreC5statexvs",
-                "moduleName": "UDFCore",
-                "genericSig": "<τ_0_0 where τ_0_0 : UDFCore.AppReducer>",
-                "sugared_genericSig": "<State where State : UDFCore.AppReducer>",
-                "implicit": true,
-                "declAttributes": [
-                  "Final"
-                ],
-                "accessorKind": "set"
-              },
-              {
-                "kind": "Accessor",
-                "name": "Modify",
-                "printedName": "Modify()",
-                "children": [
-                  {
-                    "kind": "TypeNominal",
-                    "name": "Void",
-                    "printedName": "()"
-                  }
-                ],
-                "declKind": "Accessor",
-                "usr": "s:7UDFCore16EnvironmentStoreC5statexvM",
-                "mangledName": "$s7UDFCore16EnvironmentStoreC5statexvM",
-                "moduleName": "UDFCore",
-                "genericSig": "<τ_0_0 where τ_0_0 : UDFCore.AppReducer>",
-                "sugared_genericSig": "<State where State : UDFCore.AppReducer>",
-                "implicit": true,
-                "declAttributes": [
-                  "Final"
-                ],
-                "accessorKind": "_modify"
               }
             ]
           },
@@ -6512,6 +6436,7 @@
         "declKind": "Import",
         "moduleName": "UDFCore",
         "declAttributes": [
+          "Preconcurrency",
           "RawDocComment"
         ]
       },
@@ -6708,7 +6633,10 @@
         "name": "Combine",
         "printedName": "Combine",
         "declKind": "Import",
-        "moduleName": "UDFCore"
+        "moduleName": "UDFCore",
+        "declAttributes": [
+          "Preconcurrency"
+        ]
       },
       {
         "kind": "TypeDecl",
@@ -9869,14 +9797,14 @@
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/Action\/Action.swift",
       "kind": "BooleanLiteral",
-      "offset": 973,
+      "offset": 963,
       "length": 4,
       "value": "true"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/Action\/Action.swift",
       "kind": "BooleanLiteral",
-      "offset": 1125,
+      "offset": 1115,
       "length": 4,
       "value": "true"
     },
@@ -9967,14 +9895,14 @@
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/Action\/ActionGroup\/ActionGroupBuilder.swift",
       "kind": "Array",
-      "offset": 2234,
+      "offset": 3285,
       "length": 2,
       "value": "[]"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/Action\/ActionGroup\/ActionGroupBuilder.swift",
       "kind": "Array",
-      "offset": 2354,
+      "offset": 3405,
       "length": 2,
       "value": "[]"
     },
@@ -10037,42 +9965,42 @@
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/EnvironmentStore.swift",
       "kind": "StringLiteral",
-      "offset": 543,
+      "offset": 572,
       "length": 18,
       "value": "\"EnvironmentStore\""
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/InternalStore.swift",
       "kind": "Array",
-      "offset": 364,
+      "offset": 380,
       "length": 2,
       "value": "[]"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/InternalStore.swift",
       "kind": "BooleanLiteral",
-      "offset": 2706,
+      "offset": 3114,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/InternalStore.swift",
       "kind": "BooleanLiteral",
-      "offset": 3241,
+      "offset": 3655,
       "length": 4,
       "value": "true"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/InternalStore.swift",
       "kind": "BooleanLiteral",
-      "offset": 5316,
+      "offset": 5768,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/InternalStore.swift",
       "kind": "BooleanLiteral",
-      "offset": 5408,
+      "offset": 5860,
       "length": 4,
       "value": "true"
     },
@@ -10093,21 +10021,21 @@
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/XCTestStore.swift",
       "kind": "StringLiteral",
-      "offset": 470,
+      "offset": 486,
       "length": 12,
       "value": "\"Reduce\t\t\""
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/XCTestStore.swift",
       "kind": "StringLiteral",
-      "offset": 515,
+      "offset": 531,
       "length": 173,
       "value": "\"---------------------------------------------------------------------------------------------------------------------------------------------------------------------------\""
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/XCTestStore.swift",
       "kind": "StringLiteral",
-      "offset": 966,
+      "offset": 982,
       "length": 47,
       "value": "\"XCTestStore is only for using in Test targets\""
     },

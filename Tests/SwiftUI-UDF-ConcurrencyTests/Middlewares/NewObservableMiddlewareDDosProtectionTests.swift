@@ -116,7 +116,7 @@ final class NewObservableMiddlewareDDosProtectionTests: XCTestCase {
         XCTAssertEqual(numberValue, 2)
 
         formTitle = await store.state.testForm.title
-        XCTAssertEqual(formTitle, "Flow message 1")
+        XCTAssertEqual(formTitle, "title4")
 
         await store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.title, value: "title5"))
         await store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.title, value: "title6"))
