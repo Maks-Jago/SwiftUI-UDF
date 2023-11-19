@@ -1,5 +1,5 @@
 // swift-interface-format-version: 1.0
-// swift-compiler-version: Apple Swift version 5.8.1 (swiftlang-5.8.0.124.5 clang-1403.0.22.11.100)
+// swift-compiler-version: Apple Swift version 5.9 (swiftlang-5.9.0.128.108 clang-1500.0.40.1)
 // swift-module-flags: -target x86_64-apple-macos11.0 -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -O -module-name UDFCore
 // swift-module-flags-ignorable: -enable-bare-slash-regex
 import Combine
@@ -8,6 +8,7 @@ import Swift
 import SwiftUI
 import _Concurrency
 import _StringProcessing
+import _SwiftConcurrencyShims
 public struct DefaultActionFilter : UDFCore.ActionFilter {
   public init()
   public func include(action: UDFCore.LoggingAction) -> Swift.Bool
@@ -290,7 +291,9 @@ extension UDFCore.EnvironmentStore {
   #if compiler(>=5.3) && $AsyncAwait
   final public func subscribe(_ middlewareBuilder: (_ store: any UDFCore.Store<State>) -> some Middleware<State>) async
   #endif
-  final public func subscribeAsync(_ middlewareBuilder: @escaping (_ store: any UDFCore.Store<State>) -> some Middleware<State>, onSubscribe: @escaping () -> Swift.Void = {})
+  #if compiler(>=5.3) && $Sendable
+  final public func subscribeAsync(_ middlewareBuilder: @escaping (_ store: any UDFCore.Store<State>) -> some Middleware<State>, onSubscribe: @escaping @Sendable () -> Swift.Void = {})
+  #endif
 }
 #if compiler(>=5.3) && $PrimaryAssociatedTypes2
 public protocol Store<State> : _Concurrency.Actor {
