@@ -6,7 +6,7 @@
 	<dict>
 		<key>Resources/Info.plist</key>
 		<data>
-		w4rMaJ2KV+VpuQiFc1yKCFDkWrk=
+		KE22woIxgspu28qckkApMmXP+18=
 		</data>
 	</dict>
 	<key>files2</key>
@@ -22,77 +22,77 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			oD7ZF1BaRkMQ6O9e+zAX/oylNMxn7tGfIf6tfV2wNlQ=
+			wSAKCFSe63OunSpQSoWTJykzmMZrv/Xg2W1+EFVTvj8=
 			</data>
 		</dict>
 		<key>Modules/UDFCore.swiftmodule/arm64-apple-macos.abi.json</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			RMzJn5nAHXMaknZoo4z5PubN2YG07L31wllWNOlagG4=
+			BrOJ9LCYQvshQWSekgvyoMat3gmDqkAbeLUyKz8RDy4=
 			</data>
 		</dict>
 		<key>Modules/UDFCore.swiftmodule/arm64-apple-macos.private.swiftinterface</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			gsD8e7sY9TlXpuHv1h5N/kWJVn0SXOS84LjB55czlSY=
+			Ft6AOCX04GvmqgDmODhW3qA4AqcFmhYSaSeLuAtHVn4=
 			</data>
 		</dict>
 		<key>Modules/UDFCore.swiftmodule/arm64-apple-macos.swiftdoc</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			p1rcdKzZuEJdH4PDk6dANaTp2rqWZuxJOLt9QmKbm5E=
+			YdcLPrL19t+5smEtO4yejxtZ4uJlqMBg9RMEMUbl194=
 			</data>
 		</dict>
 		<key>Modules/UDFCore.swiftmodule/arm64-apple-macos.swiftinterface</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			gsD8e7sY9TlXpuHv1h5N/kWJVn0SXOS84LjB55czlSY=
+			Ft6AOCX04GvmqgDmODhW3qA4AqcFmhYSaSeLuAtHVn4=
 			</data>
 		</dict>
 		<key>Modules/UDFCore.swiftmodule/arm64-apple-macos.swiftmodule</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			P5Ttig4+U2xVLUMVQ4yzpqN36lxmI/PNVE7ewhC+mlk=
+			sdHBZvAnXyB5IIHpL8w23tEInSsG8UV8M7eN8oafBOs=
 			</data>
 		</dict>
 		<key>Modules/UDFCore.swiftmodule/x86_64-apple-macos.abi.json</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			RMzJn5nAHXMaknZoo4z5PubN2YG07L31wllWNOlagG4=
+			BrOJ9LCYQvshQWSekgvyoMat3gmDqkAbeLUyKz8RDy4=
 			</data>
 		</dict>
 		<key>Modules/UDFCore.swiftmodule/x86_64-apple-macos.private.swiftinterface</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			j95TjwxPBSU1DRWaboMFo427guEcYHhl2KGc/2DJsjQ=
+			qIrR4KlubPV0vpSBp7rGCNyiBx5P1YoQ31Kc9cNcjTc=
 			</data>
 		</dict>
 		<key>Modules/UDFCore.swiftmodule/x86_64-apple-macos.swiftdoc</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			fEqJsvKRa9BPcgEqOc6hss5us3Hn3syvaFRWJs+0B7g=
+			AFI2xTnJEWcWMUQ9TFS05i8StwI50Jbt1iJpWlm81pk=
 			</data>
 		</dict>
 		<key>Modules/UDFCore.swiftmodule/x86_64-apple-macos.swiftinterface</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			j95TjwxPBSU1DRWaboMFo427guEcYHhl2KGc/2DJsjQ=
+			qIrR4KlubPV0vpSBp7rGCNyiBx5P1YoQ31Kc9cNcjTc=
 			</data>
 		</dict>
 		<key>Modules/UDFCore.swiftmodule/x86_64-apple-macos.swiftmodule</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			ETP6Cr9qHypfXhKWzhAOXMByBHYtBq5z9P7fcedXTps=
+			GIkX7SQMzqNXWnqP/wc3JQ2iG2zbLNoXHns5sMdTKn0=
 			</data>
 		</dict>
 		<key>Modules/module.modulemap</key>
@@ -106,7 +106,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			xPK0+kWDHQk6gdNuuy+YiXkked2Rn4NMApfecWpxjrc=
+			u+XCdof/yT9vjvBzWRfZ4jPh1ARA7c6TV8Awh483w5U=
 			</data>
 		</dict>
 	</dict>

@@ -42,7 +42,7 @@ class MergeableAppStateTests: XCTestCase {
         }
     }
 
-    struct AppState: AppReducer, Equatable {
+    struct AppState: AppReducer {
         var allItems = AllItems()
     }
 

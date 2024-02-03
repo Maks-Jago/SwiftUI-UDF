@@ -26,7 +26,7 @@ public extension Actions {
         public init() {}
     }
 
-    struct Error: Action {
+    struct Error: Action, LocalizedError {
         public static func == (lhs: Actions.Error, rhs: Actions.Error) -> Bool {
             lhs.error == rhs.error && lhs.id == rhs.id
         }
@@ -36,12 +36,18 @@ public extension Actions {
         public var code: Int
         public var meta: [String: Any]?
 
-        public init<Id: Hashable>(error: String? = nil, id: Id, code: Int = -1001, meta: [String: Any]? = nil) {
+        public init<Id: Hashable>(error: String? = nil, id: Id, code: Int? = nil, meta: [String: Any]? = nil) {
             self.error = error?.isEmpty == true ? nil : error
             self.id = AnyHashable(id)
             self.meta = meta
-            self.code = code
+            self.code = if let code {
+                code
+            } else {
+                error?.hashValue ?? -1001
+            }
         }
+
+        public var errorDescription: String? { error }
     }
 
     struct Message: Action {
@@ -80,6 +86,10 @@ public extension Actions {
         public init<Id: Hashable>(by cancelation: Id) {
             self.cancelation = AnyHashable(cancelation)
         }
+    }
+
+    struct ApplicationDidReceiveMemoryWarning: Action {
+        public init() {}
     }
 }
 

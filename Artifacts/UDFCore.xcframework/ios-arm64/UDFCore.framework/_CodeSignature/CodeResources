@@ -10,31 +10,31 @@
 		</data>
 		<key>Headers/UDFCore-Swift.h</key>
 		<data>
-		rJRhYgAdmNU+M4lReW0Rlrqppsc=
+		BkyV8/fmoPykar2W0QezILPBsMo=
 		</data>
 		<key>Info.plist</key>
 		<data>
-		n+DSBpFpqm7QwgS6nugzmDcxJUA=
+		ZtMltGAXRWoILfK3mXsju+XT9cQ=
 		</data>
 		<key>Modules/UDFCore.swiftmodule/arm64-apple-ios.abi.json</key>
 		<data>
-		UWdmVWKbf0JRIQDlU+MtVbCnK58=
+		ztpmcraQnc5ogEkMOxW+4r9uFcc=
 		</data>
 		<key>Modules/UDFCore.swiftmodule/arm64-apple-ios.private.swiftinterface</key>
 		<data>
-		rol/pF6FYeXgMJ7NK6I/XqH7pmg=
+		T1QXA9gjl5FZWlr0MTDIysSJxmg=
 		</data>
 		<key>Modules/UDFCore.swiftmodule/arm64-apple-ios.swiftdoc</key>
 		<data>
-		HwqVXd4nSzFbFXTshUNvDSGz3E8=
+		CTIRbt42zdYXo1NtxtxJT9lGV7I=
 		</data>
 		<key>Modules/UDFCore.swiftmodule/arm64-apple-ios.swiftinterface</key>
 		<data>
-		rol/pF6FYeXgMJ7NK6I/XqH7pmg=
+		T1QXA9gjl5FZWlr0MTDIysSJxmg=
 		</data>
 		<key>Modules/UDFCore.swiftmodule/arm64-apple-ios.swiftmodule</key>
 		<data>
-		FxuhEUjgSwtyqKhtXGCIMVcFdCo=
+		vyXZUvmwMTSlK0yLdGzOW1yMYKU=
 		</data>
 		<key>Modules/module.modulemap</key>
 		<data>
@@ -54,42 +54,42 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			HepPAARWrDxXpjH94hlpBnxQZ7AnYRd9qIhCOXkbB70=
+			KBmWIF2Y0KakCu2lsh177K5VhDZyEjd0wJSbXeQ5GAo=
 			</data>
 		</dict>
 		<key>Modules/UDFCore.swiftmodule/arm64-apple-ios.abi.json</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			RMzJn5nAHXMaknZoo4z5PubN2YG07L31wllWNOlagG4=
+			BrOJ9LCYQvshQWSekgvyoMat3gmDqkAbeLUyKz8RDy4=
 			</data>
 		</dict>
 		<key>Modules/UDFCore.swiftmodule/arm64-apple-ios.private.swiftinterface</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			YMe76A8D9X51M04TtW6ZwD3QxXChHji/eIA/V6tW0xw=
+			leT40jtmk/bQY7+fZmC4XWoBv8S+vbhy0VKONldxlkY=
 			</data>
 		</dict>
 		<key>Modules/UDFCore.swiftmodule/arm64-apple-ios.swiftdoc</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			lrZlSja/n3vJH+K+ek7/VIlTvtp3Ex2+bi9C6l4Eoik=
+			Qkx0Tn1WH0TUlJ7VXAO5TPQEMw34nM3JjhhG0UsWTC0=
 			</data>
 		</dict>
 		<key>Modules/UDFCore.swiftmodule/arm64-apple-ios.swiftinterface</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			YMe76A8D9X51M04TtW6ZwD3QxXChHji/eIA/V6tW0xw=
+			leT40jtmk/bQY7+fZmC4XWoBv8S+vbhy0VKONldxlkY=
 			</data>
 		</dict>
 		<key>Modules/UDFCore.swiftmodule/arm64-apple-ios.swiftmodule</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			Ka0QTi6fnFoXt8vr6RJa9src84EBKl44tnGjGfdtia8=
+			2O7bYV7FAn7ssusjCcna4vOh7R89cq5/4tTJAAcqbls=
 			</data>
 		</dict>
 		<key>Modules/module.modulemap</key>
