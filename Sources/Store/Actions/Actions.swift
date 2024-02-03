@@ -88,7 +88,9 @@ public extension Actions {
         }
     }
 
-    struct ApplicationDidReceiveMemoryWarning: Action {}
+    struct ApplicationDidReceiveMemoryWarning: Action {
+        public init() {}
+    }
 }
 
 
