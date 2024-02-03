@@ -3148,8 +3148,7 @@
         "moduleName": "UDFCore",
         "declAttributes": [
           "AccessControl",
-          "ResultBuilder",
-          "RawDocComment"
+          "ResultBuilder"
         ]
       },
       {
@@ -5345,65 +5344,6 @@
           {
             "kind": "Constructor",
             "name": "init",
-            "printedName": "init(initial:accessToken:loggers:)",
-            "children": [
-              {
-                "kind": "TypeNominal",
-                "name": "EnvironmentStore",
-                "printedName": "UDFCore.EnvironmentStore<τ_0_0>",
-                "children": [
-                  {
-                    "kind": "TypeNominal",
-                    "name": "GenericTypeParam",
-                    "printedName": "τ_0_0"
-                  }
-                ],
-                "usr": "s:7UDFCore16EnvironmentStoreC"
-              },
-              {
-                "kind": "TypeNominal",
-                "name": "GenericTypeParam",
-                "printedName": "τ_0_0"
-              },
-              {
-                "kind": "TypeNominal",
-                "name": "String",
-                "printedName": "Swift.String",
-                "usr": "s:SS"
-              },
-              {
-                "kind": "TypeNominal",
-                "name": "Array",
-                "printedName": "[UDFCore.ActionLogger]",
-                "children": [
-                  {
-                    "kind": "TypeNominal",
-                    "name": "ActionLogger",
-                    "printedName": "UDFCore.ActionLogger",
-                    "usr": "s:7UDFCore12ActionLoggerP"
-                  }
-                ],
-                "usr": "s:Sa"
-              }
-            ],
-            "declKind": "Constructor",
-            "usr": "s:7UDFCore16EnvironmentStoreC7initial11accessToken7loggersACyxGx_SSSayAA12ActionLogger_pGtKcfc",
-            "mangledName": "$s7UDFCore16EnvironmentStoreC7initial11accessToken7loggersACyxGx_SSSayAA12ActionLogger_pGtKcfc",
-            "moduleName": "UDFCore",
-            "genericSig": "<τ_0_0 where τ_0_0 : UDFCore.AppReducer>",
-            "sugared_genericSig": "<State where State : UDFCore.AppReducer>",
-            "deprecated": true,
-            "declAttributes": [
-              "Convenience",
-              "AccessControl",
-              "Available"
-            ],
-            "throwing": true,
-            "init_kind": "Convenience"
-          },
-          {
-            "kind": "Constructor",
-            "name": "init",
             "printedName": "init(initial:loggers:)",
             "children": [
               {
@@ -5450,57 +5390,6 @@
             ],
             "throwing": true,
             "init_kind": "Designated"
-          },
-          {
-            "kind": "Constructor",
-            "name": "init",
-            "printedName": "init(initial:accessToken:logger:)",
-            "children": [
-              {
-                "kind": "TypeNominal",
-                "name": "EnvironmentStore",
-                "printedName": "UDFCore.EnvironmentStore<τ_0_0>",
-                "children": [
-                  {
-                    "kind": "TypeNominal",
-                    "name": "GenericTypeParam",
-                    "printedName": "τ_0_0"
-                  }
-                ],
-                "usr": "s:7UDFCore16EnvironmentStoreC"
-              },
-              {
-                "kind": "TypeNominal",
-                "name": "GenericTypeParam",
-                "printedName": "τ_0_0"
-              },
-              {
-                "kind": "TypeNominal",
-                "name": "String",
-                "printedName": "Swift.String",
-                "usr": "s:SS"
-              },
-              {
-                "kind": "TypeNominal",
-                "name": "ActionLogger",
-                "printedName": "UDFCore.ActionLogger",
-                "usr": "s:7UDFCore12ActionLoggerP"
-              }
-            ],
-            "declKind": "Constructor",
-            "usr": "s:7UDFCore16EnvironmentStoreC7initial11accessToken6loggerACyxGx_SSAA12ActionLogger_ptKcfc",
-            "mangledName": "$s7UDFCore16EnvironmentStoreC7initial11accessToken6loggerACyxGx_SSAA12ActionLogger_ptKcfc",
-            "moduleName": "UDFCore",
-            "genericSig": "<τ_0_0 where τ_0_0 : UDFCore.AppReducer>",
-            "sugared_genericSig": "<State where State : UDFCore.AppReducer>",
-            "deprecated": true,
-            "declAttributes": [
-              "Convenience",
-              "AccessControl",
-              "Available"
-            ],
-            "throwing": true,
-            "init_kind": "Convenience"
           },
           {
             "kind": "Constructor",
@@ -9903,14 +9792,14 @@
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/Action\/ActionGroup\/ActionGroupBuilder.swift",
       "kind": "Array",
-      "offset": 3285,
+      "offset": 2234,
       "length": 2,
       "value": "[]"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/Action\/ActionGroup\/ActionGroupBuilder.swift",
       "kind": "Array",
-      "offset": 3405,
+      "offset": 2354,
       "length": 2,
       "value": "[]"
     },

@@ -1,5 +1,5 @@
 // swift-interface-format-version: 1.0
-// swift-compiler-version: Apple Swift version 5.9 (swiftlang-5.9.0.128.108 clang-1500.0.40.1)
+// swift-compiler-version: Apple Swift version 5.9.2 (swiftlang-5.9.2.2.56 clang-1500.1.0.2.5)
 // swift-module-flags: -target arm64-apple-ios14.0-simulator -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -O -module-name UDFCore
 // swift-module-flags-ignorable: -enable-bare-slash-regex
 import Combine
@@ -276,11 +276,7 @@ final public class EnvironmentStore<State> where State : UDFCore.AppReducer {
   final public var $state: UDFCore.SourceOfTruth<State> {
     get
   }
-  @available(*, deprecated, message: "`accessToken` is no longer needed for internal projects and will be removed in future updates")
-  convenience public init(initial state: State, accessToken: Swift.String, loggers: [any UDFCore.ActionLogger]) throws
   public init(initial state: State, loggers: [any UDFCore.ActionLogger]) throws
-  @available(*, deprecated, message: "`accessToken` is no longer needed for internal projects and will be removed in future updates")
-  convenience public init(initial state: State, accessToken: Swift.String, logger: any UDFCore.ActionLogger) throws
   convenience public init(initial state: State, logger: any UDFCore.ActionLogger) throws
   final public func dispatch(_ action: some Action, priority: UDFCore.ActionPriority = .default, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line)
   final public func bind(_ action: some Action, priority: UDFCore.ActionPriority = .default, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) -> UDFCore.Command
