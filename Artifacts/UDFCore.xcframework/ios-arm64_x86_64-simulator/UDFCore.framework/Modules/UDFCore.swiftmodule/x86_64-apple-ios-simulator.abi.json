@@ -115,6 +115,95 @@
       },
       {
         "kind": "TypeDecl",
+        "name": "XCTestGroup",
+        "printedName": "XCTestGroup",
+        "children": [
+          {
+            "kind": "Function",
+            "name": "enter",
+            "printedName": "enter()",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:7UDFCore11XCTestGroupC5enteryyFZ",
+            "mangledName": "$s7UDFCore11XCTestGroupC5enteryyFZ",
+            "moduleName": "UDFCore",
+            "static": true,
+            "declAttributes": [
+              "Final",
+              "AccessControl"
+            ],
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "leave",
+            "printedName": "leave()",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:7UDFCore11XCTestGroupC5leaveyyFZ",
+            "mangledName": "$s7UDFCore11XCTestGroupC5leaveyyFZ",
+            "moduleName": "UDFCore",
+            "static": true,
+            "declAttributes": [
+              "Final",
+              "AccessControl"
+            ],
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "wait",
+            "printedName": "wait()",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:7UDFCore11XCTestGroupC4waityyFZ",
+            "mangledName": "$s7UDFCore11XCTestGroupC4waityyFZ",
+            "moduleName": "UDFCore",
+            "static": true,
+            "declAttributes": [
+              "Final",
+              "AccessControl"
+            ],
+            "funcSelfKind": "NonMutating"
+          }
+        ],
+        "declKind": "Class",
+        "usr": "s:7UDFCore11XCTestGroupC",
+        "mangledName": "$s7UDFCore11XCTestGroupC",
+        "moduleName": "UDFCore",
+        "declAttributes": [
+          "Final",
+          "AccessControl"
+        ],
+        "hasMissingDesignatedInitializers": true
+      },
+      {
+        "kind": "Import",
+        "name": "Foundation",
+        "printedName": "Foundation",
+        "declKind": "Import",
+        "moduleName": "UDFCore"
+      },
+      {
+        "kind": "TypeDecl",
         "name": "WrappedReducer",
         "printedName": "WrappedReducer",
         "children": [
@@ -9916,21 +10005,21 @@
       "value": "true"
     },
     {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/XCTestStore.swift",
+      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/XCTestStore\/XCTestStore.swift",
       "kind": "StringLiteral",
       "offset": 486,
       "length": 12,
       "value": "\"Reduce\t\t\""
     },
     {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/XCTestStore.swift",
+      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/XCTestStore\/XCTestStore.swift",
       "kind": "StringLiteral",
       "offset": 531,
       "length": 173,
       "value": "\"---------------------------------------------------------------------------------------------------------------------------------------------------------------------------\""
     },
     {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/XCTestStore.swift",
+      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/XCTestStore\/XCTestStore.swift",
       "kind": "StringLiteral",
       "offset": 982,
       "length": 47,

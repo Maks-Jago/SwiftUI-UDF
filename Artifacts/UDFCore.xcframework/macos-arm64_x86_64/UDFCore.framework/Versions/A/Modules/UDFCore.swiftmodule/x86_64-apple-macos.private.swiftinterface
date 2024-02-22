@@ -18,6 +18,12 @@ extension UDFCore.ActionFilter where Self == UDFCore.DefaultActionFilter {
     get
   }
 }
+@_hasMissingDesignatedInitializers final public class XCTestGroup {
+  public static func enter()
+  public static func leave()
+  public static func wait()
+  @objc deinit
+}
 public protocol WrappedReducer : UDFCore.Reducing {
   var reducer: any UDFCore.Reducing { get set }
 }

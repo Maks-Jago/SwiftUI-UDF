@@ -33,7 +33,7 @@ open class BaseMiddleware<State: AppReducer>: Middleware {
         }
 
         let filePosition = fileFunctionLine(effect, fileName: fileName, functionName: functionName, lineNumber: lineNumber)
-
+        XCTestGroup.enter()
         cancelations[anyId] = effect
             .subscribe(on: queue)
             .receive(on: queue)
@@ -45,9 +45,11 @@ open class BaseMiddleware<State: AppReducer>: Middleware {
                     functionName: filePosition.functionName,
                     lineNumber: filePosition.lineNumber
                 )
+                XCTestGroup.leave()
             })
             .sink(receiveCompletion: { [weak self] _ in
                 self?.cancelations[anyId] = nil
+                XCTestGroup.leave()
             }, receiveValue: { [weak self] action in
                 if self?.cancelations[anyId] != nil {
                     self?.store.dispatch(
@@ -57,7 +59,9 @@ open class BaseMiddleware<State: AppReducer>: Middleware {
                         lineNumber: filePosition.lineNumber
                     )
                 }
+                XCTestGroup.leave()
             })
+        XCTestGroup.wait()
     }
 
     open func execute<E, Id>(

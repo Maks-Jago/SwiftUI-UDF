@@ -62,6 +62,7 @@ open class BaseConcurrencyMiddleware<State: AppReducer>: Middleware {
 
         let filePosition = fileFunctionLine(effect, fileName: fileName, functionName: functionName, lineNumber: lineNumber)
 
+        XCTestGroup.enter()
         let task = Task { [weak self] in
             do {
                 let action = try await effect.task()
@@ -84,9 +85,11 @@ open class BaseConcurrencyMiddleware<State: AppReducer>: Middleware {
             _ = self?.queue.sync { [weak self] in
                 self?.cancelations.removeValue(forKey: anyId)
             }
+            XCTestGroup.leave()
         }
 
         cancelations[anyId] = task
+        XCTestGroup.wait()
     }
 
     @discardableResult
