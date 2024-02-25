@@ -1,5 +1,5 @@
 
-#if canImport(XCTest)
+import UDF
 import XCTest
 
 public extension XCTestCase {
@@ -14,4 +14,3 @@ public extension XCTestCase {
         await waitForExpectations(timeout: sleep + 1)
     }
 }
-#endif

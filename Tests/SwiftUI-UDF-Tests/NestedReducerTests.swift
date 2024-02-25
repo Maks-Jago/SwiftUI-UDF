@@ -4,6 +4,7 @@ import XCTest
 import Combine
 import CoreLocation
 import SwiftUI
+import UDFXCTest
 
 final class NestedReducerTests: XCTestCase {
 

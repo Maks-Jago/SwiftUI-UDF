@@ -8,6 +8,7 @@
 import XCTest
 @testable import UDF
 import OrderedCollections
+import UDFXCTest
 
 fileprivate extension Actions {
     struct ResetCache: Action {}

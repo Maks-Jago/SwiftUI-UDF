@@ -13,6 +13,10 @@ let package = Package(
         .library(
             name: "UDF",
             targets: ["UDF"]
+        ),
+        .library(
+            name: "UDFXCTest",
+            targets: ["UDFXCTest"]
         )
     ],
     dependencies: [
@@ -25,22 +29,32 @@ let package = Package(
                 .product(name: "OrderedCollections", package: "swift-collections"),
                 .target(name: "UDFCore")
             ],
-            path: "Sources"
+            path: "UDF"
         ),
 
         .binaryTarget(name: "UDFCore", path: "Artifacts/UDFCore.xcframework"),
 
+        .target(
+            name: "UDFXCTest",
+            dependencies: [
+                .target(name: "UDF")
+            ],
+            path: "UDFXCTest"
+        ),
+
         .testTarget(
             name: "SwiftUI-UDF-Tests",
             dependencies: [
-                .target(name: "UDF")
+//                .target(name: "UDF"),
+                .target(name: "UDFXCTest")
             ]
         ),
 
         .testTarget(
             name: "SwiftUI-UDF-ConcurrencyTests",
             dependencies: [
-                .target(name: "UDF")
+//                .target(name: "UDF"),
+                .target(name: "UDFXCTest")
             ]
         )
     ]

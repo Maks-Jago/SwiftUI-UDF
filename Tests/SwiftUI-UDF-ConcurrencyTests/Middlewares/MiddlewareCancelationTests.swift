@@ -1,6 +1,7 @@
 import XCTest
 @testable import UDF
 import Combine
+import UDFXCTest
 
 final class MiddlewareCancelationTests: XCTestCase {
 
