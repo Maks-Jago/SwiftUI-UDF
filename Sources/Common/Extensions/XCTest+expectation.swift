@@ -1,6 +1,8 @@
+
+#if canImport(XCTest)
 import XCTest
 
-extension XCTestCase {
+public extension XCTestCase {
     func expectation(description: String, sleep: TimeInterval) async {
         let exp = expectation(description: description)
 
@@ -12,3 +14,4 @@ extension XCTestCase {
         await waitForExpectations(timeout: sleep + 1)
     }
 }
+#endif
