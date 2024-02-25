@@ -58,8 +58,7 @@ final class ConcurrencyMiddlewareCancelationTests: XCTestCase {
 
         XCTAssertEqual(middlewareFlow, .loading)
         await store.dispatch(Actions.CancelLoading())
-
-        await expectation(description: "Waiting for cancelation", sleep: 0.2)
+        await store.wait()
 
         middlewareFlow = await store.state.middlewareFlow
         XCTAssertEqual(middlewareFlow, .didCancel)

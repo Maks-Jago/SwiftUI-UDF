@@ -56,7 +56,7 @@ final class NewReducibleMiddlewareTests: XCTestCase {
         XCTAssertTrue(formTitle.isEmpty)
 
         await store.dispatch(Actions.SendMessage(message: "Message 1"))
-        await expectation(description: "Waiting for observe method", sleep: 0.5)
+        await store.wait()
 
         formTitle = await store.state.testForm.title
         XCTAssertEqual(formTitle, "Message 1")

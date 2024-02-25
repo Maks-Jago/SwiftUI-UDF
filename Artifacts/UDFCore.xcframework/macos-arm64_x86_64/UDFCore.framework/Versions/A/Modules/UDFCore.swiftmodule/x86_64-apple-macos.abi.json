@@ -121,17 +121,38 @@
           {
             "kind": "Function",
             "name": "enter",
-            "printedName": "enter()",
+            "printedName": "enter(fileName:functionName:lineNumber:)",
             "children": [
               {
                 "kind": "TypeNominal",
                 "name": "Void",
                 "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "hasDefaultArg": true,
+                "usr": "s:SS"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "hasDefaultArg": true,
+                "usr": "s:SS"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Int",
+                "printedName": "Swift.Int",
+                "hasDefaultArg": true,
+                "usr": "s:Si"
               }
             ],
             "declKind": "Func",
-            "usr": "s:7UDFCore11XCTestGroupC5enteryyFZ",
-            "mangledName": "$s7UDFCore11XCTestGroupC5enteryyFZ",
+            "usr": "s:7UDFCore11XCTestGroupC5enter8fileName08functionF010lineNumberySS_SSSitFZ",
+            "mangledName": "$s7UDFCore11XCTestGroupC5enter8fileName08functionF010lineNumberySS_SSSitFZ",
             "moduleName": "UDFCore",
             "static": true,
             "declAttributes": [
@@ -143,17 +164,38 @@
           {
             "kind": "Function",
             "name": "leave",
-            "printedName": "leave()",
+            "printedName": "leave(fileName:functionName:lineNumber:)",
             "children": [
               {
                 "kind": "TypeNominal",
                 "name": "Void",
                 "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "hasDefaultArg": true,
+                "usr": "s:SS"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "hasDefaultArg": true,
+                "usr": "s:SS"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Int",
+                "printedName": "Swift.Int",
+                "hasDefaultArg": true,
+                "usr": "s:Si"
               }
             ],
             "declKind": "Func",
-            "usr": "s:7UDFCore11XCTestGroupC5leaveyyFZ",
-            "mangledName": "$s7UDFCore11XCTestGroupC5leaveyyFZ",
+            "usr": "s:7UDFCore11XCTestGroupC5leave8fileName08functionF010lineNumberySS_SSSitFZ",
+            "mangledName": "$s7UDFCore11XCTestGroupC5leave8fileName08functionF010lineNumberySS_SSSitFZ",
             "moduleName": "UDFCore",
             "static": true,
             "declAttributes": [
@@ -165,17 +207,38 @@
           {
             "kind": "Function",
             "name": "wait",
-            "printedName": "wait()",
+            "printedName": "wait(fileName:functionName:lineNumber:)",
             "children": [
               {
                 "kind": "TypeNominal",
                 "name": "Void",
                 "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "hasDefaultArg": true,
+                "usr": "s:SS"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "hasDefaultArg": true,
+                "usr": "s:SS"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Int",
+                "printedName": "Swift.Int",
+                "hasDefaultArg": true,
+                "usr": "s:Si"
               }
             ],
             "declKind": "Func",
-            "usr": "s:7UDFCore11XCTestGroupC4waityyFZ",
-            "mangledName": "$s7UDFCore11XCTestGroupC4waityyFZ",
+            "usr": "s:7UDFCore11XCTestGroupC4wait8fileName08functionF010lineNumberySS_SSSitFZ",
+            "mangledName": "$s7UDFCore11XCTestGroupC4wait8fileName08functionF010lineNumberySS_SSSitFZ",
             "moduleName": "UDFCore",
             "static": true,
             "declAttributes": [
@@ -6914,6 +6977,30 @@
               "AccessControl"
             ],
             "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "wait",
+            "printedName": "wait()",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:7UDFCore11XCTestStoreC4waityyF",
+            "mangledName": "$s7UDFCore11XCTestStoreC4waityyF",
+            "moduleName": "UDFCore",
+            "genericSig": "<τ_0_0 where τ_0_0 : UDFCore.AppReducer>",
+            "sugared_genericSig": "<State where State : UDFCore.AppReducer>",
+            "declAttributes": [
+              "Custom",
+              "Final",
+              "AccessControl"
+            ],
+            "funcSelfKind": "NonMutating"
           }
         ],
         "declKind": "Class",
@@ -9767,6 +9854,13 @@
       "value": "false"
     },
     {
+      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/XCTestStore\/XCTestGroup.swift",
+      "kind": "StringLiteral",
+      "offset": 189,
+      "length": 13,
+      "value": "\"XCTestGroup\""
+    },
+    {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Common\/Protocols\/IsEquatable.swift",
       "kind": "BooleanLiteral",
       "offset": 348,
@@ -9965,28 +10059,28 @@
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/InternalStore.swift",
       "kind": "BooleanLiteral",
-      "offset": 2670,
+      "offset": 2734,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/InternalStore.swift",
       "kind": "BooleanLiteral",
-      "offset": 3211,
+      "offset": 3275,
       "length": 4,
       "value": "true"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/InternalStore.swift",
       "kind": "BooleanLiteral",
-      "offset": 5324,
+      "offset": 5388,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/InternalStore.swift",
       "kind": "BooleanLiteral",
-      "offset": 5416,
+      "offset": 5480,
       "length": 4,
       "value": "true"
     },

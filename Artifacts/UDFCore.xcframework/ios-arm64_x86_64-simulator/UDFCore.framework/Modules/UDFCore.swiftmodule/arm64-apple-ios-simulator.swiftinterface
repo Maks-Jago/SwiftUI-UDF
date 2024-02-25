@@ -19,9 +19,9 @@ extension UDFCore.ActionFilter where Self == UDFCore.DefaultActionFilter {
   }
 }
 @_hasMissingDesignatedInitializers final public class XCTestGroup {
-  public static func enter()
-  public static func leave()
-  public static func wait()
+  public static func enter(fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line)
+  public static func leave(fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line)
+  public static func wait(fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line)
   @objc deinit
 }
 public protocol WrappedReducer : UDFCore.Reducing {
@@ -363,6 +363,7 @@ extension UDFCore.ActionFilter where Self == UDFCore.VerboseActionFilter {
   #if compiler(>=5.3) && $AsyncAwait
   @_Concurrency.MainActor final public func dispatch(_ action: some Action, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) async
   #endif
+  @_Concurrency.MainActor final public func wait()
   @objc deinit
 }
 #if compiler(>=5.3) && $PrimaryAssociatedTypes2

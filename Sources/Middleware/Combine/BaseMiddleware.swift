@@ -59,9 +59,8 @@ open class BaseMiddleware<State: AppReducer>: Middleware {
                         lineNumber: filePosition.lineNumber
                     )
                 }
-                XCTestGroup.leave()
+//                XCTestGroup.leave()
             })
-        XCTestGroup.wait()
     }
 
     open func execute<E, Id>(

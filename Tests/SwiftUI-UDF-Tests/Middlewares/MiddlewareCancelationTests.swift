@@ -69,7 +69,6 @@ final class MiddlewareCancelationTests: XCTestCase {
         XCTAssertEqual(middlewareFlow, .loading)
 
         await store.dispatch(Actions.CancelLoading())
-        await expectation(description: "waiting for the possible message action dispatch", sleep: 2)
 
         middlewareFlow = await store.state.middlewareFlow
         XCTAssertEqual(middlewareFlow, .none)
@@ -85,8 +84,7 @@ final class MiddlewareCancelationTests: XCTestCase {
 
         await expectation(description: "waiting for messages to increase messages count in form", sleep: 2)
         await store.dispatch(Actions.CancelLoading())
-
-        await expectation(description: "waiting for cancelation", sleep: 0.2)
+        await store.wait()
 
         let messagesCount = await store.state.runForm.messagesCount
         XCTAssertGreaterThanOrEqual(messagesCount, 1)
@@ -104,7 +102,6 @@ final class MiddlewareCancelationTests: XCTestCase {
         XCTAssertEqual(middlewareFlow, .loading)
 
         await store.dispatch(Actions.CancelLoading())
-        await expectation(description: "waiting for the possible message action dispatch", sleep: 2)
 
         middlewareFlow = await store.state.middlewareFlow
         XCTAssertEqual(middlewareFlow, .none)
@@ -136,7 +133,7 @@ private extension MiddlewareCancelationTests {
             switch state.middlewareFlow {
             case .loading:
                 execute(
-                    Effect(action: Actions.Message(id: "message_id")).delay(duration: 1, queue: DispatchQueue.main),
+                    Effect(action: Actions.Message(id: "message_id")).delay(duration: 1, queue: queue),
                     cancelation: Cancelation.message
                 )
 
@@ -223,7 +220,7 @@ private extension MiddlewareCancelationTests {
             switch action {
             case is Actions.Loading:
                 execute(
-                    Effect(action: Actions.Message(id: "message_id")).delay(duration: 1, queue: DispatchQueue.main),
+                    Effect(action: Actions.Message(id: "message_id")).delay(duration: 1, queue: queue),
                     cancelation: Cancelation.reducibleMessage
                 )
 

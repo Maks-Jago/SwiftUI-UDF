@@ -130,16 +130,13 @@ class ReducibleMiddlewareTests: XCTestCase {
         XCTAssertEqual(title, "title 1")
 
         await store.dispatch(Actions.SendMessage(message: "Service title 1"))
-        await expectation(description: "exp", sleep: 1)
+        await store.wait()
 
         title = await store.state.testForm.title
-
         XCTAssertEqual(title, "Service title 1")
 
         await store.dispatch(Actions.SendMessage(message: "Flow message", id: TestFlow.id))
         await store.dispatch(Actions.UpdateFormField(keyPath: \FormToCombine.value, value: 2))
-
-        await expectation(description: "flowExp", sleep: 1)
 
         title = await store.state.testForm.title
         XCTAssertEqual(title, "Flow message")

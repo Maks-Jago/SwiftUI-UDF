@@ -14,15 +14,15 @@
 		</data>
 		<key>Info.plist</key>
 		<data>
-		RAz7dI0FAHhtKXvJT/OjazswrHw=
+		TtKkcjXrYVaVTZO1fZiPMXAaHxo=
 		</data>
 		<key>Modules/UDFCore.swiftmodule/arm64-apple-ios.abi.json</key>
 		<data>
-		9EmwEWsjDfvj6SkZJNp9VYz3+mg=
+		ZwOezTDbHDP+AIvcxOPiGOdEgbs=
 		</data>
 		<key>Modules/UDFCore.swiftmodule/arm64-apple-ios.private.swiftinterface</key>
 		<data>
-		VYTslv5cOjQ48lD4ud/cYikQFV4=
+		ZI21SM2Hwvq9GR8wvWdtnwXqstU=
 		</data>
 		<key>Modules/UDFCore.swiftmodule/arm64-apple-ios.swiftdoc</key>
 		<data>
@@ -30,11 +30,11 @@
 		</data>
 		<key>Modules/UDFCore.swiftmodule/arm64-apple-ios.swiftinterface</key>
 		<data>
-		VYTslv5cOjQ48lD4ud/cYikQFV4=
+		ZI21SM2Hwvq9GR8wvWdtnwXqstU=
 		</data>
 		<key>Modules/UDFCore.swiftmodule/arm64-apple-ios.swiftmodule</key>
 		<data>
-		2Sah/CeyC1d75g1RIIQOgjLRt1I=
+		ACXKzR5ESrkYIJd/gvu1j7AKHPE=
 		</data>
 		<key>Modules/module.modulemap</key>
 		<data>
@@ -61,14 +61,14 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			LlYAOYRnzKo9KfhyJUGfLWPwi+p1d3FfLGSQB81OuuM=
+			Mvc78g1oMPJqMrLQW+Cet7AobcNPZewsdZHrCiQ4QFs=
 			</data>
 		</dict>
 		<key>Modules/UDFCore.swiftmodule/arm64-apple-ios.private.swiftinterface</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			QkzQiH9BE0Yq48fYdmlVPYcLPFOfOUr5ZbW+NZZmy6E=
+			4mSXSTtXuQ8OzfVuJA5SXDKc6w9+LFi01lak3NVsuT4=
 			</data>
 		</dict>
 		<key>Modules/UDFCore.swiftmodule/arm64-apple-ios.swiftdoc</key>
@@ -82,14 +82,14 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			QkzQiH9BE0Yq48fYdmlVPYcLPFOfOUr5ZbW+NZZmy6E=
+			4mSXSTtXuQ8OzfVuJA5SXDKc6w9+LFi01lak3NVsuT4=
 			</data>
 		</dict>
 		<key>Modules/UDFCore.swiftmodule/arm64-apple-ios.swiftmodule</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			38NzLZT+SiPZUIGT7esBJTfq2N9YeTjTSiUs9IauI7A=
+			jdcuy28lPwBTg7hg2khS17ULzzXalECRW+539SzPBjA=
 			</data>
 		</dict>
 		<key>Modules/module.modulemap</key>

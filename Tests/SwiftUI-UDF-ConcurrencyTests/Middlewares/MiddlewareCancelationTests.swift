@@ -62,13 +62,11 @@ final class MiddlewareCancelationTests: XCTestCase {
         await store.subscribe(ObservableMiddlewareToCancel.self)
         await store.dispatch(Actions.Loading())
 
-        await expectation(description: "Wait for dispatch action", sleep: 0.1)
         var middlewareFlow = await store.state.middlewareFlow
 
         XCTAssertEqual(middlewareFlow, .loading)
         await store.dispatch(Actions.CancelLoading())
-
-        await expectation(description: "Wait for dispatch action", sleep: 0.2)
+        await store.wait()
 
         middlewareFlow = await store.state.middlewareFlow
         XCTAssertEqual(middlewareFlow, .didCancel)
@@ -80,13 +78,11 @@ final class MiddlewareCancelationTests: XCTestCase {
         await store.dispatch(Actions.Loading())
 
         await expectation(description: "Wait for dispatch action", sleep: 2)
-
         var middlewareFlow = await store.state.middlewareFlow
 
         XCTAssertEqual(middlewareFlow, .loading)
         await store.dispatch(Actions.CancelLoading())
-
-        await expectation(description: "Wait for dispatch action", sleep: 0.2)
+        await store.wait()
 
         middlewareFlow = await store.state.middlewareFlow
         let messagesCount = await store.state.runForm.messagesCount
@@ -100,13 +96,11 @@ final class MiddlewareCancelationTests: XCTestCase {
         await store.subscribe(ReducibleMiddlewareToCancel.self)
         await store.dispatch(Actions.Loading())
 
-        await expectation(description: "Wait for dispatch action", sleep: 0.1)
-
         var middlewareFlow = await store.state.middlewareFlow
         XCTAssertEqual(middlewareFlow, .loading)
 
         await store.dispatch(Actions.CancelLoading())
-        await expectation(description: "Wait for dispatch action", sleep: 0.1)
+        await store.wait()
 
         middlewareFlow = await store.state.middlewareFlow
         let messagesCount = await store.state.runForm.messagesCount
@@ -152,7 +146,7 @@ private extension MiddlewareCancelationTests {
             switch state.middlewareFlow {
             case .loading:
                 execute(
-                    Effect(action: Actions.Message(id: "message_id")).delay(duration: 2, queue: DispatchQueue.main),
+                    Effect(action: Actions.Message(id: "message_id")).delay(duration: 2, queue: queue),
                     cancelation: Cancelation.message
                 )
 
@@ -240,7 +234,7 @@ private extension MiddlewareCancelationTests {
             switch action {
             case is Actions.Loading:
                 execute(
-                    Effect(action: Actions.Message(id: "message_id")).delay(duration: 1, queue: DispatchQueue.main),
+                    Effect(action: Actions.Message(id: "message_id")).delay(duration: 1, queue: queue),
                     cancelation: Cancelation.reducibleMessage
                 )
 

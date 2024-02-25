@@ -99,7 +99,7 @@ final class NewObservableMiddlewareDDosProtectionTests: XCTestCase {
         let store = try await XCTestStore(initial: AppState())
 
         await store.subscribe(SendMessageMiddleware.self)
-        await expectation(description: "Waiting for initial observe method", sleep: 0.2)
+        await store.wait()
 
         var formTitle = await store.state.testForm.title
         XCTAssertTrue(formTitle.isEmpty)
@@ -109,8 +109,7 @@ final class NewObservableMiddlewareDDosProtectionTests: XCTestCase {
         await store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.title, value: "title2"))
         await store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.title, value: "title3"))
         await store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.title, value: "title4"))
-
-        await expectation(description: "Waiting for observe method", sleep: 0.2)
+        await store.wait()
 
         let numberValue = await store.state.testForm.nested.number
         XCTAssertEqual(numberValue, 2)
@@ -120,8 +119,7 @@ final class NewObservableMiddlewareDDosProtectionTests: XCTestCase {
 
         await store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.title, value: "title5"))
         await store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.title, value: "title6"))
-
-        await expectation(description: "Waiting for observe method", sleep: 0.2)
+        await store.wait()
 
         formTitle = await store.state.testForm.title
         XCTAssertEqual(formTitle, "title6")

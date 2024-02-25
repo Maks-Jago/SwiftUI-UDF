@@ -117,8 +117,6 @@ class ObservableMiddlewareTests: XCTestCase {
         await store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.title, value: "title5"))
         await store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.title, value: "title6"))
 
-        await expectation(description: "flowExp", sleep: 3)
-
         let number = await store.state.testForm.nested.number
         XCTAssertGreaterThan(number, 1)
     }
