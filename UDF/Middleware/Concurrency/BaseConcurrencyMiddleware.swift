@@ -43,7 +43,6 @@ open class BaseConcurrencyMiddleware<State: AppReducer>: Middleware {
                 functionName: filePosition.functionName,
                 lineNumber: filePosition.lineNumber
             )
-            XCTestGroup.leave()
         }
     }
 
@@ -85,6 +84,7 @@ open class BaseConcurrencyMiddleware<State: AppReducer>: Middleware {
 
             _ = self?.queue.sync { [weak self] in
                 self?.cancelations.removeValue(forKey: anyId)
+                XCTestGroup.leave()
             }
         }
 
