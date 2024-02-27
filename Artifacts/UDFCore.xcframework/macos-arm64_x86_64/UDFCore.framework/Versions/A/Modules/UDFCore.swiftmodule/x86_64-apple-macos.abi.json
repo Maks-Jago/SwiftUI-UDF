@@ -6682,6 +6682,173 @@
       },
       {
         "kind": "TypeDecl",
+        "name": "XCTestStoreActor",
+        "printedName": "XCTestStoreActor",
+        "children": [
+          {
+            "kind": "Var",
+            "name": "shared",
+            "printedName": "shared",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "XCTestStoreActor",
+                "printedName": "UDFCore.XCTestStoreActor",
+                "usr": "s:7UDFCore16XCTestStoreActorC"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:7UDFCore16XCTestStoreActorC6sharedACvpZ",
+            "mangledName": "$s7UDFCore16XCTestStoreActorC6sharedACvpZ",
+            "moduleName": "UDFCore",
+            "static": true,
+            "declAttributes": [
+              "Final",
+              "HasInitialValue",
+              "HasStorage",
+              "SetterAccess",
+              "AccessControl"
+            ],
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "XCTestStoreActor",
+                    "printedName": "UDFCore.XCTestStoreActor",
+                    "usr": "s:7UDFCore16XCTestStoreActorC"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:7UDFCore16XCTestStoreActorC6sharedACvgZ",
+                "mangledName": "$s7UDFCore16XCTestStoreActorC6sharedACvgZ",
+                "moduleName": "UDFCore",
+                "static": true,
+                "implicit": true,
+                "declAttributes": [
+                  "Final"
+                ],
+                "accessorKind": "get"
+              }
+            ]
+          },
+          {
+            "kind": "Var",
+            "name": "unownedExecutor",
+            "printedName": "unownedExecutor",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "UnownedSerialExecutor",
+                "printedName": "_Concurrency.UnownedSerialExecutor",
+                "usr": "s:Sce"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:7UDFCore16XCTestStoreActorC15unownedExecutorScevp",
+            "mangledName": "$s7UDFCore16XCTestStoreActorC15unownedExecutorScevp",
+            "moduleName": "UDFCore",
+            "implicit": true,
+            "intro_Macosx": "10.15",
+            "intro_iOS": "13.0",
+            "intro_tvOS": "13.0",
+            "intro_watchOS": "6.0",
+            "declAttributes": [
+              "Available",
+              "Available",
+              "Available",
+              "Available",
+              "Final",
+              "Nonisolated",
+              "Semantics"
+            ],
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "UnownedSerialExecutor",
+                    "printedName": "_Concurrency.UnownedSerialExecutor",
+                    "usr": "s:Sce"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:7UDFCore16XCTestStoreActorC15unownedExecutorScevg",
+                "mangledName": "$s7UDFCore16XCTestStoreActorC15unownedExecutorScevg",
+                "moduleName": "UDFCore",
+                "implicit": true,
+                "declAttributes": [
+                  "Final"
+                ],
+                "accessorKind": "get"
+              }
+            ]
+          }
+        ],
+        "declKind": "Class",
+        "usr": "s:7UDFCore16XCTestStoreActorC",
+        "mangledName": "$s7UDFCore16XCTestStoreActorC",
+        "moduleName": "UDFCore",
+        "declAttributes": [
+          "AccessControl",
+          "GlobalActor"
+        ],
+        "hasMissingDesignatedInitializers": true,
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Actor",
+            "printedName": "Actor",
+            "usr": "s:ScA",
+            "mangledName": "$sScA"
+          },
+          {
+            "kind": "Conformance",
+            "name": "GlobalActor",
+            "printedName": "GlobalActor",
+            "children": [
+              {
+                "kind": "TypeWitness",
+                "name": "ActorType",
+                "printedName": "ActorType",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "XCTestStoreActor",
+                    "printedName": "UDFCore.XCTestStoreActor",
+                    "usr": "s:7UDFCore16XCTestStoreActorC"
+                  }
+                ]
+              }
+            ],
+            "usr": "s:12_Concurrency11GlobalActorP",
+            "mangledName": "$ss11GlobalActorP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "AnyActor",
+            "printedName": "AnyActor",
+            "usr": "s:12_Concurrency8AnyActorP",
+            "mangledName": "$ss8AnyActorP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Sendable",
+            "printedName": "Sendable",
+            "usr": "s:s8SendableP",
+            "mangledName": "$ss8SendableP"
+          }
+        ]
+      },
+      {
+        "kind": "TypeDecl",
         "name": "XCTestStore",
         "printedName": "XCTestStore",
         "children": [
@@ -10227,21 +10394,21 @@
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/XCTestStore\/XCTestStore.swift",
       "kind": "StringLiteral",
-      "offset": 486,
+      "offset": 604,
       "length": 12,
       "value": "\"Reduce\t\t\""
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/XCTestStore\/XCTestStore.swift",
       "kind": "StringLiteral",
-      "offset": 531,
+      "offset": 649,
       "length": 173,
       "value": "\"---------------------------------------------------------------------------------------------------------------------------------------------------------------------------\""
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/XCTestStore\/XCTestStore.swift",
       "kind": "StringLiteral",
-      "offset": 982,
+      "offset": 1100,
       "length": 47,
       "value": "\"XCTestStore is only for using in Test targets\""
     },
