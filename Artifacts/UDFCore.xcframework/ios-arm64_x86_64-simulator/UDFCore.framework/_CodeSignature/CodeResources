@@ -18,7 +18,7 @@
 		</data>
 		<key>Modules/UDFCore.swiftmodule/arm64-apple-ios-simulator.abi.json</key>
 		<data>
-		P4vsB1vR/Gz9T37RnnSEVjUIrc8=
+		9PV5pl2sivCp8O+goIQjxyEI+0s=
 		</data>
 		<key>Modules/UDFCore.swiftmodule/arm64-apple-ios-simulator.private.swiftinterface</key>
 		<data>
@@ -38,7 +38,7 @@
 		</data>
 		<key>Modules/UDFCore.swiftmodule/x86_64-apple-ios-simulator.abi.json</key>
 		<data>
-		P4vsB1vR/Gz9T37RnnSEVjUIrc8=
+		9PV5pl2sivCp8O+goIQjxyEI+0s=
 		</data>
 		<key>Modules/UDFCore.swiftmodule/x86_64-apple-ios-simulator.private.swiftinterface</key>
 		<data>
@@ -81,7 +81,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			AqqwJel7fhAZee+a2yF+nI47ozbknhzNkUX+0baprBk=
+			DK5lo7mELjpogG5buVy+xLWEqxaXnysmm3Lza/Ic+0Q=
 			</data>
 		</dict>
 		<key>Modules/UDFCore.swiftmodule/arm64-apple-ios-simulator.private.swiftinterface</key>
@@ -116,7 +116,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			AqqwJel7fhAZee+a2yF+nI47ozbknhzNkUX+0baprBk=
+			DK5lo7mELjpogG5buVy+xLWEqxaXnysmm3Lza/Ic+0Q=
 			</data>
 		</dict>
 		<key>Modules/UDFCore.swiftmodule/x86_64-apple-ios-simulator.private.swiftinterface</key>
