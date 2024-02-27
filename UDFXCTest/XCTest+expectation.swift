@@ -3,7 +3,7 @@ import UDF
 import XCTest
 
 public extension XCTestCase {
-    func expectation(description: String, sleep: TimeInterval) async {
+    func fulfill(description: String, sleep: TimeInterval) async {
         let exp = expectation(description: description)
 
         Task {
@@ -11,6 +11,6 @@ public extension XCTestCase {
             exp.fulfill()
         }
 
-        await waitForExpectations(timeout: sleep + 1)
+        await fulfillment(of: [exp], timeout: sleep + 1)
     }
 }

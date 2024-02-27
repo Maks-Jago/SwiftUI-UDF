@@ -347,23 +347,36 @@ extension UDFCore.ActionFilter where Self == UDFCore.VerboseActionFilter {
     get
   }
 }
-@_Concurrency.MainActor final public class XCTestStore<State> where State : UDFCore.AppReducer {
-  @UDFCore.SourceOfTruth @_projectedValueProperty($state) @_Concurrency.MainActor final public var state: State {
+#if compiler(>=5.3) && $Actors
+@_hasMissingDesignatedInitializers @globalActor public actor XCTestStoreActor {
+  public static var shared: UDFCore.XCTestStoreActor {
+    get
+  }
+  public typealias ActorType = UDFCore.XCTestStoreActor
+  @objc deinit
+  @available(iOS 13.0, tvOS 13.0, watchOS 6.0, macOS 10.15, *)
+  @_semantics("defaultActor") nonisolated final public var unownedExecutor: _Concurrency.UnownedSerialExecutor {
+    get
+  }
+}
+#endif
+@UDFCore.XCTestStoreActor final public class XCTestStore<State> where State : UDFCore.AppReducer {
+  @UDFCore.SourceOfTruth @_projectedValueProperty($state) @UDFCore.XCTestStoreActor final public var state: State {
     get
     set
     _modify
   }
-  @_Concurrency.MainActor final public var $state: UDFCore.SourceOfTruth<State> {
+  @UDFCore.XCTestStoreActor final public var $state: UDFCore.SourceOfTruth<State> {
     get
   }
-  @_Concurrency.MainActor public init(initial state: State) throws
+  @UDFCore.XCTestStoreActor public init(initial state: State) throws
   #if compiler(>=5.3) && $AsyncAwait
-  @_Concurrency.MainActor final public func subscribe(_ middlewareBuilder: (_ store: any UDFCore.Store<State>) -> some Middleware<State>) async
+  @UDFCore.XCTestStoreActor final public func subscribe(_ middlewareBuilder: (_ store: any UDFCore.Store<State>) -> some Middleware<State>) async
   #endif
   #if compiler(>=5.3) && $AsyncAwait
-  @_Concurrency.MainActor final public func dispatch(_ action: some Action, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) async
+  @UDFCore.XCTestStoreActor final public func dispatch(_ action: some Action, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) async
   #endif
-  @_Concurrency.MainActor final public func wait()
+  @UDFCore.XCTestStoreActor final public func wait(fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line)
   @objc deinit
 }
 #if compiler(>=5.3) && $PrimaryAssociatedTypes2
@@ -431,6 +444,9 @@ extension UDFCore.MiddlewareStatus : Swift.Equatable {}
 extension UDFCore.MiddlewareStatus : Swift.Hashable {}
 extension UDFCore.ActionPriority : Swift.Equatable {}
 extension UDFCore.ActionPriority : Swift.Hashable {}
+#if compiler(>=5.3) && $Actors
+extension UDFCore.XCTestStoreActor : _Concurrency.GlobalActor {}
+#endif
 extension UDFCore.XCTestStore : Swift.Sendable {}
 extension UDFCore.AsynchronousOperation.State : Swift.Equatable {}
 extension UDFCore.AsynchronousOperation.State : Swift.Hashable {}
