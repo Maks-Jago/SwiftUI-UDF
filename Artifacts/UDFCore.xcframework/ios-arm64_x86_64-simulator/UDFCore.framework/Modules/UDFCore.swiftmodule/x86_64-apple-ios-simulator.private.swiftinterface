@@ -363,7 +363,7 @@ extension UDFCore.ActionFilter where Self == UDFCore.VerboseActionFilter {
   #if compiler(>=5.3) && $AsyncAwait
   @_Concurrency.MainActor final public func dispatch(_ action: some Action, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) async
   #endif
-  @_Concurrency.MainActor final public func wait()
+  @_Concurrency.MainActor final public func wait(fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line)
   @objc deinit
 }
 #if compiler(>=5.3) && $PrimaryAssociatedTypes2

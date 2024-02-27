@@ -18,11 +18,11 @@
 		</data>
 		<key>Modules/UDFCore.swiftmodule/arm64-apple-ios-simulator.abi.json</key>
 		<data>
-		ztRvlzST+Cmy2bQ6ae/Ab91t+a0=
+		EHtM0roimktHHrFP3jU42CvVhA0=
 		</data>
 		<key>Modules/UDFCore.swiftmodule/arm64-apple-ios-simulator.private.swiftinterface</key>
 		<data>
-		MCIQDaru1OGUJzzjHfyM2cIxNDQ=
+		SRYUYwoHw05hef42HwyW43A1I7g=
 		</data>
 		<key>Modules/UDFCore.swiftmodule/arm64-apple-ios-simulator.swiftdoc</key>
 		<data>
@@ -30,19 +30,19 @@
 		</data>
 		<key>Modules/UDFCore.swiftmodule/arm64-apple-ios-simulator.swiftinterface</key>
 		<data>
-		MCIQDaru1OGUJzzjHfyM2cIxNDQ=
+		SRYUYwoHw05hef42HwyW43A1I7g=
 		</data>
 		<key>Modules/UDFCore.swiftmodule/arm64-apple-ios-simulator.swiftmodule</key>
 		<data>
-		5UJmNGVFkjF956oZToAblUT2iH8=
+		Sh1x+B63Zg9ZYEcYuMURywzMDqM=
 		</data>
 		<key>Modules/UDFCore.swiftmodule/x86_64-apple-ios-simulator.abi.json</key>
 		<data>
-		ztRvlzST+Cmy2bQ6ae/Ab91t+a0=
+		EHtM0roimktHHrFP3jU42CvVhA0=
 		</data>
 		<key>Modules/UDFCore.swiftmodule/x86_64-apple-ios-simulator.private.swiftinterface</key>
 		<data>
-		c6G8qbRaHWWBhBp+oGmEXQpNXOc=
+		SfwwbILDVY41S9sB5qaql1ZZVAA=
 		</data>
 		<key>Modules/UDFCore.swiftmodule/x86_64-apple-ios-simulator.swiftdoc</key>
 		<data>
@@ -50,11 +50,11 @@
 		</data>
 		<key>Modules/UDFCore.swiftmodule/x86_64-apple-ios-simulator.swiftinterface</key>
 		<data>
-		c6G8qbRaHWWBhBp+oGmEXQpNXOc=
+		SfwwbILDVY41S9sB5qaql1ZZVAA=
 		</data>
 		<key>Modules/UDFCore.swiftmodule/x86_64-apple-ios-simulator.swiftmodule</key>
 		<data>
-		iqI6muvP+JwOCbaP3rk9Ou77LB4=
+		QOggTgjwxPMCllDiDa3osEFaCZ0=
 		</data>
 		<key>Modules/module.modulemap</key>
 		<data>
@@ -81,14 +81,14 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			zZko+ouRehuLiCIzFg7MD0RXtBJlJkQUv482Edjq/K4=
+			SU9ZUFEPVkI0UWmXnjygNahhdaFWEt+pX213RgTgVjY=
 			</data>
 		</dict>
 		<key>Modules/UDFCore.swiftmodule/arm64-apple-ios-simulator.private.swiftinterface</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			nFpLWk2NxMIyF7R+3zWfs8X+FvJeGuXoTiGGx8/KvbM=
+			+DmBdc/cQTFsoH2KbkkyOY+EzulddkmIWHwicRNcHDQ=
 			</data>
 		</dict>
 		<key>Modules/UDFCore.swiftmodule/arm64-apple-ios-simulator.swiftdoc</key>
@@ -102,28 +102,28 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			nFpLWk2NxMIyF7R+3zWfs8X+FvJeGuXoTiGGx8/KvbM=
+			+DmBdc/cQTFsoH2KbkkyOY+EzulddkmIWHwicRNcHDQ=
 			</data>
 		</dict>
 		<key>Modules/UDFCore.swiftmodule/arm64-apple-ios-simulator.swiftmodule</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			GF45bxdTiw4H5uhLiDJtHisEyzp42FTphW5BSAuBD58=
+			O12aP8FUHyMgFJU6dP7yOT7k68Y8DHNMUqCDH9NmbsE=
 			</data>
 		</dict>
 		<key>Modules/UDFCore.swiftmodule/x86_64-apple-ios-simulator.abi.json</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			zZko+ouRehuLiCIzFg7MD0RXtBJlJkQUv482Edjq/K4=
+			SU9ZUFEPVkI0UWmXnjygNahhdaFWEt+pX213RgTgVjY=
 			</data>
 		</dict>
 		<key>Modules/UDFCore.swiftmodule/x86_64-apple-ios-simulator.private.swiftinterface</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			awGolICkaJhwanaDuSfgAV6AE2I80dZb8C0alKjr7Ws=
+			tY6oZwbWt6UCgzMWiJO8ZAYKnFfpQZ1St/BoznHvq2Y=
 			</data>
 		</dict>
 		<key>Modules/UDFCore.swiftmodule/x86_64-apple-ios-simulator.swiftdoc</key>
@@ -137,14 +137,14 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			awGolICkaJhwanaDuSfgAV6AE2I80dZb8C0alKjr7Ws=
+			tY6oZwbWt6UCgzMWiJO8ZAYKnFfpQZ1St/BoznHvq2Y=
 			</data>
 		</dict>
 		<key>Modules/UDFCore.swiftmodule/x86_64-apple-ios-simulator.swiftmodule</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			PEDr+0gV7lBVKnNmYcK1jYmzb2nohWVtChVbo0Cau08=
+			6VBzqAahyozriXDP0ci3etGg86dC/AmHoqOQVYs/HTo=
 			</data>
 		</dict>
 		<key>Modules/module.modulemap</key>
