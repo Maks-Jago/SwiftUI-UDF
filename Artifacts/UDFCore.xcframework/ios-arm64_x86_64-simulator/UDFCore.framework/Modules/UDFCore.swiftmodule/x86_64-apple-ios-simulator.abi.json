@@ -9987,69 +9987,6 @@
       "value": "\"\""
     },
     {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/XCTestStore\/XCTestGroup.swift",
-      "kind": "IntegerLiteral",
-      "offset": 1680,
-      "length": 13,
-      "value": "2000000000"
-    },
-    {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/XCTestStore\/XCTestGroup.swift",
-      "kind": "StringLiteral",
-      "offset": 1800,
-      "length": 74,
-      "value": "\"XCTestGroup: success. \""
-    },
-    {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/XCTestStore\/XCTestGroup.swift",
-      "kind": "StringLiteral",
-      "offset": 1833,
-      "length": 1,
-      "value": "\" - \""
-    },
-    {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/XCTestStore\/XCTestGroup.swift",
-      "kind": "StringLiteral",
-      "offset": 1851,
-      "length": 2,
-      "value": "\" at line \""
-    },
-    {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/XCTestStore\/XCTestGroup.swift",
-      "kind": "StringLiteral",
-      "offset": 1873,
-      "length": 2,
-      "value": "\"\""
-    },
-    {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/XCTestStore\/XCTestGroup.swift",
-      "kind": "StringLiteral",
-      "offset": 1926,
-      "length": 75,
-      "value": "\"XCTestGroup: timedOut. \""
-    },
-    {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/XCTestStore\/XCTestGroup.swift",
-      "kind": "StringLiteral",
-      "offset": 1960,
-      "length": 1,
-      "value": "\" - \""
-    },
-    {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/XCTestStore\/XCTestGroup.swift",
-      "kind": "StringLiteral",
-      "offset": 1978,
-      "length": 2,
-      "value": "\" at line \""
-    },
-    {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/XCTestStore\/XCTestGroup.swift",
-      "kind": "StringLiteral",
-      "offset": 2000,
-      "length": 2,
-      "value": "\"\""
-    },
-    {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Common\/Protocols\/IsEquatable.swift",
       "kind": "BooleanLiteral",
       "offset": 348,
