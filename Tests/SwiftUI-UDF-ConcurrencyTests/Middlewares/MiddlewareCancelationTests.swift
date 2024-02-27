@@ -78,7 +78,7 @@ final class MiddlewareCancelationTests: XCTestCase {
         await store.subscribe(ObservableRunMiddlewareToCancel.self)
         await store.dispatch(Actions.Loading())
 
-        await expectation(description: "Wait for dispatch action", sleep: 2)
+        await fulfill(description: "Wait for dispatch action", sleep: 2)
         var middlewareFlow = await store.state.middlewareFlow
 
         XCTAssertEqual(middlewareFlow, .loading)

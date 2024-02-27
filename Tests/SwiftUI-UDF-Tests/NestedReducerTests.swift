@@ -74,6 +74,6 @@ final class NestedReducerTests: XCTestCase {
 
         XCTAssertEqual(title, "temp_21")
 
-        await expectation(description: "locationFlow must be in `requestPermissions` case", sleep: 1)
+        await fulfill(description: "locationFlow must be in `requestPermissions` case", sleep: 1)
     }
 }

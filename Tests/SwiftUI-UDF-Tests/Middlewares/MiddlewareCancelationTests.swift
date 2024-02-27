@@ -83,7 +83,7 @@ final class MiddlewareCancelationTests: XCTestCase {
         var middlewareFlow = await store.state.middlewareFlow
         XCTAssertEqual(middlewareFlow, .loading)
 
-        await expectation(description: "waiting for messages to increase messages count in form", sleep: 2)
+        await fulfill(description: "waiting for messages to increase messages count in form", sleep: 2)
         await store.dispatch(Actions.CancelLoading())
         await store.wait()
 
