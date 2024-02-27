@@ -10051,105 +10051,168 @@
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/XCTestStore\/XCTestGroup.swift",
       "kind": "StringLiteral",
-      "offset": 536,
+      "offset": 526,
       "length": 14,
       "value": "\"Unknown file\""
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/XCTestStore\/XCTestGroup.swift",
       "kind": "StringLiteral",
-      "offset": 569,
+      "offset": 563,
       "length": 72,
       "value": "\"XCTestGroup: enter. \""
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/XCTestStore\/XCTestGroup.swift",
       "kind": "StringLiteral",
-      "offset": 600,
+      "offset": 594,
       "length": 1,
       "value": "\" - \""
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/XCTestStore\/XCTestGroup.swift",
       "kind": "StringLiteral",
-      "offset": 618,
+      "offset": 612,
       "length": 2,
       "value": "\" at line \""
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/XCTestStore\/XCTestGroup.swift",
       "kind": "StringLiteral",
-      "offset": 640,
+      "offset": 634,
       "length": 2,
       "value": "\"\""
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/XCTestStore\/XCTestGroup.swift",
       "kind": "StringLiteral",
-      "offset": 1042,
+      "offset": 1016,
       "length": 14,
       "value": "\"Unknown file\""
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/XCTestStore\/XCTestGroup.swift",
       "kind": "StringLiteral",
-      "offset": 1075,
+      "offset": 1053,
       "length": 72,
       "value": "\"XCTestGroup: leave. \""
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/XCTestStore\/XCTestGroup.swift",
       "kind": "StringLiteral",
-      "offset": 1106,
+      "offset": 1084,
       "length": 1,
       "value": "\" - \""
+    },
+    {
+      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/XCTestStore\/XCTestGroup.swift",
+      "kind": "StringLiteral",
+      "offset": 1102,
+      "length": 2,
+      "value": "\" at line \""
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/XCTestStore\/XCTestGroup.swift",
       "kind": "StringLiteral",
       "offset": 1124,
       "length": 2,
-      "value": "\" at line \""
-    },
-    {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/XCTestStore\/XCTestGroup.swift",
-      "kind": "StringLiteral",
-      "offset": 1146,
-      "length": 2,
       "value": "\"\""
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/XCTestStore\/XCTestGroup.swift",
       "kind": "StringLiteral",
-      "offset": 1496,
+      "offset": 1464,
       "length": 14,
       "value": "\"Unknown file\""
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/XCTestStore\/XCTestGroup.swift",
       "kind": "StringLiteral",
-      "offset": 1529,
+      "offset": 1538,
       "length": 71,
       "value": "\"XCTestGroup: wait. \""
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/XCTestStore\/XCTestGroup.swift",
       "kind": "StringLiteral",
-      "offset": 1559,
+      "offset": 1568,
       "length": 1,
       "value": "\" - \""
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/XCTestStore\/XCTestGroup.swift",
       "kind": "StringLiteral",
-      "offset": 1577,
+      "offset": 1586,
       "length": 2,
       "value": "\" at line \""
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/XCTestStore\/XCTestGroup.swift",
       "kind": "StringLiteral",
-      "offset": 1599,
+      "offset": 1608,
+      "length": 2,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/XCTestStore\/XCTestGroup.swift",
+      "kind": "IntegerLiteral",
+      "offset": 1687,
+      "length": 1,
+      "value": "4"
+    },
+    {
+      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/XCTestStore\/XCTestGroup.swift",
+      "kind": "StringLiteral",
+      "offset": 1768,
+      "length": 74,
+      "value": "\"XCTestGroup: success. \""
+    },
+    {
+      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/XCTestStore\/XCTestGroup.swift",
+      "kind": "StringLiteral",
+      "offset": 1801,
+      "length": 1,
+      "value": "\" - \""
+    },
+    {
+      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/XCTestStore\/XCTestGroup.swift",
+      "kind": "StringLiteral",
+      "offset": 1819,
+      "length": 2,
+      "value": "\" at line \""
+    },
+    {
+      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/XCTestStore\/XCTestGroup.swift",
+      "kind": "StringLiteral",
+      "offset": 1841,
+      "length": 2,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/XCTestStore\/XCTestGroup.swift",
+      "kind": "StringLiteral",
+      "offset": 1894,
+      "length": 75,
+      "value": "\"XCTestGroup: timedOut. \""
+    },
+    {
+      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/XCTestStore\/XCTestGroup.swift",
+      "kind": "StringLiteral",
+      "offset": 1928,
+      "length": 1,
+      "value": "\" - \""
+    },
+    {
+      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/XCTestStore\/XCTestGroup.swift",
+      "kind": "StringLiteral",
+      "offset": 1946,
+      "length": 2,
+      "value": "\" at line \""
+    },
+    {
+      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/XCTestStore\/XCTestGroup.swift",
+      "kind": "StringLiteral",
+      "offset": 1968,
       "length": 2,
       "value": "\"\""
     },
