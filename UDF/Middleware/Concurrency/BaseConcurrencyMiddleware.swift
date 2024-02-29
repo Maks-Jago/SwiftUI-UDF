@@ -109,5 +109,5 @@ open class BaseConcurrencyMiddleware<State: AppReducer>: Middleware {
     }
 }
 
-public typealias BaseConcurrencyObservableMiddleware<State: AppReducer> = BaseConcurrencyMiddleware<State> & ObservableMiddleware & EnvironmentMiddleware
-public typealias BaseConcurrencyReducibleMiddleware<State: AppReducer> = BaseConcurrencyMiddleware<State> & ReducibleMiddleware & EnvironmentMiddleware
+public typealias BaseConcurrencyObservableMiddleware<State: AppReducer> = XMiddleware<State> & ObservableMiddleware & EnvironmentMiddleware
+public typealias BaseConcurrencyReducibleMiddleware<State: AppReducer> = XMiddleware<State> & ReducibleMiddleware & EnvironmentMiddleware
