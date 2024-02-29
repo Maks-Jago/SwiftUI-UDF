@@ -75,17 +75,14 @@ final class MiddlewareCancelationTests: XCTestCase {
         await store.subscribe(ObservableRunMiddlewareToCancel.self)
         await store.dispatch(Actions.Loading())
 
-//        await fulfill(description: "Wait for dispatch action", sleep: 2)
         var middlewareFlow = await store.state.middlewareFlow
 
         XCTAssertEqual(middlewareFlow, .loading)
         await store.dispatch(Actions.CancelLoading())
+        await store.wait()
 
         middlewareFlow = await store.state.middlewareFlow
-//        let messagesCount = await store.state.runForm.messagesCount
-
-//        XCTAssertTrue(messagesCount >= 2)
-        XCTAssertEqual(middlewareFlow, .cancel)
+        XCTAssertEqual(middlewareFlow, .didCancel)
     }
 
     func testReducibleMiddlewareToCancel() async throws {

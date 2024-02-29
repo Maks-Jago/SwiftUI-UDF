@@ -17,24 +17,6 @@ open class BaseMiddleware<State: AppReducer>: Middleware {
 
     public var cancelations: [AnyHashable: CancellableTask] = [:]
     
-    // MARK: - Cancellation
-    @discardableResult
-    open func cancel<Id: Hashable>(by cancelation: Id) -> Bool {
-        let anyId = AnyHashable(cancelation)
-
-        guard let cancellableTask = cancelations[anyId] else {
-            return false
-        }
-
-        cancellableTask.cancel()
-        cancelations[anyId] = nil
-        return true
-    }
-
-    open func cancelAll() {
-        cancelations.keys.forEach { cancel(by: $0) }
-    }
-    
     // MARK: - Combine
     open func execute<E, Id>(
         _ effect: E,
@@ -77,6 +59,7 @@ open class BaseMiddleware<State: AppReducer>: Middleware {
                         lineNumber: filePosition.lineNumber
                     )
                 }
+//                XCTestGroup.leave()
             })
     }
 
@@ -187,6 +170,24 @@ open class BaseMiddleware<State: AppReducer>: Middleware {
                     )
                 }
             })
+    }
+    
+    // MARK: - Cancellation
+    @discardableResult
+    open func cancel<Id: Hashable>(by cancelation: Id) -> Bool {
+        let anyId = AnyHashable(cancelation)
+
+        guard let cancellableTask = cancelations[anyId] else {
+            return false
+        }
+
+        cancellableTask.cancel()
+        cancelations[anyId] = nil
+        return true
+    }
+
+    open func cancelAll() {
+        cancelations.keys.forEach { cancel(by: $0) }
     }
     
     // MARK: - Concurrency
