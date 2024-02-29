@@ -2,9 +2,6 @@ import UDFCore
 import Foundation
 import Combine
 
-extension AnyCancellable: CancellableTask {}
-extension Task<Void, Never>: CancellableTask {}
-
 open class BaseMiddleware<State: AppReducer>: Middleware {
     public var store: any Store<State>
     public var queue: DispatchQueue
@@ -269,3 +266,6 @@ open class BaseMiddleware<State: AppReducer>: Middleware {
         cancelations[anyId] = task
     }
 }
+
+extension AnyCancellable: CancellableTask {}
+extension Task<Void, Never>: CancellableTask {}

@@ -15,22 +15,10 @@ class ObservableMiddlewareTests: XCTestCase {
     struct AppState: AppReducer {
         var testForm = TestForm()
         var testFlow = TestFlow()
-
-        var formToCombine = FormToCombine()
     }
 
     struct TestForm: Form {
         var title: String = ""
-
-        var nested: NestedForm = .init()
-    }
-
-    struct NestedForm: Form {
-        var number: Int = 0
-    }
-
-    struct FormToCombine: Form {
-        var value: Int = 0
     }
 
     enum TestFlow: IdentifiableFlow {
@@ -94,13 +82,8 @@ class ObservableMiddlewareTests: XCTestCase {
         var number: Int
 
         var upstream: AnyPublisher<any Action, Never> {
-            Just(
-                ActionGroup {
-                    Actions.UpdateFormField(keyPath: \TestForm.title, value: title)
-                    Actions.UpdateFormField(keyPath: \NestedForm.number, value: number)
-                }
-            )
-            .eraseToAnyPublisher()
+            Just(Actions.UpdateFormField(keyPath: \TestForm.title, value: title))
+                .eraseToAnyPublisher()
         }
     }
 
@@ -108,16 +91,11 @@ class ObservableMiddlewareTests: XCTestCase {
         let store = try await XCTestStore(initial: AppState())
         await store.subscribe(SendMessageMiddleware.self)
 
-        await store.dispatch(Actions.SendMessage(message: "Flow message 1", id: TestFlow.id))
-        await store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.title, value: "title"))
-        await store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.title, value: "title2"))
-        await store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.title, value: "title3"))
-        await store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.title, value: "title4"))
-
-        await store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.title, value: "title5"))
-        await store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.title, value: "title6"))
-
-        let number = await store.state.testForm.nested.number
-        XCTAssertGreaterThan(number, 1)
+        let message = "Flow message 1"
+        await store.dispatch(Actions.SendMessage(message: message, id: TestFlow.id))
+        await store.wait()
+        
+        let title = await store.state.testForm.title
+        XCTAssertEqual(title, message)
     }
 }

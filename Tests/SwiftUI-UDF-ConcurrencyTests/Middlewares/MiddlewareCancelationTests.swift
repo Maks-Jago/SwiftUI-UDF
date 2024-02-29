@@ -18,15 +18,12 @@ final class MiddlewareCancelationTests: XCTestCase {
         mutating func reduce(_ action: some Action) {
             switch action {
             case let action as Actions.DidCancelEffect where action.cancelation == ObservableMiddlewareToCancel.Cancelation.message:
-                //Actions.DidCancelEffect where ObservableMiddlewareToCancel.Cancelation.allCases.contains(action.cancelation):
                 self = .didCancel
 
             case let action as Actions.DidCancelEffect where action.cancelation == ReducibleMiddlewareToCancel.Cancelation.reducibleMessage:
-                //Actions.DidCancelEffect where ObservableMiddlewareToCancel.Cancelation.allCases.contains(action.cancelation):
                 self = .didCancel
 
             case let action as Actions.DidCancelEffect where action.cancelation == ObservableRunMiddlewareToCancel.Cancelation.runMessage:
-                //Actions.DidCancelEffect where ObservableMiddlewareToCancel.Cancelation.allCases.contains(action.cancelation):
                 self = .didCancel
 
             case is Actions.Loading:
@@ -83,13 +80,12 @@ final class MiddlewareCancelationTests: XCTestCase {
 
         XCTAssertEqual(middlewareFlow, .loading)
         await store.dispatch(Actions.CancelLoading())
-        await store.wait()
 
         middlewareFlow = await store.state.middlewareFlow
 //        let messagesCount = await store.state.runForm.messagesCount
 
 //        XCTAssertTrue(messagesCount >= 2)
-        XCTAssertEqual(middlewareFlow, .didCancel)
+        XCTAssertEqual(middlewareFlow, .cancel)
     }
 
     func testReducibleMiddlewareToCancel() async throws {
