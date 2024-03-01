@@ -74,7 +74,7 @@ fileprivate extension Actions {
 // MARK: - Middlewares
 private extension ConcurrencyMiddlewareCancelationTests {
 
-    final class ObservableMiddlewareToCancel: BaseConcurrencyObservableMiddleware<AppState> {
+    final class ObservableMiddlewareToCancel: BaseObservableMiddleware<AppState> {
         struct Environment {
             var loadItems: () async -> [String]
         }

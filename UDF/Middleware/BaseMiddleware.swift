@@ -267,6 +267,3 @@ open class BaseMiddleware<State: AppReducer>: Middleware {
         cancelations[anyId] = task
     }
 }
-
-extension AnyCancellable: CancellableTask {}
-extension Task<Void, Never>: CancellableTask {}
