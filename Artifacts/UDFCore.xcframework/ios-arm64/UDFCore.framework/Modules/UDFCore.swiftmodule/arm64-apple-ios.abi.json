@@ -5836,6 +5836,63 @@
           },
           {
             "kind": "Function",
+            "name": "subscribe",
+            "printedName": "subscribe(_:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeFunc",
+                "name": "Function",
+                "printedName": "(UDFCore.Store<τ_0_0>) -> [UDFCore.Middleware<τ_0_0>]",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Array",
+                    "printedName": "[UDFCore.Middleware<τ_0_0>]",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "Middleware",
+                        "printedName": "UDFCore.Middleware<τ_0_0>",
+                        "usr": "s:7UDFCore10MiddlewareP"
+                      }
+                    ],
+                    "usr": "s:Sa"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Store",
+                    "printedName": "UDFCore.Store<τ_0_0>",
+                    "usr": "s:7UDFCore5StoreP"
+                  }
+                ],
+                "typeAttributes": [
+                  "noescape"
+                ]
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:7UDFCore16EnvironmentStoreC9subscribeyySayAA10Middleware_px5StateRts_XPGAA0C0_pxAGRS_XPXEYaF",
+            "mangledName": "$s7UDFCore16EnvironmentStoreC9subscribeyySayAA10Middleware_px5StateRts_XPGAA0C0_pxAGRS_XPXEYaF",
+            "moduleName": "UDFCore",
+            "genericSig": "<τ_0_0 where τ_0_0 : UDFCore.AppReducer>",
+            "sugared_genericSig": "<State where State : UDFCore.AppReducer>",
+            "intro_Macosx": "13.0.0",
+            "intro_iOS": "16.0.0",
+            "declAttributes": [
+              "Final",
+              "Available",
+              "Available"
+            ],
+            "isFromExtension": true,
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
             "name": "subscribeAsync",
             "printedName": "subscribeAsync(_:onSubscribe:)",
             "children": [
@@ -9944,469 +10001,469 @@
   },
   "ConstValues": [
     {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/Action\/InternalAction.swift",
+      "filePath": "\/Users\/sharko\/Developer\/URLaunched\/swiftui-udf-private\/SwiftUI-UDF\/Store\/Action\/InternalAction.swift",
       "kind": "BooleanLiteral",
       "offset": 366,
       "length": 5,
       "value": "false"
     },
     {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/Action\/InternalAction.swift",
+      "filePath": "\/Users\/sharko\/Developer\/URLaunched\/swiftui-udf-private\/SwiftUI-UDF\/Store\/Action\/InternalAction.swift",
       "kind": "StringLiteral",
       "offset": 739,
       "length": 14,
       "value": "\"Unknown file\""
     },
     {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/Action\/InternalAction.swift",
+      "filePath": "\/Users\/sharko\/Developer\/URLaunched\/swiftui-udf-private\/SwiftUI-UDF\/Store\/Action\/InternalAction.swift",
       "kind": "StringLiteral",
       "offset": 813,
       "length": 131,
       "value": "\"\""
     },
     {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/Action\/InternalAction.swift",
+      "filePath": "\/Users\/sharko\/Developer\/URLaunched\/swiftui-udf-private\/SwiftUI-UDF\/Store\/Action\/InternalAction.swift",
       "kind": "StringLiteral",
       "offset": 842,
       "length": 1,
       "value": "\", animation: \""
     },
     {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/Action\/InternalAction.swift",
+      "filePath": "\/Users\/sharko\/Developer\/URLaunched\/swiftui-udf-private\/SwiftUI-UDF\/Store\/Action\/InternalAction.swift",
       "kind": "StringLiteral",
       "offset": 887,
       "length": 4,
       "value": "\" from \""
     },
     {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/Action\/InternalAction.swift",
+      "filePath": "\/Users\/sharko\/Developer\/URLaunched\/swiftui-udf-private\/SwiftUI-UDF\/Store\/Action\/InternalAction.swift",
       "kind": "StringLiteral",
       "offset": 903,
       "length": 1,
       "value": "\" - \""
     },
     {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/Action\/InternalAction.swift",
+      "filePath": "\/Users\/sharko\/Developer\/URLaunched\/swiftui-udf-private\/SwiftUI-UDF\/Store\/Action\/InternalAction.swift",
       "kind": "StringLiteral",
       "offset": 921,
       "length": 2,
       "value": "\" at line \""
     },
     {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/Action\/InternalAction.swift",
+      "filePath": "\/Users\/sharko\/Developer\/URLaunched\/swiftui-udf-private\/SwiftUI-UDF\/Store\/Action\/InternalAction.swift",
       "kind": "StringLiteral",
       "offset": 943,
       "length": 1,
       "value": "\"\""
     },
     {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/Action\/InternalAction.swift",
+      "filePath": "\/Users\/sharko\/Developer\/URLaunched\/swiftui-udf-private\/SwiftUI-UDF\/Store\/Action\/InternalAction.swift",
       "kind": "StringLiteral",
       "offset": 994,
       "length": 86,
       "value": "\"\""
     },
     {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/Action\/InternalAction.swift",
+      "filePath": "\/Users\/sharko\/Developer\/URLaunched\/swiftui-udf-private\/SwiftUI-UDF\/Store\/Action\/InternalAction.swift",
       "kind": "StringLiteral",
       "offset": 1023,
       "length": 4,
       "value": "\" from \""
     },
     {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/Action\/InternalAction.swift",
+      "filePath": "\/Users\/sharko\/Developer\/URLaunched\/swiftui-udf-private\/SwiftUI-UDF\/Store\/Action\/InternalAction.swift",
       "kind": "StringLiteral",
       "offset": 1039,
       "length": 1,
       "value": "\" - \""
     },
     {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/Action\/InternalAction.swift",
+      "filePath": "\/Users\/sharko\/Developer\/URLaunched\/swiftui-udf-private\/SwiftUI-UDF\/Store\/Action\/InternalAction.swift",
       "kind": "StringLiteral",
       "offset": 1057,
       "length": 2,
       "value": "\" at line \""
     },
     {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/Action\/InternalAction.swift",
+      "filePath": "\/Users\/sharko\/Developer\/URLaunched\/swiftui-udf-private\/SwiftUI-UDF\/Store\/Action\/InternalAction.swift",
       "kind": "StringLiteral",
       "offset": 1079,
       "length": 1,
       "value": "\"\""
     },
     {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/Logger\/Filters\/DefaultActionFilter.swift",
+      "filePath": "\/Users\/sharko\/Developer\/URLaunched\/swiftui-udf-private\/SwiftUI-UDF\/Store\/Logger\/Filters\/DefaultActionFilter.swift",
       "kind": "BooleanLiteral",
       "offset": 284,
       "length": 5,
       "value": "false"
     },
     {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/XCTestStore\/XCTestGroup.swift",
+      "filePath": "\/Users\/sharko\/Developer\/URLaunched\/swiftui-udf-private\/SwiftUI-UDF\/Store\/XCTestStore\/XCTestGroup.swift",
       "kind": "StringLiteral",
       "offset": 199,
       "length": 13,
       "value": "\"XCTestGroup\""
     },
     {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/XCTestStore\/XCTestGroup.swift",
+      "filePath": "\/Users\/sharko\/Developer\/URLaunched\/swiftui-udf-private\/SwiftUI-UDF\/Store\/XCTestStore\/XCTestGroup.swift",
       "kind": "IntegerLiteral",
       "offset": 1046,
       "length": 1,
       "value": "4"
     },
     {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Common\/Protocols\/IsEquatable.swift",
+      "filePath": "\/Users\/sharko\/Developer\/URLaunched\/swiftui-udf-private\/SwiftUI-UDF\/Common\/Protocols\/IsEquatable.swift",
       "kind": "BooleanLiteral",
       "offset": 348,
       "length": 5,
       "value": "false"
     },
     {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/View\/Container\/ContainerState.swift",
+      "filePath": "\/Users\/sharko\/Developer\/URLaunched\/swiftui-udf-private\/SwiftUI-UDF\/View\/Container\/ContainerState.swift",
       "kind": "StringLiteral",
       "offset": 187,
       "length": 2,
       "value": "\"\""
     },
     {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/Action\/Action.swift",
+      "filePath": "\/Users\/sharko\/Developer\/URLaunched\/swiftui-udf-private\/SwiftUI-UDF\/Store\/Action\/Action.swift",
       "kind": "BooleanLiteral",
       "offset": 963,
       "length": 4,
       "value": "true"
     },
     {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/Action\/Action.swift",
+      "filePath": "\/Users\/sharko\/Developer\/URLaunched\/swiftui-udf-private\/SwiftUI-UDF\/Store\/Action\/Action.swift",
       "kind": "BooleanLiteral",
       "offset": 1115,
       "length": 4,
       "value": "true"
     },
     {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/Reducer\/AppReducer\/RuntimeReducing.swift",
+      "filePath": "\/Users\/sharko\/Developer\/URLaunched\/swiftui-udf-private\/SwiftUI-UDF\/Store\/Reducer\/AppReducer\/RuntimeReducing.swift",
       "kind": "BooleanLiteral",
       "offset": 2249,
       "length": 5,
       "value": "false"
     },
     {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/Reducer\/AppReducer\/RuntimeReducing.swift",
+      "filePath": "\/Users\/sharko\/Developer\/URLaunched\/swiftui-udf-private\/SwiftUI-UDF\/Store\/Reducer\/AppReducer\/RuntimeReducing.swift",
       "kind": "BooleanLiteral",
       "offset": 2288,
       "length": 5,
       "value": "false"
     },
     {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/Reducer\/AppReducer\/RuntimeReducing.swift",
+      "filePath": "\/Users\/sharko\/Developer\/URLaunched\/swiftui-udf-private\/SwiftUI-UDF\/Store\/Reducer\/AppReducer\/RuntimeReducing.swift",
       "kind": "BooleanLiteral",
       "offset": 2828,
       "length": 4,
       "value": "true"
     },
     {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/Reducer\/AppReducer\/RuntimeReducing.swift",
+      "filePath": "\/Users\/sharko\/Developer\/URLaunched\/swiftui-udf-private\/SwiftUI-UDF\/Store\/Reducer\/AppReducer\/RuntimeReducing.swift",
       "kind": "BooleanLiteral",
       "offset": 2999,
       "length": 4,
       "value": "true"
     },
     {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/Reducer\/AppReducer\/RuntimeReducing.swift",
+      "filePath": "\/Users\/sharko\/Developer\/URLaunched\/swiftui-udf-private\/SwiftUI-UDF\/Store\/Reducer\/AppReducer\/RuntimeReducing.swift",
       "kind": "BooleanLiteral",
       "offset": 3231,
       "length": 5,
       "value": "false"
     },
     {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/Reducer\/AppReducer\/RuntimeReducing.swift",
+      "filePath": "\/Users\/sharko\/Developer\/URLaunched\/swiftui-udf-private\/SwiftUI-UDF\/Store\/Reducer\/AppReducer\/RuntimeReducing.swift",
       "kind": "BooleanLiteral",
       "offset": 3269,
       "length": 5,
       "value": "false"
     },
     {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/Reducer\/AppReducer\/RuntimeReducing.swift",
+      "filePath": "\/Users\/sharko\/Developer\/URLaunched\/swiftui-udf-private\/SwiftUI-UDF\/Store\/Reducer\/AppReducer\/RuntimeReducing.swift",
       "kind": "BooleanLiteral",
       "offset": 3764,
       "length": 4,
       "value": "true"
     },
     {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/Reducer\/AppReducer\/RuntimeReducing.swift",
+      "filePath": "\/Users\/sharko\/Developer\/URLaunched\/swiftui-udf-private\/SwiftUI-UDF\/Store\/Reducer\/AppReducer\/RuntimeReducing.swift",
       "kind": "BooleanLiteral",
       "offset": 4240,
       "length": 4,
       "value": "true"
     },
     {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Common\/Types.swift",
+      "filePath": "\/Users\/sharko\/Developer\/URLaunched\/swiftui-udf-private\/SwiftUI-UDF\/Common\/Types.swift",
       "kind": "BooleanLiteral",
       "offset": 311,
       "length": 5,
       "value": "false"
     },
     {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Common\/Extensions\/ProcessInfo.swift",
+      "filePath": "\/Users\/sharko\/Developer\/URLaunched\/swiftui-udf-private\/SwiftUI-UDF\/Common\/Extensions\/ProcessInfo.swift",
       "kind": "StringLiteral",
       "offset": 181,
       "length": 29,
       "value": "\"XCTestConfigurationFilePath\""
     },
     {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/View\/Container\/Container.swift",
+      "filePath": "\/Users\/sharko\/Developer\/URLaunched\/swiftui-udf-private\/SwiftUI-UDF\/View\/Container\/Container.swift",
       "kind": "BooleanLiteral",
       "offset": 2369,
       "length": 4,
       "value": "true"
     },
     {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/View\/Container\/Container.swift",
+      "filePath": "\/Users\/sharko\/Developer\/URLaunched\/swiftui-udf-private\/SwiftUI-UDF\/View\/Container\/Container.swift",
       "kind": "BooleanLiteral",
       "offset": 2655,
       "length": 5,
       "value": "false"
     },
     {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/Action\/ActionGroup\/ActionGroupBuilder.swift",
+      "filePath": "\/Users\/sharko\/Developer\/URLaunched\/swiftui-udf-private\/SwiftUI-UDF\/Store\/Action\/ActionGroup\/ActionGroupBuilder.swift",
       "kind": "Array",
       "offset": 2234,
       "length": 2,
       "value": "[]"
     },
     {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/Action\/ActionGroup\/ActionGroupBuilder.swift",
+      "filePath": "\/Users\/sharko\/Developer\/URLaunched\/swiftui-udf-private\/SwiftUI-UDF\/Store\/Action\/ActionGroup\/ActionGroupBuilder.swift",
       "kind": "Array",
       "offset": 2354,
       "length": 2,
       "value": "[]"
     },
     {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Common\/GlobalValue.swift",
+      "filePath": "\/Users\/sharko\/Developer\/URLaunched\/swiftui-udf-private\/SwiftUI-UDF\/Common\/GlobalValue.swift",
       "kind": "StringLiteral",
       "offset": 316,
       "length": 70,
       "value": "\"You have to initialize EnvironmentStore before to use any Containers\""
     },
     {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/Action\/ActionGroup\/ActionGroup.swift",
+      "filePath": "\/Users\/sharko\/Developer\/URLaunched\/swiftui-udf-private\/SwiftUI-UDF\/Store\/Action\/ActionGroup\/ActionGroup.swift",
       "kind": "Array",
       "offset": 1275,
       "length": 2,
       "value": "[]"
     },
     {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/Action\/ActionGroup\/ActionGroup.swift",
+      "filePath": "\/Users\/sharko\/Developer\/URLaunched\/swiftui-udf-private\/SwiftUI-UDF\/Store\/Action\/ActionGroup\/ActionGroup.swift",
       "kind": "StringLiteral",
       "offset": 1432,
       "length": 140,
       "value": "\"ActionGroup {\n                \""
     },
     {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/Action\/ActionGroup\/ActionGroup.swift",
+      "filePath": "\/Users\/sharko\/Developer\/URLaunched\/swiftui-udf-private\/SwiftUI-UDF\/Store\/Action\/ActionGroup\/ActionGroup.swift",
       "kind": "StringLiteral",
       "offset": 1535,
       "length": 12,
       "value": "\"\n\t\t\t\t\""
     },
     {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/Action\/ActionGroup\/ActionGroup.swift",
+      "filePath": "\/Users\/sharko\/Developer\/URLaunched\/swiftui-udf-private\/SwiftUI-UDF\/Store\/Action\/ActionGroup\/ActionGroup.swift",
       "kind": "StringLiteral",
       "offset": 1550,
       "length": 1,
       "value": "\"\n}\""
     },
     {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/Action\/ActionGroup\/ActionGroup.swift",
+      "filePath": "\/Users\/sharko\/Developer\/URLaunched\/swiftui-udf-private\/SwiftUI-UDF\/Store\/Action\/ActionGroup\/ActionGroup.swift",
       "kind": "IntegerLiteral",
       "offset": 2826,
       "length": 1,
       "value": "0"
     },
     {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Common\/Extensions\/Hashable.swift",
+      "filePath": "\/Users\/sharko\/Developer\/URLaunched\/swiftui-udf-private\/SwiftUI-UDF\/Common\/Extensions\/Hashable.swift",
       "kind": "BooleanLiteral",
       "offset": 571,
       "length": 5,
       "value": "false"
     },
     {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Common\/Extensions\/Hashable.swift",
+      "filePath": "\/Users\/sharko\/Developer\/URLaunched\/swiftui-udf-private\/SwiftUI-UDF\/Common\/Extensions\/Hashable.swift",
       "kind": "BooleanLiteral",
       "offset": 816,
       "length": 5,
       "value": "false"
     },
     {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/EnvironmentStore.swift",
+      "filePath": "\/Users\/sharko\/Developer\/URLaunched\/swiftui-udf-private\/SwiftUI-UDF\/Store\/EnvironmentStore.swift",
       "kind": "StringLiteral",
       "offset": 572,
       "length": 18,
       "value": "\"EnvironmentStore\""
     },
     {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/InternalStore.swift",
+      "filePath": "\/Users\/sharko\/Developer\/URLaunched\/swiftui-udf-private\/SwiftUI-UDF\/Store\/InternalStore.swift",
       "kind": "Array",
       "offset": 364,
       "length": 2,
       "value": "[]"
     },
     {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/InternalStore.swift",
+      "filePath": "\/Users\/sharko\/Developer\/URLaunched\/swiftui-udf-private\/SwiftUI-UDF\/Store\/InternalStore.swift",
       "kind": "BooleanLiteral",
-      "offset": 2734,
+      "offset": 2946,
       "length": 5,
       "value": "false"
     },
     {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/InternalStore.swift",
+      "filePath": "\/Users\/sharko\/Developer\/URLaunched\/swiftui-udf-private\/SwiftUI-UDF\/Store\/InternalStore.swift",
       "kind": "BooleanLiteral",
-      "offset": 3275,
+      "offset": 3487,
       "length": 4,
       "value": "true"
     },
     {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/InternalStore.swift",
+      "filePath": "\/Users\/sharko\/Developer\/URLaunched\/swiftui-udf-private\/SwiftUI-UDF\/Store\/InternalStore.swift",
       "kind": "BooleanLiteral",
-      "offset": 5388,
+      "offset": 5600,
       "length": 5,
       "value": "false"
     },
     {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/InternalStore.swift",
+      "filePath": "\/Users\/sharko\/Developer\/URLaunched\/swiftui-udf-private\/SwiftUI-UDF\/Store\/InternalStore.swift",
       "kind": "BooleanLiteral",
-      "offset": 5480,
+      "offset": 5692,
       "length": 4,
       "value": "true"
     },
     {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Common\/Extensions\/Task+SleepSeconds.swift",
+      "filePath": "\/Users\/sharko\/Developer\/URLaunched\/swiftui-udf-private\/SwiftUI-UDF\/Common\/Extensions\/Task+SleepSeconds.swift",
       "kind": "IntegerLiteral",
       "offset": 282,
       "length": 13,
       "value": "1000000000"
     },
     {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/Logger\/Filters\/VerboseActionFilter.swift",
+      "filePath": "\/Users\/sharko\/Developer\/URLaunched\/swiftui-udf-private\/SwiftUI-UDF\/Store\/Logger\/Filters\/VerboseActionFilter.swift",
       "kind": "BooleanLiteral",
       "offset": 252,
       "length": 4,
       "value": "true"
     },
     {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/XCTestStore\/XCTestStore.swift",
+      "filePath": "\/Users\/sharko\/Developer\/URLaunched\/swiftui-udf-private\/SwiftUI-UDF\/Store\/XCTestStore\/XCTestStore.swift",
       "kind": "StringLiteral",
       "offset": 604,
       "length": 12,
       "value": "\"Reduce\t\t\""
     },
     {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/XCTestStore\/XCTestStore.swift",
+      "filePath": "\/Users\/sharko\/Developer\/URLaunched\/swiftui-udf-private\/SwiftUI-UDF\/Store\/XCTestStore\/XCTestStore.swift",
       "kind": "StringLiteral",
       "offset": 649,
       "length": 173,
       "value": "\"---------------------------------------------------------------------------------------------------------------------------------------------------------------------------\""
     },
     {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/XCTestStore\/XCTestStore.swift",
+      "filePath": "\/Users\/sharko\/Developer\/URLaunched\/swiftui-udf-private\/SwiftUI-UDF\/Store\/XCTestStore\/XCTestStore.swift",
       "kind": "StringLiteral",
       "offset": 1100,
       "length": 47,
       "value": "\"XCTestStore is only for using in Test targets\""
     },
     {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Common\/SubscribersCoordinator.swift",
+      "filePath": "\/Users\/sharko\/Developer\/URLaunched\/swiftui-udf-private\/SwiftUI-UDF\/Common\/SubscribersCoordinator.swift",
       "kind": "Dictionary",
       "offset": 231,
       "length": 3,
       "value": "[]"
     },
     {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/StoreQueue.swift",
+      "filePath": "\/Users\/sharko\/Developer\/URLaunched\/swiftui-udf-private\/SwiftUI-UDF\/Store\/StoreQueue.swift",
       "kind": "IntegerLiteral",
       "offset": 229,
       "length": 1,
       "value": "1"
     },
     {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/StoreQueue.swift",
+      "filePath": "\/Users\/sharko\/Developer\/URLaunched\/swiftui-udf-private\/SwiftUI-UDF\/Store\/StoreQueue.swift",
       "kind": "StringLiteral",
       "offset": 246,
       "length": 12,
       "value": "\"StoreQueue\""
     },
     {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/StoreQueue.swift",
+      "filePath": "\/Users\/sharko\/Developer\/URLaunched\/swiftui-udf-private\/SwiftUI-UDF\/Store\/StoreQueue.swift",
       "kind": "BooleanLiteral",
       "offset": 420,
       "length": 4,
       "value": "true"
     },
     {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/StoreQueue.swift",
+      "filePath": "\/Users\/sharko\/Developer\/URLaunched\/swiftui-udf-private\/SwiftUI-UDF\/Store\/StoreQueue.swift",
       "kind": "StringLiteral",
       "offset": 1080,
       "length": 7,
       "value": "\"Ready\""
     },
     {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/StoreQueue.swift",
+      "filePath": "\/Users\/sharko\/Developer\/URLaunched\/swiftui-udf-private\/SwiftUI-UDF\/Store\/StoreQueue.swift",
       "kind": "StringLiteral",
       "offset": 1113,
       "length": 11,
       "value": "\"Executing\""
     },
     {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/StoreQueue.swift",
+      "filePath": "\/Users\/sharko\/Developer\/URLaunched\/swiftui-udf-private\/SwiftUI-UDF\/Store\/StoreQueue.swift",
       "kind": "StringLiteral",
       "offset": 1149,
       "length": 10,
       "value": "\"Finished\""
     },
     {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/StoreQueue.swift",
+      "filePath": "\/Users\/sharko\/Developer\/URLaunched\/swiftui-udf-private\/SwiftUI-UDF\/Store\/StoreQueue.swift",
       "kind": "StringLiteral",
       "offset": 1209,
       "length": 4,
       "value": "\"is\""
     },
     {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/StoreQueue.swift",
+      "filePath": "\/Users\/sharko\/Developer\/URLaunched\/swiftui-udf-private\/SwiftUI-UDF\/Store\/StoreQueue.swift",
       "kind": "StringLiteral",
       "offset": 1080,
       "length": 7,
       "value": "\"Ready\""
     },
     {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/StoreQueue.swift",
+      "filePath": "\/Users\/sharko\/Developer\/URLaunched\/swiftui-udf-private\/SwiftUI-UDF\/Store\/StoreQueue.swift",
       "kind": "StringLiteral",
       "offset": 1113,
       "length": 11,
       "value": "\"Executing\""
     },
     {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/StoreQueue.swift",
+      "filePath": "\/Users\/sharko\/Developer\/URLaunched\/swiftui-udf-private\/SwiftUI-UDF\/Store\/StoreQueue.swift",
       "kind": "StringLiteral",
       "offset": 1149,
       "length": 10,
       "value": "\"Finished\""
     },
     {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/StoreQueue.swift",
+      "filePath": "\/Users\/sharko\/Developer\/URLaunched\/swiftui-udf-private\/SwiftUI-UDF\/Store\/StoreQueue.swift",
       "kind": "StringLiteral",
       "offset": 1833,
       "length": 35,
       "value": "\"AsynchronousOperation State Queue\""
     },
     {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/StoreQueue.swift",
+      "filePath": "\/Users\/sharko\/Developer\/URLaunched\/swiftui-udf-private\/SwiftUI-UDF\/Store\/StoreQueue.swift",
       "kind": "StringLiteral",
       "offset": 2014,
       "length": 14,
       "value": "\"UDFCore.StoreOperation\""
     },
     {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Common\/Scope\/Scope+None.swift",
+      "filePath": "\/Users\/sharko\/Developer\/URLaunched\/swiftui-udf-private\/SwiftUI-UDF\/Common\/Scope\/Scope+None.swift",
       "kind": "BooleanLiteral",
       "offset": 314,
       "length": 4,

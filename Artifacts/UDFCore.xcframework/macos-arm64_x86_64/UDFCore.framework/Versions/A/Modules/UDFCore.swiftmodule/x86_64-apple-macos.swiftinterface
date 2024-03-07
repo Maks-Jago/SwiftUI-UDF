@@ -293,6 +293,10 @@ extension UDFCore.EnvironmentStore {
   #if compiler(>=5.3) && $AsyncAwait
   final public func subscribe(_ middlewareBuilder: (_ store: any UDFCore.Store<State>) -> some Middleware<State>) async
   #endif
+  #if compiler(>=5.3) && $AsyncAwait
+  @available(macOS 13.0.0, iOS 16.0.0, *)
+  final public func subscribe(_ middlewaresBuilder: (_ store: any UDFCore.Store<State>) -> [any UDFCore.Middleware<State>]) async
+  #endif
   #if compiler(>=5.3) && $Sendable
   final public func subscribeAsync(_ middlewareBuilder: @escaping (_ store: any UDFCore.Store<State>) -> some Middleware<State>, onSubscribe: @escaping @Sendable () -> Swift.Void = {})
   #endif

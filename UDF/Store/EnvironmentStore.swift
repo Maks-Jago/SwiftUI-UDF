@@ -94,4 +94,11 @@ public extension EnvironmentStore {
             onSubscribe()
         }
     }
+    
+    @available(iOS 16.0.0, macOS 13.0.0, *)
+    func subscribeAsync(@MiddlewareBuilder _ builder: (_ store: any Store<State>) -> [MiddlewareWrapper<State>]) async {
+        await self.subscribe { store in
+            builder(store).map { $0.instance ?? $0.type.init(store: store) }
+        }
+    }
 }
