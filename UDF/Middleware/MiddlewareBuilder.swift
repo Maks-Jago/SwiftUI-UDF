@@ -9,40 +9,39 @@ import Foundation
 
 @available(iOS 16.0.0, macOS 13.0.0, *)
 @resultBuilder
-struct MiddlewareBuilder {
-    static func buildBlock<State: AppReducer>(_ components: MiddlewareWrapper<State>...) -> [MiddlewareWrapper<State>] {
+struct MiddlewareBuilder<State: AppReducer> {
+    static func buildBlock(_ components: MiddlewareWrapper<State>...) -> [MiddlewareWrapper<State>] {
         components.map { $0 }
     }
     
-    static func buildExpression<State: AppReducer>(_ expression: some Middleware<State>) -> MiddlewareWrapper<State> {
+    static func buildExpression(_ expression: some MiddlewareWrapperProtocol<State>) -> MiddlewareWrapper<State> {
         .init(instance: expression)
     }
     
-    static func buildExpression<State: AppReducer>(_ expression: any Middleware<State>.Type) -> MiddlewareWrapper<State> {
+    static func buildExpression(_ expression: any MiddlewareWrapperProtocol<State>.Type) -> MiddlewareWrapper<State> {
         .init(type: expression)
     }
 }
 
 public struct MiddlewareWrapper<State: AppReducer> {
-    var instance: (any Middleware<State>)?
-    var type: any Middleware<State>.Type
+    var instance: (any MiddlewareWrapperProtocol<State>)?
+    var type: any MiddlewareWrapperProtocol<State>.Type
     
-    init(instance: any Middleware<State>) {
+    init(instance: any MiddlewareWrapperProtocol<State>) {
         self.instance = instance
         self.type = Swift.type(of: instance)
     }
     
-    init(type: any Middleware<State>.Type) {
+    init(type: any MiddlewareWrapperProtocol<State>.Type) {
         self.instance = nil
         self.type = type
     }
 }
 
-
 @available(iOS 16.0.0, macOS 13.0.0, *)
 func test() async {
     let store = try! EnvironmentStore(initial: AppState(), loggers: [.consoleDebug])
-
+    
     await store.subscribeAsync { store in
         Middleware1.self
         Middleware2.self
@@ -82,3 +81,4 @@ class Middleware3: BaseReducibleMiddleware<AppState> {
 }
 
 struct AppState: AppReducer {}
+

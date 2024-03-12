@@ -289,13 +289,20 @@ final public class EnvironmentStore<State> where State : UDFCore.AppReducer {
   final public func bind<T>(_ action: @escaping (T) -> some Action, priority: UDFCore.ActionPriority = .default, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) -> UDFCore.CommandWith<T>
   @objc deinit
 }
+#if compiler(>=5.3) && $PrimaryAssociatedTypes2
+public protocol MiddlewareWrapperProtocol<State> : UDFCore.EnvironmentMiddleware, UDFCore.Middleware {
+}
+#else
+public protocol MiddlewareWrapperProtocol : UDFCore.EnvironmentMiddleware, UDFCore.Middleware {
+}
+#endif
 extension UDFCore.EnvironmentStore {
   #if compiler(>=5.3) && $AsyncAwait
   final public func subscribe(_ middlewareBuilder: (_ store: any UDFCore.Store<State>) -> some Middleware<State>) async
   #endif
   #if compiler(>=5.3) && $AsyncAwait
   @available(macOS 13.0.0, iOS 16.0.0, *)
-  final public func subscribe(_ middlewaresBuilder: (_ store: any UDFCore.Store<State>) -> [any UDFCore.Middleware<State>]) async
+  final public func subscribe(_ middlewaresBuilder: (_ store: any UDFCore.Store<State>) -> [any UDFCore.MiddlewareWrapperProtocol<State>]) async
   #endif
   #if compiler(>=5.3) && $Sendable
   final public func subscribeAsync(_ middlewareBuilder: @escaping (_ store: any UDFCore.Store<State>) -> some Middleware<State>, onSubscribe: @escaping @Sendable () -> Swift.Void = {})
@@ -382,6 +389,31 @@ extension UDFCore.ActionFilter where Self == UDFCore.VerboseActionFilter {
   #endif
   @UDFCore.XCTestStoreActor final public func wait(fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line)
   @objc deinit
+}
+#if compiler(>=5.3) && $PrimaryAssociatedTypes2
+public protocol EnvironmentMiddleware<State> {
+  associatedtype Environment
+  associatedtype State : UDFCore.AppReducer
+  var environment: Self.Environment! { get set }
+  init(store: some Store<State>, environment: Self.Environment)
+  init(store: some Store<State>, environment: Self.Environment, queue: Dispatch.DispatchQueue)
+  static func buildLiveEnvironment(for store: some Store<State>) -> Self.Environment
+  static func buildTestEnvironment(for store: some Store<State>) -> Self.Environment
+}
+#else
+public protocol EnvironmentMiddleware {
+  associatedtype Environment
+  associatedtype State : UDFCore.AppReducer
+  var environment: Self.Environment! { get set }
+  init(store: some Store<State>, environment: Self.Environment)
+  init(store: some Store<State>, environment: Self.Environment, queue: Dispatch.DispatchQueue)
+  static func buildLiveEnvironment(for store: some Store<State>) -> Self.Environment
+  static func buildTestEnvironment(for store: some Store<State>) -> Self.Environment
+}
+#endif
+extension UDFCore.EnvironmentMiddleware where Self.Environment == () {
+  public static func buildLiveEnvironment(for store: some Store<State>) -> Self.Environment
+  public static func buildTestEnvironment(for store: some Store<State>) -> Self.Environment
 }
 #if compiler(>=5.3) && $PrimaryAssociatedTypes2
 public protocol _ObservableMiddleware<State> : UDFCore.Middleware {

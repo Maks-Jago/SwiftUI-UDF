@@ -5847,18 +5847,18 @@
               {
                 "kind": "TypeFunc",
                 "name": "Function",
-                "printedName": "(UDFCore.Store<τ_0_0>) -> [UDFCore.Middleware<τ_0_0>]",
+                "printedName": "(UDFCore.Store<τ_0_0>) -> [UDFCore.MiddlewareWrapperProtocol<τ_0_0>]",
                 "children": [
                   {
                     "kind": "TypeNominal",
                     "name": "Array",
-                    "printedName": "[UDFCore.Middleware<τ_0_0>]",
+                    "printedName": "[UDFCore.MiddlewareWrapperProtocol<τ_0_0>]",
                     "children": [
                       {
                         "kind": "TypeNominal",
-                        "name": "Middleware",
-                        "printedName": "UDFCore.Middleware<τ_0_0>",
-                        "usr": "s:7UDFCore10MiddlewareP"
+                        "name": "MiddlewareWrapperProtocol",
+                        "printedName": "UDFCore.MiddlewareWrapperProtocol<τ_0_0>",
+                        "usr": "s:7UDFCore25MiddlewareWrapperProtocolP"
                       }
                     ],
                     "usr": "s:Sa"
@@ -5876,8 +5876,8 @@
               }
             ],
             "declKind": "Func",
-            "usr": "s:7UDFCore16EnvironmentStoreC9subscribeyySayAA10Middleware_px5StateRts_XPGAA0C0_pxAGRS_XPXEYaF",
-            "mangledName": "$s7UDFCore16EnvironmentStoreC9subscribeyySayAA10Middleware_px5StateRts_XPGAA0C0_pxAGRS_XPXEYaF",
+            "usr": "s:7UDFCore16EnvironmentStoreC9subscribeyySayAA25MiddlewareWrapperProtocol_px5StateRts_XPGAA0C0_pxAGRS_XPXEYaF",
+            "mangledName": "$s7UDFCore16EnvironmentStoreC9subscribeyySayAA25MiddlewareWrapperProtocol_px5StateRts_XPGAA0C0_pxAGRS_XPXEYaF",
             "moduleName": "UDFCore",
             "genericSig": "<τ_0_0 where τ_0_0 : UDFCore.AppReducer>",
             "sugared_genericSig": "<State where State : UDFCore.AppReducer>",
@@ -5960,6 +5960,36 @@
         "declAttributes": [
           "Final",
           "AccessControl"
+        ]
+      },
+      {
+        "kind": "TypeDecl",
+        "name": "MiddlewareWrapperProtocol",
+        "printedName": "MiddlewareWrapperProtocol",
+        "declKind": "Protocol",
+        "usr": "s:7UDFCore25MiddlewareWrapperProtocolP",
+        "mangledName": "$s7UDFCore25MiddlewareWrapperProtocolP",
+        "moduleName": "UDFCore",
+        "genericSig": "<τ_0_0 : UDFCore.EnvironmentMiddleware, τ_0_0 : UDFCore.Middleware>",
+        "sugared_genericSig": "<Self : UDFCore.EnvironmentMiddleware, Self : UDFCore.Middleware>",
+        "declAttributes": [
+          "AccessControl"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "EnvironmentMiddleware",
+            "printedName": "EnvironmentMiddleware",
+            "usr": "s:7UDFCore21EnvironmentMiddlewareP",
+            "mangledName": "$s7UDFCore21EnvironmentMiddlewareP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Middleware",
+            "printedName": "Middleware",
+            "usr": "s:7UDFCore10MiddlewareP",
+            "mangledName": "$s7UDFCore10MiddlewareP"
+          }
         ]
       },
       {
@@ -7267,6 +7297,338 @@
             "usr": "s:s8SendableP",
             "mangledName": "$ss8SendableP"
           }
+        ]
+      },
+      {
+        "kind": "Import",
+        "name": "Foundation",
+        "printedName": "Foundation",
+        "declKind": "Import",
+        "moduleName": "UDFCore",
+        "declAttributes": [
+          "RawDocComment"
+        ]
+      },
+      {
+        "kind": "TypeDecl",
+        "name": "EnvironmentMiddleware",
+        "printedName": "EnvironmentMiddleware",
+        "children": [
+          {
+            "kind": "AssociatedType",
+            "name": "Environment",
+            "printedName": "Environment",
+            "declKind": "AssociatedType",
+            "usr": "s:7UDFCore21EnvironmentMiddlewareP0B0Qa",
+            "mangledName": "$s7UDFCore21EnvironmentMiddlewareP0B0Qa",
+            "moduleName": "UDFCore",
+            "protocolReq": true
+          },
+          {
+            "kind": "AssociatedType",
+            "name": "State",
+            "printedName": "State",
+            "declKind": "AssociatedType",
+            "usr": "s:7UDFCore21EnvironmentMiddlewareP5StateQa",
+            "mangledName": "$s7UDFCore21EnvironmentMiddlewareP5StateQa",
+            "moduleName": "UDFCore",
+            "protocolReq": true
+          },
+          {
+            "kind": "Var",
+            "name": "environment",
+            "printedName": "environment",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "ImplicitlyUnwrappedOptional",
+                "printedName": "τ_0_0.Environment?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "DependentMember",
+                    "printedName": "τ_0_0.Environment"
+                  }
+                ],
+                "usr": "s:Sq"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:7UDFCore21EnvironmentMiddlewareP11environment0B0QzSgvp",
+            "mangledName": "$s7UDFCore21EnvironmentMiddlewareP11environment0B0QzSgvp",
+            "moduleName": "UDFCore",
+            "protocolReq": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "ImplicitlyUnwrappedOptional",
+                    "printedName": "τ_0_0.Environment?",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "DependentMember",
+                        "printedName": "τ_0_0.Environment"
+                      }
+                    ],
+                    "usr": "s:Sq"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:7UDFCore21EnvironmentMiddlewareP11environment0B0QzSgvg",
+                "mangledName": "$s7UDFCore21EnvironmentMiddlewareP11environment0B0QzSgvg",
+                "moduleName": "UDFCore",
+                "genericSig": "<τ_0_0 where τ_0_0 : UDFCore.EnvironmentMiddleware>",
+                "sugared_genericSig": "<Self where Self : UDFCore.EnvironmentMiddleware>",
+                "protocolReq": true,
+                "reqNewWitnessTableEntry": true,
+                "accessorKind": "get"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Set",
+                "printedName": "Set()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "ImplicitlyUnwrappedOptional",
+                    "printedName": "τ_0_0.Environment?",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "DependentMember",
+                        "printedName": "τ_0_0.Environment"
+                      }
+                    ],
+                    "usr": "s:Sq"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:7UDFCore21EnvironmentMiddlewareP11environment0B0QzSgvs",
+                "mangledName": "$s7UDFCore21EnvironmentMiddlewareP11environment0B0QzSgvs",
+                "moduleName": "UDFCore",
+                "genericSig": "<τ_0_0 where τ_0_0 : UDFCore.EnvironmentMiddleware>",
+                "sugared_genericSig": "<Self where Self : UDFCore.EnvironmentMiddleware>",
+                "protocolReq": true,
+                "reqNewWitnessTableEntry": true,
+                "accessorKind": "set"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Modify",
+                "printedName": "Modify()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:7UDFCore21EnvironmentMiddlewareP11environment0B0QzSgvM",
+                "mangledName": "$s7UDFCore21EnvironmentMiddlewareP11environment0B0QzSgvM",
+                "moduleName": "UDFCore",
+                "genericSig": "<τ_0_0 where τ_0_0 : UDFCore.EnvironmentMiddleware>",
+                "sugared_genericSig": "<Self where Self : UDFCore.EnvironmentMiddleware>",
+                "protocolReq": true,
+                "implicit": true,
+                "reqNewWitnessTableEntry": true,
+                "accessorKind": "_modify"
+              }
+            ]
+          },
+          {
+            "kind": "Constructor",
+            "name": "init",
+            "printedName": "init(store:environment:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "GenericTypeParam",
+                "printedName": "τ_0_0"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "GenericTypeParam",
+                "printedName": "τ_1_0"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "DependentMember",
+                "printedName": "τ_0_0.Environment"
+              }
+            ],
+            "declKind": "Constructor",
+            "usr": "s:7UDFCore21EnvironmentMiddlewareP5store11environmentxqd___0B0QztcAA5StoreRd__5StateQyd__AIRtzlufc",
+            "mangledName": "$s7UDFCore21EnvironmentMiddlewareP5store11environmentxqd___0B0QztcAA5StoreRd__5StateQyd__AIRtzlufc",
+            "moduleName": "UDFCore",
+            "genericSig": "<τ_0_0, τ_1_0 where τ_0_0 : UDFCore.EnvironmentMiddleware, τ_1_0 : UDFCore.Store, τ_0_0.State == τ_1_0.State>",
+            "sugared_genericSig": "<Self where Self : UDFCore.EnvironmentMiddleware>",
+            "protocolReq": true,
+            "reqNewWitnessTableEntry": true,
+            "init_kind": "Designated"
+          },
+          {
+            "kind": "Constructor",
+            "name": "init",
+            "printedName": "init(store:environment:queue:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "GenericTypeParam",
+                "printedName": "τ_0_0"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "GenericTypeParam",
+                "printedName": "τ_1_0"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "DependentMember",
+                "printedName": "τ_0_0.Environment"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "DispatchQueue",
+                "printedName": "Dispatch.DispatchQueue",
+                "usr": "c:objc(cs)OS_dispatch_queue"
+              }
+            ],
+            "declKind": "Constructor",
+            "usr": "s:7UDFCore21EnvironmentMiddlewareP5store11environment5queuexqd___0B0QzSo012OS_dispatch_F0CtcAA5StoreRd__5StateQyd__ALRtzlufc",
+            "mangledName": "$s7UDFCore21EnvironmentMiddlewareP5store11environment5queuexqd___0B0QzSo012OS_dispatch_F0CtcAA5StoreRd__5StateQyd__ALRtzlufc",
+            "moduleName": "UDFCore",
+            "genericSig": "<τ_0_0, τ_1_0 where τ_0_0 : UDFCore.EnvironmentMiddleware, τ_1_0 : UDFCore.Store, τ_0_0.State == τ_1_0.State>",
+            "sugared_genericSig": "<Self where Self : UDFCore.EnvironmentMiddleware>",
+            "protocolReq": true,
+            "reqNewWitnessTableEntry": true,
+            "init_kind": "Designated"
+          },
+          {
+            "kind": "Function",
+            "name": "buildLiveEnvironment",
+            "printedName": "buildLiveEnvironment(for:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "DependentMember",
+                "printedName": "τ_0_0.Environment"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "GenericTypeParam",
+                "printedName": "τ_1_0"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:7UDFCore21EnvironmentMiddlewareP09buildLiveB03for0B0Qzqd___tAA5StoreRd__5StateQyd__AIRtzlFZ",
+            "mangledName": "$s7UDFCore21EnvironmentMiddlewareP09buildLiveB03for0B0Qzqd___tAA5StoreRd__5StateQyd__AIRtzlFZ",
+            "moduleName": "UDFCore",
+            "genericSig": "<τ_0_0, τ_1_0 where τ_0_0 : UDFCore.EnvironmentMiddleware, τ_1_0 : UDFCore.Store, τ_0_0.State == τ_1_0.State>",
+            "sugared_genericSig": "<Self where Self : UDFCore.EnvironmentMiddleware>",
+            "static": true,
+            "protocolReq": true,
+            "reqNewWitnessTableEntry": true,
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "buildTestEnvironment",
+            "printedName": "buildTestEnvironment(for:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "DependentMember",
+                "printedName": "τ_0_0.Environment"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "GenericTypeParam",
+                "printedName": "τ_1_0"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:7UDFCore21EnvironmentMiddlewareP09buildTestB03for0B0Qzqd___tAA5StoreRd__5StateQyd__AIRtzlFZ",
+            "mangledName": "$s7UDFCore21EnvironmentMiddlewareP09buildTestB03for0B0Qzqd___tAA5StoreRd__5StateQyd__AIRtzlFZ",
+            "moduleName": "UDFCore",
+            "genericSig": "<τ_0_0, τ_1_0 where τ_0_0 : UDFCore.EnvironmentMiddleware, τ_1_0 : UDFCore.Store, τ_0_0.State == τ_1_0.State>",
+            "sugared_genericSig": "<Self where Self : UDFCore.EnvironmentMiddleware>",
+            "static": true,
+            "protocolReq": true,
+            "reqNewWitnessTableEntry": true,
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "buildLiveEnvironment",
+            "printedName": "buildLiveEnvironment(for:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "DependentMember",
+                "printedName": "τ_0_0.Environment"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "GenericTypeParam",
+                "printedName": "τ_1_0"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:7UDFCore21EnvironmentMiddlewarePAAyt0B0RtzrlE09buildLiveB03foryqd___tAA5StoreRd__5StateQyd__AIRtzlFZ",
+            "mangledName": "$s7UDFCore21EnvironmentMiddlewarePAAyt0B0RtzrlE09buildLiveB03foryqd___tAA5StoreRd__5StateQyd__AIRtzlFZ",
+            "moduleName": "UDFCore",
+            "genericSig": "<τ_0_0, τ_1_0 where τ_0_0 : UDFCore.EnvironmentMiddleware, τ_1_0 : UDFCore.Store, τ_0_0.Environment == (), τ_0_0.State == τ_1_0.State>",
+            "sugared_genericSig": "<Self where Self : UDFCore.EnvironmentMiddleware, Self.Environment == ()>",
+            "static": true,
+            "isFromExtension": true,
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "buildTestEnvironment",
+            "printedName": "buildTestEnvironment(for:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "DependentMember",
+                "printedName": "τ_0_0.Environment"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "GenericTypeParam",
+                "printedName": "τ_1_0"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:7UDFCore21EnvironmentMiddlewarePAAyt0B0RtzrlE09buildTestB03foryqd___tAA5StoreRd__5StateQyd__AIRtzlFZ",
+            "mangledName": "$s7UDFCore21EnvironmentMiddlewarePAAyt0B0RtzrlE09buildTestB03foryqd___tAA5StoreRd__5StateQyd__AIRtzlFZ",
+            "moduleName": "UDFCore",
+            "genericSig": "<τ_0_0, τ_1_0 where τ_0_0 : UDFCore.EnvironmentMiddleware, τ_1_0 : UDFCore.Store, τ_0_0.Environment == (), τ_0_0.State == τ_1_0.State>",
+            "sugared_genericSig": "<Self where Self : UDFCore.EnvironmentMiddleware, Self.Environment == ()>",
+            "static": true,
+            "isFromExtension": true,
+            "funcSelfKind": "NonMutating"
+          }
+        ],
+        "declKind": "Protocol",
+        "usr": "s:7UDFCore21EnvironmentMiddlewareP",
+        "mangledName": "$s7UDFCore21EnvironmentMiddlewareP",
+        "moduleName": "UDFCore",
+        "genericSig": "<τ_0_0.State : UDFCore.AppReducer>",
+        "sugared_genericSig": "<Self.State : UDFCore.AppReducer>",
+        "declAttributes": [
+          "AccessControl"
         ]
       },
       {
@@ -10311,28 +10673,28 @@
     {
       "filePath": "\/Users\/sharko\/Developer\/URLaunched\/swiftui-udf-private\/SwiftUI-UDF\/Store\/InternalStore.swift",
       "kind": "BooleanLiteral",
-      "offset": 2946,
+      "offset": 2961,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/sharko\/Developer\/URLaunched\/swiftui-udf-private\/SwiftUI-UDF\/Store\/InternalStore.swift",
       "kind": "BooleanLiteral",
-      "offset": 3487,
+      "offset": 3502,
       "length": 4,
       "value": "true"
     },
     {
       "filePath": "\/Users\/sharko\/Developer\/URLaunched\/swiftui-udf-private\/SwiftUI-UDF\/Store\/InternalStore.swift",
       "kind": "BooleanLiteral",
-      "offset": 5600,
+      "offset": 5615,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/sharko\/Developer\/URLaunched\/swiftui-udf-private\/SwiftUI-UDF\/Store\/InternalStore.swift",
       "kind": "BooleanLiteral",
-      "offset": 5692,
+      "offset": 5707,
       "length": 4,
       "value": "true"
     },
