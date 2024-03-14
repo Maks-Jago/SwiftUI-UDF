@@ -20,7 +20,19 @@ final class NewReducibleMiddlewareTests: XCTestCase {
     }
 
     class SendMessageMiddleware: BaseReducibleMiddleware<AppState> {
-        var environment: Void!
+        static func buildLiveEnvironment(for store: some UDFCore.Store<AppState>) -> Environment {
+            Environment(loadItems: { [] })
+        }
+        
+        static func buildTestEnvironment(for store: some UDFCore.Store<AppState>) -> Environment {
+            Environment(loadItems: { [] })
+        }
+        
+        var environment: Environment!
+        
+        struct Environment {
+            var loadItems: () -> [String]
+        }
 
         func reduce(_ action: some Action, for state: AppState) {
             switch action {

@@ -7184,6 +7184,64 @@
           },
           {
             "kind": "Function",
+            "name": "subscribe",
+            "printedName": "subscribe(_:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeFunc",
+                "name": "Function",
+                "printedName": "(UDFCore.Store<τ_0_0>) -> [UDFCore.MiddlewareWrapperProtocol<τ_0_0>]",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Array",
+                    "printedName": "[UDFCore.MiddlewareWrapperProtocol<τ_0_0>]",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "MiddlewareWrapperProtocol",
+                        "printedName": "UDFCore.MiddlewareWrapperProtocol<τ_0_0>",
+                        "usr": "s:7UDFCore25MiddlewareWrapperProtocolP"
+                      }
+                    ],
+                    "usr": "s:Sa"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Store",
+                    "printedName": "UDFCore.Store<τ_0_0>",
+                    "usr": "s:7UDFCore5StoreP"
+                  }
+                ],
+                "typeAttributes": [
+                  "noescape"
+                ]
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:7UDFCore11XCTestStoreC9subscribeyySayAA25MiddlewareWrapperProtocol_px5StateRts_XPGAA0C0_pxAGRS_XPXEYaF",
+            "mangledName": "$s7UDFCore11XCTestStoreC9subscribeyySayAA25MiddlewareWrapperProtocol_px5StateRts_XPGAA0C0_pxAGRS_XPXEYaF",
+            "moduleName": "UDFCore",
+            "genericSig": "<τ_0_0 where τ_0_0 : UDFCore.AppReducer>",
+            "sugared_genericSig": "<State where State : UDFCore.AppReducer>",
+            "intro_Macosx": "13.0.0",
+            "intro_iOS": "16.0.0",
+            "declAttributes": [
+              "Custom",
+              "Final",
+              "AccessControl",
+              "Available",
+              "Available"
+            ],
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
             "name": "dispatch",
             "printedName": "dispatch(_:fileName:functionName:lineNumber:)",
             "children": [

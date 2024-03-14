@@ -385,6 +385,10 @@ extension UDFCore.ActionFilter where Self == UDFCore.VerboseActionFilter {
   @UDFCore.XCTestStoreActor final public func subscribe(_ middlewareBuilder: (_ store: any UDFCore.Store<State>) -> some Middleware<State>) async
   #endif
   #if compiler(>=5.3) && $AsyncAwait
+  @available(macOS 13.0.0, iOS 16.0.0, *)
+  @UDFCore.XCTestStoreActor final public func subscribe(_ middlewaresBuilder: (_ store: any UDFCore.Store<State>) -> [any UDFCore.MiddlewareWrapperProtocol<State>]) async
+  #endif
+  #if compiler(>=5.3) && $AsyncAwait
   @UDFCore.XCTestStoreActor final public func dispatch(_ action: some Action, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) async
   #endif
   @UDFCore.XCTestStoreActor final public func wait(fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line)
