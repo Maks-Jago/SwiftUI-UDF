@@ -70,6 +70,7 @@ final class MiddlewareCancelationTests: XCTestCase {
         XCTAssertEqual(middlewareFlow, .loading)
 
         await store.dispatch(Actions.CancelLoading())
+        await store.wait()
 
         middlewareFlow = await store.state.middlewareFlow
         XCTAssertEqual(middlewareFlow, .none)
