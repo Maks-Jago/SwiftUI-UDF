@@ -14,10 +14,10 @@ final class MiddlewareSubscriptionTests: XCTestCase {
     func testMiddlewareSubscriptions() async throws {
         let store = try await XCTestStore(initial: AppState())
         
-        await store.subscribeAsync { store in
+        await store.subscribe(build: { store in
             ObservableMiddleware.self
             ReducibleMiddleware(store: store)
-        }
+        })
 
         var type = await store.state.testForm.type
         XCTAssertNil(type)
@@ -37,7 +37,7 @@ final class MiddlewareSubscriptionTests: XCTestCase {
     func testEnvironmentMiddlewareSubscription() async throws {
         let store = try await XCTestStore(initial: AppState())
         
-        await store.subscribeAsync { store in
+        await store.subscribe { store in
             EnvironmentMiddleware.self
         }
 
@@ -52,7 +52,7 @@ final class MiddlewareSubscriptionTests: XCTestCase {
         
         setLiveEnvironment()
         
-        await store.subscribeAsync { store in
+        await store.subscribe { store in
             EnvironmentMiddleware.self
         }
 
