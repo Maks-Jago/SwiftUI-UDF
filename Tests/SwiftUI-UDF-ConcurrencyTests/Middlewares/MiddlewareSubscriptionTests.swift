@@ -2,15 +2,16 @@ import XCTest
 @testable import UDF
 import Combine
 
+@available(iOS 16.0.0, *)
 fileprivate extension Actions {
     struct TestMiddleware: Action {
         var type: MiddlewareSubscriptionTests.TestMiddlewareType
     }
 }
 
+@available(iOS 16.0.0, *)
 final class MiddlewareSubscriptionTests: XCTestCase {
-    
-    @available(iOS 16.0.0, *)
+
     func testMiddlewareSubscriptions() async throws {
         let store = try await XCTestStore(initial: AppState())
         
@@ -32,8 +33,7 @@ final class MiddlewareSubscriptionTests: XCTestCase {
         type = await store.state.testForm.type
         XCTAssertEqual(type, .reducible)
     }
-    
-    @available(iOS 16.0.0, *)
+
     func testEnvironmentMiddlewareSubscription() async throws {
         let store = try await XCTestStore(initial: AppState())
         
@@ -45,8 +45,7 @@ final class MiddlewareSubscriptionTests: XCTestCase {
         await store.wait()
         XCTAssertEqual(middlewareId, .testEnvironment)
     }
-    
-    @available(iOS 16.0.0, *)
+
     func liveEnvironmentMiddlewareSubscription() async throws {
         let store = try await XCTestStore(initial: AppState())
         
@@ -63,6 +62,7 @@ final class MiddlewareSubscriptionTests: XCTestCase {
 }
 
 // MARK: - AppState
+@available(iOS 16.0.0, *)
 extension MiddlewareSubscriptionTests {
     
     enum TestMiddlewareType: String {
@@ -96,6 +96,7 @@ extension MiddlewareSubscriptionTests {
 }
 
 //MARK: - Middlewares
+@available(iOS 16.0.0, *)
 extension MiddlewareSubscriptionTests {
     
     struct TestMiddlewareEffect: Effectable {
@@ -184,6 +185,7 @@ extension MiddlewareSubscriptionTests {
     }
 }
 
+@available(iOS 16.0.0, *)
 private extension MiddlewareSubscriptionTests {
     private func setLiveEnvironment() {
         let original = class_getClassMethod(ProcessInfo.self, #selector(getter: ProcessInfo.processInfo))!
