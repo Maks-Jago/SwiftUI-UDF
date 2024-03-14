@@ -12,13 +12,7 @@ final class SubscribeMiddlewareTests: XCTestCase {
     @available(iOS 16.0.0, *)
     func testReducibleMiddleware() async throws {
         let store = try await XCTestStore(initial: AppState())
-//        let envStore = try EnvironmentStore(initial: AppState(), loggers: [])
-
-//        await envStore.subscribe(build: { store in
-//            ObservableMiddleware.self
-//            ReducibleMiddleware(store: store)
-//        })
-
+        
         await store.subscribe(build: { store in
             ObservableMiddleware.self
             ReducibleMiddleware(store: store)
