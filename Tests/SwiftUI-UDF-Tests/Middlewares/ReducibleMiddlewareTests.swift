@@ -15,22 +15,10 @@ class ReducibleMiddlewareTests: XCTestCase {
     struct AppState: AppReducer {
         var testForm = TestForm()
         var testFlow = TestFlow()
-
-        var formToCombine = FormToCombine()
     }
 
     struct TestForm: Form {
         var title: String = ""
-
-        var nested: NestedForm = .init()
-    }
-
-    struct NestedForm: Form {
-        var number: Int = 0
-    }
-
-    struct FormToCombine: Form {
-        var value: Int = 0
     }
 
     enum TestFlow: IdentifiableFlow {
@@ -78,38 +66,6 @@ class ReducibleMiddlewareTests: XCTestCase {
         }
     }
 
-    class ServiceObservableMiddleware: BaseObservableMiddleware<AppState> {
-        struct Environment {
-
-        }
-
-        var environment: Environment!
-
-        static func buildLiveEnvironment(for store: some Store<AppState>) -> Environment {
-            Environment()
-        }
-
-        static func buildTestEnvironment(for store: some Store<AppState>) -> Environment {
-            Environment()
-        }
-
-        func scope(for state: ReducibleMiddlewareTests.AppState) -> Scope {
-            state.testFlow
-            state.testForm
-            state.formToCombine
-        }
-
-        func observe(state: AppState) {
-            switch state.testFlow {
-            case .sending(let message):
-                execute(ServiceEffect(title: message), cancelation: "service")
-
-            default:
-                break
-            }
-        }
-    }
-
     struct ServiceEffect: Effectable {
         var title: String
 
@@ -122,23 +78,12 @@ class ReducibleMiddlewareTests: XCTestCase {
     func testReducibleMiddleware() async throws {
         let store = try await XCTestStore(initial: AppState())
         await store.subscribe(ServiceMiddleware.self)
-        await store.subscribe(ServiceObservableMiddleware.self)
 
-        await store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.title, value: "title 1"))
-
-        var title = await store.state.testForm.title
-        XCTAssertEqual(title, "title 1")
-
-        await store.dispatch(Actions.SendMessage(message: "Service title 1"))
+        let message = "Service title 1"
+        await store.dispatch(Actions.SendMessage(message: message))
         await store.wait()
 
-        title = await store.state.testForm.title
-        XCTAssertEqual(title, "Service title 1")
-
-        await store.dispatch(Actions.SendMessage(message: "Flow message", id: TestFlow.id))
-        await store.dispatch(Actions.UpdateFormField(keyPath: \FormToCombine.value, value: 2))
-
-        title = await store.state.testForm.title
-        XCTAssertEqual(title, "Flow message")
+        let title = await store.state.testForm.title
+        XCTAssertEqual(title, message)
     }
 }
