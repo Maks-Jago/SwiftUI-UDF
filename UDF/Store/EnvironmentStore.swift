@@ -94,26 +94,38 @@ public extension EnvironmentStore {
             onSubscribe()
         }
     }
-    
-    @available(iOS 16.0.0, macOS 13.0.0, *)
-    func subscribeAsync(@MiddlewareBuilder<State> _ builder: (_ store: any Store<State>) -> [MiddlewareWrapper<State>]) async {
-        if ProcessInfo.processInfo.xcTest {
-            await self.subscribe { store in
-                builder(store).map {
-                    $0.instance ?? middleware(store: store, type: $0.type, isInTestEnvironment: true)
-                }
+}
+
+@available(iOS 16.0.0, macOS 13.0.0, *)
+public extension EnvironmentStore {
+
+    func subscribeAsync(@MiddlewareBuilder<State> build: @escaping (_ store: any Store<State>) -> [MiddlewareWrapper<State>]) async {
+        self.subscribeAsync(buildMiddlewares: { store in
+            build(store).map { wrapper in
+                wrapper.instance ?? self.middleware(store: store, type: wrapper.type)
             }
-        } else {
-            await self.subscribe { store in
-                builder(store).map {
-                    $0.instance ?? middleware(store: store, type: $0.type)
-                }
+        })
+    }
+
+    func subscribe(@MiddlewareBuilder<State> build: @escaping (_ store: any Store<State>) -> [MiddlewareWrapper<State>]) async {
+        await self.subscribe(buildMiddlewares: { store in
+            build(store).map { wrapper in
+                wrapper.instance ?? self.middleware(store: store, type: wrapper.type)
             }
+        })
+    }
+
+    private func middleware<M: Middleware<State>>(store: any Store<State>, type: M.Type) -> any Middleware<State> where M.State == State {
+        switch type {
+        case let envMiddlewareType as any MiddlewareWithEnvironment<State>.Type:
+            envMiddleware(store: store, type: envMiddlewareType)
+        default:
+            type.init(store: store)
         }
     }
-    
-    func middleware<M: Middleware<State>>(store: any Store<State>, type: M.Type, isInTestEnvironment: Bool = false) -> M where M.State == State, M: EnvironmentMiddleware {
-        if isInTestEnvironment {
+
+    private func envMiddleware<M: MiddlewareWithEnvironment<State>>(store: any Store<State>, type: M.Type) -> any Middleware<State> where M.State == State {
+        if ProcessInfo.processInfo.xcTest {
             type.init(store: store, environment: type.buildTestEnvironment(for: store))
         } else {
             type.init(store: store, environment: type.buildLiveEnvironment(for: store))

@@ -28,3 +28,5 @@ public extension Middleware where Self: EnvironmentMiddleware {
         self.environment = environment
     }
 }
+
+typealias MiddlewareWithEnvironment<State> = Middleware<State> & EnvironmentMiddleware<State>

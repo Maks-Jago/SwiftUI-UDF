@@ -12,12 +12,18 @@ final class SubscribeMiddlewareTests: XCTestCase {
     @available(iOS 16.0.0, *)
     func testReducibleMiddleware() async throws {
         let store = try await XCTestStore(initial: AppState())
-        
-        await store.subscribeAsync { store in
+//        let envStore = try EnvironmentStore(initial: AppState(), loggers: [])
+
+//        await envStore.subscribe(build: { store in
+//            ObservableMiddleware.self
+//            ReducibleMiddleware(store: store)
+//        })
+
+        await store.subscribe(build: { store in
             ObservableMiddleware.self
             ReducibleMiddleware(store: store)
             EnvironmentMiddleware(store: store, environment: EnvironmentMiddleware.buildTestEnvironment(for: store))
-        }
+        })
 
         var middlewareId = await store.state.testForm.middlewareId
         XCTAssertNil(middlewareId)
