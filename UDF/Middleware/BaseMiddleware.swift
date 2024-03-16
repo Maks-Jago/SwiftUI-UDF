@@ -59,7 +59,6 @@ open class BaseMiddleware<State: AppReducer>: Middleware {
                         lineNumber: filePosition.lineNumber
                     )
                 }
-//                XCTestGroup.leave()
             })
     }
 
