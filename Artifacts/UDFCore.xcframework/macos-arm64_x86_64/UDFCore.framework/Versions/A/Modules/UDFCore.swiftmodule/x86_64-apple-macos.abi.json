@@ -5793,7 +5793,7 @@
           {
             "kind": "Function",
             "name": "subscribe",
-            "printedName": "subscribe(_:)",
+            "printedName": "subscribe(buildMiddleware:)",
             "children": [
               {
                 "kind": "TypeNominal",
@@ -5823,8 +5823,8 @@
               }
             ],
             "declKind": "Func",
-            "usr": "s:7UDFCore16EnvironmentStoreC9subscribeyyqd__AA0C0_px5StateRts_XPXEYaAFQyd__RszAA10MiddlewareRd__lF",
-            "mangledName": "$s7UDFCore16EnvironmentStoreC9subscribeyyqd__AA0C0_px5StateRts_XPXEYaAFQyd__RszAA10MiddlewareRd__lF",
+            "usr": "s:7UDFCore16EnvironmentStoreC9subscribe15buildMiddlewareyqd__AA0C0_px5StateRts_XPXE_tYaAGQyd__RszAA0F0Rd__lF",
+            "mangledName": "$s7UDFCore16EnvironmentStoreC9subscribe15buildMiddlewareyqd__AA0C0_px5StateRts_XPXE_tYaAGQyd__RszAA0F0Rd__lF",
             "moduleName": "UDFCore",
             "genericSig": "<τ_0_0, τ_1_0 where τ_0_0 == τ_1_0.State, τ_1_0 : UDFCore.Middleware>",
             "sugared_genericSig": "<State>",
@@ -5837,7 +5837,7 @@
           {
             "kind": "Function",
             "name": "subscribeAsync",
-            "printedName": "subscribeAsync(_:onSubscribe:)",
+            "printedName": "subscribeAsync(buildMiddleware:onSubscribe:)",
             "children": [
               {
                 "kind": "TypeNominal",
@@ -5882,11 +5882,132 @@
               }
             ],
             "declKind": "Func",
-            "usr": "s:7UDFCore16EnvironmentStoreC14subscribeAsync_11onSubscribeyqd__AA0C0_px5StateRts_XPc_yyYbctAGQyd__RszAA10MiddlewareRd__lF",
-            "mangledName": "$s7UDFCore16EnvironmentStoreC14subscribeAsync_11onSubscribeyqd__AA0C0_px5StateRts_XPc_yyYbctAGQyd__RszAA10MiddlewareRd__lF",
+            "usr": "s:7UDFCore16EnvironmentStoreC14subscribeAsync15buildMiddleware11onSubscribeyqd__AA0C0_px5StateRts_XPc_yyYbctAHQyd__RszAA0G0Rd__lF",
+            "mangledName": "$s7UDFCore16EnvironmentStoreC14subscribeAsync15buildMiddleware11onSubscribeyqd__AA0C0_px5StateRts_XPc_yyYbctAHQyd__RszAA0G0Rd__lF",
             "moduleName": "UDFCore",
             "genericSig": "<τ_0_0, τ_1_0 where τ_0_0 == τ_1_0.State, τ_1_0 : UDFCore.Middleware>",
             "sugared_genericSig": "<State>",
+            "declAttributes": [
+              "Final"
+            ],
+            "isFromExtension": true,
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "subscribe",
+            "printedName": "subscribe(buildMiddlewares:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeFunc",
+                "name": "Function",
+                "printedName": "(UDFCore.Store<τ_0_0>) -> [UDFCore.Middleware<τ_0_0>]",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Array",
+                    "printedName": "[UDFCore.Middleware<τ_0_0>]",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "Middleware",
+                        "printedName": "UDFCore.Middleware<τ_0_0>",
+                        "usr": "s:7UDFCore10MiddlewareP"
+                      }
+                    ],
+                    "usr": "s:Sa"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Store",
+                    "printedName": "UDFCore.Store<τ_0_0>",
+                    "usr": "s:7UDFCore5StoreP"
+                  }
+                ],
+                "typeAttributes": [
+                  "noescape"
+                ]
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:7UDFCore16EnvironmentStoreC9subscribe16buildMiddlewaresySayAA10Middleware_px5StateRts_XPGAA0C0_pxAHRS_XPXE_tYaF",
+            "mangledName": "$s7UDFCore16EnvironmentStoreC9subscribe16buildMiddlewaresySayAA10Middleware_px5StateRts_XPGAA0C0_pxAHRS_XPXE_tYaF",
+            "moduleName": "UDFCore",
+            "genericSig": "<τ_0_0 where τ_0_0 : UDFCore.AppReducer>",
+            "sugared_genericSig": "<State where State : UDFCore.AppReducer>",
+            "declAttributes": [
+              "Final"
+            ],
+            "isFromExtension": true,
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "subscribeAsync",
+            "printedName": "subscribeAsync(buildMiddlewares:onSubscribe:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeFunc",
+                "name": "Function",
+                "printedName": "(UDFCore.Store<τ_0_0>) -> [UDFCore.Middleware<τ_0_0>]",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Array",
+                    "printedName": "[UDFCore.Middleware<τ_0_0>]",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "Middleware",
+                        "printedName": "UDFCore.Middleware<τ_0_0>",
+                        "usr": "s:7UDFCore10MiddlewareP"
+                      }
+                    ],
+                    "usr": "s:Sa"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Store",
+                    "printedName": "UDFCore.Store<τ_0_0>",
+                    "usr": "s:7UDFCore5StoreP"
+                  }
+                ]
+              },
+              {
+                "kind": "TypeFunc",
+                "name": "Function",
+                "printedName": "() -> ()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  }
+                ],
+                "hasDefaultArg": true
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:7UDFCore16EnvironmentStoreC14subscribeAsync16buildMiddlewares11onSubscribeySayAA10Middleware_px5StateRts_XPGAA0C0_pxAIRS_XPc_yyYbctF",
+            "mangledName": "$s7UDFCore16EnvironmentStoreC14subscribeAsync16buildMiddlewares11onSubscribeySayAA10Middleware_px5StateRts_XPGAA0C0_pxAIRS_XPc_yyYbctF",
+            "moduleName": "UDFCore",
+            "genericSig": "<τ_0_0 where τ_0_0 : UDFCore.AppReducer>",
+            "sugared_genericSig": "<State where State : UDFCore.AppReducer>",
             "declAttributes": [
               "Final"
             ],
@@ -7053,7 +7174,7 @@
           {
             "kind": "Function",
             "name": "subscribe",
-            "printedName": "subscribe(_:)",
+            "printedName": "subscribe(build:)",
             "children": [
               {
                 "kind": "TypeNominal",
@@ -7083,8 +7204,8 @@
               }
             ],
             "declKind": "Func",
-            "usr": "s:7UDFCore11XCTestStoreC9subscribeyyqd__AA0C0_px5StateRts_XPXEYaAFQyd__RszAA10MiddlewareRd__lF",
-            "mangledName": "$s7UDFCore11XCTestStoreC9subscribeyyqd__AA0C0_px5StateRts_XPXEYaAFQyd__RszAA10MiddlewareRd__lF",
+            "usr": "s:7UDFCore11XCTestStoreC9subscribe5buildyqd__AA0C0_px5StateRts_XPXE_tYaAGQyd__RszAA10MiddlewareRd__lF",
+            "mangledName": "$s7UDFCore11XCTestStoreC9subscribe5buildyqd__AA0C0_px5StateRts_XPXE_tYaAGQyd__RszAA10MiddlewareRd__lF",
             "moduleName": "UDFCore",
             "genericSig": "<τ_0_0, τ_1_0 where τ_0_0 == τ_1_0.State, τ_1_0 : UDFCore.Middleware>",
             "sugared_genericSig": "<State>",
@@ -7092,6 +7213,64 @@
               "Custom",
               "Final",
               "AccessControl"
+            ],
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "subscribe",
+            "printedName": "subscribe(buildMiddlewares:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeFunc",
+                "name": "Function",
+                "printedName": "(UDFCore.Store<τ_0_0>) -> [UDFCore.Middleware<τ_0_0>]",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Array",
+                    "printedName": "[UDFCore.Middleware<τ_0_0>]",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "Middleware",
+                        "printedName": "UDFCore.Middleware<τ_0_0>",
+                        "usr": "s:7UDFCore10MiddlewareP"
+                      }
+                    ],
+                    "usr": "s:Sa"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Store",
+                    "printedName": "UDFCore.Store<τ_0_0>",
+                    "usr": "s:7UDFCore5StoreP"
+                  }
+                ],
+                "typeAttributes": [
+                  "noescape"
+                ]
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:7UDFCore11XCTestStoreC9subscribe16buildMiddlewaresySayAA10Middleware_px5StateRts_XPGAA0C0_pxAHRS_XPXE_tYaF",
+            "mangledName": "$s7UDFCore11XCTestStoreC9subscribe16buildMiddlewaresySayAA10Middleware_px5StateRts_XPGAA0C0_pxAHRS_XPXE_tYaF",
+            "moduleName": "UDFCore",
+            "genericSig": "<τ_0_0 where τ_0_0 : UDFCore.AppReducer>",
+            "sugared_genericSig": "<State where State : UDFCore.AppReducer>",
+            "intro_Macosx": "13.0.0",
+            "intro_iOS": "16.0.0",
+            "declAttributes": [
+              "Custom",
+              "Final",
+              "AccessControl",
+              "Available",
+              "Available"
             ],
             "funcSelfKind": "NonMutating"
           },
@@ -10254,28 +10433,28 @@
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/InternalStore.swift",
       "kind": "BooleanLiteral",
-      "offset": 2734,
+      "offset": 2946,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/InternalStore.swift",
       "kind": "BooleanLiteral",
-      "offset": 3275,
+      "offset": 3487,
       "length": 4,
       "value": "true"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/InternalStore.swift",
       "kind": "BooleanLiteral",
-      "offset": 5388,
+      "offset": 5600,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/InternalStore.swift",
       "kind": "BooleanLiteral",
-      "offset": 5480,
+      "offset": 5692,
       "length": 4,
       "value": "true"
     },

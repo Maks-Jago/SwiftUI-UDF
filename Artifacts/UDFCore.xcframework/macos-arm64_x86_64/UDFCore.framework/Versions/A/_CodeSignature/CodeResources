@@ -6,7 +6,7 @@
 	<dict>
 		<key>Resources/Info.plist</key>
 		<data>
-		mjA8g86F1ygqMf5G00TsPMSD8Do=
+		mW2VjbvbSD6/IfyFjDbIdVA5nQ4=
 		</data>
 	</dict>
 	<key>files2</key>
@@ -29,14 +29,14 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			DK5lo7mELjpogG5buVy+xLWEqxaXnysmm3Lza/Ic+0Q=
+			YOdA8OAJWqjqIc8QSM6LrUYY7w3GTzAl3VaDsFG17/E=
 			</data>
 		</dict>
 		<key>Modules/UDFCore.swiftmodule/arm64-apple-macos.private.swiftinterface</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			UeQB9UtTnhgjRndLahFOTyHpJwQCoQDu3WNcdRQcfls=
+			yZqAowE9B35rvJ1BD6sJBqJ/hCtGJaZKhvVHdgog4mM=
 			</data>
 		</dict>
 		<key>Modules/UDFCore.swiftmodule/arm64-apple-macos.swiftdoc</key>
@@ -50,28 +50,28 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			UeQB9UtTnhgjRndLahFOTyHpJwQCoQDu3WNcdRQcfls=
+			yZqAowE9B35rvJ1BD6sJBqJ/hCtGJaZKhvVHdgog4mM=
 			</data>
 		</dict>
 		<key>Modules/UDFCore.swiftmodule/arm64-apple-macos.swiftmodule</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			bqt1rfeIlEf8nDHZkwVXdVUkQQK/d8JoAyHfgMNqtMs=
+			YS6sY7CIqE8OlP4H0+BTdDNzb0QQqn2NdNtQe7nRg+Y=
 			</data>
 		</dict>
 		<key>Modules/UDFCore.swiftmodule/x86_64-apple-macos.abi.json</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			DK5lo7mELjpogG5buVy+xLWEqxaXnysmm3Lza/Ic+0Q=
+			YOdA8OAJWqjqIc8QSM6LrUYY7w3GTzAl3VaDsFG17/E=
 			</data>
 		</dict>
 		<key>Modules/UDFCore.swiftmodule/x86_64-apple-macos.private.swiftinterface</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			muziNnQHijuJ/9ltNObLoCID7wgDb/ta0L+2O+s30Ws=
+			IJY5IrQc5dEUI4DrTsDfxnyGbo1xtoBMxd7FcLmbfug=
 			</data>
 		</dict>
 		<key>Modules/UDFCore.swiftmodule/x86_64-apple-macos.swiftdoc</key>
@@ -85,14 +85,14 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			muziNnQHijuJ/9ltNObLoCID7wgDb/ta0L+2O+s30Ws=
+			IJY5IrQc5dEUI4DrTsDfxnyGbo1xtoBMxd7FcLmbfug=
 			</data>
 		</dict>
 		<key>Modules/UDFCore.swiftmodule/x86_64-apple-macos.swiftmodule</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			MyZOr6kmFHSFVPYij0aIkeW8hc8BlBLc4r6yDIv5Odg=
+			UKGMIHzKXnsw3ZUUAywS6mQH7O1m8hBtayC7ZDQnD5A=
 			</data>
 		</dict>
 		<key>Modules/module.modulemap</key>
@@ -106,7 +106,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			/fffqBSD0r7YD0niy1JiQUeDrTTEGjow3rLjpXtfsJw=
+			ZnPxbgeTJ0VSc8yquJBQjXyfKFmoK5rQX+yv9A6BARk=
 			</data>
 		</dict>
 	</dict>

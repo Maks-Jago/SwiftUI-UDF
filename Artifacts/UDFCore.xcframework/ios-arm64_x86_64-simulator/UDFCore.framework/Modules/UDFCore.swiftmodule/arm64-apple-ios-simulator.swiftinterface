@@ -291,10 +291,19 @@ final public class EnvironmentStore<State> where State : UDFCore.AppReducer {
 }
 extension UDFCore.EnvironmentStore {
   #if compiler(>=5.3) && $AsyncAwait
-  final public func subscribe(_ middlewareBuilder: (_ store: any UDFCore.Store<State>) -> some Middleware<State>) async
+  final public func subscribe(buildMiddleware: (_ store: any UDFCore.Store<State>) -> some Middleware<State>) async
   #endif
   #if compiler(>=5.3) && $Sendable
-  final public func subscribeAsync(_ middlewareBuilder: @escaping (_ store: any UDFCore.Store<State>) -> some Middleware<State>, onSubscribe: @escaping @Sendable () -> Swift.Void = {})
+  final public func subscribeAsync(buildMiddleware: @escaping (_ store: any UDFCore.Store<State>) -> some Middleware<State>, onSubscribe: @escaping @Sendable () -> Swift.Void = {})
+  #endif
+}
+@available(macOS 13.0.0, iOS 16.0.0, *)
+extension UDFCore.EnvironmentStore {
+  #if compiler(>=5.3) && $AsyncAwait
+  final public func subscribe(buildMiddlewares: (_ store: any UDFCore.Store<State>) -> [any UDFCore.Middleware<State>]) async
+  #endif
+  #if compiler(>=5.3) && $Sendable
+  final public func subscribeAsync(buildMiddlewares: @escaping (_ store: any UDFCore.Store<State>) -> [any UDFCore.Middleware<State>], onSubscribe: @escaping @Sendable () -> Swift.Void = {})
   #endif
 }
 #if compiler(>=5.3) && $PrimaryAssociatedTypes2
@@ -371,7 +380,11 @@ extension UDFCore.ActionFilter where Self == UDFCore.VerboseActionFilter {
   }
   @UDFCore.XCTestStoreActor public init(initial state: State) throws
   #if compiler(>=5.3) && $AsyncAwait
-  @UDFCore.XCTestStoreActor final public func subscribe(_ middlewareBuilder: (_ store: any UDFCore.Store<State>) -> some Middleware<State>) async
+  @UDFCore.XCTestStoreActor final public func subscribe(build: (_ store: any UDFCore.Store<State>) -> some Middleware<State>) async
+  #endif
+  #if compiler(>=5.3) && $AsyncAwait
+  @available(macOS 13.0.0, iOS 16.0.0, *)
+  @UDFCore.XCTestStoreActor final public func subscribe(buildMiddlewares: (_ store: any UDFCore.Store<State>) -> [any UDFCore.Middleware<State>]) async
   #endif
   #if compiler(>=5.3) && $AsyncAwait
   @UDFCore.XCTestStoreActor final public func dispatch(_ action: some Action, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) async
