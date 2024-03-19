@@ -45,7 +45,6 @@ let package = Package(
         .testTarget(
             name: "SwiftUI-UDF-Tests",
             dependencies: [
-//                .target(name: "UDF"),
                 .target(name: "UDFXCTest")
             ]
         ),
@@ -53,7 +52,6 @@ let package = Package(
         .testTarget(
             name: "SwiftUI-UDF-ConcurrencyTests",
             dependencies: [
-//                .target(name: "UDF"),
                 .target(name: "UDFXCTest")
             ]
         )

@@ -18,12 +18,6 @@ extension UDFCore.ActionFilter where Self == UDFCore.DefaultActionFilter {
     get
   }
 }
-@_hasMissingDesignatedInitializers final public class XCTestGroup {
-  public static func enter(fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line)
-  public static func leave(fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line)
-  public static func wait(fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line)
-  @objc deinit
-}
 public protocol WrappedReducer : UDFCore.Reducing {
   var reducer: any UDFCore.Reducing { get set }
 }
@@ -91,7 +85,7 @@ public typealias EquatableScope = Swift.Equatable & UDFCore.Scope
 extension UDFCore._Mergeable {
   public func filled(from value: Self, mutate: (_ filledValue: inout Self, _ oldValue: Self) -> Swift.Void) -> Self
 }
-public enum MiddlewareStatus : Swift.Sendable {
+public enum MiddlewareStatus {
   case active
   case suspend
   public static func == (a: UDFCore.MiddlewareStatus, b: UDFCore.MiddlewareStatus) -> Swift.Bool
@@ -152,7 +146,7 @@ extension UDFCore._Container {
   public var store: UDFCore.EnvironmentStore<Self.ContainerState> {
     get
   }
-  @_Concurrency.MainActor public var body: some SwiftUI.View {
+  public var body: some SwiftUI.View {
     get
   }
 }
@@ -167,31 +161,17 @@ extension UDFCore._Container {
   public static func buildLimitedAvailability(_ component: [any Swift.Equatable]) -> [any Swift.Equatable]
   public static func buildFinalResult(_ component: [any Swift.Equatable], fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) -> UDFCore.ActionGroup
 }
-#if compiler(>=5.3) && $PrimaryAssociatedTypes2
-public protocol Middleware<State> {
-  associatedtype State : UDFCore.AppReducer
-  var store: any UDFCore.Store<Self.State> { get }
-  var queue: Dispatch.DispatchQueue { get set }
-  init(store: some Store<State>)
-  init(store: some Store<State>, queue: Dispatch.DispatchQueue)
-  func status(for state: Self.State) -> UDFCore.MiddlewareStatus
-  @discardableResult
-  func cancel<Id>(by cancelation: Id) -> Swift.Bool where Id : Swift.Hashable
-  func cancelAll()
-}
-#else
 public protocol Middleware {
   associatedtype State : UDFCore.AppReducer
-  var store: any UDFCore.Store<Self.State> { get }
+  var store: any UDFCore.Store { get }
   var queue: Dispatch.DispatchQueue { get set }
-  init(store: some Store<State>)
-  init(store: some Store<State>, queue: Dispatch.DispatchQueue)
+  init(store: any UDFCore.Store)
+  init(store: any UDFCore.Store, queue: Dispatch.DispatchQueue)
   func status(for state: Self.State) -> UDFCore.MiddlewareStatus
   @discardableResult
   func cancel<Id>(by cancelation: Id) -> Swift.Bool where Id : Swift.Hashable
   func cancelAll()
 }
-#endif
 @_hasMissingDesignatedInitializers @propertyWrapper @dynamicMemberLookup final public class SourceOfTruth<AppState> where AppState : UDFCore.AppReducer {
   final public var wrappedValue: AppState
   final public var projectedValue: UDFCore.SourceOfTruth<AppState> {
@@ -278,6 +258,8 @@ extension Swift.Hashable {
 final public class EnvironmentStore<State> where State : UDFCore.AppReducer {
   @UDFCore.SourceOfTruth @_projectedValueProperty($state) final public var state: State {
     get
+    set
+    _modify
   }
   final public var $state: UDFCore.SourceOfTruth<State> {
     get
@@ -291,40 +273,21 @@ final public class EnvironmentStore<State> where State : UDFCore.AppReducer {
 }
 extension UDFCore.EnvironmentStore {
   #if compiler(>=5.3) && $AsyncAwait
-  final public func subscribe(buildMiddleware: (_ store: any UDFCore.Store<State>) -> some Middleware<State>) async
+  final public func subscribe(_ middlewareBuilder: (_ store: any UDFCore.Store) -> some Middleware) async
   #endif
-  #if compiler(>=5.3) && $Sendable
-  final public func subscribeAsync(buildMiddleware: @escaping (_ store: any UDFCore.Store<State>) -> some Middleware<State>, onSubscribe: @escaping @Sendable () -> Swift.Void = {})
-  #endif
+  final public func subscribeAsync(_ middlewareBuilder: @escaping (_ store: any UDFCore.Store) -> some Middleware, onSubscribe: @escaping () -> Swift.Void = {})
 }
-@available(macOS 13.0.0, iOS 16.0.0, *)
-extension UDFCore.EnvironmentStore {
-  #if compiler(>=5.3) && $AsyncAwait
-  final public func subscribe(buildMiddlewares: (_ store: any UDFCore.Store<State>) -> [any UDFCore.Middleware<State>]) async
-  #endif
-  #if compiler(>=5.3) && $Sendable
-  final public func subscribeAsync(buildMiddlewares: @escaping (_ store: any UDFCore.Store<State>) -> [any UDFCore.Middleware<State>], onSubscribe: @escaping @Sendable () -> Swift.Void = {})
-  #endif
-}
-#if compiler(>=5.3) && $PrimaryAssociatedTypes2
-public protocol Store<State> : _Concurrency.Actor {
-  associatedtype State : UDFCore.AppReducer
-  var state: Self.State { get }
-  nonisolated func dispatch(_ action: some Action, priority: UDFCore.ActionPriority, fileName: Swift.String, functionName: Swift.String, lineNumber: Swift.Int)
-}
-#else
 public protocol Store : _Concurrency.Actor {
   associatedtype State : UDFCore.AppReducer
   var state: Self.State { get }
   nonisolated func dispatch(_ action: some Action, priority: UDFCore.ActionPriority, fileName: Swift.String, functionName: Swift.String, lineNumber: Swift.Int)
 }
-#endif
 extension UDFCore.Store {
   nonisolated public func dispatch(_ action: some Action, priority: UDFCore.ActionPriority = .default, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line)
   public func bind(_ action: some Action, priority: UDFCore.ActionPriority = .default, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) -> UDFCore.Command
   public func bind<T>(_ action: @escaping (T) -> some Action, priority: UDFCore.ActionPriority = .default, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) -> UDFCore.CommandWith<T>
 }
-public enum ActionPriority : Swift.Sendable {
+public enum ActionPriority {
   case `default`
   case userInteractive
   public static func == (a: UDFCore.ActionPriority, b: UDFCore.ActionPriority) -> Swift.Bool
@@ -356,40 +319,22 @@ extension UDFCore.ActionFilter where Self == UDFCore.VerboseActionFilter {
     get
   }
 }
-#if compiler(>=5.3) && $Actors
-@_hasMissingDesignatedInitializers @globalActor public actor XCTestStoreActor {
-  public static var shared: UDFCore.XCTestStoreActor {
-    get
-  }
-  public typealias ActorType = UDFCore.XCTestStoreActor
-  @objc deinit
-  @available(iOS 13.0, tvOS 13.0, watchOS 6.0, macOS 10.15, *)
-  @_semantics("defaultActor") nonisolated final public var unownedExecutor: _Concurrency.UnownedSerialExecutor {
-    get
-  }
-}
-#endif
-@UDFCore.XCTestStoreActor final public class XCTestStore<State> where State : UDFCore.AppReducer {
-  @UDFCore.SourceOfTruth @_projectedValueProperty($state) @UDFCore.XCTestStoreActor final public var state: State {
+@_Concurrency.MainActor final public class XCTestStore<State> where State : UDFCore.AppReducer {
+  @UDFCore.SourceOfTruth @_projectedValueProperty($state) @_Concurrency.MainActor final public var state: State {
     get
     set
     _modify
   }
-  @UDFCore.XCTestStoreActor final public var $state: UDFCore.SourceOfTruth<State> {
+  @_Concurrency.MainActor final public var $state: UDFCore.SourceOfTruth<State> {
     get
   }
-  @UDFCore.XCTestStoreActor public init(initial state: State) throws
+  @_Concurrency.MainActor public init(initial state: State) throws
   #if compiler(>=5.3) && $AsyncAwait
-  @UDFCore.XCTestStoreActor final public func subscribe(build: (_ store: any UDFCore.Store<State>) -> some Middleware<State>) async
+  @_Concurrency.MainActor final public func subscribe(_ middlewareBuilder: (_ store: any UDFCore.Store) -> some Middleware) async
   #endif
   #if compiler(>=5.3) && $AsyncAwait
-  @available(macOS 13.0.0, iOS 16.0.0, *)
-  @UDFCore.XCTestStoreActor final public func subscribe(buildMiddlewares: (_ store: any UDFCore.Store<State>) -> [any UDFCore.Middleware<State>]) async
+  @_Concurrency.MainActor final public func dispatch(_ action: some Action, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) async
   #endif
-  #if compiler(>=5.3) && $AsyncAwait
-  @UDFCore.XCTestStoreActor final public func dispatch(_ action: some Action, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) async
-  #endif
-  @UDFCore.XCTestStoreActor final public func wait(fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line)
   @objc deinit
 }
 #if compiler(>=5.3) && $PrimaryAssociatedTypes2
@@ -457,9 +402,6 @@ extension UDFCore.MiddlewareStatus : Swift.Equatable {}
 extension UDFCore.MiddlewareStatus : Swift.Hashable {}
 extension UDFCore.ActionPriority : Swift.Equatable {}
 extension UDFCore.ActionPriority : Swift.Hashable {}
-#if compiler(>=5.3) && $Actors
-extension UDFCore.XCTestStoreActor : _Concurrency.GlobalActor {}
-#endif
 extension UDFCore.XCTestStore : Swift.Sendable {}
 extension UDFCore.AsynchronousOperation.State : Swift.Equatable {}
 extension UDFCore.AsynchronousOperation.State : Swift.Hashable {}

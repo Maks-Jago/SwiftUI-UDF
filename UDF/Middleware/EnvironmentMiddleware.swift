@@ -2,21 +2,21 @@
 import UDFCore
 import Foundation
 
-public protocol EnvironmentMiddleware<State> {
+public protocol EnvironmentMiddleware {
     associatedtype Environment
     associatedtype State: AppReducer
 
     var environment: Environment! { get set }
 
-    init(store: some Store<State>, environment: Environment)
-    init(store: some Store<State>, environment: Environment, queue: DispatchQueue)
+    init(store: any Store, environment: Environment)
+    init(store: any Store, environment: Environment, queue: DispatchQueue)
 
-    static func buildLiveEnvironment(for store: some Store<State>) -> Environment
-    static func buildTestEnvironment(for store: some Store<State>) -> Environment
+    static func buildLiveEnvironment(for store: any Store) -> Environment
+    static func buildTestEnvironment(for store: any Store) -> Environment
 }
 
 public extension EnvironmentMiddleware where Environment == Void {
 
-    static func buildLiveEnvironment(for store: some Store<State>) -> Environment { () }
-    static func buildTestEnvironment(for store: some Store<State>) -> Environment { () }
+    static func buildLiveEnvironment(for store: any Store) -> Environment { () }
+    static func buildTestEnvironment(for store: any Store) -> Environment { () }
 }

@@ -23,6 +23,15 @@ public struct Paginator<Item: Hashable & Identifiable, FlowId: Hashable>: Reduci
         page.pageNumber == initialPage && isLoading
     }
 
+    @available(*, deprecated, message: "This init is deprecated and will be removed in future updates, use init(itemType:flowId:perPage)")
+    public init(flowId: FlowId, perPage: Int, usePrefixForFirstPage: Bool = false, initialPage: Int = 1) {
+        self.flowId = flowId
+        self.perPage = perPage
+        self.usePrefixForFirstPage = usePrefixForFirstPage
+        self.initialPage = initialPage
+        self.page = .number(initialPage)
+    }
+
     public init(_ itemType: Item.Type, flowId: FlowId, perPage: Int, usePrefixForFirstPage: Bool = false, initialPage: Int = 1) {
         self.flowId = flowId
         self.perPage = perPage
