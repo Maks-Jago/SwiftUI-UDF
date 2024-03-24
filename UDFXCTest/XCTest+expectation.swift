@@ -1,8 +1,9 @@
 
+import UDF
 import XCTest
 
-extension XCTestCase {
-    func expectation(description: String, sleep: TimeInterval) async {
+public extension XCTestCase {
+    func fulfill(description: String, sleep: TimeInterval) async {
         let exp = expectation(description: description)
 
         Task {

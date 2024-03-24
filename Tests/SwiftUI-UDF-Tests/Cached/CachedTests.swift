@@ -8,6 +8,7 @@
 import XCTest
 @testable import UDF
 import OrderedCollections
+import UDFXCTest
 
 fileprivate extension Actions {
     struct ResetCache: Action {}
@@ -69,7 +70,7 @@ class CachedTests: XCTestCase {
         var count = await store.state.nestedForm.items.count
         XCTAssertEqual(count, 4)
 
-        await expectation(description: "waiting for cache syncing", sleep: 1.5)
+        await fulfill(description: "waiting for cache syncing", sleep: 1.5)
 
         store = try await .init(initial: AppState())
         isEmpty = await store.state.nestedForm.items.isEmpty
@@ -91,7 +92,7 @@ class CachedTests: XCTestCase {
         let count = await store.state.nestedForm.items.count
         XCTAssertEqual(count, 4)
 
-        await expectation(description: "waiting for cache syncing", sleep: 1.5)
+        await fulfill(description: "waiting for cache syncing", sleep: 1.5)
         await store.dispatch(Actions.ResetCache())
 
         isEmpty = await store.state.nestedForm.items.isEmpty

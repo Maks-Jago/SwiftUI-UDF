@@ -20,7 +20,19 @@ final class NewReducibleMiddlewareTests: XCTestCase {
     }
 
     class SendMessageMiddleware: BaseReducibleMiddleware<AppState> {
-        var environment: Void!
+        static func buildLiveEnvironment(for store: some UDFCore.Store<AppState>) -> Environment {
+            Environment(loadItems: { [] })
+        }
+        
+        static func buildTestEnvironment(for store: some UDFCore.Store<AppState>) -> Environment {
+            Environment(loadItems: { [] })
+        }
+        
+        var environment: Environment!
+        
+        struct Environment {
+            var loadItems: () -> [String]
+        }
 
         func reduce(_ action: some Action, for state: AppState) {
             switch action {
@@ -56,7 +68,7 @@ final class NewReducibleMiddlewareTests: XCTestCase {
         XCTAssertTrue(formTitle.isEmpty)
 
         await store.dispatch(Actions.SendMessage(message: "Message 1"))
-        await expectation(description: "Waiting for observe method", sleep: 0.5)
+        await store.wait()
 
         formTitle = await store.state.testForm.title
         XCTAssertEqual(formTitle, "Message 1")

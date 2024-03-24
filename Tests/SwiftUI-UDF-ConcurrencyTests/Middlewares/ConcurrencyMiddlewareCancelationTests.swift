@@ -58,8 +58,7 @@ final class ConcurrencyMiddlewareCancelationTests: XCTestCase {
 
         XCTAssertEqual(middlewareFlow, .loading)
         await store.dispatch(Actions.CancelLoading())
-
-        await expectation(description: "Waiting for cancelation", sleep: 0.2)
+        await store.wait()
 
         middlewareFlow = await store.state.middlewareFlow
         XCTAssertEqual(middlewareFlow, .didCancel)
@@ -75,7 +74,7 @@ fileprivate extension Actions {
 // MARK: - Middlewares
 private extension ConcurrencyMiddlewareCancelationTests {
 
-    final class ObservableMiddlewareToCancel: BaseConcurrencyObservableMiddleware<AppState> {
+    final class ObservableMiddlewareToCancel: BaseObservableMiddleware<AppState> {
         struct Environment {
             var loadItems: () async -> [String]
         }

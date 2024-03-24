@@ -2,7 +2,7 @@
 import UDFCore
 import Foundation
 
-public protocol EnvironmentMiddleware {
+public protocol EnvironmentMiddleware<State> {
     associatedtype Environment
     associatedtype State: AppReducer
 

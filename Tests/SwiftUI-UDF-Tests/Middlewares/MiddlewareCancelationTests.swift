@@ -2,6 +2,7 @@
 import XCTest
 @testable import UDF
 import Combine
+import UDFXCTest
 
 final class MiddlewareCancelationTests: XCTestCase {
 
@@ -19,15 +20,12 @@ final class MiddlewareCancelationTests: XCTestCase {
             switch action {
 
             case let action as Actions.DidCancelEffect where action.cancelation == ObservableMiddlewareToCancel.Cancelation.message:
-                //Actions.DidCancelEffect where ObservableMiddlewareToCancel.Cancelation.allCases.contains(action.cancelation):
                 self = .none
 
             case let action as Actions.DidCancelEffect where action.cancelation == ReducibleMiddlewareToCancel.Cancelation.reducibleMessage:
-                //Actions.DidCancelEffect where ObservableMiddlewareToCancel.Cancelation.allCases.contains(action.cancelation):
                 self = .none
 
             case let action as Actions.DidCancelEffect where action.cancelation == ObservableRunMiddlewareToCancel.Cancelation.runMessage:
-                //Actions.DidCancelEffect where ObservableMiddlewareToCancel.Cancelation.allCases.contains(action.cancelation):
                 self = .none
 
             case is Actions.Loading:
@@ -69,7 +67,7 @@ final class MiddlewareCancelationTests: XCTestCase {
         XCTAssertEqual(middlewareFlow, .loading)
 
         await store.dispatch(Actions.CancelLoading())
-        await expectation(description: "waiting for the possible message action dispatch", sleep: 2)
+        await store.wait()
 
         middlewareFlow = await store.state.middlewareFlow
         XCTAssertEqual(middlewareFlow, .none)
@@ -83,10 +81,9 @@ final class MiddlewareCancelationTests: XCTestCase {
         var middlewareFlow = await store.state.middlewareFlow
         XCTAssertEqual(middlewareFlow, .loading)
 
-        await expectation(description: "waiting for messages to increase messages count in form", sleep: 2)
+        await fulfill(description: "waiting for messages to increase messages count in form", sleep: 2)
         await store.dispatch(Actions.CancelLoading())
-
-        await expectation(description: "waiting for cancelation", sleep: 0.2)
+        await store.wait()
 
         let messagesCount = await store.state.runForm.messagesCount
         XCTAssertGreaterThanOrEqual(messagesCount, 1)
@@ -104,7 +101,7 @@ final class MiddlewareCancelationTests: XCTestCase {
         XCTAssertEqual(middlewareFlow, .loading)
 
         await store.dispatch(Actions.CancelLoading())
-        await expectation(description: "waiting for the possible message action dispatch", sleep: 2)
+        await store.wait()
 
         middlewareFlow = await store.state.middlewareFlow
         XCTAssertEqual(middlewareFlow, .none)
@@ -136,7 +133,7 @@ private extension MiddlewareCancelationTests {
             switch state.middlewareFlow {
             case .loading:
                 execute(
-                    Effect(action: Actions.Message(id: "message_id")).delay(duration: 1, queue: DispatchQueue.main),
+                    Effect(action: Actions.Message(id: "message_id")).delay(duration: 1, queue: queue),
                     cancelation: Cancelation.message
                 )
 
@@ -223,7 +220,7 @@ private extension MiddlewareCancelationTests {
             switch action {
             case is Actions.Loading:
                 execute(
-                    Effect(action: Actions.Message(id: "message_id")).delay(duration: 1, queue: DispatchQueue.main),
+                    Effect(action: Actions.Message(id: "message_id")).delay(duration: 1, queue: queue),
                     cancelation: Cancelation.reducibleMessage
                 )
 

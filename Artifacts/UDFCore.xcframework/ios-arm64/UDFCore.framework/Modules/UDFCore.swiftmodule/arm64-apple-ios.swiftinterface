@@ -1,6 +1,6 @@
 // swift-interface-format-version: 1.0
 // swift-compiler-version: Apple Swift version 5.9.2 (swiftlang-5.9.2.2.56 clang-1500.1.0.2.5)
-// swift-module-flags: -target arm64-apple-ios14.0 -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -O -module-name UDFCore
+// swift-module-flags: -target arm64-apple-ios16.0 -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -O -module-name UDFCore
 // swift-module-flags-ignorable: -enable-bare-slash-regex
 import Combine
 import Foundation
@@ -17,6 +17,12 @@ extension UDFCore.ActionFilter where Self == UDFCore.DefaultActionFilter {
   public static var `default`: any UDFCore.ActionFilter {
     get
   }
+}
+@_hasMissingDesignatedInitializers final public class XCTestGroup {
+  public static func enter(fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line)
+  public static func leave(fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line)
+  public static func wait(fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line)
+  @objc deinit
 }
 public protocol WrappedReducer : UDFCore.Reducing {
   var reducer: any UDFCore.Reducing { get set }
@@ -285,10 +291,19 @@ final public class EnvironmentStore<State> where State : UDFCore.AppReducer {
 }
 extension UDFCore.EnvironmentStore {
   #if compiler(>=5.3) && $AsyncAwait
-  final public func subscribe(_ middlewareBuilder: (_ store: any UDFCore.Store<State>) -> some Middleware<State>) async
+  final public func subscribe(buildMiddleware: (_ store: any UDFCore.Store<State>) -> some Middleware<State>) async
   #endif
   #if compiler(>=5.3) && $Sendable
-  final public func subscribeAsync(_ middlewareBuilder: @escaping (_ store: any UDFCore.Store<State>) -> some Middleware<State>, onSubscribe: @escaping @Sendable () -> Swift.Void = {})
+  final public func subscribeAsync(buildMiddleware: @escaping (_ store: any UDFCore.Store<State>) -> some Middleware<State>, onSubscribe: @escaping @Sendable () -> Swift.Void = {})
+  #endif
+}
+@available(macOS 13.0.0, iOS 16.0.0, *)
+extension UDFCore.EnvironmentStore {
+  #if compiler(>=5.3) && $AsyncAwait
+  final public func subscribe(buildMiddlewares: (_ store: any UDFCore.Store<State>) -> [any UDFCore.Middleware<State>]) async
+  #endif
+  #if compiler(>=5.3) && $Sendable
+  final public func subscribeAsync(buildMiddlewares: @escaping (_ store: any UDFCore.Store<State>) -> [any UDFCore.Middleware<State>], onSubscribe: @escaping @Sendable () -> Swift.Void = {})
   #endif
 }
 #if compiler(>=5.3) && $PrimaryAssociatedTypes2
@@ -341,22 +356,40 @@ extension UDFCore.ActionFilter where Self == UDFCore.VerboseActionFilter {
     get
   }
 }
-@_Concurrency.MainActor final public class XCTestStore<State> where State : UDFCore.AppReducer {
-  @UDFCore.SourceOfTruth @_projectedValueProperty($state) @_Concurrency.MainActor final public var state: State {
+#if compiler(>=5.3) && $Actors
+@_hasMissingDesignatedInitializers @globalActor public actor XCTestStoreActor {
+  public static var shared: UDFCore.XCTestStoreActor {
+    get
+  }
+  public typealias ActorType = UDFCore.XCTestStoreActor
+  @objc deinit
+  @available(iOS 13.0, tvOS 13.0, watchOS 6.0, macOS 10.15, *)
+  @_semantics("defaultActor") nonisolated final public var unownedExecutor: _Concurrency.UnownedSerialExecutor {
+    get
+  }
+}
+#endif
+@UDFCore.XCTestStoreActor final public class XCTestStore<State> where State : UDFCore.AppReducer {
+  @UDFCore.SourceOfTruth @_projectedValueProperty($state) @UDFCore.XCTestStoreActor final public var state: State {
     get
     set
     _modify
   }
-  @_Concurrency.MainActor final public var $state: UDFCore.SourceOfTruth<State> {
+  @UDFCore.XCTestStoreActor final public var $state: UDFCore.SourceOfTruth<State> {
     get
   }
-  @_Concurrency.MainActor public init(initial state: State) throws
+  @UDFCore.XCTestStoreActor public init(initial state: State) throws
   #if compiler(>=5.3) && $AsyncAwait
-  @_Concurrency.MainActor final public func subscribe(_ middlewareBuilder: (_ store: any UDFCore.Store<State>) -> some Middleware<State>) async
+  @UDFCore.XCTestStoreActor final public func subscribe(build: (_ store: any UDFCore.Store<State>) -> some Middleware<State>) async
   #endif
   #if compiler(>=5.3) && $AsyncAwait
-  @_Concurrency.MainActor final public func dispatch(_ action: some Action, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) async
+  @available(macOS 13.0.0, iOS 16.0.0, *)
+  @UDFCore.XCTestStoreActor final public func subscribe(buildMiddlewares: (_ store: any UDFCore.Store<State>) -> [any UDFCore.Middleware<State>]) async
   #endif
+  #if compiler(>=5.3) && $AsyncAwait
+  @UDFCore.XCTestStoreActor final public func dispatch(_ action: some Action, fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line) async
+  #endif
+  @UDFCore.XCTestStoreActor final public func wait(fileName: Swift.String = #file, functionName: Swift.String = #function, lineNumber: Swift.Int = #line)
   @objc deinit
 }
 #if compiler(>=5.3) && $PrimaryAssociatedTypes2
@@ -424,6 +457,9 @@ extension UDFCore.MiddlewareStatus : Swift.Equatable {}
 extension UDFCore.MiddlewareStatus : Swift.Hashable {}
 extension UDFCore.ActionPriority : Swift.Equatable {}
 extension UDFCore.ActionPriority : Swift.Hashable {}
+#if compiler(>=5.3) && $Actors
+extension UDFCore.XCTestStoreActor : _Concurrency.GlobalActor {}
+#endif
 extension UDFCore.XCTestStore : Swift.Sendable {}
 extension UDFCore.AsynchronousOperation.State : Swift.Equatable {}
 extension UDFCore.AsynchronousOperation.State : Swift.Hashable {}

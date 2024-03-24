@@ -115,6 +115,158 @@
       },
       {
         "kind": "TypeDecl",
+        "name": "XCTestGroup",
+        "printedName": "XCTestGroup",
+        "children": [
+          {
+            "kind": "Function",
+            "name": "enter",
+            "printedName": "enter(fileName:functionName:lineNumber:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "hasDefaultArg": true,
+                "usr": "s:SS"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "hasDefaultArg": true,
+                "usr": "s:SS"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Int",
+                "printedName": "Swift.Int",
+                "hasDefaultArg": true,
+                "usr": "s:Si"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:7UDFCore11XCTestGroupC5enter8fileName08functionF010lineNumberySS_SSSitFZ",
+            "mangledName": "$s7UDFCore11XCTestGroupC5enter8fileName08functionF010lineNumberySS_SSSitFZ",
+            "moduleName": "UDFCore",
+            "static": true,
+            "declAttributes": [
+              "Final",
+              "AccessControl"
+            ],
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "leave",
+            "printedName": "leave(fileName:functionName:lineNumber:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "hasDefaultArg": true,
+                "usr": "s:SS"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "hasDefaultArg": true,
+                "usr": "s:SS"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Int",
+                "printedName": "Swift.Int",
+                "hasDefaultArg": true,
+                "usr": "s:Si"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:7UDFCore11XCTestGroupC5leave8fileName08functionF010lineNumberySS_SSSitFZ",
+            "mangledName": "$s7UDFCore11XCTestGroupC5leave8fileName08functionF010lineNumberySS_SSSitFZ",
+            "moduleName": "UDFCore",
+            "static": true,
+            "declAttributes": [
+              "Final",
+              "AccessControl"
+            ],
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "wait",
+            "printedName": "wait(fileName:functionName:lineNumber:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "hasDefaultArg": true,
+                "usr": "s:SS"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "hasDefaultArg": true,
+                "usr": "s:SS"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Int",
+                "printedName": "Swift.Int",
+                "hasDefaultArg": true,
+                "usr": "s:Si"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:7UDFCore11XCTestGroupC4wait8fileName08functionF010lineNumberySS_SSSitFZ",
+            "mangledName": "$s7UDFCore11XCTestGroupC4wait8fileName08functionF010lineNumberySS_SSSitFZ",
+            "moduleName": "UDFCore",
+            "static": true,
+            "declAttributes": [
+              "Final",
+              "AccessControl"
+            ],
+            "funcSelfKind": "NonMutating"
+          }
+        ],
+        "declKind": "Class",
+        "usr": "s:7UDFCore11XCTestGroupC",
+        "mangledName": "$s7UDFCore11XCTestGroupC",
+        "moduleName": "UDFCore",
+        "declAttributes": [
+          "Final",
+          "AccessControl"
+        ],
+        "hasMissingDesignatedInitializers": true
+      },
+      {
+        "kind": "Import",
+        "name": "Foundation",
+        "printedName": "Foundation",
+        "declKind": "Import",
+        "moduleName": "UDFCore"
+      },
+      {
+        "kind": "TypeDecl",
         "name": "WrappedReducer",
         "printedName": "WrappedReducer",
         "children": [
@@ -5641,7 +5793,7 @@
           {
             "kind": "Function",
             "name": "subscribe",
-            "printedName": "subscribe(_:)",
+            "printedName": "subscribe(buildMiddleware:)",
             "children": [
               {
                 "kind": "TypeNominal",
@@ -5671,8 +5823,8 @@
               }
             ],
             "declKind": "Func",
-            "usr": "s:7UDFCore16EnvironmentStoreC9subscribeyyqd__AA0C0_px5StateRts_XPXEYaAFQyd__RszAA10MiddlewareRd__lF",
-            "mangledName": "$s7UDFCore16EnvironmentStoreC9subscribeyyqd__AA0C0_px5StateRts_XPXEYaAFQyd__RszAA10MiddlewareRd__lF",
+            "usr": "s:7UDFCore16EnvironmentStoreC9subscribe15buildMiddlewareyqd__AA0C0_px5StateRts_XPXE_tYaAGQyd__RszAA0F0Rd__lF",
+            "mangledName": "$s7UDFCore16EnvironmentStoreC9subscribe15buildMiddlewareyqd__AA0C0_px5StateRts_XPXE_tYaAGQyd__RszAA0F0Rd__lF",
             "moduleName": "UDFCore",
             "genericSig": "<τ_0_0, τ_1_0 where τ_0_0 == τ_1_0.State, τ_1_0 : UDFCore.Middleware>",
             "sugared_genericSig": "<State>",
@@ -5685,7 +5837,7 @@
           {
             "kind": "Function",
             "name": "subscribeAsync",
-            "printedName": "subscribeAsync(_:onSubscribe:)",
+            "printedName": "subscribeAsync(buildMiddleware:onSubscribe:)",
             "children": [
               {
                 "kind": "TypeNominal",
@@ -5730,11 +5882,132 @@
               }
             ],
             "declKind": "Func",
-            "usr": "s:7UDFCore16EnvironmentStoreC14subscribeAsync_11onSubscribeyqd__AA0C0_px5StateRts_XPc_yyYbctAGQyd__RszAA10MiddlewareRd__lF",
-            "mangledName": "$s7UDFCore16EnvironmentStoreC14subscribeAsync_11onSubscribeyqd__AA0C0_px5StateRts_XPc_yyYbctAGQyd__RszAA10MiddlewareRd__lF",
+            "usr": "s:7UDFCore16EnvironmentStoreC14subscribeAsync15buildMiddleware11onSubscribeyqd__AA0C0_px5StateRts_XPc_yyYbctAHQyd__RszAA0G0Rd__lF",
+            "mangledName": "$s7UDFCore16EnvironmentStoreC14subscribeAsync15buildMiddleware11onSubscribeyqd__AA0C0_px5StateRts_XPc_yyYbctAHQyd__RszAA0G0Rd__lF",
             "moduleName": "UDFCore",
             "genericSig": "<τ_0_0, τ_1_0 where τ_0_0 == τ_1_0.State, τ_1_0 : UDFCore.Middleware>",
             "sugared_genericSig": "<State>",
+            "declAttributes": [
+              "Final"
+            ],
+            "isFromExtension": true,
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "subscribe",
+            "printedName": "subscribe(buildMiddlewares:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeFunc",
+                "name": "Function",
+                "printedName": "(UDFCore.Store<τ_0_0>) -> [UDFCore.Middleware<τ_0_0>]",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Array",
+                    "printedName": "[UDFCore.Middleware<τ_0_0>]",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "Middleware",
+                        "printedName": "UDFCore.Middleware<τ_0_0>",
+                        "usr": "s:7UDFCore10MiddlewareP"
+                      }
+                    ],
+                    "usr": "s:Sa"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Store",
+                    "printedName": "UDFCore.Store<τ_0_0>",
+                    "usr": "s:7UDFCore5StoreP"
+                  }
+                ],
+                "typeAttributes": [
+                  "noescape"
+                ]
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:7UDFCore16EnvironmentStoreC9subscribe16buildMiddlewaresySayAA10Middleware_px5StateRts_XPGAA0C0_pxAHRS_XPXE_tYaF",
+            "mangledName": "$s7UDFCore16EnvironmentStoreC9subscribe16buildMiddlewaresySayAA10Middleware_px5StateRts_XPGAA0C0_pxAHRS_XPXE_tYaF",
+            "moduleName": "UDFCore",
+            "genericSig": "<τ_0_0 where τ_0_0 : UDFCore.AppReducer>",
+            "sugared_genericSig": "<State where State : UDFCore.AppReducer>",
+            "declAttributes": [
+              "Final"
+            ],
+            "isFromExtension": true,
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "subscribeAsync",
+            "printedName": "subscribeAsync(buildMiddlewares:onSubscribe:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeFunc",
+                "name": "Function",
+                "printedName": "(UDFCore.Store<τ_0_0>) -> [UDFCore.Middleware<τ_0_0>]",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Array",
+                    "printedName": "[UDFCore.Middleware<τ_0_0>]",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "Middleware",
+                        "printedName": "UDFCore.Middleware<τ_0_0>",
+                        "usr": "s:7UDFCore10MiddlewareP"
+                      }
+                    ],
+                    "usr": "s:Sa"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Store",
+                    "printedName": "UDFCore.Store<τ_0_0>",
+                    "usr": "s:7UDFCore5StoreP"
+                  }
+                ]
+              },
+              {
+                "kind": "TypeFunc",
+                "name": "Function",
+                "printedName": "() -> ()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  }
+                ],
+                "hasDefaultArg": true
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:7UDFCore16EnvironmentStoreC14subscribeAsync16buildMiddlewares11onSubscribeySayAA10Middleware_px5StateRts_XPGAA0C0_pxAIRS_XPc_yyYbctF",
+            "mangledName": "$s7UDFCore16EnvironmentStoreC14subscribeAsync16buildMiddlewares11onSubscribeySayAA10Middleware_px5StateRts_XPGAA0C0_pxAIRS_XPc_yyYbctF",
+            "moduleName": "UDFCore",
+            "genericSig": "<τ_0_0 where τ_0_0 : UDFCore.AppReducer>",
+            "sugared_genericSig": "<State where State : UDFCore.AppReducer>",
             "declAttributes": [
               "Final"
             ],
@@ -6530,6 +6803,173 @@
       },
       {
         "kind": "TypeDecl",
+        "name": "XCTestStoreActor",
+        "printedName": "XCTestStoreActor",
+        "children": [
+          {
+            "kind": "Var",
+            "name": "shared",
+            "printedName": "shared",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "XCTestStoreActor",
+                "printedName": "UDFCore.XCTestStoreActor",
+                "usr": "s:7UDFCore16XCTestStoreActorC"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:7UDFCore16XCTestStoreActorC6sharedACvpZ",
+            "mangledName": "$s7UDFCore16XCTestStoreActorC6sharedACvpZ",
+            "moduleName": "UDFCore",
+            "static": true,
+            "declAttributes": [
+              "Final",
+              "HasInitialValue",
+              "HasStorage",
+              "SetterAccess",
+              "AccessControl"
+            ],
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "XCTestStoreActor",
+                    "printedName": "UDFCore.XCTestStoreActor",
+                    "usr": "s:7UDFCore16XCTestStoreActorC"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:7UDFCore16XCTestStoreActorC6sharedACvgZ",
+                "mangledName": "$s7UDFCore16XCTestStoreActorC6sharedACvgZ",
+                "moduleName": "UDFCore",
+                "static": true,
+                "implicit": true,
+                "declAttributes": [
+                  "Final"
+                ],
+                "accessorKind": "get"
+              }
+            ]
+          },
+          {
+            "kind": "Var",
+            "name": "unownedExecutor",
+            "printedName": "unownedExecutor",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "UnownedSerialExecutor",
+                "printedName": "_Concurrency.UnownedSerialExecutor",
+                "usr": "s:Sce"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:7UDFCore16XCTestStoreActorC15unownedExecutorScevp",
+            "mangledName": "$s7UDFCore16XCTestStoreActorC15unownedExecutorScevp",
+            "moduleName": "UDFCore",
+            "implicit": true,
+            "intro_Macosx": "10.15",
+            "intro_iOS": "13.0",
+            "intro_tvOS": "13.0",
+            "intro_watchOS": "6.0",
+            "declAttributes": [
+              "Available",
+              "Available",
+              "Available",
+              "Available",
+              "Final",
+              "Nonisolated",
+              "Semantics"
+            ],
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "UnownedSerialExecutor",
+                    "printedName": "_Concurrency.UnownedSerialExecutor",
+                    "usr": "s:Sce"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:7UDFCore16XCTestStoreActorC15unownedExecutorScevg",
+                "mangledName": "$s7UDFCore16XCTestStoreActorC15unownedExecutorScevg",
+                "moduleName": "UDFCore",
+                "implicit": true,
+                "declAttributes": [
+                  "Final"
+                ],
+                "accessorKind": "get"
+              }
+            ]
+          }
+        ],
+        "declKind": "Class",
+        "usr": "s:7UDFCore16XCTestStoreActorC",
+        "mangledName": "$s7UDFCore16XCTestStoreActorC",
+        "moduleName": "UDFCore",
+        "declAttributes": [
+          "AccessControl",
+          "GlobalActor"
+        ],
+        "hasMissingDesignatedInitializers": true,
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Actor",
+            "printedName": "Actor",
+            "usr": "s:ScA",
+            "mangledName": "$sScA"
+          },
+          {
+            "kind": "Conformance",
+            "name": "GlobalActor",
+            "printedName": "GlobalActor",
+            "children": [
+              {
+                "kind": "TypeWitness",
+                "name": "ActorType",
+                "printedName": "ActorType",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "XCTestStoreActor",
+                    "printedName": "UDFCore.XCTestStoreActor",
+                    "usr": "s:7UDFCore16XCTestStoreActorC"
+                  }
+                ]
+              }
+            ],
+            "usr": "s:12_Concurrency11GlobalActorP",
+            "mangledName": "$ss11GlobalActorP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "AnyActor",
+            "printedName": "AnyActor",
+            "usr": "s:12_Concurrency8AnyActorP",
+            "mangledName": "$ss8AnyActorP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Sendable",
+            "printedName": "Sendable",
+            "usr": "s:s8SendableP",
+            "mangledName": "$ss8SendableP"
+          }
+        ]
+      },
+      {
+        "kind": "TypeDecl",
         "name": "XCTestStore",
         "printedName": "XCTestStore",
         "children": [
@@ -6734,7 +7174,7 @@
           {
             "kind": "Function",
             "name": "subscribe",
-            "printedName": "subscribe(_:)",
+            "printedName": "subscribe(build:)",
             "children": [
               {
                 "kind": "TypeNominal",
@@ -6764,8 +7204,8 @@
               }
             ],
             "declKind": "Func",
-            "usr": "s:7UDFCore11XCTestStoreC9subscribeyyqd__AA0C0_px5StateRts_XPXEYaAFQyd__RszAA10MiddlewareRd__lF",
-            "mangledName": "$s7UDFCore11XCTestStoreC9subscribeyyqd__AA0C0_px5StateRts_XPXEYaAFQyd__RszAA10MiddlewareRd__lF",
+            "usr": "s:7UDFCore11XCTestStoreC9subscribe5buildyqd__AA0C0_px5StateRts_XPXE_tYaAGQyd__RszAA10MiddlewareRd__lF",
+            "mangledName": "$s7UDFCore11XCTestStoreC9subscribe5buildyqd__AA0C0_px5StateRts_XPXE_tYaAGQyd__RszAA10MiddlewareRd__lF",
             "moduleName": "UDFCore",
             "genericSig": "<τ_0_0, τ_1_0 where τ_0_0 == τ_1_0.State, τ_1_0 : UDFCore.Middleware>",
             "sugared_genericSig": "<State>",
@@ -6773,6 +7213,64 @@
               "Custom",
               "Final",
               "AccessControl"
+            ],
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "subscribe",
+            "printedName": "subscribe(buildMiddlewares:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeFunc",
+                "name": "Function",
+                "printedName": "(UDFCore.Store<τ_0_0>) -> [UDFCore.Middleware<τ_0_0>]",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Array",
+                    "printedName": "[UDFCore.Middleware<τ_0_0>]",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "Middleware",
+                        "printedName": "UDFCore.Middleware<τ_0_0>",
+                        "usr": "s:7UDFCore10MiddlewareP"
+                      }
+                    ],
+                    "usr": "s:Sa"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Store",
+                    "printedName": "UDFCore.Store<τ_0_0>",
+                    "usr": "s:7UDFCore5StoreP"
+                  }
+                ],
+                "typeAttributes": [
+                  "noescape"
+                ]
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:7UDFCore11XCTestStoreC9subscribe16buildMiddlewaresySayAA10Middleware_px5StateRts_XPGAA0C0_pxAHRS_XPXE_tYaF",
+            "mangledName": "$s7UDFCore11XCTestStoreC9subscribe16buildMiddlewaresySayAA10Middleware_px5StateRts_XPGAA0C0_pxAHRS_XPXE_tYaF",
+            "moduleName": "UDFCore",
+            "genericSig": "<τ_0_0 where τ_0_0 : UDFCore.AppReducer>",
+            "sugared_genericSig": "<State where State : UDFCore.AppReducer>",
+            "intro_Macosx": "13.0.0",
+            "intro_iOS": "16.0.0",
+            "declAttributes": [
+              "Custom",
+              "Final",
+              "AccessControl",
+              "Available",
+              "Available"
             ],
             "funcSelfKind": "NonMutating"
           },
@@ -6818,6 +7316,51 @@
             "mangledName": "$s7UDFCore11XCTestStoreC8dispatch_8fileName08functionF010lineNumberyqd___S2SSitYaAA6ActionRd__lF",
             "moduleName": "UDFCore",
             "genericSig": "<τ_0_0, τ_1_0 where τ_0_0 : UDFCore.AppReducer, τ_1_0 : UDFCore.Action>",
+            "sugared_genericSig": "<State where State : UDFCore.AppReducer>",
+            "declAttributes": [
+              "Custom",
+              "Final",
+              "AccessControl"
+            ],
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "wait",
+            "printedName": "wait(fileName:functionName:lineNumber:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "hasDefaultArg": true,
+                "usr": "s:SS"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "hasDefaultArg": true,
+                "usr": "s:SS"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Int",
+                "printedName": "Swift.Int",
+                "hasDefaultArg": true,
+                "usr": "s:Si"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:7UDFCore11XCTestStoreC4wait8fileName08functionF010lineNumberySS_SSSitF",
+            "mangledName": "$s7UDFCore11XCTestStoreC4wait8fileName08functionF010lineNumberySS_SSSitF",
+            "moduleName": "UDFCore",
+            "genericSig": "<τ_0_0 where τ_0_0 : UDFCore.AppReducer>",
             "sugared_genericSig": "<State where State : UDFCore.AppReducer>",
             "declAttributes": [
               "Custom",
@@ -9678,6 +10221,20 @@
       "value": "false"
     },
     {
+      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/XCTestStore\/XCTestGroup.swift",
+      "kind": "StringLiteral",
+      "offset": 199,
+      "length": 13,
+      "value": "\"XCTestGroup\""
+    },
+    {
+      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/XCTestStore\/XCTestGroup.swift",
+      "kind": "IntegerLiteral",
+      "offset": 1046,
+      "length": 1,
+      "value": "4"
+    },
+    {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Common\/Protocols\/IsEquatable.swift",
       "kind": "BooleanLiteral",
       "offset": 348,
@@ -9876,28 +10433,28 @@
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/InternalStore.swift",
       "kind": "BooleanLiteral",
-      "offset": 2670,
+      "offset": 2946,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/InternalStore.swift",
       "kind": "BooleanLiteral",
-      "offset": 3211,
+      "offset": 3487,
       "length": 4,
       "value": "true"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/InternalStore.swift",
       "kind": "BooleanLiteral",
-      "offset": 5324,
+      "offset": 5600,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/InternalStore.swift",
       "kind": "BooleanLiteral",
-      "offset": 5416,
+      "offset": 5692,
       "length": 4,
       "value": "true"
     },
@@ -9916,23 +10473,23 @@
       "value": "true"
     },
     {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/XCTestStore.swift",
+      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/XCTestStore\/XCTestStore.swift",
       "kind": "StringLiteral",
-      "offset": 486,
+      "offset": 604,
       "length": 12,
       "value": "\"Reduce\t\t\""
     },
     {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/XCTestStore.swift",
+      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/XCTestStore\/XCTestStore.swift",
       "kind": "StringLiteral",
-      "offset": 531,
+      "offset": 649,
       "length": 173,
       "value": "\"---------------------------------------------------------------------------------------------------------------------------------------------------------------------------\""
     },
     {
-      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/XCTestStore.swift",
+      "filePath": "\/Users\/max\/Works\/MK\/Swiftui-UDF-Private\/SwiftUI-UDF\/Store\/XCTestStore\/XCTestStore.swift",
       "kind": "StringLiteral",
-      "offset": 982,
+      "offset": 1100,
       "length": 47,
       "value": "\"XCTestStore is only for using in Test targets\""
     },
