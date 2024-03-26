@@ -14,9 +14,28 @@ open class BaseMiddleware<State: AppReducer>: Middleware {
     open func status(for state: State) -> MiddlewareStatus { .active }
 
     public typealias DispatchFilter<Output> = (_ state: State, _ output: Output) -> Bool
+    public typealias ErrorMapper<Id> = (_ id: Id, _ error: Error) -> any Action
 
     public var cancelations: [AnyHashable: CancellableTask] = [:]
     
+    // MARK: - Cancellation
+    @discardableResult
+    open func cancel<Id: Hashable>(by cancelation: Id) -> Bool {
+        let anyId = AnyHashable(cancelation)
+
+        guard let cancellableTask = cancelations[anyId] else {
+            return false
+        }
+
+        cancellableTask.cancel()
+        cancelations[anyId] = nil
+        return true
+    }
+
+    open func cancelAll() {
+        cancelations.keys.forEach { cancel(by: $0) }
+    }
+
     // MARK: - Combine
     open func execute<E, Id>(
         _ effect: E,
@@ -73,6 +92,7 @@ open class BaseMiddleware<State: AppReducer>: Middleware {
         execute(
             effect.asEffectable,
             cancelation: cancelation,
+            mapAction: mapAction,
             fileName: fileName,
             functionName: functionName,
             lineNumber: lineNumber
@@ -171,28 +191,12 @@ open class BaseMiddleware<State: AppReducer>: Middleware {
             })
     }
     
-    // MARK: - Cancellation
-    @discardableResult
-    open func cancel<Id: Hashable>(by cancelation: Id) -> Bool {
-        let anyId = AnyHashable(cancelation)
-
-        guard let cancellableTask = cancelations[anyId] else {
-            return false
-        }
-
-        cancellableTask.cancel()
-        cancelations[anyId] = nil
-        return true
-    }
-
-    open func cancelAll() {
-        cancelations.keys.forEach { cancel(by: $0) }
-    }
-    
     // MARK: - Concurrency
     open func execute<TaskId: Hashable>(
         id: TaskId,
         cancelation: some Hashable,
+        mapAction: @escaping (any Action) -> any Action = { $0 },
+        mapError: @escaping ErrorMapper<TaskId> = { effectId, error in Actions.Error(error: error.localizedDescription, id: effectId) },
         fileName: String = #file,
         functionName: String = #function,
         lineNumber: Int = #line,
@@ -206,7 +210,9 @@ open class BaseMiddleware<State: AppReducer>: Middleware {
                 functionName: functionName,
                 lineNumber: lineNumber
             ),
-            cancelation: cancelation
+            cancelation: cancelation,
+            mapAction: mapAction,
+            mapError: mapError
         )
     }
 
@@ -222,10 +228,11 @@ open class BaseMiddleware<State: AppReducer>: Middleware {
         }
     }
     
-    open func execute<Id: Hashable>(
-        _ effect: some ConcurrencyEffect,
+    open func execute<Id: Hashable, E: ConcurrencyEffect>(
+        _ effect: E,
         cancelation: Id,
         mapAction: @escaping (any Action) -> any Action = { $0 },
+        mapError: @escaping ErrorMapper<E.Id> = { effectId, error in Actions.Error(error: error.localizedDescription, id: effectId) },
         fileName: String = #file,
         functionName: String = #function,
         lineNumber: Int = #line
@@ -254,7 +261,7 @@ open class BaseMiddleware<State: AppReducer>: Middleware {
                     self?.dispatch(action: Actions.DidCancelEffect(by: cancelation), filePosition: filePosition)
 
                 } else if !Task.isCancelled {
-                    self?.dispatch(action: Actions.Error(error: error.localizedDescription, id: effect.id), filePosition: filePosition)
+                    self?.dispatch(action: mapError(effect.id, error), filePosition: filePosition)
                 }
             }
 
