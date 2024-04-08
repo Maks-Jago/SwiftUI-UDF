@@ -99,7 +99,7 @@ public extension EnvironmentStore {
 @available(iOS 16.0.0, macOS 13.0.0, *)
 public extension EnvironmentStore {
 
-    func subscribeAsync(@MiddlewareBuilder<State> build: @escaping (_ store: any Store<State>) -> [MiddlewareWrapper<State>]) async {
+    func subscribeAsync(@MiddlewareBuilder<State> build: @escaping (_ store: any Store<State>) -> [MiddlewareWrapper<State>]) {
         self.subscribeAsync(buildMiddlewares: { store in
             build(store).map { wrapper in
                 wrapper.instance ?? self.middleware(store: store, type: wrapper.type)
