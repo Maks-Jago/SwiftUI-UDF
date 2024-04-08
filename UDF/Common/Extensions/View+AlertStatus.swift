@@ -129,30 +129,31 @@ private struct AlertWrapperModifier: ViewModifier {
         case .title:
             content
                 .alert(style.title, isPresented: $isPresented, actions: {
-                    Button("Cancel title", role: .cancel, action: {})
+                    ForEach(style.actions, id: \.id) { action in
+                        Button(action.title, role: action.role, action: action.action)
+                    }
                 })
         case .error:
             content
                 .alert(style.title, isPresented: $isPresented, actions: {
-                    Button("Cancel error", role: .cancel, action: {})
+                    ForEach(style.actions, id: \.id) { action in
+                        Button(action.title, role: action.role, action: action.action)
+                    }
                 })
         case .message:
             content
                 .alert(style.title, isPresented: $isPresented, actions: {
-                    Button("Cancel message", role: .cancel, action: {})
+                    ForEach(style.actions, id: \.id) { action in
+                        Button(action.title, role: action.role, action: action.action)
+                    }
                 }, message: {
                     Text(style.message)
                 })
-        case .data:
-            content
-                .alert(style.title, isPresented: $isPresented, actions: {
-                    Button("Cancel data", role: .cancel, action: {})
-                })
         case .none:
             content
-                .alert(style.title, isPresented: $isPresented, actions: {
-                    Button("Cancel none", role: .cancel, action: {})
-                })
+                .alert("", isPresented: .constant(false)) {
+                    Button("", role: .none, action: {})
+                }
         }
     }
 }
