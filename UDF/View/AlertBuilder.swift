@@ -24,6 +24,7 @@ public enum AlertBuilder {
 
         public enum Status: Equatable {
             case presented(AlertStyle)
+            case presentedWithStyle(TheAlertStyle)
             case dismissed
 
             public static func == (lhs: Self, rhs: Self) -> Bool {
@@ -73,6 +74,11 @@ public enum AlertBuilder {
             id = style.id
             status = .presented(style)
         }
+        
+        public init(theStyle: TheAlertStyle) {
+            id = UUID()
+            status = .presentedWithStyle(theStyle)
+        }
 
         public init<AlertId: Hashable>(id: AlertId) {
             if let builder = AlertBuilder.alertBuilders[id] {
@@ -80,6 +86,34 @@ public enum AlertBuilder {
             } else {
                 self = .dismissed
             }
+        }
+    }
+    
+    public struct TheAlertStyle {
+        public var alertType: TheAlertType = .none
+        public var title: String = ""
+        public var body: String = ""
+        
+        public enum TheAlertType {
+            case none
+            case title
+            case error
+            //            func alert<A>(LocalizedStringKey, isPresented: Binding<Bool>, actions: () -> A) -> some View
+            //            Presents an alert when a given condition is true, using a localized string key for the title.
+            case message
+            //            func alert<A, M>(LocalizedStringKey, isPresented: Binding<Bool>, actions: () -> A, message: () -> M) -> some View
+            //            Presents an alert with a message when a given condition is true, using a localized string key for a title.
+            case data
+            //            func alert<A, M, T>(Text, isPresented: Binding<Bool>, presenting: T?, actions: (T) -> A, message: (T) -> M) -> some View
+            //            Presents an alert with a message using the given data to produce the alert’s content and a text view for a title.
+        }
+
+        public init() {}
+        
+        public init(alertType: TheAlertType, title: String, body: String) {
+            self.alertType = alertType
+            self.title = title
+            self.body = body
         }
     }
 
@@ -197,7 +231,6 @@ public enum AlertBuilder {
     public static func registerAlert<AlertId: Hashable>(by id: AlertId, _ builder: @escaping () -> AlertStyle) {
         alertBuilders[AnyHashable(id)] = builder
     }
-
 }
 
 // MARK: - Identifiable
@@ -205,7 +238,6 @@ extension AlertBuilder.AlertStatus: Identifiable {}
 
 // MARK: - Alerts
 private extension AlertBuilder {
-
     static func alert(title: String, text: String) -> Alert {
         .init(title: Text(title), message: Text(text), dismissButton: .default(Text(NSLocalizedString("Ok", comment: "Ok"))))
     }

@@ -81,8 +81,82 @@ private struct AlertModifier: ViewModifier {
     }
 }
 
+private struct AlertWrapperModifier: ViewModifier {
+    @Binding var alertStatus: AlertBuilder.AlertStatus
+    @State private var isPresented: Bool = false
+    @State private var style: AlertBuilder.TheAlertStyle = .init()
+    
+    init(alert: Binding<AlertBuilder.AlertStatus>) {
+        _alertStatus = alert
+        if alert.wrappedValue.status != .dismissed {
+            _isPresented = .init(initialValue: true)
+            guard case .presentedWithStyle(let stylePresented) = alert.wrappedValue.status else {
+                return
+            }
+            _style = .init(initialValue: stylePresented)
+        } else {
+            style = .init()
+            isPresented = false
+        }
+    }
+    
+    public func body(content: Content) -> some View {
+        switch (isPresented, alertStatus.status) {
+        case (false, .dismissed):
+            break
+            
+        case (true, .dismissed):
+            DispatchQueue.main.async {
+                isPresented = false
+            }
+            
+        case (false, .presented):
+            isPresented = true
+            
+        case (false, .presentedWithStyle):
+            isPresented = true
+            
+        default:
+            break
+        }
+        
+        switch style.alertType {
+        case .title:
+            return content
+                .alert(style.title, isPresented: $isPresented, actions: {
+                    Button("Cancel title", role: .cancel, action: {})
+                })
+        case .error:
+            return content
+                .alert(style.title, isPresented: $isPresented, actions: {
+                    Button("Cancel error", role: .cancel, action: {})
+                })
+        case .message:
+            return content
+                .alert(style.title, isPresented: $isPresented, actions: {
+                    Button("Cancel message", role: .cancel, action: {})
+                })
+        case .data:
+            return content
+                .alert(style.title, isPresented: $isPresented, actions: {
+                    Button("Cancel data", role: .cancel, action: {})
+                })
+        case .none:
+            return content
+                .alert(style.title, isPresented: $isPresented, actions: {
+                    Button("Cancel none", role: .cancel, action: {})
+                })
+        }
+    }
+}
+
 public extension View {
+    @available(*, deprecated, message: "Use alert(statusWrapper: _) instead")
     func alert(status: Binding<AlertBuilder.AlertStatus>) -> some View {
         self.modifier(AlertModifier(alert: status))
+    }
+    
+    func alert(statusWrapper: Binding<AlertBuilder.AlertStatus>) -> some View {
+        self.modifier(AlertWrapperModifier(alert: statusWrapper))
     }
 }
