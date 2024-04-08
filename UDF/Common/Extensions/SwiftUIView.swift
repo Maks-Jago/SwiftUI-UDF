@@ -14,16 +14,7 @@ struct SwiftUIView: View {
                 statusWrapper: .constant(
                     .init(
                         theStyle:
-                                .init(
-                                    title: "The title",
-                                    body: "Body",
-                                    message: "My message",
-                                    actions: [
-                                        .init(title: "Cancel", role: .cancel, action: {}),
-                                        .init(title: "Ok"),
-                                        .init(title: "Why", role: .destructive, action: {})
-                                    ]
-                                )
+                                .init(error: "My error")
                     )
                 )
             )

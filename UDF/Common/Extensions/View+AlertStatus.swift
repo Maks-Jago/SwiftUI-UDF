@@ -133,14 +133,7 @@ private struct AlertWrapperModifier: ViewModifier {
                         Button(action.title, role: action.role, action: action.action)
                     }
                 })
-        case .error:
-            content
-                .alert(style.title, isPresented: $isPresented, actions: {
-                    ForEach(style.actions, id: \.id) { action in
-                        Button(action.title, role: action.role, action: action.action)
-                    }
-                })
-        case .message:
+        case .message, .error:
             content
                 .alert(style.title, isPresented: $isPresented, actions: {
                     ForEach(style.actions, id: \.id) { action in

@@ -109,6 +109,11 @@ public enum AlertBuilder {
 
         public init() {}
         
+        public init(error: String) {
+            self.alertType = .error
+            self.title = error
+        }
+        
         public init(title: String, body: String, actions: [AlertAction]) {
             self.alertType = .title
             self.title = title
