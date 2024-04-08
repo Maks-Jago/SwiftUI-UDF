@@ -120,29 +120,36 @@ private struct AlertWrapperModifier: ViewModifier {
             break
         }
         
+        return buildAlert(for: content)
+    }
+    
+    @ViewBuilder
+    private func buildAlert(for content: Content) -> some View {
         switch style.alertType {
         case .title:
-            return content
+            content
                 .alert(style.title, isPresented: $isPresented, actions: {
                     Button("Cancel title", role: .cancel, action: {})
                 })
         case .error:
-            return content
+            content
                 .alert(style.title, isPresented: $isPresented, actions: {
                     Button("Cancel error", role: .cancel, action: {})
                 })
         case .message:
-            return content
+            content
                 .alert(style.title, isPresented: $isPresented, actions: {
                     Button("Cancel message", role: .cancel, action: {})
+                }, message: {
+                    Text(style.message)
                 })
         case .data:
-            return content
+            content
                 .alert(style.title, isPresented: $isPresented, actions: {
                     Button("Cancel data", role: .cancel, action: {})
                 })
         case .none:
-            return content
+            content
                 .alert(style.title, isPresented: $isPresented, actions: {
                     Button("Cancel none", role: .cancel, action: {})
                 })

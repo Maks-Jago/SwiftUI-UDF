@@ -93,6 +93,7 @@ public enum AlertBuilder {
         public var alertType: TheAlertType = .none
         public var title: String = ""
         public var body: String = ""
+        public var message: String = ""
         
         public enum TheAlertType {
             case none
@@ -110,10 +111,17 @@ public enum AlertBuilder {
 
         public init() {}
         
-        public init(alertType: TheAlertType, title: String, body: String) {
+        public init(alertType: TheAlertType = .title, title: String, body: String) {
             self.alertType = alertType
             self.title = title
             self.body = body
+        }
+        
+        public init(alertType: TheAlertType = .message, title: String, body: String, message: String) {
+            self.alertType = alertType
+            self.title = title
+            self.body = body
+            self.message = message
         }
     }
 
