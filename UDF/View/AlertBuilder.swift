@@ -111,14 +111,14 @@ public enum AlertBuilder {
 
         public init() {}
         
-        public init(alertType: TheAlertType = .title, title: String, body: String) {
-            self.alertType = alertType
+        public init(title: String, body: String) {
+            self.alertType = .title
             self.title = title
             self.body = body
         }
         
-        public init(alertType: TheAlertType = .message, title: String, body: String, message: String) {
-            self.alertType = alertType
+        public init(title: String, body: String, message: String) {
+            self.alertType = .message
             self.title = title
             self.body = body
             self.message = message

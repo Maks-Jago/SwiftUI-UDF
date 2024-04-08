@@ -10,7 +10,7 @@ import SwiftUI
 struct SwiftUIView: View {
     var body: some View {
         Text("Hello, World!")
-            .alert(statusWrapper: .constant(.init(theStyle: .init(alertType: .message, title: "The title", body: "Body", message: "My message"))))
+            .alert(statusWrapper: .constant(.init(theStyle: .init(title: "The title", body: "Body", message: "My message"))))
     }
 }
 
