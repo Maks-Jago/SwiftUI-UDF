@@ -114,10 +114,11 @@ private struct AlertWrapperModifier: ViewModifier {
                 print("DID dismiss: \(isPresented)")
             }
             
-        case (false, .presentedWithStyle):
+        case (false, .presentedWithStyle(let style)):
             print("DID (false, .presentedWithStyle)")
             DispatchQueue.main.async {
                 isPresented = true
+                self.style = style
                 print("DID present: \(isPresented)")
             }
         case (true, .presentedWithStyle):
@@ -155,10 +156,8 @@ private struct AlertWrapperModifier: ViewModifier {
                 }
         case .none:
             content
-                .alert("My alert test", isPresented: .constant(true)) {
-                    Button("Ok", role: .destructive, action: {
-                        print("Did dismiss")
-                    })
+                .alert("", isPresented: .constant(false)) {
+                    Button("", role: .none, action: {})
                 }
         }
     }
