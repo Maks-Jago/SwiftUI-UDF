@@ -120,7 +120,9 @@ private struct AlertWrapperModifier: ViewModifier {
                 isPresented = true
                 print("DID present: \(isPresented)")
             }
-            return buildAlert(for: content)
+        case (true, .presentedWithStyle):
+            print("DID (true, .presentedWithStyle)")
+            
         default:
             print("DID default")
             break
