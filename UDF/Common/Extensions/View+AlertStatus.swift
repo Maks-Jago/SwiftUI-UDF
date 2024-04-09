@@ -110,12 +110,10 @@ private struct AlertWrapperModifier: ViewModifier {
                 isPresented = false
             }
             
-        case (false, .presented):
-            isPresented = true
-            
         case (false, .presentedWithStyle):
-            isPresented = true
-            
+            DispatchQueue.main.async {
+                isPresented = true
+            }
         default:
             break
         }
