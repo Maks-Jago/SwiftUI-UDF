@@ -84,7 +84,7 @@ private struct AlertModifier: ViewModifier {
 private struct AlertWrapperModifier: ViewModifier {
     @Binding var alertStatus: AlertBuilder.AlertStatus
     @State private var isPresented: Bool = false
-    @State private var style: AlertBuilder.TheAlertStyle = .init()
+    @State private var style: AlertStyleUpd = .init()
     
     init(alert: Binding<AlertBuilder.AlertStatus>) {
         _alertStatus = alert
@@ -94,7 +94,6 @@ private struct AlertWrapperModifier: ViewModifier {
                 return
             }
             _style = .init(initialValue: stylePresented)
-            print("DID receive status style: \(stylePresented)")
         } else {
             style = .init()
             isPresented = false
@@ -104,23 +103,18 @@ private struct AlertWrapperModifier: ViewModifier {
     public func body(content: Content) -> some View {
         switch (isPresented, alertStatus.status) {
         case (false, .dismissed):
-            print("DID (false, .dismissed)")
             break
             
         case (true, .dismissed):
-            print("DID (true, .dismissed)")
             DispatchQueue.main.async {
                 isPresented = false
-                print("DID dismiss: \(isPresented)")
             }
             
         case (false, .presentedWithStyle(let style)):
-            print("DID (false, .presentedWithStyle)")
             if self.style != style {
                 DispatchQueue.main.async {
                     isPresented = true
                     self.style = style
-                    print("DID present: \(isPresented)")
                 }
             } else {
                 DispatchQueue.main.async {
@@ -129,10 +123,9 @@ private struct AlertWrapperModifier: ViewModifier {
             }
             
         case (true, .presentedWithStyle):
-            print("DID (true, .presentedWithStyle)")
+            print("DEBUG: Alert presented")
             
         default:
-            print("DID default")
             break
         }
         
