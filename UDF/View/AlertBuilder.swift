@@ -83,14 +83,14 @@ public enum AlertBuilder {
             }
         }
         
-        public init(theStyle: AlertStyleUpd) {
-            id = theStyle.id
-            status = .presentedWithStyle(theStyle)
+        public init(styleUpd: AlertStyleUpd) {
+            id = styleUpd.id
+            status = .presentedWithStyle(styleUpd)
         }
         
         public init(errorStyle: String?) {
             if let errorStyle, !errorStyle.isEmpty {
-                self = .init(theStyle: .init(error: errorStyle))
+                self = .init(styleUpd: .init(error: errorStyle))
             } else {
                 self = .init()
             }
