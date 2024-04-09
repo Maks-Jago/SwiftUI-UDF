@@ -94,6 +94,7 @@ private struct AlertWrapperModifier: ViewModifier {
                 return
             }
             _style = .init(initialValue: stylePresented)
+            print("DID receive status style: \(stylePresented)")
         } else {
             style = .init()
             isPresented = false
@@ -103,18 +104,24 @@ private struct AlertWrapperModifier: ViewModifier {
     public func body(content: Content) -> some View {
         switch (isPresented, alertStatus.status) {
         case (false, .dismissed):
+            print("DID (false, .dismissed)")
             break
             
         case (true, .dismissed):
+            print("DID (true, .dismissed)")
             DispatchQueue.main.async {
                 isPresented = false
+                print("DID dismiss: \(isPresented)")
             }
             
         case (false, .presentedWithStyle):
+            print("DID (false, .presentedWithStyle)")
             DispatchQueue.main.async {
                 isPresented = true
+                print("DID present: \(isPresented)")
             }
         default:
+            print("DID default")
             break
         }
         
