@@ -40,7 +40,8 @@ public enum AlertBuilder {
                 }
             }
         }
-
+        
+        @available(*, deprecated, message: "Use styleUpd/errorStyle instead")
         public init(error: String?) {
             if let error = error, error.isEmpty == false {
                 self = .init(style: .init(failure: error))
@@ -49,6 +50,7 @@ public enum AlertBuilder {
             }
         }
 
+        @available(*, deprecated, message: "Use styleUpd/errorStyle instead")
         public init(message: String?) {
             if let message = message, message.isEmpty == false {
                 self = .init(style: .init(message: message))
@@ -57,6 +59,7 @@ public enum AlertBuilder {
             }
         }
 
+        @available(*, deprecated, message: "Use styleUpd/errorStyle instead")
         public init(title: String, message: String?) {
             if let message = message, message.isEmpty == false {
                 self = .init(style: .init(title: title, message: message))
@@ -70,11 +73,13 @@ public enum AlertBuilder {
             status = .dismissed
         }
 
+        @available(*, deprecated, message: "Use styleUpd/errorStyle instead")
         public init(style: AlertStyle) {
             id = style.id
             status = .presented(style)
         }
         
+        @available(*, deprecated, message: "Use styleUpd/errorStyle instead")
         public init<AlertId: Hashable>(id: AlertId) {
             if let builder = AlertBuilder.alertBuilders[id] {
                 self = .init(style: builder())
