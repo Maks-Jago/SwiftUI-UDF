@@ -76,7 +76,7 @@ public enum AlertBuilder {
         }
         
         public init(theStyle: TheAlertStyle) {
-            id = UUID()
+            id = theStyle.id
             status = .presentedWithStyle(theStyle)
         }
 
@@ -89,7 +89,12 @@ public enum AlertBuilder {
         }
     }
     
-    public struct TheAlertStyle {
+    public struct TheAlertStyle: Equatable {
+        public static func == (lhs: Self, rhs: Self) -> Bool {
+            lhs.id == rhs.id
+        }
+        
+        public var id = UUID()
         public var alertType: TheAlertType = .none
         public var title: String = ""
         public var body: String = ""

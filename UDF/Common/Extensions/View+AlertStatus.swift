@@ -116,11 +116,14 @@ private struct AlertWrapperModifier: ViewModifier {
             
         case (false, .presentedWithStyle(let style)):
             print("DID (false, .presentedWithStyle)")
-            DispatchQueue.main.async {
-                isPresented = true
-                self.style = style
-                print("DID present: \(isPresented)")
+            if self.style != style {
+                DispatchQueue.main.async {
+                    isPresented = true
+                    self.style = style
+                    print("DID present: \(isPresented)")
+                }
             }
+            
         case (true, .presentedWithStyle):
             print("DID (true, .presentedWithStyle)")
             
@@ -151,9 +154,6 @@ private struct AlertWrapperModifier: ViewModifier {
                 }, message: {
                     Text(style.message)
                 })
-                .onAppear {
-                    print("DID .message, .error")
-                }
         case .none:
             content
                 .alert("", isPresented: .constant(false)) {
