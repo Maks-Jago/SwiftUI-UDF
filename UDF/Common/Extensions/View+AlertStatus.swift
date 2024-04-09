@@ -122,6 +122,10 @@ private struct AlertWrapperModifier: ViewModifier {
                     self.style = style
                     print("DID present: \(isPresented)")
                 }
+            } else {
+                DispatchQueue.main.async {
+                    alertStatus = .dismissed
+                }
             }
             
         case (true, .presentedWithStyle):
