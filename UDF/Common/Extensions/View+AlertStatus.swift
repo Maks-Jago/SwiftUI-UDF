@@ -155,8 +155,10 @@ private struct AlertWrapperModifier: ViewModifier {
                 }
         case .none:
             content
-                .alert("", isPresented: .constant(false)) {
-                    Button("", role: .none, action: {})
+                .alert("My alert test", isPresented: .constant(true)) {
+                    Button("Ok", role: .destructive, action: {
+                        print("Did dismiss")
+                    })
                 }
         }
     }
