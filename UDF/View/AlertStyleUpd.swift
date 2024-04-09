@@ -38,17 +38,15 @@ public struct AlertStyleUpd: Equatable {
         self.title = error
     }
     
-    public init(title: String, body: String, @AlertActionBuilder actions: () -> [AlertAction]) {
+    public init(title: String, @AlertActionBuilder actions: () -> [AlertAction]) {
         self.alertType = .title
         self.title = title
-        self.body = body
         self.actions = actions()
     }
     
-    public init(title: String, body: String, message: String, @AlertActionBuilder actions: () -> [AlertAction]) {
+    public init(title: String, message: String, @AlertActionBuilder actions: () -> [AlertAction]) {
         self.alertType = .message
         self.title = title
-        self.body = body
         self.message = message
         self.actions = actions()
     }
