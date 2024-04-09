@@ -38,31 +38,36 @@ public struct AlertStyleUpd: Equatable {
         self.title = error
     }
     
-    public init(title: String, body: String, actions: [AlertAction]) {
+    public init(title: String, body: String, @AlertActionBuilder actions: () -> [AlertAction]) {
         self.alertType = .title
         self.title = title
         self.body = body
-        self.actions = actions
+        self.actions = actions()
     }
     
-    public init(title: String, body: String, message: String, actions: [AlertAction]) {
+    public init(title: String, body: String, message: String, @AlertActionBuilder actions: () -> [AlertAction]) {
         self.alertType = .message
         self.title = title
         self.body = body
         self.message = message
-        self.actions = actions
+        self.actions = actions()
+    }
+    
+    @resultBuilder
+    public struct AlertActionBuilder {
+        public static func buildBlock(_ actions: AlertAction...) -> [AlertAction] {
+            actions.map { $0 }
+        }
     }
 }
 
-public extension AlertStyleUpd {
-    struct AlertAction: Identifiable {
-        public static func == (lhs: AlertAction, rhs: AlertAction) -> Bool {
-            return lhs.id == rhs.id
-        }
-        
-        public var id = UUID()
-        public var title: String
-        public var role: ButtonRole?
-        public var action: () -> () = {}
+public struct AlertAction: Identifiable {
+    public static func == (lhs: AlertAction, rhs: AlertAction) -> Bool {
+        return lhs.id == rhs.id
     }
+    
+    public var id = UUID()
+    public var title: String
+    public var role: ButtonRole?
+    public var action: () -> () = {}
 }
