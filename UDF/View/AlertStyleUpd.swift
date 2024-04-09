@@ -38,13 +38,13 @@ public struct AlertStyleUpd: Equatable {
         self.title = error
     }
     
-    public init(title: String, @AlertActionBuilder actions: () -> [AlertAction]) {
+    public init(title: String, @AlertActionBuilder<AlertAction> actions: () -> [AlertAction]) {
         self.alertType = .title
         self.title = title
         self.actions = actions()
     }
     
-    public init(title: String, message: String, @AlertActionBuilder actions: () -> [AlertAction]) {
+    public init(title: String, message: String, @AlertActionBuilder<AlertAction> actions: () -> [AlertAction]) {
         self.alertType = .message
         self.title = title
         self.message = message
@@ -52,9 +52,33 @@ public struct AlertStyleUpd: Equatable {
     }
     
     @resultBuilder
-    public struct AlertActionBuilder {
-        public static func buildBlock(_ actions: AlertAction...) -> [AlertAction] {
-            actions.map { $0 }
+    public enum AlertActionBuilder<AlertAction> {
+        public static func buildEither(first component: [AlertAction]) -> [AlertAction] {
+            return component
+        }
+        
+        public static func buildEither(second component: [AlertAction]) -> [AlertAction] {
+            return component
+        }
+        
+        public static func buildOptional(_ component: [AlertAction]?) -> [AlertAction] {
+            return component ?? []
+        }
+        
+        public static func buildExpression(_ expression: AlertAction) -> [AlertAction] {
+            return [expression]
+        }
+        
+        public static func buildExpression(_ expression: ()) -> [AlertAction] {
+            return []
+        }
+        
+        public static func buildBlock(_ components: [AlertAction]...) -> [AlertAction] {
+            return components.flatMap { $0 }
+        }
+        
+        public static func buildArray(_ components: [[AlertAction]]) -> [AlertAction] {
+            Array(components.joined())
         }
     }
 }
