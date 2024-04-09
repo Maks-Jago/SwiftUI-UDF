@@ -120,6 +120,7 @@ private struct AlertWrapperModifier: ViewModifier {
                 isPresented = true
                 print("DID present: \(isPresented)")
             }
+            return buildAlert(for: content)
         default:
             print("DID default")
             break
@@ -147,6 +148,9 @@ private struct AlertWrapperModifier: ViewModifier {
                 }, message: {
                     Text(style.message)
                 })
+                .onAppear {
+                    print("DID .message, .error")
+                }
         case .none:
             content
                 .alert("", isPresented: .constant(false)) {
