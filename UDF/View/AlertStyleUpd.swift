@@ -96,4 +96,16 @@ public struct AlertAction: Identifiable {
     public var title: String
     public var role: ButtonRole?
     public var action: () -> () = {}
+    
+    public init(
+        id: UUID = UUID(),
+        title: String,
+        role: ButtonRole? = nil,
+        action: @escaping () -> Void = {}
+    ) {
+        self.id = id
+        self.title = title
+        self.role = role
+        self.action = action
+    }
 }
