@@ -82,7 +82,7 @@ public struct AlertStyleUpd: Equatable {
         }
         
         public static func buildArray(_ components: [[AlertAction]]) -> [AlertAction] {
-            Array(components.joined())
+            components.flatMap { $0 }
         }
     }
 }
