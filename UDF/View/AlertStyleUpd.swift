@@ -54,27 +54,31 @@ public struct AlertStyleUpd: Equatable {
     @resultBuilder
     public enum AlertActionBuilder<AlertAction> {
         public static func buildEither(first component: [AlertAction]) -> [AlertAction] {
-            return component
+            component
         }
         
         public static func buildEither(second component: [AlertAction]) -> [AlertAction] {
-            return component
+            component
         }
         
         public static func buildOptional(_ component: [AlertAction]?) -> [AlertAction] {
-            return component ?? []
+            component ?? []
         }
         
         public static func buildExpression(_ expression: AlertAction) -> [AlertAction] {
-            return [expression]
+            [expression]
         }
         
         public static func buildExpression(_ expression: ()) -> [AlertAction] {
-            return []
+            []
+        }
+        
+        static func buildLimitedAvailability(_ components: [AlertAction]) -> [AlertAction] {
+            components
         }
         
         public static func buildBlock(_ components: [AlertAction]...) -> [AlertAction] {
-            return components.flatMap { $0 }
+            components.flatMap { $0 }
         }
         
         public static func buildArray(_ components: [[AlertAction]]) -> [AlertAction] {
