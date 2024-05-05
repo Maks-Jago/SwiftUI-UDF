@@ -13,6 +13,27 @@ private struct AlertModifier: ViewModifier {
     @State private var localAlert: AlertBuilder.AlertStatus?
     @State private var alertToDissmiss: AlertBuilder.AlertStatus? = nil
 
+    private var isAlertPresented: Binding<Bool> {
+        Binding(
+            get: {
+                switch localAlert?.status {
+                case .presented:
+                    true
+                case .dismissed:
+                    false
+                case nil:
+                    false
+                }
+            },
+            set: { newValue in
+                if !newValue {
+                    localAlert = .dismissed
+                }
+
+            }
+        )
+    }
+
     init(alert: Binding<AlertBuilder.AlertStatus>) {
         _alertStatus = alert
         if alert.wrappedValue.status != .dismissed {
@@ -51,57 +72,34 @@ private struct AlertModifier: ViewModifier {
             break
         }
 
-        return content
-            .modifier(
-                AlertTypeModifier(
-                    isAlertPresented: $localAlert.willSet({ (newValue, oldValue) in
-                        guard newValue != oldValue else {
-                            return
-                        }
-
-                        if let newValue = newValue {
-                            alertStatus = newValue
-                        } else if oldValue?.status != .dismissed {
-                            alertToDissmiss = localAlert
-                            alertStatus = .dismissed
-                        }
-                    }).isPresented(),
-                    type: {
-                        if case let .presented(alertStyle) = localAlert?.status {
-                            return alertStyle.type
-                        } else {
-                            return AlertBuilder.AlertStyle.AlertType.message(text: { "" })
-                        }
-                    }
-                )
-            )
+        return contentBody(isAlertPresented: isAlertPresented, content: content)
     }
-}
-
-private struct AlertTypeModifier: ViewModifier {
-
-    var isAlertPresented: Binding<Bool>
-    var type: () -> AlertBuilder.AlertStyle.AlertType
 
     @ViewBuilder
-    public func body(content: Content) -> some View {
-        switch type() {
+    public func contentBody(isAlertPresented: Binding<Bool>, content: Content) -> some View {
+        let type = if case let .presented(alertStyle) = localAlert?.status {
+            alertStyle.type
+        } else {
+            AlertBuilder.AlertStyle.AlertType.message(text: { "" })
+        }
+
+        switch type {
         case .validationError(let text):
-            textAlert(content: content, text: text)
+            textAlert(isAlertPresented, content: content, text: text)
         case .success(let text):
-            textAlert(content: content, text: text)
+            textAlert(isAlertPresented, content: content, text: text)
         case .failure(let text):
-            textAlert(content: content, text: text)
+            textAlert(isAlertPresented, content: content, text: text)
         case .message(let text):
-            textAlert(content: content, text: text)
+            textAlert(isAlertPresented, content: content, text: text)
         case .messageTitle(let title, let text):
-            textAlert(content: content, title: title, text: text)
+            textAlert(isAlertPresented, content: content, title: title, text: text)
         case .custom(let title, let text, let actions):
-            actionsAlert(content: content, title: title, text: text, actions: actions)
+            actionsAlert(isAlertPresented, content: content, title: title, text: text, actions: actions)
         }
     }
 
-    func textAlert(content: Content, title: () -> String = { "" }, text: () -> String) -> some View {
+    func textAlert(_ isAlertPresented: Binding<Bool>, content: Content, title: () -> String = { "" }, text: () -> String) -> some View {
         content.alert(title(), isPresented: isAlertPresented, actions: {
             Button(NSLocalizedString("Ok", comment: "Ok"), action: {})
         }, message: {
@@ -109,7 +107,7 @@ private struct AlertTypeModifier: ViewModifier {
         })
     }
 
-    func actionsAlert(content: Content, title: () -> String = { "" }, text: () -> String, actions: () -> [AlertAction] ) -> some View {
+    func actionsAlert(_ isAlertPresented: Binding<Bool>, content: Content, title: () -> String = { "" }, text: () -> String, actions: () -> [AlertAction] ) -> some View {
         content.alert(title(), isPresented: isAlertPresented, actions: {
             ForEach(actions(), id: \.id) { action in
                 Button(action.title, role: action.role, action: action.action)
@@ -128,22 +126,6 @@ fileprivate extension Binding {
             set: { newValue in
                 willSet((newValue, self.wrappedValue))
                 self.wrappedValue = newValue
-            }
-        )
-    }
-
-    func isPresented<T>() -> Binding<Bool> where Value == Optional<T> {
-        Binding<Bool>(
-            get: {
-                switch self.wrappedValue {
-                case .some: return true
-                case .none: return false
-                }
-            },
-            set: {
-                if !$0 {
-                    self.wrappedValue = nil
-                }
             }
         )
     }
