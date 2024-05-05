@@ -31,7 +31,7 @@ public struct AlertAction: Identifiable {
         self.action = action
     }
 
-    func role(_ role: ButtonRole) -> Self {
+    public func role(_ role: ButtonRole) -> Self {
         var newAction = self
         newAction.role = role
         return self
