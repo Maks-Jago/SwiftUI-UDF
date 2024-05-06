@@ -43,8 +43,22 @@ public extension AlertAction {
         AlertAction(title: title, action: action)
     }
 
+    static func `default`(_ text: Text, action: @escaping () -> Void) -> AlertAction {
+        AlertAction(title: text.content ?? "", action: action)
+    }
+
     static func cancel(_ title: String) -> AlertAction {
         AlertAction(title: title)
             .role(.cancel)
+    }
+
+    static func cancel(_ text: Text) -> AlertAction {
+        AlertAction(title: text.content ?? "")
+            .role(.cancel)
+    }
+
+    static func destructive(_ title: String, action: @escaping () -> Void) -> AlertAction {
+        AlertAction(title: title, action: action)
+            .role(.destructive)
     }
 }
