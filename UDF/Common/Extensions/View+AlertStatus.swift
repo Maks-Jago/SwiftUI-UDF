@@ -54,7 +54,9 @@ private struct AlertModifier: ViewModifier {
             }
 
         case (.some(let lhs), .presented) where lhs == .dismissed:
-            localAlert = alertStatus
+            DispatchQueue.main.async {
+                localAlert = alertStatus
+            }
 
         case (.some, .presented):
             if localAlert != alertStatus {
@@ -72,49 +74,48 @@ private struct AlertModifier: ViewModifier {
             break
         }
 
-        return contentBody(isAlertPresented: isAlertPresented, content: content)
-    }
-
-    @ViewBuilder
-    public func contentBody(isAlertPresented: Binding<Bool>, content: Content) -> some View {
         let type = if case let .presented(alertStyle) = localAlert?.status {
             alertStyle.type
         } else {
             AlertBuilder.AlertStyle.AlertType.message(text: { "" })
         }
 
-        switch type {
-        case .validationError(let text):
-            textAlert(isAlertPresented, content: content, text: text)
-        case .success(let text):
-            textAlert(isAlertPresented, content: content, text: text)
-        case .failure(let text):
-            textAlert(isAlertPresented, content: content, text: text)
-        case .message(let text):
-            textAlert(isAlertPresented, content: content, text: text)
-        case .messageTitle(let title, let text):
-            textAlert(isAlertPresented, content: content, title: title, text: text)
-        case .custom(let title, let text, let actions):
-            actionsAlert(isAlertPresented, content: content, title: title, text: text, actions: actions)
-        }
-    }
+        let texts = texts(for: type)
 
-    func textAlert(_ isAlertPresented: Binding<Bool>, content: Content, title: () -> String = { "" }, text: () -> String) -> some View {
-        content.alert(title(), isPresented: isAlertPresented, actions: {
-            Button(NSLocalizedString("Ok", comment: "Ok"), action: {})
-        }, message: {
-            Text(text())
-        })
-    }
-
-    func actionsAlert(_ isAlertPresented: Binding<Bool>, content: Content, title: () -> String = { "" }, text: () -> String, actions: () -> [AlertAction] ) -> some View {
-        content.alert(title(), isPresented: isAlertPresented, actions: {
-            ForEach(actions(), id: \.id) { action in
+        return content.alert(texts.title(), isPresented: isAlertPresented, actions: {
+            ForEach(alertActions(for: type), id: \.id) { action in
                 Button(action.title, role: action.role, action: action.action)
             }
         }, message: {
-            Text(text())
+            Text(texts.text())
         })
+    }
+
+    func alertActions(for type: AlertBuilder.AlertStyle.AlertType) -> [AlertAction] {
+        switch type {
+        case .custom(_, _, let actions):
+            return actions()
+
+        default:
+            return [AlertAction(id: "default_action", title: NSLocalizedString("Ok", comment: "Ok"))]
+        }
+    }
+
+    func texts(for type: AlertBuilder.AlertStyle.AlertType) -> (title: () -> String, text: () -> String) {
+        switch type {
+        case .validationError(let text):
+            return ({""}, text)
+        case .success(let text):
+            return ({""}, text)
+        case .failure(let text):
+            return ({""}, text)
+        case .message(let text):
+            return ({""}, text)
+        case .messageTitle(let title, let text):
+            return (title, text)
+        case .custom(let title, let text, _):
+            return (title, text)
+        }
     }
 }
 
