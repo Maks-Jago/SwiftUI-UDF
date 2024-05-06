@@ -39,26 +39,34 @@ public struct AlertAction: Identifiable {
 }
 
 public extension AlertAction {
-    static func `default`(_ title: String, action: @escaping () -> Void) -> AlertAction {
+    static func `default`(_ title: String, action: @escaping () -> Void = {}) -> AlertAction {
         AlertAction(title: title, action: action)
     }
 
-    static func `default`(_ text: Text, action: @escaping () -> Void) -> AlertAction {
+    @available(*, deprecated, message: "use `default` with String instead of Text")
+    static func `default`(_ text: Text, action: @escaping () -> Void = {}) -> AlertAction {
         AlertAction(title: text.content ?? "", action: action)
     }
 
-    static func cancel(_ title: String) -> AlertAction {
-        AlertAction(title: title)
-            .role(.cancel)
-    }
-
-    static func cancel(_ text: Text) -> AlertAction {
-        AlertAction(title: text.content ?? "")
-            .role(.cancel)
-    }
-
-    static func destructive(_ title: String, action: @escaping () -> Void) -> AlertAction {
+    static func cancel(_ title: String, action: @escaping () -> Void = {}) -> AlertAction {
         AlertAction(title: title, action: action)
+            .role(.cancel)
+    }
+
+    @available(*, deprecated, message: "use `cancel` with String instead of Text")
+    static func cancel(_ text: Text, action: @escaping () -> Void = {}) -> AlertAction {
+        AlertAction(title: text.content ?? "", action: action)
+            .role(.cancel)
+    }
+
+    static func destructive(_ title: String, action: @escaping () -> Void = {}) -> AlertAction {
+        AlertAction(title: title, action: action)
+            .role(.destructive)
+    }
+
+    @available(*, deprecated, message: "use `destructive` with String instead of Text")
+    static func destructive(_ text: Text, action: @escaping () -> Void = {}) -> AlertAction {
+        AlertAction(title: text.content ?? "", action: action)
             .role(.destructive)
     }
 }
