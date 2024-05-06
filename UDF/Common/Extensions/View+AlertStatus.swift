@@ -13,26 +13,25 @@ private struct AlertModifier: ViewModifier {
     @State private var localAlert: AlertBuilder.AlertStatus?
     @State private var alertToDissmiss: AlertBuilder.AlertStatus? = nil
 
-    private var isAlertPresented: Binding<Bool> {
-        Binding(
-            get: {
-                switch localAlert?.status {
-                case .presented:
-                    true
-                case .dismissed:
-                    false
-                case nil:
-                    false
-                }
-            },
-            set: { newValue in
-                if !newValue {
-                    localAlert = .dismissed
-                }
-
-            }
-        )
-    }
+//    private var isAlertPresented: Binding<Bool> {
+//        Binding(
+//            get: {
+//                switch localAlert?.status {
+//                case .presented:
+//                    true
+//                case .dismissed:
+//                    false
+//                case nil:
+//                    false
+//                }
+//            },
+//            set: { newValue in
+//                if !newValue {
+//                    localAlert = .dismissed
+//                }
+//            }
+//        )
+//    }
 
     init(alert: Binding<AlertBuilder.AlertStatus>) {
         _alertStatus = alert
@@ -82,7 +81,18 @@ private struct AlertModifier: ViewModifier {
 
         let texts = texts(for: type)
 
-        return content.alert(texts.title(), isPresented: isAlertPresented, actions: {
+        return content.alert(texts.title(), isPresented: $localAlert.willSet({ (newValue, oldValue) in
+            guard newValue != oldValue else {
+                return
+            }
+
+            if let newValue = newValue {
+                alertStatus = newValue
+            } else if oldValue?.status != .dismissed {
+                alertToDissmiss = localAlert
+                alertStatus = .dismissed
+            }
+        }).isPresented() /*isAlertPresented*/, actions: {
             ForEach(alertActions(for: type), id: \.id) { action in
                 Button(action.title, role: action.role, action: action.action)
             }
@@ -127,6 +137,22 @@ fileprivate extension Binding {
             set: { newValue in
                 willSet((newValue, self.wrappedValue))
                 self.wrappedValue = newValue
+            }
+        )
+    }
+
+    func isPresented<T>() -> Binding<Bool> where Value == Optional<T> {
+        Binding<Bool>(
+            get: {
+                switch self.wrappedValue {
+                case .some: return true
+                case .none: return false
+                }
+            },
+            set: {
+                if !$0 {
+                    self.wrappedValue = nil
+                }
             }
         )
     }
