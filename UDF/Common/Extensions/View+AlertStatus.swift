@@ -13,26 +13,6 @@ private struct AlertModifier: ViewModifier {
     @State private var localAlert: AlertBuilder.AlertStatus?
     @State private var alertToDissmiss: AlertBuilder.AlertStatus? = nil
 
-//    private var isAlertPresented: Binding<Bool> {
-//        Binding(
-//            get: {
-//                switch localAlert?.status {
-//                case .presented:
-//                    true
-//                case .dismissed:
-//                    false
-//                case nil:
-//                    false
-//                }
-//            },
-//            set: { newValue in
-//                if !newValue {
-//                    localAlert = .dismissed
-//                }
-//            }
-//        )
-//    }
-
     init(alert: Binding<AlertBuilder.AlertStatus>) {
         _alertStatus = alert
         if alert.wrappedValue.status != .dismissed {
@@ -92,7 +72,7 @@ private struct AlertModifier: ViewModifier {
                 alertToDissmiss = localAlert
                 alertStatus = .dismissed
             }
-        }).isPresented() /*isAlertPresented*/, actions: {
+        }).isPresented(), actions: {
             ForEach(alertActions(for: type), id: \.id) { action in
                 Button(action.title, role: action.role, action: action.action)
             }
@@ -103,7 +83,13 @@ private struct AlertModifier: ViewModifier {
 
     func alertActions(for type: AlertBuilder.AlertStyle.AlertType) -> [AlertAction] {
         switch type {
-        case .custom(_, _, let actions):
+        case let .custom(_, _, primaryButton, secondaryButton):
+            return [primaryButton, secondaryButton]
+
+        case .customDismiss(_, _, let dismissButton):
+            return [dismissButton]
+
+        case .customActions(_, _, let actions):
             return actions()
 
         default:
@@ -121,9 +107,13 @@ private struct AlertModifier: ViewModifier {
             return ({""}, text)
         case .message(let text):
             return ({""}, text)
-        case .messageTitle(let title, let text):
+        case let .messageTitle(title, text):
             return (title, text)
-        case .custom(let title, let text, _):
+        case let .customActions(title, text, _):
+            return (title, text)
+        case let .custom(title, text, _, _):
+            return (title, text)
+        case let .customDismiss(title, text, _):
             return (title, text)
         }
     }

@@ -37,3 +37,14 @@ public struct AlertAction: Identifiable {
         return newAction
     }
 }
+
+public extension AlertAction {
+    static func `default`(_ title: String, action: @escaping () -> Void) -> AlertAction {
+        AlertAction(title: title, action: action)
+    }
+
+    static func cancel(_ title: String) -> AlertAction {
+        AlertAction(title: title)
+            .role(.cancel)
+    }
+}

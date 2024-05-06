@@ -98,7 +98,14 @@ public enum AlertBuilder {
             case failure(text: () -> String)
             case message(text: () -> String)
             case messageTitle(title: () -> String, message: () -> String)
-            case custom(title: () -> String, text: () -> String, actions: () -> [AlertAction])
+
+            @available(*, deprecated, message: "use custom(title:text:actions) case instead")
+            case custom(title: () -> String, text: () -> String, primaryButton: AlertAction, secondaryButton: AlertAction)
+
+            @available(*, deprecated, message: "use custom(title:text:actions) case instead")
+            case customDismiss(title: () -> String, text: () -> String, dismissButton: AlertAction)
+
+            case customActions(title: () -> String, text: () -> String, actions: () -> [AlertAction])
         }
 
         public init(validationError text: String) {
@@ -146,13 +153,35 @@ public enum AlertBuilder {
             type = .messageTitle(title: title, message: message)
         }
 
+        @available(*, deprecated, message: "use init(title:text:actions) instead")
+        public init(title: String, text: String, primaryButton: AlertAction, secondaryButton: AlertAction) {
+            self.init(title: { title }, text: { text }, primaryButton: primaryButton, secondaryButton: secondaryButton)
+        }
+
+        @available(*, deprecated, message: "use init(title:text:actions) instead")
+        public init(title: @escaping () -> String, text: @escaping () -> String, primaryButton: AlertAction, secondaryButton: AlertAction) {
+            id = UUID()
+            type = .custom(title: title, text: text, primaryButton: primaryButton, secondaryButton: secondaryButton)
+        }
+
+        @available(*, deprecated, message: "use init(title:text:actions) instead")
+        public init(title: String, text: String, dismissButton: AlertAction) {
+            self.init(title: { title }, text: { text }, dismissButton: dismissButton)
+        }
+
+        @available(*, deprecated, message: "use init(title:text:actions) instead")
+        public init(title: @escaping () -> String, text: @escaping () -> String, dismissButton: AlertAction) {
+            id = UUID()
+            type = .customDismiss(title: title, text: text, dismissButton: dismissButton)
+        }
+
         public init(title: String, text: String, @AlertActionsBuilder actions: @escaping () -> [AlertAction]) {
             self.init(title: { title }, text: { text }, actions: actions)
         }
 
         public init(title: @escaping () -> String, text: @escaping () -> String, @AlertActionsBuilder actions: @escaping () -> [AlertAction]) {
             id = UUID()
-            type = .custom(title: title, text: text, actions: actions)
+            type = .customActions(title: title, text: text, actions: actions)
         }
     }
 
