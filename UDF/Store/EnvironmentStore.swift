@@ -96,7 +96,6 @@ public extension EnvironmentStore {
     }
 }
 
-@available(iOS 16.0.0, macOS 13.0.0, *)
 public extension EnvironmentStore {
 
     func subscribeAsync(@MiddlewareBuilder<State> build: @escaping (_ store: any Store<State>) -> [MiddlewareWrapper<State>]) {
