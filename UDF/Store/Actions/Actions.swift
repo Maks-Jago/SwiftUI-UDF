@@ -5,6 +5,7 @@ import UDFCore
 import class CoreLocation.CLLocation
 import enum CoreLocation.CLAuthorizationStatus
 import enum CoreLocation.CLAccuracyAuthorization
+import UIKit.UIApplication
 
 public extension Actions {
     struct UpdateAlertStatus: Action {
@@ -90,6 +91,24 @@ public extension Actions {
 
     struct ApplicationDidReceiveMemoryWarning: Action {
         public init() {}
+    }
+
+    struct ApplicationDidBecomeActive: Action {
+        public init() {}
+    }
+
+    struct ApplicationDidLaunchWithOptions: Action {
+        public static func == (lhs: ApplicationDidLaunchWithOptions, rhs: ApplicationDidLaunchWithOptions) -> Bool {
+            lhs.application == rhs.application && lhs.launchOptions?.count == rhs.launchOptions?.count
+        }
+
+        public let application: UIApplication
+        public let launchOptions: [UIApplication.LaunchOptionsKey : Any]?
+
+        public init(application: UIApplication, launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) {
+            self.application = application
+            self.launchOptions = launchOptions
+        }
     }
 }
 
