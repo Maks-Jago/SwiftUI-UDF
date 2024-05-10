@@ -6,6 +6,7 @@ import class CoreLocation.CLLocation
 import enum CoreLocation.CLAuthorizationStatus
 import enum CoreLocation.CLAccuracyAuthorization
 import UIKit.UIApplication
+import class AppTrackingTransparency.ATTrackingManager
 
 public extension Actions {
     struct UpdateAlertStatus: Action {
@@ -108,6 +109,14 @@ public extension Actions {
         public init(application: UIApplication, launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) {
             self.application = application
             self.launchOptions = launchOptions
+        }
+    }
+
+    struct DidUpdateATTrackingStatus: Action {
+        public let status: ATTrackingManager.AuthorizationStatus
+
+        public init(status: ATTrackingManager.AuthorizationStatus) {
+            self.status = status
         }
     }
 }
