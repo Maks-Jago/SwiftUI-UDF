@@ -5,8 +5,17 @@ import UDFCore
 import class CoreLocation.CLLocation
 import enum CoreLocation.CLAuthorizationStatus
 import enum CoreLocation.CLAccuracyAuthorization
-import UIKit.UIApplication
 import class AppTrackingTransparency.ATTrackingManager
+
+#if canImport(UIKit)
+import UIKit.UIApplication
+public typealias PlatformApplication = UIApplication
+public typealias PlatformLaunchOptions = [UIApplication.LaunchOptionsKey: Any]?
+#else
+import AppKit.NSApplication
+public typealias PlatformApplication = NSApplication
+public typealias PlatformLaunchOptions = Notification
+#endif
 
 public extension Actions {
     struct UpdateAlertStatus: Action {
@@ -100,16 +109,23 @@ public extension Actions {
 
     struct ApplicationDidLaunchWithOptions: Action {
         public static func == (lhs: ApplicationDidLaunchWithOptions, rhs: ApplicationDidLaunchWithOptions) -> Bool {
-            lhs.application == rhs.application && lhs.launchOptions?.count == rhs.launchOptions?.count
+            lhs.application == rhs.application
         }
         
-        public let application: UIApplication
-        public let launchOptions: [UIApplication.LaunchOptionsKey : Any]?
+        public let application: PlatformApplication
+        public let launchOptions: PlatformLaunchOptions
 
-        public init(application: UIApplication, launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) {
+        #if canImport(UIKit)
+        public init(application: PlatformApplication, launchOptions: PlatformLaunchOptions = nil) {
             self.application = application
             self.launchOptions = launchOptions
         }
+        #else
+        public init(application: PlatformApplication, launchOptions: PlatformLaunchOptions) {
+            self.application = application
+            self.launchOptions = launchOptions
+        }
+        #endif
     }
 
     struct DidUpdateATTrackingStatus: Action {
