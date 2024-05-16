@@ -40,7 +40,7 @@ final class NewReducibleMiddlewareTests: XCTestCase {
                 execute(
                     ServiceEffect(title: action.message)
                         .delay(duration: 0.2, queue: queue),
-                    cancelation: "service"
+                    cancellation: "service"
                 )
 
             default:

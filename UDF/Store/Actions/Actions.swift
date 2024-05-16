@@ -92,10 +92,10 @@ public extension Actions {
     }
 
     struct DidCancelEffect: Action {
-        public var cancelation: AnyHashable
+        public var cancellation: AnyHashable
 
-        public init<Id: Hashable>(by cancelation: Id) {
-            self.cancelation = AnyHashable(cancelation)
+        public init<Id: Hashable>(by cancellation: Id) {
+            self.cancellation = AnyHashable(cancellation)
         }
     }
 

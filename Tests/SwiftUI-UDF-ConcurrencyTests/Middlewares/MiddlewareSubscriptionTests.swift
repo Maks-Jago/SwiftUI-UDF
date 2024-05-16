@@ -123,7 +123,7 @@ extension MiddlewareSubscriptionTests {
                 execute(
                     TestMiddlewareEffect(type: middlewareType)
                         .delay(duration: 0.2, queue: queue),
-                    cancelation: middlewareType.rawValue
+                    cancellation: middlewareType.rawValue
                 )
                 
             default:
@@ -141,7 +141,7 @@ extension MiddlewareSubscriptionTests {
                 execute(
                     TestMiddlewareEffect(type: action.type)
                         .delay(duration: 0.2, queue: queue),
-                    cancelation: action.type.rawValue
+                    cancellation: action.type.rawValue
                 )
 
             default:
@@ -175,7 +175,7 @@ extension MiddlewareSubscriptionTests {
                 execute(
                     TestMiddlewareEffect(type: action.type)
                         .delay(duration: 0.2, queue: queue),
-                    cancelation: action.type.rawValue
+                    cancellation: action.type.rawValue
                 )
 
             default:

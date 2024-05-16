@@ -63,7 +63,7 @@ final class NestedReducerTests: XCTestCase {
         }
     }
 
-    var cancelation: AnyCancellable? = nil
+    var cancellation: AnyCancellable? = nil
 
     func testAppState() async throws {
         let store = try await XCTestStore(initial: AppState())

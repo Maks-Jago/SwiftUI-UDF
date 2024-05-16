@@ -3,7 +3,7 @@ import XCTest
 @testable import UDF
 import Combine
 
-final class ConcurrencyMiddlewareCancelationTests: XCTestCase {
+final class ConcurrencyMiddlewareCancellationTests: XCTestCase {
 
     struct AppState: AppReducer {
         var middlewareFlow = MiddlewareFlow()
@@ -17,7 +17,7 @@ final class ConcurrencyMiddlewareCancelationTests: XCTestCase {
 
         mutating func reduce(_ action: some Action) {
             switch action {
-            case let action as Actions.DidCancelEffect where action.cancelation == ObservableMiddlewareToCancel.Cancelation.message:
+            case let action as Actions.DidCancelEffect where action.cancellation == ObservableMiddlewareToCancel.Сancellation.message:
                 self = .didCancel
 
             case is Actions.Loading:
@@ -49,7 +49,7 @@ final class ConcurrencyMiddlewareCancelationTests: XCTestCase {
         }
     }
 
-    func testObservableMiddlewareCancelation() async throws {
+    func testObservableMiddlewareCancellation() async throws {
         let store = try await XCTestStore(initial: AppState())
         await store.subscribe(ObservableMiddlewareToCancel.self)
         await store.dispatch(Actions.Loading())
@@ -72,7 +72,7 @@ fileprivate extension Actions {
 }
 
 // MARK: - Middlewares
-private extension ConcurrencyMiddlewareCancelationTests {
+private extension ConcurrencyMiddlewareCancellationTests {
 
     final class ObservableMiddlewareToCancel: BaseObservableMiddleware<AppState> {
         struct Environment {
@@ -89,7 +89,7 @@ private extension ConcurrencyMiddlewareCancelationTests {
             Environment(loadItems: { [] })
         }
 
-        enum Cancelation: CaseIterable {
+        enum Сancellation: CaseIterable {
             case message
         }
 
@@ -102,11 +102,11 @@ private extension ConcurrencyMiddlewareCancelationTests {
             case .loading:
                 execute(
                     SomeEffect(id: "message_id"),
-                    cancelation: Cancelation.message
+                    cancellation: Сancellation.message
                 )
 
             case .cancel:
-                cancel(by: Cancelation.message)
+                cancel(by: Сancellation.message)
 
             default:
                 break
