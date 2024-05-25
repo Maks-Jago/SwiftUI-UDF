@@ -1,5 +1,4 @@
 
-import UDFCore
 import Foundation
 
 public protocol EnvironmentMiddleware<State> {
