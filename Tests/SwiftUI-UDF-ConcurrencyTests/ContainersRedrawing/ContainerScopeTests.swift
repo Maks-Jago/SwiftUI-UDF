@@ -121,11 +121,6 @@ final class ContainerScopeTests: XCTestCase {
 //MARK: - ItemsListContainer
 extension ContainerScopeTests {
     struct ItemsListContainer: Container {
-
-        func onContainerAppear(store: EnvironmentStore<AppState>) {}
-        func onContainerDisappear(store: EnvironmentStore<AppState>) {}
-        func onContainerDidLoad(store: EnvironmentStore<AppState>) {}
-
         typealias ContainerComponent = ItemsListComponent
 
         @Box var renderingNumber: Int = 0
@@ -161,11 +156,6 @@ extension ContainerScopeTests {
 //MARK: - RootContainer
 extension ContainerScopeTests {
     struct RootContainer: Container {
-
-        func onContainerAppear(store: EnvironmentStore<AppState>) {}
-        func onContainerDisappear(store: EnvironmentStore<AppState>) {}
-        func onContainerDidLoad(store: EnvironmentStore<AppState>) {}
-
         typealias ContainerComponent = RootComponent
 
         @Box var renderingNumber: Int = 0
