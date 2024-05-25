@@ -123,42 +123,6 @@ extension EnvironmentStore {
 // MARK: - Subscribe Methods
 public extension EnvironmentStore {
 
-    func subscribe(buildMiddleware: (_ store: any Store<State>) -> some Middleware<State>) async {
-        await store.subscribe(buildMiddleware(store))
-    }
-
-    func subscribeAsync(buildMiddleware: @escaping (_ store: any Store<State>) -> some Middleware<State>, onSubscribe: @Sendable @escaping () -> Void = {}) {
-        Task(priority: .userInitiated) {
-            await subscribe(buildMiddleware: buildMiddleware)
-            onSubscribe()
-        }
-    }
-}
-
-// MARK: - Subscribe Methods with array
-public extension EnvironmentStore {
-
-    func subscribe(buildMiddlewares: (_ store: any Store<State>) -> [any Middleware<State>]) async {
-        await store.subscribe(buildMiddlewares(store))
-    }
-
-    func subscribeAsync(
-        buildMiddlewares: @escaping (_ store: any Store<State>) -> [any Middleware<State>],
-        onSubscribe: @Sendable @escaping () -> Void = {}
-    ) {
-        Task(priority: .userInitiated) {
-            await store.subscribe(buildMiddlewares(store))
-            onSubscribe()
-        }
-    }
-}
-
-
-
-
-// MARK: - Subscribe Methods
-public extension EnvironmentStore {
-
     func subscribe<M: Middleware<State>>(_ middlewareType: M.Type) async where M.State == State, M: EnvironmentMiddleware {
         if ProcessInfo.processInfo.xcTest {
             await self.subscribe { store in
@@ -248,24 +212,23 @@ public extension EnvironmentStore {
             onSubscribe()
         }
     }
-}
-
-public extension EnvironmentStore {
 
     func subscribeAsync(@MiddlewareBuilder<State> build: @escaping (_ store: any Store<State>) -> [MiddlewareWrapper<State>]) {
-        self.subscribeAsync(buildMiddlewares: { store in
-            build(store).map { wrapper in
-                wrapper.instance ?? self.middleware(store: store, type: wrapper.type)
-            }
-        })
+        Task(priority: .userInitiated) {
+            await self.store.subscribe(
+                build(store).map { wrapper in
+                    wrapper.instance ?? self.middleware(store: store, type: wrapper.type)
+                }
+            )
+        }
     }
 
     func subscribe(@MiddlewareBuilder<State> build: @escaping (_ store: any Store<State>) -> [MiddlewareWrapper<State>]) async {
-        await self.subscribe(buildMiddlewares: { store in
+        await self.store.subscribe(
             build(store).map { wrapper in
                 wrapper.instance ?? self.middleware(store: store, type: wrapper.type)
             }
-        })
+        )
     }
 
     private func middleware<M: Middleware<State>>(store: any Store<State>, type: M.Type) -> any Middleware<State> where M.State == State {
