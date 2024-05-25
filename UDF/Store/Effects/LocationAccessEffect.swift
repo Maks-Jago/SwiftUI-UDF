@@ -8,7 +8,6 @@
 import Foundation
 import Combine
 import CoreLocation
-import UDFCore
 
 public extension Effects {
 

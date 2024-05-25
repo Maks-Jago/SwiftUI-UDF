@@ -1,6 +1,160 @@
 
-import UDFCore
 import Foundation
+import SwiftUI
+@preconcurrency import Combine
+
+public final class EnvironmentStore<State: AppReducer> {
+
+    @SourceOfTruth public private(set) var state: State
+
+    private var store: InternalStore<State>
+    private var cancelation: Cancellable? = nil
+    private let subscribersCoordinator: SubscribersCoordinator<StateSubscriber<State>> = SubscribersCoordinator()
+    private let storeQueue: DispatchQueue = .init(label: "EnvironmentStore")
+
+    public init(initial state: State, loggers: [ActionLogger]) throws {
+        var mutableState = state
+        mutableState.initialSetup()
+
+        let store = try InternalStore(initial: mutableState, loggers: loggers)
+        self.store = store
+        self._state = .init(wrappedValue: mutableState, store: store)
+
+        sinkSubject()
+        GlobalValue.set(self)
+    }
+
+    public convenience init(initial state: State, logger: ActionLogger) throws {
+        try self.init(initial: state, loggers: [logger])
+    }
+
+    public func dispatch(
+        _ action: some Action,
+        priority: ActionPriority = .default,
+        fileName: String = #file,
+        functionName: String = #function,
+        lineNumber: Int = #line
+    ) {
+        storeQueue.async { [weak self] in
+            self?.store.dispatch(action, priority: priority, fileName: fileName, functionName: functionName, lineNumber: lineNumber)
+        }
+    }
+
+    public func bind(
+        _ action: some Action,
+        priority: ActionPriority = .default,
+        fileName: String = #file,
+        functionName: String = #function,
+        lineNumber: Int = #line
+    ) -> Command {
+        return {
+            self.dispatch(
+                action,
+                priority: priority,
+                fileName: fileName,
+                functionName: functionName,
+                lineNumber: lineNumber
+            )
+        }
+    }
+
+    public func bind<T>(
+        _ action: @escaping (T) -> some Action,
+        priority: ActionPriority = .default,
+        fileName: String = #file,
+        functionName: String = #function,
+        lineNumber: Int = #line
+    ) -> CommandWith<T> {
+        return { value in
+            self.dispatch(
+                action(value),
+                priority: priority,
+                fileName: fileName,
+                functionName: functionName,
+                lineNumber: lineNumber
+            )
+        }
+    }
+
+    private func sinkSubject() {
+        self.cancelation = store.subject
+            .receive(on: DispatchQueue.main)
+            .sink { [unowned self] (newState, oldState, animation) in
+                self.state = newState
+
+                Task(priority: .high) {
+                    let subscribers = await subscribersCoordinator.allSubscibers()
+                    await MainActor.run {
+                        subscribers.forEach { subscriber in
+                            subscriber(oldState, newState, animation)
+                        }
+                    }
+                }
+            }
+    }
+}
+
+// MARK: - State Subscribers
+extension EnvironmentStore {
+    func add(statePublisher: @escaping StateSubscriber<State>) -> String {
+        let key = UUID().uuidString
+
+        Task(priority: .high) {
+            await subscribersCoordinator.add(subscriber: statePublisher, for: key)
+        }
+
+        return key
+    }
+
+    func removePublisher(forKey key: String) {
+        Task(priority: .high) {
+            await subscribersCoordinator.removeSubscriber(forKey: key)
+        }
+    }
+}
+
+//MARK: - Global
+extension EnvironmentStore {
+    class var global: EnvironmentStore<State> {
+        GlobalValue.value(for: EnvironmentStore<State>.self)
+    }
+}
+
+// MARK: - Subscribe Methods
+public extension EnvironmentStore {
+
+    func subscribe(buildMiddleware: (_ store: any Store<State>) -> some Middleware<State>) async {
+        await store.subscribe(buildMiddleware(store))
+    }
+
+    func subscribeAsync(buildMiddleware: @escaping (_ store: any Store<State>) -> some Middleware<State>, onSubscribe: @Sendable @escaping () -> Void = {}) {
+        Task(priority: .userInitiated) {
+            await subscribe(buildMiddleware: buildMiddleware)
+            onSubscribe()
+        }
+    }
+}
+
+// MARK: - Subscribe Methods with array
+public extension EnvironmentStore {
+
+    func subscribe(buildMiddlewares: (_ store: any Store<State>) -> [any Middleware<State>]) async {
+        await store.subscribe(buildMiddlewares(store))
+    }
+
+    func subscribeAsync(
+        buildMiddlewares: @escaping (_ store: any Store<State>) -> [any Middleware<State>],
+        onSubscribe: @Sendable @escaping () -> Void = {}
+    ) {
+        Task(priority: .userInitiated) {
+            await store.subscribe(buildMiddlewares(store))
+            onSubscribe()
+        }
+    }
+}
+
+
+
 
 // MARK: - Subscribe Methods
 public extension EnvironmentStore {

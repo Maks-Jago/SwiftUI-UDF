@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import UDFCore
 
 @resultBuilder
 public enum MiddlewareBuilder<State: AppReducer> {

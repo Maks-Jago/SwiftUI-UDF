@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import UDFCore
 import enum CoreLocation.CLAuthorizationStatus
 import enum CoreLocation.CLAccuracyAuthorization
 

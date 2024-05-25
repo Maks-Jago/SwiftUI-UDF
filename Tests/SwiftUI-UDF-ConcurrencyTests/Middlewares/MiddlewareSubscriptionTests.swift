@@ -151,14 +151,14 @@ extension MiddlewareSubscriptionTests {
     }
     
     class EnvironmentMiddleware: BaseReducibleMiddleware<AppState> {
-        static func buildLiveEnvironment(for store: some UDFCore.Store<AppState>) -> Environment {
+        static func buildLiveEnvironment(for store: some Store<AppState>) -> Environment {
             store.dispatch(
                 Actions.UpdateFormField(keyPath: \TestForm.type, value: .liveEnvironment)
             )
             return Environment()
         }
         
-        static func buildTestEnvironment(for store: some UDFCore.Store<AppState>) -> Environment {
+        static func buildTestEnvironment(for store: some Store<AppState>) -> Environment {
             store.dispatch(
                 Actions.UpdateFormField(keyPath: \TestForm.type, value: .testEnvironment)
             )

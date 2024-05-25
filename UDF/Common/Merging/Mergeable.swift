@@ -1,8 +1,11 @@
 
-import UDFCore
 import Foundation
 
-public protocol Mergeable: _Mergeable {}
+public protocol Mergeable {
+    func merging(_ newValue: Self) -> Self
+
+    func filled(from value: Self, mutate: (_ filled: inout Self, _ old: Self) -> Void) -> Self
+}
 
 public extension Dictionary where Value: Mergeable {
 

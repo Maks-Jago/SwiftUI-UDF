@@ -1,4 +1,0 @@
-framework module UDFCore {
-  header "UDFCore-Swift.h"
-  requires objc
-}
