@@ -1,6 +1,21 @@
 
-import UDFCore
 import Foundation
+
+public protocol Middleware<State> {
+    associatedtype State: AppReducer
+
+    var store: any Store<State> { get }
+    var queue: DispatchQueue { get set }
+
+    init(store: some Store<State>)
+    init(store: some Store<State>, queue: DispatchQueue)
+
+    func status(for state: State) -> MiddlewareStatus
+
+    @discardableResult
+    func cancel<Id: Hashable>(by cancelation: Id) -> Bool
+    func cancelAll()
+}
 
 public extension Middleware {
     init(store: some Store<State>) {

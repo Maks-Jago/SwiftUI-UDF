@@ -37,7 +37,7 @@ final class MiddlewareMapErrorTests: XCTestCase {
     }
 
     final class LoadingMiddleware: BaseReducibleMiddleware<AppState> {
-        enum Cancelation: CaseIterable {
+        enum Сancellation: CaseIterable {
             case message
         }
 
@@ -48,7 +48,7 @@ final class MiddlewareMapErrorTests: XCTestCase {
             case is Actions.StartLoading:
                 execute(
                     id: MiddlewareMapErrorTests.AppState.ErrorFlow.id,
-                    cancelation: Cancelation.message,
+                    cancellation: Сancellation.message,
                     mapError: mapAPIError
                 ) { _ in
                     throw APIError.statusCode(400)

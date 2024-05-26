@@ -72,7 +72,7 @@ final class NewObservableMiddlewareDDosProtectionTests: XCTestCase {
 
             switch state.testFlow {
             case .sending(let message):
-                execute(ServiceEffect(title: message, number: observeCount), cancelation: "service")
+                execute(ServiceEffect(title: message, number: observeCount), cancellation: "service")
 
             default:
                 break

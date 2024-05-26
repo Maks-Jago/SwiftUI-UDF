@@ -58,7 +58,7 @@ class ReducibleMiddlewareTests: XCTestCase {
         func reduce(_ action: some Action, for state: ReducibleMiddlewareTests.AppState) {
             switch action {
             case let action as Actions.SendMessage:
-                execute(ServiceEffect(title: action.message), cancelation: "service")
+                execute(ServiceEffect(title: action.message), cancellation: "service")
 
             default:
                 break

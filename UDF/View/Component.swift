@@ -1,5 +1,10 @@
 
-import UDFCore
 import SwiftUI
 
-public protocol Component: _Component {}
+public protocol Component: View {
+    associatedtype Props
+
+    var props: Props { get }
+
+    init(props: Props)
+}

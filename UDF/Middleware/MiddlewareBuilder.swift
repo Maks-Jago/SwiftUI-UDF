@@ -6,9 +6,7 @@
 //
 
 import Foundation
-import UDFCore
 
-@available(iOS 16.0.0, macOS 13.0.0, *)
 @resultBuilder
 public enum MiddlewareBuilder<State: AppReducer> {
     public static func buildBlock(_ components: MiddlewareWrapper<State>...) -> [MiddlewareWrapper<State>] {

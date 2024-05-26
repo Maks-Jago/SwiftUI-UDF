@@ -123,7 +123,7 @@ extension MiddlewareSubscriptionTests {
                 execute(
                     TestMiddlewareEffect(type: middlewareType)
                         .delay(duration: 0.2, queue: queue),
-                    cancelation: middlewareType.rawValue
+                    cancellation: middlewareType.rawValue
                 )
                 
             default:
@@ -141,7 +141,7 @@ extension MiddlewareSubscriptionTests {
                 execute(
                     TestMiddlewareEffect(type: action.type)
                         .delay(duration: 0.2, queue: queue),
-                    cancelation: action.type.rawValue
+                    cancellation: action.type.rawValue
                 )
 
             default:
@@ -151,14 +151,14 @@ extension MiddlewareSubscriptionTests {
     }
     
     class EnvironmentMiddleware: BaseReducibleMiddleware<AppState> {
-        static func buildLiveEnvironment(for store: some UDFCore.Store<AppState>) -> Environment {
+        static func buildLiveEnvironment(for store: some Store<AppState>) -> Environment {
             store.dispatch(
                 Actions.UpdateFormField(keyPath: \TestForm.type, value: .liveEnvironment)
             )
             return Environment()
         }
         
-        static func buildTestEnvironment(for store: some UDFCore.Store<AppState>) -> Environment {
+        static func buildTestEnvironment(for store: some Store<AppState>) -> Environment {
             store.dispatch(
                 Actions.UpdateFormField(keyPath: \TestForm.type, value: .testEnvironment)
             )
@@ -175,7 +175,7 @@ extension MiddlewareSubscriptionTests {
                 execute(
                     TestMiddlewareEffect(type: action.type)
                         .delay(duration: 0.2, queue: queue),
-                    cancelation: action.type.rawValue
+                    cancellation: action.type.rawValue
                 )
 
             default:

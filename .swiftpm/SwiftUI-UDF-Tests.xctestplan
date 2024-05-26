@@ -1,0 +1,31 @@
+{
+  "configurations" : [
+    {
+      "id" : "C238B87A-592F-4917-85C5-DD74DE4DC55D",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:",
+        "identifier" : "SwiftUI-UDF-Tests",
+        "name" : "SwiftUI-UDF-Tests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:",
+        "identifier" : "SwiftUI-UDF-ConcurrencyTests",
+        "name" : "SwiftUI-UDF-ConcurrencyTests"
+      }
+    }
+  ],
+  "version" : 1
+}

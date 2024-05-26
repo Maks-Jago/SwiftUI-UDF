@@ -1,4 +1,4 @@
-import UDFCore
+
 import Foundation
 import Combine
 
@@ -16,50 +16,50 @@ open class BaseMiddleware<State: AppReducer>: Middleware {
     public typealias DispatchFilter<Output> = (_ state: State, _ output: Output) -> Bool
     public typealias ErrorMapper<Id> = (_ id: Id, _ error: Error) -> any Action
 
-    public var cancelations: [AnyHashable: CancellableTask] = [:]
+    public var cancellations: [AnyHashable: CancellableTask] = [:]
     
     // MARK: - Cancellation
     @discardableResult
-    open func cancel<Id: Hashable>(by cancelation: Id) -> Bool {
-        let anyId = AnyHashable(cancelation)
+    open func cancel<Id: Hashable>(by cancellation: Id) -> Bool {
+        let anyId = AnyHashable(cancellation)
 
-        guard let cancellableTask = cancelations[anyId] else {
+        guard let cancellableTask = cancellations[anyId] else {
             return false
         }
 
         cancellableTask.cancel()
-        cancelations[anyId] = nil
+        cancellations[anyId] = nil
         return true
     }
 
     open func cancelAll() {
-        cancelations.keys.forEach { cancel(by: $0) }
+        cancellations.keys.forEach { cancel(by: $0) }
     }
 
     // MARK: - Combine
     open func execute<E, Id>(
         _ effect: E,
-        cancelation: Id,
+        cancellation: Id,
         mapAction: @escaping (any Action) -> any Action = { $0 },
         fileName: String = #file,
         functionName: String = #function,
         lineNumber: Int = #line
     ) where E: PureEffect, E.Output == any Action, E.Failure == Never, Id: Hashable {
-        let anyId = AnyHashable(cancelation)
+        let anyId = AnyHashable(cancellation)
 
-        guard cancelations[anyId] == nil else {
+        guard cancellations[anyId] == nil else {
             return
         }
 
         let filePosition = fileFunctionLine(effect, fileName: fileName, functionName: functionName, lineNumber: lineNumber)
         XCTestGroup.enter()
-        cancelations[anyId] = effect
+        cancellations[anyId] = effect
             .subscribe(on: queue)
             .receive(on: queue)
             .handleEvents(receiveCancel: { [weak self] in
-                self?.cancelations[anyId] = nil
+                self?.cancellations[anyId] = nil
                 self?.store.dispatch(
-                    Actions.DidCancelEffect(by: cancelation),
+                    Actions.DidCancelEffect(by: cancellation),
                     fileName: filePosition.fileName,
                     functionName: filePosition.functionName,
                     lineNumber: filePosition.lineNumber
@@ -67,10 +67,10 @@ open class BaseMiddleware<State: AppReducer>: Middleware {
                 XCTestGroup.leave()
             })
             .sink(receiveCompletion: { [weak self] _ in
-                self?.cancelations[anyId] = nil
+                self?.cancellations[anyId] = nil
                 XCTestGroup.leave()
             }, receiveValue: { [weak self] action in
-                if self?.cancelations[anyId] != nil {
+                if self?.cancellations[anyId] != nil {
                     self?.store.dispatch(
                         mapAction(action),
                         fileName: filePosition.fileName,
@@ -83,7 +83,7 @@ open class BaseMiddleware<State: AppReducer>: Middleware {
 
     open func execute<E, Id>(
         _ effect: E,
-        cancelation: Id,
+        cancellation: Id,
         mapAction: @escaping (any Action) -> any Action = { $0 },
         fileName: String = #file,
         functionName: String = #function,
@@ -91,7 +91,7 @@ open class BaseMiddleware<State: AppReducer>: Middleware {
     ) where E: PureEffect & ErasableToEffect, Id: Hashable {
         execute(
             effect.asEffectable,
-            cancelation: cancelation,
+            cancellation: cancellation,
             mapAction: mapAction,
             fileName: fileName,
             functionName: functionName,
@@ -101,28 +101,28 @@ open class BaseMiddleware<State: AppReducer>: Middleware {
 
     open func run<E, Id>(
         _ effect: E,
-        cancelation: Id,
+        cancellation: Id,
         mapAction: @escaping (any Action) -> any Action = { $0 },
         dispatchFilter: @escaping DispatchFilter<any Action>,
         fileName: String = #file,
         functionName: String = #function,
         lineNumber: Int = #line
     ) where E: PureEffect, E.Output == any Action, E.Failure == Never, Id: Hashable {
-        let anyId = AnyHashable(cancelation)
+        let anyId = AnyHashable(cancellation)
 
-        guard cancelations[anyId] == nil else {
+        guard cancellations[anyId] == nil else {
             return
         }
 
         let filePosition = fileFunctionLine(effect, fileName: fileName, functionName: functionName, lineNumber: lineNumber)
 
-        cancelations[anyId] = effect
+        cancellations[anyId] = effect
             .subscribe(on: queue)
             .receive(on: queue)
             .handleEvents(receiveCancel: { [weak self] in
-                self?.cancelations[anyId] = nil
+                self?.cancellations[anyId] = nil
                 self?.store.dispatch(
-                    Actions.DidCancelEffect(by: cancelation),
+                    Actions.DidCancelEffect(by: cancellation),
                     fileName: filePosition.fileName,
                     functionName: filePosition.functionName,
                     lineNumber: filePosition.lineNumber
@@ -136,9 +136,9 @@ open class BaseMiddleware<State: AppReducer>: Middleware {
                     .eraseToAnyPublisher()
             }
             .sink(receiveCompletion: { [weak self] _ in
-                self?.cancelations[anyId] = nil
+                self?.cancellations[anyId] = nil
             }, receiveValue: { [weak self] result in
-                if self?.cancelations[anyId] != nil, dispatchFilter(result.state, result.action) {
+                if self?.cancellations[anyId] != nil, dispatchFilter(result.state, result.action) {
                     self?.store.dispatch(
                         mapAction(result.action),
                         fileName: filePosition.fileName,
@@ -151,36 +151,36 @@ open class BaseMiddleware<State: AppReducer>: Middleware {
 
     open func run<E, Id>(
         _ effect: E,
-        cancelation: Id,
+        cancellation: Id,
         mapAction: @escaping (any Action) -> any Action = { $0 },
         fileName: String = #file,
         functionName: String = #function,
         lineNumber: Int = #line
     ) where E: PureEffect, E.Output == any Action, E.Failure == Never, Id: Hashable {
-        let anyId = AnyHashable(cancelation)
+        let anyId = AnyHashable(cancellation)
 
-        guard cancelations[anyId] == nil else {
+        guard cancellations[anyId] == nil else {
             return
         }
 
         let filePosition = fileFunctionLine(effect, fileName: fileName, functionName: functionName, lineNumber: lineNumber)
 
-        cancelations[anyId] = effect
+        cancellations[anyId] = effect
             .subscribe(on: queue)
             .receive(on: queue)
             .handleEvents(receiveCancel: { [weak self] in
-                self?.cancelations[anyId] = nil
+                self?.cancellations[anyId] = nil
                 self?.store.dispatch(
-                    Actions.DidCancelEffect(by: cancelation),
+                    Actions.DidCancelEffect(by: cancellation),
                     fileName: filePosition.fileName,
                     functionName: filePosition.functionName,
                     lineNumber: filePosition.lineNumber
                 )
             })
             .sink(receiveCompletion: { [weak self] _ in
-                self?.cancelations[anyId] = nil
+                self?.cancellations[anyId] = nil
             }, receiveValue: { [weak self] action in
-                if self?.cancelations[anyId] != nil {
+                if self?.cancellations[anyId] != nil {
                     self?.store.dispatch(
                         mapAction(action),
                         fileName: filePosition.fileName,
@@ -194,7 +194,7 @@ open class BaseMiddleware<State: AppReducer>: Middleware {
     // MARK: - Concurrency
     open func execute<TaskId: Hashable>(
         id: TaskId,
-        cancelation: some Hashable,
+        cancellation: some Hashable,
         mapAction: @escaping (any Action) -> any Action = { $0 },
         mapError: @escaping ErrorMapper<TaskId> = { effectId, error in Actions.Error(error: error.localizedDescription, id: effectId) },
         fileName: String = #file,
@@ -210,7 +210,7 @@ open class BaseMiddleware<State: AppReducer>: Middleware {
                 functionName: functionName,
                 lineNumber: lineNumber
             ),
-            cancelation: cancelation,
+            cancellation: cancellation,
             mapAction: mapAction,
             mapError: mapError
         )
@@ -230,16 +230,16 @@ open class BaseMiddleware<State: AppReducer>: Middleware {
     
     open func execute<Id: Hashable, E: ConcurrencyEffect>(
         _ effect: E,
-        cancelation: Id,
+        cancellation: Id,
         mapAction: @escaping (any Action) -> any Action = { $0 },
         mapError: @escaping ErrorMapper<E.Id> = { effectId, error in Actions.Error(error: error.localizedDescription, id: effectId) },
         fileName: String = #file,
         functionName: String = #function,
         lineNumber: Int = #line
     ) {
-        let anyId = AnyHashable(cancelation)
+        let anyId = AnyHashable(cancellation)
 
-        guard cancelations[anyId] == nil else {
+        guard cancellations[anyId] == nil else {
             return
         }
 
@@ -250,7 +250,7 @@ open class BaseMiddleware<State: AppReducer>: Middleware {
             do {
                 let action = try await effect.task()
                 if Task.isCancelled {
-                    self?.dispatch(action: Actions.DidCancelEffect(by: cancelation), filePosition: filePosition)
+                    self?.dispatch(action: Actions.DidCancelEffect(by: cancellation), filePosition: filePosition)
 
                 } else {
                     self?.dispatch(action: mapAction(action), filePosition: filePosition)
@@ -258,7 +258,7 @@ open class BaseMiddleware<State: AppReducer>: Middleware {
 
             } catch let error {
                 if error is CancellationError {
-                    self?.dispatch(action: Actions.DidCancelEffect(by: cancelation), filePosition: filePosition)
+                    self?.dispatch(action: Actions.DidCancelEffect(by: cancellation), filePosition: filePosition)
 
                 } else if !Task.isCancelled {
                     self?.dispatch(action: mapError(effect.id, error), filePosition: filePosition)
@@ -266,10 +266,10 @@ open class BaseMiddleware<State: AppReducer>: Middleware {
             }
 
             _ = self?.queue.sync { [weak self] in
-                self?.cancelations.removeValue(forKey: anyId)
+                self?.cancellations.removeValue(forKey: anyId)
             }
         }
 
-        cancelations[anyId] = task
+        cancellations[anyId] = task
     }
 }

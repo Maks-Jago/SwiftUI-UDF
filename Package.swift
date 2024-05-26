@@ -7,7 +7,7 @@ let package = Package(
     name: "SwiftUI-UDF",
     platforms: [
         .iOS(.v16),
-        .macOS(.v11)
+        .macOS(.v13)
     ],
     products: [
         .library(
@@ -20,19 +20,18 @@ let package = Package(
         )
     ],
     dependencies: [
-        .package(url: "https://github.com/apple/swift-collections", from: "1.0.6")
+        .package(url: "https://github.com/apple/swift-collections", from: "1.0.6"),
+        .package(url: "https://github.com/urlaunched-com/Runtime", from: "2.2.6")
     ],
     targets: [
         .target(
             name: "UDF",
             dependencies: [
                 .product(name: "OrderedCollections", package: "swift-collections"),
-                .target(name: "UDFCore")
+                .product(name: "Runtime", package: "Runtime")
             ],
             path: "UDF"
         ),
-
-        .binaryTarget(name: "UDFCore", path: "Artifacts/UDFCore.xcframework"),
 
         .target(
             name: "UDFXCTest",

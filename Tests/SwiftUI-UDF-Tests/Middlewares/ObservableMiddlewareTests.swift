@@ -69,7 +69,7 @@ class ObservableMiddlewareTests: XCTestCase {
 
             switch state.testFlow {
             case .sending(let message):
-                execute(ServiceEffect(title: message, number: 4), cancelation: "service")
+                execute(ServiceEffect(title: message, number: 4), cancellation: "service")
 
             default:
                 break

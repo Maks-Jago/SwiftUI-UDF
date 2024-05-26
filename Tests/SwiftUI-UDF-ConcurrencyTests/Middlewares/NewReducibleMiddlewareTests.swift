@@ -20,11 +20,11 @@ final class NewReducibleMiddlewareTests: XCTestCase {
     }
 
     class SendMessageMiddleware: BaseReducibleMiddleware<AppState> {
-        static func buildLiveEnvironment(for store: some UDFCore.Store<AppState>) -> Environment {
+        static func buildLiveEnvironment(for store: some Store<AppState>) -> Environment {
             Environment(loadItems: { [] })
         }
         
-        static func buildTestEnvironment(for store: some UDFCore.Store<AppState>) -> Environment {
+        static func buildTestEnvironment(for store: some Store<AppState>) -> Environment {
             Environment(loadItems: { [] })
         }
         
@@ -40,7 +40,7 @@ final class NewReducibleMiddlewareTests: XCTestCase {
                 execute(
                     ServiceEffect(title: action.message)
                         .delay(duration: 0.2, queue: queue),
-                    cancelation: "service"
+                    cancellation: "service"
                 )
 
             default:

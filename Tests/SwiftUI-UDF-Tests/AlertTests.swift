@@ -8,12 +8,12 @@ fileprivate extension Actions {
 
 extension AlertBuilder.AlertStyle {
     static func alertWithAction(_ action: @escaping () -> Void) -> Self {
-        .init(
-            title: "Custom alert title with action",
-            text: "Custom alert text with action",
-            primaryButton: .default(Text("Action button"), action: action),
-            secondaryButton: .cancel()
-        )
+        .init(title: "Custom alert title with action", text: "Custom alert text with action") {
+            AlertAction(title: "Action button", action: action)
+
+            AlertAction(title: "Cancel")
+                .role(.cancel)
+        }
     }
 }
 
