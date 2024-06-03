@@ -84,7 +84,13 @@ private struct AlertModifier: ViewModifier {
     func alertActions(for type: AlertBuilder.AlertStyle.AlertType) -> [AlertAction] {
         switch type {
         case let .custom(_, _, primaryButton, secondaryButton):
-            return [primaryButton, secondaryButton]
+            if primaryButton.role == .destructive {
+                return [primaryButton, secondaryButton.role(.cancel)]
+            } else if secondaryButton.role == .destructive {
+                return [primaryButton.role(.cancel), secondaryButton]
+            } else {
+                return [primaryButton, secondaryButton]
+            }
 
         case .customDismiss(_, _, let dismissButton):
             return [dismissButton]
