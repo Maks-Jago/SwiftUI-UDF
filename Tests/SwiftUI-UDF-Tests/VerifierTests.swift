@@ -8,18 +8,6 @@
 import XCTest
 @testable import UDF
 
-fileprivate extension Actions {
-    struct Message: Action {
-        public var message: String?
-        public var id: AnyHashable
-
-        public init<Id: Hashable>(message: String? = nil, id: Id) {
-            self.message = message?.isEmpty == true ? nil : message
-            self.id = AnyHashable(id)
-        }
-    }
-}
-
 class VerifierTests: XCTestCase {
 
     struct AppState: AppReducer {}

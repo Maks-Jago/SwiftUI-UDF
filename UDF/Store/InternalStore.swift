@@ -200,14 +200,14 @@ fileprivate func safetyCall(queue: DispatchQueue, block: @Sendable @escaping () 
     }
 }
 
-fileprivate final class Ref<T> {
+final class Ref<T> {
     var value: T
     init(value: T) {
         self.value = value
     }
 }
 
-fileprivate struct Box<T> {
+struct Box<T> {
     private var ref: Ref<T>
     init(_ value: T) {
         ref = Ref(value: value)

@@ -15,18 +15,18 @@ public protocol Container<ContainerState>: View {
     func map(store: EnvironmentStore<ContainerState>) -> ContainerComponent.Props
     @ScopeBuilder func scope(for state: ContainerState) -> Scope
 
-    func onContainerAppear(store: EnvironmentStore<ContainerState>)
-    func onContainerDisappear(store: EnvironmentStore<ContainerState>)
+    @MainActor func onContainerAppear(store: EnvironmentStore<ContainerState>)
+    @MainActor func onContainerDisappear(store: EnvironmentStore<ContainerState>)
 
-    func onContainerDidLoad(store: EnvironmentStore<ContainerState>)
-    func onContainerDidUnload(store: EnvironmentStore<ContainerState>)
+    @MainActor func onContainerDidLoad(store: EnvironmentStore<ContainerState>)
+    @MainActor func onContainerDidUnload(store: EnvironmentStore<ContainerState>)
 }
 
 public extension Container {
-    @MainActor func onContainerAppear(store: EnvironmentStore<ContainerState>) {}
-    @MainActor func onContainerDisappear(store: EnvironmentStore<ContainerState>) {}
-    @MainActor func onContainerDidLoad(store: EnvironmentStore<ContainerState>) {}
-    @MainActor func onContainerDidUnload(store: EnvironmentStore<ContainerState>) {}
+    func onContainerAppear(store: EnvironmentStore<ContainerState>) {}
+    func onContainerDisappear(store: EnvironmentStore<ContainerState>) {}
+    func onContainerDidLoad(store: EnvironmentStore<ContainerState>) {}
+    func onContainerDidUnload(store: EnvironmentStore<ContainerState>) {}
 }
 
 public extension Container {
@@ -44,7 +44,19 @@ public extension Container {
             onContainerDidUnload: onContainerDidUnload
         )
     }
+
+    @MainActor
+    func addHoook(
+        id: some Hashable,
+        type: HookType = .default,
+        condition: @escaping (_ state: ContainerState) -> Bool, 
+        block: @escaping (_ store: EnvironmentStore<ContainerState>) -> Void
+    ) {
+        (self.body as? ConnectedContainer<ContainerComponent, ContainerState>)?
+            .addHoook(id: id, type: type, condition: condition, block: block)
+    }
 }
+
 
 fileprivate struct ConnectedContainer<C: Component, State: AppReducer>: View {
     let map: (_ store: EnvironmentStore<State>) -> C.Props
@@ -54,6 +66,7 @@ fileprivate struct ConnectedContainer<C: Component, State: AppReducer>: View {
     var onContainerDisappear: (EnvironmentStore<State>) -> Void
 
     @StateObject var containerLifecycle: ContainerLifecycle<State>
+//    @StateObject var containerHooks: ContainerHooks<State>
     @ObservedObject var containerState: ContainerState<State>
 
     private var store: EnvironmentStore<State> { .global }
@@ -86,31 +99,14 @@ fileprivate struct ConnectedContainer<C: Component, State: AppReducer>: View {
             .onAppear { onContainerAppear(store) }
             .onDisappear { onContainerDisappear(store) }
     }
-}
 
-fileprivate final class ContainerLifecycle<State: AppReducer>: ObservableObject {
-    private var didLoad: Bool = false
-
-    func set(didLoad: Bool, store: EnvironmentStore<State>) {
-        if !self.didLoad, didLoad {
-            didLoadCommand(store)
-        }
-
-        self.didLoad = didLoad
-    }
-
-    var didLoadCommand: CommandWith<EnvironmentStore<State>>
-    var didUnloadCommand: CommandWith<EnvironmentStore<State>>
-
-    init(
-        didLoadCommand: @escaping CommandWith<EnvironmentStore<State>>,
-        didUnloadCommand: @escaping CommandWith<EnvironmentStore<State>>
+    func addHoook(
+        id: some Hashable,
+        type: HookType = .default,
+        condition: @escaping (_ state: State) -> Bool,
+        block: @escaping (_ store: EnvironmentStore<State>) -> Void
     ) {
-        self.didLoadCommand = didLoadCommand
-        self.didUnloadCommand = didUnloadCommand
-    }
-
-    deinit {
-        self.didUnloadCommand(EnvironmentStore<State>.global)
+        let hook = Hook(type: type, condition: condition, block: block)
+        containerLifecycle.containerHooks.add(hook: hook, id: id)
     }
 }

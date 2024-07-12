@@ -1,7 +1,7 @@
 
 import Foundation
 import SwiftUI
-@preconcurrency import Combine
+import Combine
 
 public final class EnvironmentStore<State: AppReducer> {
 
