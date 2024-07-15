@@ -27,9 +27,7 @@ public struct AlertButton: AlertAction, View {
         title: String,
         action: @escaping () -> Void = {}
     ) {
-        self.id = AnyHashable(UUID())
-        self.title = title
-        self.action = action
+        self.init(id: AnyHashable(UUID()), title: title, action: action)
     }
 
     public func role(_ role: ButtonRole) -> Self {

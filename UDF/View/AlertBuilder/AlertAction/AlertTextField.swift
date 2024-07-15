@@ -18,6 +18,13 @@ public struct AlertTextField: AlertAction, View {
         self.text = text
     }
 
+    public init(
+        title: String,
+        text: Binding<String>
+    ) {
+        self.init(id: UUID(), title: title, text: text)
+    }
+
     public var body: some View {
         TextField(title, text: text)
             .id(id)
