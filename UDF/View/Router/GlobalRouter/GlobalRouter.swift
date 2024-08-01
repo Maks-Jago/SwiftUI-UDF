@@ -10,7 +10,7 @@ public final class GlobalRouter {
         self.routingPath = path
     }
 
-    public func add<R: Routing>(router: Router<R>) {
+    func add<R: Routing>(router: Router<R>) {
         routers.reap()
         routers.append(.init(value: router))
     }
@@ -32,15 +32,15 @@ public final class GlobalRouter {
         routingPath.wrappedValue.append(route)
     }
 
-    func backToRoot() {
+    public func backToRoot() {
         routingPath.wrappedValue.removeLast(routingPath.wrappedValue.count)
     }
 
-    func back() {
+    public func back() {
         routingPath.wrappedValue.removeLast()
     }
 
-    func back(stepsCount: Int) {
+    public func back(stepsCount: Int) {
         routingPath.wrappedValue.removeLast(stepsCount)
     }
 }

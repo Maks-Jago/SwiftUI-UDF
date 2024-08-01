@@ -354,3 +354,38 @@ public extension Actions {
         }
     }
 }
+
+// MARK: - Global Navigation
+public extension Actions {
+    struct Navigate<R: Equatable>: Action {
+        public let to: [R]
+
+        public init(to: R) {
+            self.to = [to]
+        }
+
+        public init(path: [R]) {
+            self.to = path
+        }
+    }
+
+    struct NavigateResetStack<R: Equatable>: Action {
+        public let to: [R]
+
+        public init(to: R) {
+            self.to = [to]
+        }
+
+        public init(path: [R]) {
+            self.to = path
+        }
+    }
+
+    struct NavigationBackToRoot<R: Equatable>: Action {
+        public init() {}
+    }
+    
+    struct NavigateBack<R: Equatable>: Action {
+        public init() {}
+    }
+}
