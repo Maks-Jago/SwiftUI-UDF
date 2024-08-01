@@ -25,7 +25,7 @@ public final class GlobalRouter {
         }
 
         guard registeredRoute != nil else {
-            fatalError("Router: \(router) does not attached to the view heirarchy. use `navigationDestination(router:)` to add routerd")
+            fatalError("Router: \(router) is not attached to the view hierarchy. Use `navigationDestination(router:)` to add router")
         }
 
         routers.reap()
