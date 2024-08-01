@@ -33,14 +33,23 @@ public final class GlobalRouter {
     }
 
     public func backToRoot() {
+        guard !routingPath.wrappedValue.isEmpty else {
+            return
+        }
         routingPath.wrappedValue.removeLast(routingPath.wrappedValue.count)
     }
 
     public func back() {
+        guard !routingPath.wrappedValue.isEmpty else {
+            return
+        }
         routingPath.wrappedValue.removeLast()
     }
 
     public func back(stepsCount: Int) {
+        guard !routingPath.wrappedValue.isEmpty else {
+            return
+        }
         routingPath.wrappedValue.removeLast(stepsCount)
     }
 }
