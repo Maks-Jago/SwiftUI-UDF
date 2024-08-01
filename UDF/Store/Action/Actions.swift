@@ -354,3 +354,38 @@ public extension Actions {
         }
     }
 }
+
+// MARK: - Global Navigation
+public extension Actions {
+    struct Navigate<Routing>: Action {
+        public let to: [AnyHashable]
+
+        public init(to: AnyHashable) {
+            self.to = [to]
+        }
+
+        public init(path: [AnyHashable]) {
+            self.to = path
+        }
+    }
+
+    struct NavigateResetStack<Routing>: Action {
+        public let to: [AnyHashable]
+
+        public init(to: AnyHashable) {
+            self.to = [to]
+        }
+
+        public init(path: [AnyHashable]) {
+            self.to = path
+        }
+    }
+
+    struct NavigationBackToRoot<Routing>: Action {
+        public init() {}
+    }
+
+    struct NavigateBack<Routing>: Action {
+        public init() {}
+    }
+}
