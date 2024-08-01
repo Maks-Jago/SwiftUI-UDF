@@ -357,35 +357,35 @@ public extension Actions {
 
 // MARK: - Global Navigation
 public extension Actions {
-    struct Navigate<R: Equatable>: Action {
-        public let to: [R]
+    struct Navigate<Routing>: Action {
+        public let to: [AnyHashable]
 
-        public init(to: R) {
+        public init(to: AnyHashable) {
             self.to = [to]
         }
 
-        public init(path: [R]) {
+        public init(path: [AnyHashable]) {
             self.to = path
         }
     }
 
-    struct NavigateResetStack<R: Equatable>: Action {
-        public let to: [R]
+    struct NavigateResetStack<Routing>: Action {
+        public let to: [AnyHashable]
 
-        public init(to: R) {
+        public init(to: AnyHashable) {
             self.to = [to]
         }
 
-        public init(path: [R]) {
+        public init(path: [AnyHashable]) {
             self.to = path
         }
     }
 
-    struct NavigationBackToRoot<R: Equatable>: Action {
+    struct NavigationBackToRoot<Routing>: Action {
         public init() {}
     }
-    
-    struct NavigateBack<R: Equatable>: Action {
+
+    struct NavigateBack<Routing>: Action {
         public init() {}
     }
 }
