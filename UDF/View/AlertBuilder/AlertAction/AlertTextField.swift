@@ -38,13 +38,13 @@ public struct AlertTextField: AlertAction {
 // MARK: - Modifiers
 public extension AlertTextField {
 
-    mutating func textInputAutocapitalization(_ textInputAutocapitalization: TextInputAutocapitalization?) -> Self {
+    func textInputAutocapitalization(_ textInputAutocapitalization: TextInputAutocapitalization?) -> Self {
         mutate { field in
             field.textInputAutocapitalization = textInputAutocapitalization
         }
     }
 
-    mutating func submitLabel(_ submitLabel: SubmitLabel) -> Self {
+    func submitLabel(_ submitLabel: SubmitLabel) -> Self {
         mutate { field in
             field.submitLabel = submitLabel
         }
