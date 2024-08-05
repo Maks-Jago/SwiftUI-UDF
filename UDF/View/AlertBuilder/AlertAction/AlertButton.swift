@@ -32,9 +32,15 @@ public struct AlertButton: AlertAction {
     }
 
     public var body: some View {
-        Button(title, role: role, action: action)
-            .disabled(disabled)
-            .id(id)
+        Group {
+            if let role {
+                Button(title, role: role, action: action)
+            } else {
+                Button(title, action: action)
+            }
+        }
+        .disabled(disabled)
+        .id(id)
     }
 }
 
