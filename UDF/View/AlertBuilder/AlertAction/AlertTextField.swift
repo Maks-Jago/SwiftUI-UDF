@@ -2,7 +2,7 @@
 import Foundation
 import SwiftUI
 
-public struct AlertTextField: AlertAction, View {
+public struct AlertTextField: AlertAction {
     public var id: AnyHashable
     public var title: String
     public var text: Binding<String>

@@ -2,7 +2,7 @@
 import Foundation
 import SwiftUI
 
-public struct AlertButton: AlertAction, View {
+public struct AlertButton: AlertAction {
     public var id: AnyHashable
     public var title: String
     public var role: ButtonRole?
