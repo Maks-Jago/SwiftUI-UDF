@@ -6,6 +6,8 @@ public struct AlertTextField: AlertAction, View {
     public var id: AnyHashable
     public var title: String
     public var text: Binding<String>
+    public var textInputAutocapitalization: TextInputAutocapitalization? = nil
+    public var submitLabel: SubmitLabel = .done
 
     public func hash(into hasher: inout Hasher) {
         hasher.combine(id)
@@ -27,6 +29,24 @@ public struct AlertTextField: AlertAction, View {
 
     public var body: some View {
         TextField(title, text: text)
+            .textInputAutocapitalization(textInputAutocapitalization)
+            .submitLabel(submitLabel)
             .id(id)
+    }
+}
+
+// MARK: - Modifiers
+public extension AlertTextField {
+
+    mutating func textInputAutocapitalization(_ textInputAutocapitalization: TextInputAutocapitalization?) -> Self {
+        mutate { field in
+            field.textInputAutocapitalization = textInputAutocapitalization
+        }
+    }
+
+    mutating func submitLabel(_ submitLabel: SubmitLabel) -> Self {
+        mutate { field in
+            field.submitLabel = submitLabel
+        }
     }
 }

@@ -9,3 +9,11 @@ extension AlertAction {
         lhs.id == rhs.id
     }
 }
+
+extension AlertAction {
+    func mutate(_ block: (inout Self) -> Void) -> Self {
+        var copy = self
+        block(&copy)
+        return copy
+    }
+}

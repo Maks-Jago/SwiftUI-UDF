@@ -6,6 +6,7 @@ public struct AlertButton: AlertAction, View {
     public var id: AnyHashable
     public var title: String
     public var role: ButtonRole?
+    public var disabled: Bool = false
     public var action: () -> ()
 
     public func hash(into hasher: inout Hasher) {
@@ -30,18 +31,29 @@ public struct AlertButton: AlertAction, View {
         self.init(id: AnyHashable(UUID()), title: title, action: action)
     }
 
-    public func role(_ role: ButtonRole) -> Self {
-        var newAction = self
-        newAction.role = role
-        return newAction
-    }
-
     public var body: some View {
         Button(title, role: role, action: action)
+            .disabled(disabled)
             .id(id)
     }
 }
 
+// MARK: - Modifiers
+public extension AlertButton {
+    func role(_ role: ButtonRole) -> Self {
+        mutate { button in
+            button.role = role
+        }
+    }
+
+    func disabled(_ disabled: Bool) -> Self {
+        mutate { button in
+            button.disabled = disabled
+        }
+    }
+}
+
+// MARK: - Predifined buttons
 public extension AlertButton {
     static func `default`(_ title: String, action: @escaping () -> Void = {}) -> Self {
         AlertButton(title: title, action: action)
