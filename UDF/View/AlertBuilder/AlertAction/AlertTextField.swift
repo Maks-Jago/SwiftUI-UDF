@@ -3,35 +3,28 @@ import Foundation
 import SwiftUI
 
 public struct AlertTextField: AlertAction {
-    public var id: AnyHashable
     public var title: String
     public var text: Binding<String>
     public var textInputAutocapitalization: TextInputAutocapitalization? = nil
     public var submitLabel: SubmitLabel = .done
 
+    public static func == (lhs: AlertTextField, rhs: AlertTextField) -> Bool {
+        lhs.title == rhs.title
+    }
+
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
         hasher.combine(title)
     }
 
-    public init<ID: Hashable>(id: ID, title: String, text: Binding<String>) {
-        self.id = AnyHashable(id)
+    public init(title: String, text: Binding<String>) {
         self.title = title
         self.text = text
-    }
-
-    public init(
-        title: String,
-        text: Binding<String>
-    ) {
-        self.init(id: UUID(), title: title, text: text)
     }
 
     public var body: some View {
         TextField(title, text: text)
             .textInputAutocapitalization(textInputAutocapitalization)
             .submitLabel(submitLabel)
-            .id(id)
     }
 }
 

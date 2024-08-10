@@ -3,38 +3,31 @@ import Foundation
 import SwiftUI
 
 public struct AlertButton: AlertAction {
-    public var id: AnyHashable
     public var title: String
     public var role: ButtonRole?
     public var disabled: Bool = false
     public var action: () -> ()
 
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
-        hasher.combine(title)
+    public static func == (lhs: AlertButton, rhs: AlertButton) -> Bool {
+        lhs.title == rhs.title && lhs.role == rhs.role && lhs.disabled == rhs.disabled
     }
 
-    public init<ID: Hashable>(
-        id: ID,
-        title: String,
-        action: @escaping () -> Void = {}
-    ) {
-        self.id = AnyHashable(id)
-        self.title = title
-        self.action = action
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(title)
+        hasher.combine(disabled)
     }
 
     public init(
         title: String,
         action: @escaping () -> Void = {}
     ) {
-        self.init(id: AnyHashable(UUID()), title: title, action: action)
+        self.title = title
+        self.action = action
     }
 
     public var body: some View {
         Button(title, role: role, action: action)
             .disabled(disabled)
-//            .id(id)
     }
 }
 
