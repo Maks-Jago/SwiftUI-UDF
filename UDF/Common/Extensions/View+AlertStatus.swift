@@ -77,7 +77,7 @@ private struct AlertModifier: ViewModifier {
             ForEach(Array(actions.enumerated()), id: \.offset) { _, action in
                 switch action {
                 case let action as AlertButton: action.body.id(action.hashValue)
-                case let action as AlertTextField: action.body.id(action.hashValue)
+                case let action as AlertTextField: action.body
                 default:
                     EmptyView()
                 }
