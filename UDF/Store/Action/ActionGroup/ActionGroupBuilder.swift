@@ -85,6 +85,10 @@ public enum ActionGroupBuilder {
         []
     }
 
+    public static func buildExpression(_ expression: (any Equatable)?) -> [any Equatable] {
+        [expression].compactMap({ $0 })
+    }
+
     public static func buildOptional(_ component: [any Equatable]?) -> [any Equatable] {
         component ?? []
     }
