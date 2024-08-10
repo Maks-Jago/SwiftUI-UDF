@@ -8,6 +8,8 @@ public struct AlertTextField: AlertAction {
     public var textInputAutocapitalization: TextInputAutocapitalization? = nil
     public var submitLabel: SubmitLabel = .done
 
+    @StateObject private var debouncer: UserInputDebouncer<String>
+
     public static func == (lhs: AlertTextField, rhs: AlertTextField) -> Bool {
         lhs.title == rhs.title
     }
@@ -19,13 +21,22 @@ public struct AlertTextField: AlertAction {
     public init(title: String, text: Binding<String>) {
         self.title = title
         self.text = text
+
+        self._debouncer = .init(wrappedValue: .init(defaultValue: text.wrappedValue))
     }
 
     public var body: some View {
-        TextField(title, text: text)
+        TextField(title, text: $debouncer.value)
             .textInputAutocapitalization(textInputAutocapitalization)
             .submitLabel(submitLabel)
-            .id(title)
+            .onReceive(debouncer.$debouncedValue.dropFirst()) { value in
+                self.text.wrappedValue = value
+            }
+            .onChange(of: text.wrappedValue) { newValue in
+                if debouncer.value.isEmpty, !newValue.isEmpty {
+                    debouncer.value = newValue
+                }
+            }
     }
 }
 

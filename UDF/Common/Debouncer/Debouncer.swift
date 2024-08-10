@@ -52,4 +52,3 @@ private extension Debouncer {
         if let value = self.value { callbacks.forEach { $0(value) } }
     }
 }
-
