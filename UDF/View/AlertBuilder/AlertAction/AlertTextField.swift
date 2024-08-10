@@ -37,7 +37,6 @@ public struct AlertTextField: AlertAction, View {
                     debouncer.value = newValue
                 }
             }
-            .clipped()
     }
 }
 
