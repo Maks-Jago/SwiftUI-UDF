@@ -25,6 +25,7 @@ public struct AlertTextField: AlertAction {
         TextField(title, text: text)
             .textInputAutocapitalization(textInputAutocapitalization)
             .submitLabel(submitLabel)
+            .id(title)
     }
 }
 
