@@ -2,7 +2,7 @@
 import Foundation
 import SwiftUI
 
-public struct AlertTextField: AlertAction {
+public struct AlertTextField: AlertAction, View {
     public var title: String
     public var text: Binding<String>
     public var textInputAutocapitalization: TextInputAutocapitalization? = nil
@@ -43,13 +43,13 @@ public struct AlertTextField: AlertAction {
 // MARK: - Modifiers
 public extension AlertTextField {
 
-    func textInputAutocapitalization(_ textInputAutocapitalization: TextInputAutocapitalization?) -> Self {
+    func textInputAutocapitalization(_ textInputAutocapitalization: TextInputAutocapitalization?) -> AlertTextField {
         mutate { field in
             field.textInputAutocapitalization = textInputAutocapitalization
         }
     }
 
-    func submitLabel(_ submitLabel: SubmitLabel) -> Self {
+    func submitLabel(_ submitLabel: SubmitLabel) -> AlertTextField {
         mutate { field in
             field.submitLabel = submitLabel
         }

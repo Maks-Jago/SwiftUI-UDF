@@ -2,7 +2,7 @@
 import Foundation
 import SwiftUI
 
-public struct AlertButton: AlertAction {
+public struct AlertButton: AlertAction, View {
     public var title: String
     public var role: ButtonRole?
     public var disabled: Bool = false
@@ -33,13 +33,13 @@ public struct AlertButton: AlertAction {
 
 // MARK: - Modifiers
 public extension AlertButton {
-    func role(_ role: ButtonRole) -> Self {
+    func role(_ role: ButtonRole) -> AlertButton {
         mutate { button in
             button.role = role
         }
     }
 
-    func disabled(_ disabled: Bool) -> Self {
+    func disabled(_ disabled: Bool) -> AlertButton {
         mutate { button in
             button.disabled = disabled
         }
