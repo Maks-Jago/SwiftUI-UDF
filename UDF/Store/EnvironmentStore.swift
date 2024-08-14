@@ -12,11 +12,11 @@ public final class EnvironmentStore<State: AppReducer> {
     private let subscribersCoordinator: SubscribersCoordinator<StateSubscriber<State>> = SubscribersCoordinator()
     private let storeQueue: DispatchQueue = .init(label: "EnvironmentStore")
 
-    public init(initial state: State, loggers: [ActionLogger]) throws {
+    public init(initial state: State, loggers: [ActionLogger]) {
         var mutableState = state
         mutableState.initialSetup()
 
-        let store = try InternalStore(initial: mutableState, loggers: loggers)
+        let store = InternalStore(initial: mutableState, loggers: loggers)
         self.store = store
         self._state = .init(wrappedValue: mutableState, store: store)
 
@@ -24,8 +24,8 @@ public final class EnvironmentStore<State: AppReducer> {
         GlobalValue.set(self)
     }
 
-    public convenience init(initial state: State, logger: ActionLogger) throws {
-        try self.init(initial: state, loggers: [logger])
+    public convenience init(initial state: State, logger: ActionLogger) {
+        self.init(initial: state, loggers: [logger])
     }
 
     public func dispatch(

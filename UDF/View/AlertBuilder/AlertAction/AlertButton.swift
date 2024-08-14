@@ -2,7 +2,7 @@
 import Foundation
 import SwiftUI
 
-public struct AlertButton: AlertAction, View {
+public struct AlertButton: AlertAction {
     public var title: String
     public var role: ButtonRole?
     public var disabled: Bool = false
@@ -30,6 +30,8 @@ public struct AlertButton: AlertAction, View {
             .disabled(disabled)
     }
 }
+
+extension AlertButton: View {}
 
 // MARK: - Modifiers
 public extension AlertButton {

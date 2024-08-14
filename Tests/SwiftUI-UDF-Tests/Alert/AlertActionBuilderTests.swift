@@ -21,7 +21,7 @@ final class AlertActionBuilderTests: XCTestCase {
 
     func test_AlertButton() {
         let style = AlertBuilder.AlertStyle.init(title: "", text: "") {
-            .cancel("Cancel")
+            AlertButton.cancel("Cancel")
         }
 
         let alertType = style.type

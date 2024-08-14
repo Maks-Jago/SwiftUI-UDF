@@ -2,7 +2,7 @@
 import Foundation
 import SwiftUI
 
-public struct AlertTextField: AlertAction, View {
+public struct AlertTextField: AlertAction {
     public var title: String
     public var text: Binding<String>
     public var textInputAutocapitalization: TextInputAutocapitalization? = nil
@@ -39,6 +39,8 @@ public struct AlertTextField: AlertAction, View {
             }
     }
 }
+
+extension AlertTextField: View {}
 
 // MARK: - Modifiers
 public extension AlertTextField {
