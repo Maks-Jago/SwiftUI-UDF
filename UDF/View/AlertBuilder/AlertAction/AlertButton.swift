@@ -47,7 +47,7 @@ public extension AlertButton {
 }
 
 // MARK: - Predifined buttons
-public extension AlertButton {
+public extension AlertAction where Self == AlertButton {
     static func `default`(_ title: String, action: @escaping () -> Void = {}) -> Self {
         AlertButton(title: title, action: action)
     }

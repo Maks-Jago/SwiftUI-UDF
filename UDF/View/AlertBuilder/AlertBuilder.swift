@@ -99,10 +99,10 @@ public enum AlertBuilder {
             case message(text: () -> String)
             case messageTitle(title: () -> String, message: () -> String)
 
-            @available(*, deprecated, message: "use custom(title:text:actions) case instead")
+            @available(*, deprecated, message: "use customActions(title:text:actions) case instead")
             case custom(title: () -> String, text: () -> String, primaryButton: AlertButton, secondaryButton: AlertButton)
 
-            @available(*, deprecated, message: "use custom(title:text:actions) case instead")
+            @available(*, deprecated, message: "use customActions(title:text:actions) case instead")
             case customDismiss(title: () -> String, text: () -> String, dismissButton: AlertButton)
 
             case customActions(title: () -> String, text: () -> String, actions: () -> [any AlertAction])
