@@ -358,25 +358,33 @@ public extension Actions {
 // MARK: - Global Navigation
 public extension Actions {
     struct Navigate<Routing>: Action {
-        public let to: [AnyHashable]
+        public static func == (lhs: Actions.Navigate<Routing>, rhs: Actions.Navigate<Routing>) -> Bool {
+            true
+        }
 
-        public init(to: AnyHashable) {
+        public let to: [any Hashable]
+
+        public init(to: any Hashable) {
             self.to = [to]
         }
 
-        public init(path: [AnyHashable]) {
+        public init(path: [any Hashable]) {
             self.to = path
         }
     }
 
     struct NavigateResetStack<Routing>: Action {
-        public let to: [AnyHashable]
+        public static func == (lhs: Actions.NavigateResetStack<Routing>, rhs: Actions.NavigateResetStack<Routing>) -> Bool {
+            true
+        }
 
-        public init(to: AnyHashable) {
+        public let to: [any Hashable]
+
+        public init(to: any Hashable) {
             self.to = [to]
         }
 
-        public init(path: [AnyHashable]) {
+        public init(path: [any Hashable]) {
             self.to = path
         }
     }
