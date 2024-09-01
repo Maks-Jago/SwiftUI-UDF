@@ -118,7 +118,7 @@ final class ContainerScopeTests: XCTestCase {
 }
 
 
-//MARK: - ItemsListContainer
+// MARK: - ItemsListContainer
 extension ContainerScopeTests {
     struct ItemsListContainer: Container {
         typealias ContainerComponent = ItemsListComponent
@@ -153,7 +153,7 @@ extension ContainerScopeTests {
     }
 }
 
-//MARK: - RootContainer
+// MARK: - RootContainer
 extension ContainerScopeTests {
     struct RootContainer: Container {
         typealias ContainerComponent = RootComponent

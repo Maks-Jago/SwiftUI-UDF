@@ -26,6 +26,10 @@ public enum ScopeBuilder {
         expression
     }
 
+//    public static func buildExpression<C: BindableContainer, R: Reducing & Equatable>(_ expression: BindableReducer<C, R>) -> some EquatableScope {
+//        expression.wrappedValue
+//    }
+
     public static func buildPartialBlock<S: EquatableScope>(first scope: S) -> some EquatableScope {
         scope
     }

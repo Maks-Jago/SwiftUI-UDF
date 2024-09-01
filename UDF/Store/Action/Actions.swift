@@ -441,3 +441,25 @@ public extension Actions {
         public init() {}
     }
 }
+
+
+// MARK: BindableReducer internal actions
+extension Actions {
+    struct _OnContainerDidLoad<BindedContainer: BindableContainer>: Action {
+        static func == (lhs: UDF.Actions._OnContainerDidLoad<BindedContainer>, rhs: UDF.Actions._OnContainerDidLoad<BindedContainer>) -> Bool {
+            true
+        }
+
+        var containerType: BindedContainer.Type
+        var id: BindedContainer.ID
+    }
+
+    struct _OnContainerDidUnLoad<BindedContainer: BindableContainer>: Action {
+        static func == (lhs: UDF.Actions._OnContainerDidUnLoad<BindedContainer>, rhs: UDF.Actions._OnContainerDidUnLoad<BindedContainer>) -> Bool {
+            true
+        }
+
+        var containerType: BindedContainer.Type
+        var id: BindedContainer.ID
+    }
+}
