@@ -14,14 +14,12 @@ final class BindableContainerTests: XCTestCase {
         var id: ID
     }
 
-    struct ItemsForm: UDF.Form {
-        
-    }
+    struct ItemsForm: UDF.Form {}
 
     struct AppState: AppReducer {
 
-        @BindableReducer(containerType: ItemsContainer.self, reducerType: ItemsForm.self)
-        var itemsForm
+        @BindableReducer(ItemsForm.self, containerType: ItemsContainer.self)
+        fileprivate var itemsForm
     }
 
     func test_WhenTwoContainersLoaded_BindableReducerCountShouldBeEqual2() async throws {
@@ -60,8 +58,8 @@ final class BindableContainerTests: XCTestCase {
 }
 
 // MARK: Container
-extension BindableContainerTests {
-    
+fileprivate extension BindableContainerTests {
+
     struct ItemsContainer: BindableContainer {
         typealias ContainerComponent = ItemsComponent
 

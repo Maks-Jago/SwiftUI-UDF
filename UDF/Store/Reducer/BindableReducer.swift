@@ -10,7 +10,7 @@ public struct BindableReducer<BindedContainer: BindableContainer, Reducer: Reduc
     var reducers: Reducers = [:]
     public var wrappedValue: BindableReducer<BindedContainer, Reducer> { self }
 
-    public init(containerType: BindedContainer.Type, reducerType: Reducer.Type) {
+    public init(_ reducerType: Reducer.Type, containerType: BindedContainer.Type) {
         self.containerType = containerType
     }
 
