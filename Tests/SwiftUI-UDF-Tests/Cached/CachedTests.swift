@@ -58,8 +58,8 @@ class CachedTests: XCTestCase {
         }
     }
 
-    func testItemsCaching() async throws {
-        var store = try await XCTestStore(initial: AppState())
+    func testItemsCaching() async {
+        var store = await XCTestStore(initial: AppState())
 
         let items = (0...3).map { Item(id: .init(value: $0)) }
         await store.dispatch(Actions.DidLoadItems(items: items, id: "items"))
@@ -72,7 +72,7 @@ class CachedTests: XCTestCase {
 
         await fulfill(description: "waiting for cache syncing", sleep: 1.5)
 
-        store = try await .init(initial: AppState())
+        store = await .init(initial: AppState())
         isEmpty = await store.state.nestedForm.items.isEmpty
 
         XCTAssertFalse(isEmpty)
@@ -81,8 +81,8 @@ class CachedTests: XCTestCase {
         XCTAssertEqual(count, 4)
     }
 
-    func testResetCache() async throws {
-        let store = try await XCTestStore(initial: AppState())
+    func testResetCache() async {
+        let store = await XCTestStore(initial: AppState())
         let items = (0...3).map { Item(id: .init(value: $0)) }
         await store.dispatch(Actions.DidLoadItems(items: items, id: "items"))
 
@@ -99,8 +99,8 @@ class CachedTests: XCTestCase {
         XCTAssertTrue(isEmpty)
     }
 
-    func testSingleObjectCaching() async throws {
-        let store = try await XCTestStore(initial: AppState())
+    func testSingleObjectCaching() async {
+        let store = await XCTestStore(initial: AppState())
 
         var selectedItem = await store.state.nestedForm.selectedItem
         XCTAssertNil(selectedItem)
@@ -117,7 +117,7 @@ class CachedTests: XCTestCase {
     }
 
     func testRemoveItemFromCacheById() async throws {
-        let store = try await XCTestStore(initial: AppState())
+        let store = await XCTestStore(initial: AppState())
         await store.dispatch(Actions.ResetCache())
 
         let items = [Item(id: .init(value: 0))]

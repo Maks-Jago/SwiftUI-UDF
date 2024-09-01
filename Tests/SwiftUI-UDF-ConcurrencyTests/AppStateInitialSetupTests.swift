@@ -34,8 +34,8 @@ final class AppStateInitialSetupTests: XCTestCase {
         }
     }
 
-    func test_initialSetups() async throws {
-        let store = try await XCTestStore(initial: AppState())
+    func test_initialSetups() async {
+        let store = await XCTestStore(initial: AppState())
 
         let title = await store.state.form1.title
         XCTAssertEqual(title, "new title")

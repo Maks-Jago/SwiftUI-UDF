@@ -12,8 +12,8 @@ fileprivate extension Actions {
 @available(iOS 16.0.0, *)
 final class MiddlewareSubscriptionTests: XCTestCase {
 
-    func testMiddlewareSubscriptions() async throws {
-        let store = try await XCTestStore(initial: AppState())
+    func testMiddlewareSubscriptions() async {
+        let store = await XCTestStore(initial: AppState())
         
         await store.subscribe(build: { store in
             ObservableMiddleware.self
@@ -34,8 +34,8 @@ final class MiddlewareSubscriptionTests: XCTestCase {
         XCTAssertEqual(type, .reducible)
     }
 
-    func testEnvironmentMiddlewareSubscription() async throws {
-        let store = try await XCTestStore(initial: AppState())
+    func testEnvironmentMiddlewareSubscription() async {
+        let store = await XCTestStore(initial: AppState())
         
         await store.subscribe { store in
             EnvironmentMiddleware.self
@@ -46,8 +46,8 @@ final class MiddlewareSubscriptionTests: XCTestCase {
         XCTAssertEqual(middlewareId, .testEnvironment)
     }
 
-    func liveEnvironmentMiddlewareSubscription() async throws {
-        let store = try await XCTestStore(initial: AppState())
+    func liveEnvironmentMiddlewareSubscription() async {
+        let store = await XCTestStore(initial: AppState())
         
         setLiveEnvironment()
         

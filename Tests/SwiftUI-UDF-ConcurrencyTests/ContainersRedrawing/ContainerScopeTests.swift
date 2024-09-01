@@ -48,8 +48,8 @@ final class ContainerScopeTests: XCTestCase {
         var isUserLoggedIn: Bool = false
     }
 
-    func test_componentRenderingAfterStateMutation() async throws {
-        let store = try EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
+    func test_componentRenderingAfterStateMutation() async {
+        let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
         let itemsContainer = ItemsListContainer()
 
         let window = await MainActor.run {
@@ -73,8 +73,8 @@ final class ContainerScopeTests: XCTestCase {
         XCTAssertEqual(itemsContainer.renderingNumber, 2)
     }
 
-    func test_rootComponentRendering() async throws {
-        let store = try EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
+    func test_rootComponentRendering() async {
+        let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
         let rootContainer = RootContainer()
 
         let window = await MainActor.run {

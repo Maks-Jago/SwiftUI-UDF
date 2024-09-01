@@ -47,7 +47,7 @@ class MergeableAppStateTests: XCTestCase {
     }
 
     func testItemMerging() async throws {
-        let store = try await XCTestStore(initial: AppState())
+        let store = await XCTestStore(initial: AppState())
         var item = Item(id: .init(value: 1), title: "original")
         await store.dispatch(Actions.DidLoadItem(item: item))
 

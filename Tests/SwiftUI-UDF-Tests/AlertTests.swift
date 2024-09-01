@@ -41,8 +41,8 @@ final class AlertTests: XCTestCase {
         }
     }
 
-    func test_WhenAlerBuilderRegistered_AlertCanBePresentedById() async throws {
-        let store = try await XCTestStore(initial: AppState())
+    func test_WhenAlerBuilderRegistered_AlertCanBePresentedById() async {
+        let store = await XCTestStore(initial: AppState())
         var status = await store.state.form.alert.status
 
         XCTAssertEqual(status, .dismissed)
