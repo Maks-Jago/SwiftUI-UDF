@@ -112,17 +112,3 @@ fileprivate extension BindableContainerDataMutationTests {
         }
     }
 }
-
-// MARK: Actions
-fileprivate extension Actions {
-
-//    struct DidLoadConcreteItems: Action {
-//        var items: [BindableContainerDataMutationTests.Item]
-//        var id: AnyHashable
-//
-//        init<ID: Hashable>(items: [BindableContainerDataMutationTests.Item], id: ID) {
-//            self.items = items
-//            self.id = AnyHashable(id)
-//        }
-//    }
-}
