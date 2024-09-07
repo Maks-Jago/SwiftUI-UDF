@@ -52,6 +52,11 @@ public final class GlobalRouter {
         }
         routingPath.wrappedValue.removeLast(stepsCount)
     }
+
+    public func resetStack<R: Routing>(to route: R.Route, with router: Router<R>) where R.Route: Hashable {
+        routingPath.wrappedValue.removeLast(routingPath.wrappedValue.count)
+        navigate(to: route, with: router)
+    }
 }
 
 private struct GlobalRouterKey: EnvironmentKey {
