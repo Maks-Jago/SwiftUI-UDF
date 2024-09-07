@@ -34,10 +34,11 @@ public struct BindableReducer<BindedContainer: BindableContainer, Reducer: Reduc
 // MARK: Runtime reducing
 extension BindableReducer {
     mutating public func reduce(_ action: some Action) {
-        for var tuple in reducers {
-            _ = RuntimeReducing.reduce(action, reducer: &tuple.value)
-            reducers.updateValue(tuple.value, forKey: tuple.key)
-        }
+        //TODO: Thinking, should a Bindable Reducer reduce non-bindable actions?
+//        for var tuple in reducers {
+//            _ = RuntimeReducing.reduce(action, reducer: &tuple.value)
+//            reducers.updateValue(tuple.value, forKey: tuple.key)
+//        }
 
         switch action {
         case let action as Actions._OnContainerDidLoad<BindedContainer>:
@@ -45,6 +46,12 @@ extension BindableReducer {
 
         case let action as Actions._OnContainerDidUnLoad<BindedContainer>:
             reducers.removeValue(forKey: action.id)
+
+        case let action as Actions.BindableAction<BindedContainer>:
+            if var reducer = reducers[action.id] {
+                _ = RuntimeReducing.bindableReduce(action.value, reducer: &reducer)
+                reducers.updateValue(reducer, forKey: action.id)
+            }
 
         default:
             break

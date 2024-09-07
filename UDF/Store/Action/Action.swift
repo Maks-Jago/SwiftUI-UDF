@@ -40,3 +40,35 @@ public extension Action {
         }
     }
 }
+
+public extension Action {
+    func bindable<BindedContainer: BindableContainer>(containerType: BindedContainer.Type, id: BindedContainer.ID) -> some Action {
+        if let group = self as? ActionGroup {
+            return ActionGroup(internalActions: group._actions.map({ oldAction in
+                InternalAction(
+                    oldAction.value.bindable(containerType: containerType, id: id),
+                    animation: oldAction.animation,
+                    silent: oldAction.silent,
+                    fileName: oldAction.fileName,
+                    functionName: oldAction.functionName,
+                    lineNumber: oldAction.lineNumber
+                )
+            }))
+
+        } else {
+            return ActionGroup(internalActions: [InternalAction(Actions.BindableAction(value: self, containerType: containerType, id: id))])
+        }
+    }
+}
+
+extension Actions {
+    struct BindableAction<BindedContainer: BindableContainer>: Action {
+        let value: any Action
+        let containerType: BindedContainer.Type
+        let id: BindedContainer.ID
+
+        public static func == (lhs: BindableAction<BindedContainer>, rhs: BindableAction<BindedContainer>) -> Bool {
+            areEqual(lhs.value, rhs.value)
+        }
+    }
+}

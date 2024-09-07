@@ -15,18 +15,11 @@ final class BindableContainerDataMutationTests: XCTestCase {
     }
 
     struct ItemsForm: UDF.Form {
-//        var paginator: Paginator = .init(Item.self, flowId: ItemsFlow.id, perPage: 10) //TODO: Update paginator to use inside BindableReducer
-        /// Maybe we need something like Actions.AnyAction.bindable(to: ItemsContainer.self, id: Item.ID.init())
-
-//        var items: [Item.ID] = []
-
+        var paginator: Paginator = .init(Item.self, flowId: ItemsFlow.id, perPage: 10)
         var item: Item.ID? = nil
-        var items: [Item] = []
 
         mutating func reduce(_ action: some Action) {
             switch action {
-            case let action as Actions.DidLoadConcreteItems where action.id == ItemsFlow.FlowId.value(item):
-                items = action.items
 
             default:
                 break
@@ -34,14 +27,8 @@ final class BindableContainerDataMutationTests: XCTestCase {
         }
     }
 
-    enum ItemsFlow: Flow {
+    enum ItemsFlow: IdentifiableFlow {
         case none, loading
-
-        enum FlowId: Hashable {
-            case value(Item.ID?)
-        }
-
-//        static var id: FlowId { . }
 
         init() {
             self = .none
@@ -59,22 +46,39 @@ final class BindableContainerDataMutationTests: XCTestCase {
 
     func test_WhenMutateBindableForm_OnleConcreteInstanceOfBindableFormShouldBeUpdated() async throws {
         let store = await XCTestStore(initial: AppState())
-//        Actions.UpdateFormField(keyPath: <#T##WritableKeyPath<Form, Equatable>#>, value: <#T##Equatable#>)
 
-//        var bindedReducersCount = try XCTUnwrap(await store.state.itemsForm).reducers.count
-//        XCTAssertEqual(bindedReducersCount, 0)
+        var bindedReducersFormCount = try await XCTUnwrapAsync(await store.state.itemsForm).reducers.count
+        XCTAssertEqual(bindedReducersFormCount, 0)
+
+        var bindedReducersFlowCount = try await XCTUnwrapAsync(await store.state.itemsFlow).reducers.count
+        XCTAssertEqual(bindedReducersFlowCount, 0)
 
         await store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 1)))
         await store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 2)))
 
-        //UpdateFormField
-//        store.$state.itemsForm[.init(value: 2)].message.wrappedValue = "Items Form 2"
+        bindedReducersFormCount = try await XCTUnwrapAsync(await store.state.itemsForm).reducers.count
+        XCTAssertEqual(bindedReducersFormCount, 2)
 
-//        let message1 = store.state.itemsForm[.init(value: 1)].message
-//        XCTAssertTrue(message1.isEmpty)
+        bindedReducersFlowCount = try await XCTUnwrapAsync(await store.state.itemsFlow).reducers.count
+        XCTAssertEqual(bindedReducersFlowCount, 2)
 
-//        let message2 = store.state.itemsForm[.init(value: 2)].message
-//        XCTAssertEqual(message2, "Items Form 2")
+        await store.dispatch(
+            Actions.UpdateFormField(keyPath: \ItemsForm.item, value: .init(value: 2))
+                .bindable(containerType: ItemsContainer.self, id: .init(value: 2))
+        )
+
+        _ = try await XCTUnwrapAsync(await store.state.itemsForm[.init(value: 2)]?.item)
+
+        await store.dispatch(
+            Actions.DidLoadItems(
+                items: [Item(id: .init(value: 4)), Item(id: .init(value: 5))], 
+                id: ItemsFlow.id
+            )
+            .bindable(containerType: ItemsContainer.self, id: .init(value: 2))
+        )
+
+        let itemsCount = try await XCTUnwrapAsync(await store.state.itemsForm[.init(value: 2)]).paginator.items.count
+        XCTAssertEqual(itemsCount, 2)
     }
 }
 
@@ -112,13 +116,13 @@ fileprivate extension BindableContainerDataMutationTests {
 // MARK: Actions
 fileprivate extension Actions {
 
-    struct DidLoadConcreteItems: Action {
-        var items: [BindableContainerDataMutationTests.Item]
-        var id: AnyHashable
-
-        init<ID: Hashable>(items: [BindableContainerDataMutationTests.Item], id: ID) {
-            self.items = items
-            self.id = AnyHashable(id)
-        }
-    }
+//    struct DidLoadConcreteItems: Action {
+//        var items: [BindableContainerDataMutationTests.Item]
+//        var id: AnyHashable
+//
+//        init<ID: Hashable>(items: [BindableContainerDataMutationTests.Item], id: ID) {
+//            self.items = items
+//            self.id = AnyHashable(id)
+//        }
+//    }
 }
