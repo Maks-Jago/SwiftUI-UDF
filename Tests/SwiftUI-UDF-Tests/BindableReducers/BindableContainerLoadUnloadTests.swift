@@ -4,7 +4,7 @@ import XCTest
 import SwiftUI
 import UDFXCTest
 
-final class BindableContainerTests: XCTestCase {
+final class BindableContainerLoadUnloadTests: XCTestCase {
 
     struct Item: Identifiable {
         struct ID: Hashable {
@@ -58,18 +58,18 @@ final class BindableContainerTests: XCTestCase {
 }
 
 // MARK: Container
-fileprivate extension BindableContainerTests {
+fileprivate extension BindableContainerLoadUnloadTests {
 
     struct ItemsContainer: BindableContainer {
         typealias ContainerComponent = ItemsComponent
 
         var id: Item.ID
 
-        func scope(for state: BindableContainerTests.AppState) -> Scope {
+        func scope(for state: AppState) -> Scope {
             state.itemsForm[id]
         }
 
-        func map(store: EnvironmentStore<AppState>) -> BindableContainerTests.ItemsComponent.Props {
+        func map(store: EnvironmentStore<AppState>) -> ItemsComponent.Props {
             .init()
         }
     }
