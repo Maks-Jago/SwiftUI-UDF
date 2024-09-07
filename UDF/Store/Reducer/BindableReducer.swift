@@ -22,12 +22,12 @@ public struct BindableReducer<BindedContainer: BindableContainer, Reducer: Reduc
         lhs.reducers == rhs.reducers
     }
 
-    public subscript(_ id: BindedContainer.ID) -> Reducer {
-        reducers[id]!
-    }
-
     public subscript(_ id: BindedContainer.ID) -> Reducer? {
         reducers[id]
+    }
+
+    public subscript(_ id: BindedContainer.ID) -> ReducerScope<Reducer> {
+        ReducerScope(reducer: reducers[id])
     }
 }
 

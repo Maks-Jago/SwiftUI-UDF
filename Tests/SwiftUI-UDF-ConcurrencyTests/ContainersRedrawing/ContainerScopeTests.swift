@@ -50,20 +50,9 @@ final class ContainerScopeTests: XCTestCase {
 
     func test_componentRenderingAfterStateMutation() async {
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
+
         let itemsContainer = ItemsListContainer()
-
-        let window = await MainActor.run {
-            let window = UIWindow(frame: .zero)
-            let viewController = UIHostingController(rootView: itemsContainer)
-            window.rootViewController = viewController
-
-            viewController.beginAppearanceTransition(true, animated: false)
-            viewController.endAppearanceTransition()
-
-            viewController.view.setNeedsLayout()
-            viewController.view.layoutIfNeeded()
-            return window
-        }
+        let window = await UIWindow.render(container: itemsContainer)
 
         store.dispatch(Actions.UpdateFormField(keyPath: \PlainForm.title, value: "title 1"))
         await fulfill(description: "waiting for rendering", sleep: 1)
@@ -75,20 +64,9 @@ final class ContainerScopeTests: XCTestCase {
 
     func test_rootComponentRendering() async {
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
+        
         let rootContainer = RootContainer()
-
-        let window = await MainActor.run {
-            let window = UIWindow(frame: .zero)
-            let viewController = UIHostingController(rootView: rootContainer)
-            window.rootViewController = viewController
-
-            viewController.beginAppearanceTransition(true, animated: false)
-            viewController.endAppearanceTransition()
-
-            viewController.view.setNeedsLayout()
-            viewController.view.layoutIfNeeded()
-            return window
-        }
+        let window = await UIWindow.render(container: rootContainer)
 
         store.dispatch(Actions.UpdateFormField(keyPath: \PlainForm.title, value: "title 1"))
         await fulfill(description: "waiting for rendering", sleep: 1)
