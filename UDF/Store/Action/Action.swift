@@ -42,11 +42,11 @@ public extension Action {
 }
 
 public extension Action {
-    func bindable<BindedContainer: BindableContainer>(containerType: BindedContainer.Type, id: BindedContainer.ID) -> some Action {
+    func binded<BindedContainer: BindableContainer>(to containerType: BindedContainer.Type, by id: BindedContainer.ID) -> some Action {
         if let group = self as? ActionGroup {
             return ActionGroup(internalActions: group._actions.map({ oldAction in
                 InternalAction(
-                    oldAction.value.bindable(containerType: containerType, id: id),
+                    oldAction.value.binded(to: containerType, by: id),
                     animation: oldAction.animation,
                     silent: oldAction.silent,
                     fileName: oldAction.fileName,

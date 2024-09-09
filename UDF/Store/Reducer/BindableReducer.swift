@@ -13,8 +13,8 @@ public struct BindableReducer<BindedContainer: BindableContainer, Reducer: Reduc
         set { /*do nothing*/ }
     }
 
-    public init(_ reducerType: Reducer.Type, containerType: BindedContainer.Type) {
-        self.containerType = containerType
+    public init(_ reducerType: Reducer.Type, bindedTo: BindedContainer.Type) {
+        self.containerType = bindedTo
     }
 
     public init() {

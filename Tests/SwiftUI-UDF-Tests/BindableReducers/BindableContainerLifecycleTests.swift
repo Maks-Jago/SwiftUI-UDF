@@ -24,7 +24,7 @@ final class BindableContainerLifecycleTests: XCTestCase {
 
     struct AppState: AppReducer {
 
-        @BindableReducer(ItemsForm.self, containerType: ItemsContainer.self)
+        @BindableReducer(ItemsForm.self, bindedTo: ItemsContainer.self)
         fileprivate var itemsForm
     }
 

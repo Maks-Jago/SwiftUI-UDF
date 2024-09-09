@@ -15,7 +15,7 @@ public final class BindableReducerReference<AppState: AppReducer, BindedContaine
 
     public subscript(_ id: BindedContainer.ID) -> ReducerReference<AppState, Reducer> {
         ReducerReference(reducer: reducer[id] ?? .init()) { [dispatcher] action in
-            dispatcher(action.bindable(containerType: BindedContainer.self, id: id))
+            dispatcher(action.binded(to: BindedContainer.self, by: id))
         }
     }
 }

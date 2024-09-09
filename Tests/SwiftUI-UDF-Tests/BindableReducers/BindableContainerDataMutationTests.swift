@@ -39,10 +39,10 @@ final class BindableContainerDataMutationTests: XCTestCase {
 
     struct AppState: AppReducer {
 
-        @BindableReducer(ItemsForm.self, containerType: ItemsContainer.self)
+        @BindableReducer(ItemsForm.self, bindedTo: ItemsContainer.self)
         fileprivate var itemsForm
 
-        @BindableReducer(ItemsFlow.self, containerType: ItemsContainer.self)
+        @BindableReducer(ItemsFlow.self, bindedTo: ItemsContainer.self)
         fileprivate var itemsFlow
     }
 
@@ -66,7 +66,7 @@ final class BindableContainerDataMutationTests: XCTestCase {
 
         await store.dispatch(
             Actions.UpdateFormField(keyPath: \ItemsForm.item, value: .init(value: 2))
-                .bindable(containerType: ItemsContainer.self, id: .init(value: 2))
+                .binded(to: ItemsContainer.self, by: .init(value: 2))
         )
 
         _ = try await XCTUnwrapAsync(await store.state.itemsForm[.init(value: 2)]?.item)
@@ -76,7 +76,7 @@ final class BindableContainerDataMutationTests: XCTestCase {
                 items: [Item(id: .init(value: 4)), Item(id: .init(value: 5))], 
                 id: ItemsFlow.id
             )
-            .bindable(containerType: ItemsContainer.self, id: .init(value: 2))
+            .binded(to: ItemsContainer.self, by: .init(value: 2))
         )
 
         let itemsCount = try await XCTUnwrapAsync(await store.state.itemsForm[.init(value: 2)]).paginator.items.count
