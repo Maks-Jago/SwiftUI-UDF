@@ -27,7 +27,7 @@ public final class SourceOfTruth<AppState: AppReducer> {
     }
 
     public subscript<R: Reducible>(dynamicMember keyPath: KeyPath<AppState, R>) -> ReducerReference<AppState, R> {
-        .init(reducer: wrappedValue[keyPath: keyPath]) { [unowned store] action in
+        ReducerReference(reducer: wrappedValue[keyPath: keyPath]) { [unowned store] action in
             store?.dispatch(action, priority: .userInteractive)
         }
     }

@@ -58,7 +58,7 @@ struct ConnectedContainer<C: Component, State: AppReducer>: View {
         self._containerLifecycle = .init(
             wrappedValue: ContainerLifecycle(
                 didLoadCommand: { store in
-                    store.dispatch(Actions._OnContainerDidLoad(containerType: containerType, id: containerId()).silent())
+                    store.dispatch(Actions._OnContainerDidLoad(containerType: containerType, id: containerId()).silent(), priority: .userInteractive)
                     onContainerDidLoad(store)
                 },
                 didUnloadCommand: { store in

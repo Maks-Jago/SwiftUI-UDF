@@ -2,7 +2,7 @@
 import Foundation
 
 @propertyWrapper
-public struct BindableReducer<BindedContainer: BindableContainer, Reducer: Reducing & Equatable>: Reducible {
+public struct BindableReducer<BindedContainer: BindableContainer, Reducer: Reducible>: Reducible {
     public typealias Reducers = [BindedContainer.ID: Reducer]
 
     var containerType: BindedContainer.Type
@@ -26,8 +26,7 @@ public struct BindableReducer<BindedContainer: BindableContainer, Reducer: Reduc
     }
 
     public subscript(_ id: BindedContainer.ID) -> Reducer? {
-        get { reducers[id] }
-        set { reducers[id] = newValue }
+        reducers[id]
     }
 
     public subscript(_ id: BindedContainer.ID) -> ReducerScope<Reducer> {
