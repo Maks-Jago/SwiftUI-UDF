@@ -9,12 +9,8 @@ public struct BindableReducer<BindedContainer: BindableContainer, Reducer: Reduc
     var reducers: Reducers = [:]
     
     public var wrappedValue: BindableReducer<BindedContainer, Reducer> {
-        get {
-            self
-        }
-        set {
-            //do nothing
-        }
+        get { self }
+        set { /*do nothing*/ }
     }
 
     public init(_ reducerType: Reducer.Type, containerType: BindedContainer.Type) {
@@ -35,16 +31,7 @@ public struct BindableReducer<BindedContainer: BindableContainer, Reducer: Reduc
     }
 
     public subscript(_ id: BindedContainer.ID) -> ReducerScope<Reducer> {
-//        get {
-            ReducerScope(reducer: reducers[id])
-//        }
-//        set {
-            //do nothing
-//        }
-    }
-
-    public func reducer(by id: BindedContainer.ID) -> Reducer! {
-        reducers[id]!
+        ReducerScope(reducer: reducers[id])
     }
 }
 
@@ -59,7 +46,7 @@ extension BindableReducer: Collection {
 
     // Required subscript, based on a dictionary index
     public subscript(index: Index) -> Reducers.Element {
-        get { reducers[index] }
+        reducers[index]
     }
 
     // Method that returns the next index when iterating
@@ -96,40 +83,3 @@ extension BindableReducer {
         }
     }
 }
-
-
-
-
-/*
- // MARK: - Collection
- extension BindableReducer: MutableCollection {
- public typealias Index = Int
- public typealias Element = (key: BindedContainer.ID, value: Reducer)
-
- // An array to store keys to ensure ordered access
- private var keys: [BindedContainer.ID] {
- Array(reducers.keys)
- }
-
- // The upper and lower bounds of the collection, used in iterations
- public var startIndex: Index { keys.startIndex }
- public var endIndex: Index { keys.endIndex }
-
- // Required index(after:) implementation
- public func index(after i: Index) -> Index {
- return keys.index(after: i)
- }
-
- // Subscript for element access via index
- public subscript(position: Index) -> Element {
- get {
- let key = keys[position]
- return (key, reducers[key]!)
- }
- set {
- let (key, value) = newValue
- reducers[key] = value
- }
- }
- }
- */
