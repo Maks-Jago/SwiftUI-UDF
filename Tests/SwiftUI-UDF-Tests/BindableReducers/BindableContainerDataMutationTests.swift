@@ -18,6 +18,8 @@ final class BindableContainerDataMutationTests: XCTestCase {
         var paginator: Paginator = .init(Item.self, flowId: ItemsFlow.id, perPage: 10)
         var item: Item.ID? = nil
 
+        var message: String = ""
+
         mutating func reduce(_ action: some Action) {
             switch action {
 
@@ -42,6 +44,8 @@ final class BindableContainerDataMutationTests: XCTestCase {
 
         @BindableReducer(ItemsFlow.self, containerType: ItemsContainer.self)
         fileprivate var itemsFlow
+
+        var form2 = ItemsForm()
     }
 
     func test_WhenMutateBindableForm_OnleConcreteInstanceOfBindableFormShouldBeUpdated() async throws {
@@ -96,7 +100,24 @@ fileprivate extension BindableContainerDataMutationTests {
         }
 
         func map(store: EnvironmentStore<AppState>) -> ItemsComponent.Props {
-            .init()
+//            let binding: Binding<String> = store.$state.itemsForm[id].reducer?.reducer?.message
+            var tt: BindableReducer<ItemsContainer, ItemsForm> = store.$state.itemsForm[id].w //itemsForm[id: id].message//projectedValue[id]?.message
+
+
+
+//            var binding: Binding<String> = store.$state.itemsForm[id].message//itemsForm[id].message
+
+            for (id, itemFlow) in store.state.itemsFlow {
+                switch itemFlow {
+                case .loading:
+                    break
+
+                default:
+                    break
+                }
+            }
+
+            return .init()
         }
     }
 

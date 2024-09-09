@@ -23,15 +23,40 @@ public struct BindableReducer<BindedContainer: BindableContainer, Reducer: Reduc
     }
 
     public subscript(_ id: BindedContainer.ID) -> Reducer? {
-        reducers[id]
+        get { reducers[id] }
+        set { reducers[id] = newValue }
     }
+
+//    public subscript(_ id: BindedContainer.ID) -> ReducerReference<BindedContainer.ContainerState, Reducer> {
+//        .init(reducer: reducers[id]!, store: store)
+//    }
 
     public subscript(_ id: BindedContainer.ID) -> ReducerScope<Reducer> {
         ReducerScope(reducer: reducers[id])
     }
 }
 
-// MARK: Runtime reducing
+// MARK: - Collection
+extension BindableReducer: Collection {
+    public typealias Index = Reducers.Index
+    public typealias Element = Reducers.Element
+
+    // The upper and lower bounds of the collection, used in iterations
+    public var startIndex: Index { reducers.startIndex }
+    public var endIndex: Index { reducers.endIndex }
+
+    // Required subscript, based on a dictionary index
+    public subscript(index: Index) -> Reducers.Element {
+        get { reducers[index] }
+    }
+
+    // Method that returns the next index when iterating
+    public func index(after i: Index) -> Index {
+        reducers.index(after: i)
+    }
+}
+
+// MARK: - Runtime reducing
 extension BindableReducer {
     mutating public func reduce(_ action: some Action) {
         //TODO: Thinking, should a Bindable Reducer reduce non-bindable actions?
