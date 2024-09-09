@@ -22,11 +22,16 @@ public class ReducerReference<AppState: AppReducer, Reducer: Reducible> {
 
     var dispatcher: (any Action) -> Void
 
-    public var wrappedValue: Reducer { reducer }
-    public var projectedValue: ReducerReference {
-        get { self.reducer }
-        set { self.reducer = newValue }
-    }
+//    public var wrappedValue: Reducer { reducer }
+//    public var projectedValue: some ReducerReferincing<AppState, Reducer> { self }
+
+//    public var projectedValue: Reducer {
+//        get { self.reducer }
+//        set { self.reducer = newValue }
+//    }
+//        get { self.reducer }
+//        set { self.reducer = newValue }
+//    }
 
     init(reducer: Reducer, dispatcher: @escaping (any Action) -> Void) {
         self.reducer = reducer
@@ -38,7 +43,12 @@ public class ReducerReference<AppState: AppReducer, Reducer: Reducible> {
     }
 
     public subscript<C: BindableContainer, R: Reducible>(dynamicMember keyPath: WritableKeyPath<Reducer, BindableReducer<C, R>>) -> BindableReducerReference<AppState, C, R> {
-        BindableReducerReference(reducer: reducer[keyPath: keyPath], dispatcher: dispatcher)
+        get {
+            BindableReducerReference(reducer: reducer[keyPath: keyPath], dispatcher: dispatcher)
+        }
+        set {
+            //do nothing
+        }
     }
 
     public subscript<R: Reducible>(dynamicMember keyPath: KeyPath<Reducer, R>) -> ReducerScope<R> {
@@ -102,9 +112,14 @@ public final class BindableReducerReference<AppState: AppReducer, BindedContaine
     //        reducer[id]
     //    }
 
-    public subscript(id: BindedContainer.ID) -> ReducerReference<AppState, Reducer> {
-        self.bindableId = id
-        return ReducerReference(reducer: reducer[id]!, dispatcher: dispatcher)
+    public subscript(_ id: BindedContainer.ID) -> ReducerReference<AppState, Reducer> {
+        get {
+            self.bindableId = id
+            return ReducerReference(reducer: reducer[id]!, dispatcher: dispatcher)
+        }
+        set {
+            // do nothing
+        }
 
 //        reducer[id]
     }

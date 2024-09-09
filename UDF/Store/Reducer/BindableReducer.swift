@@ -6,9 +6,16 @@ public struct BindableReducer<BindedContainer: BindableContainer, Reducer: Reduc
     public typealias Reducers = [BindedContainer.ID: Reducer]
 
     var containerType: BindedContainer.Type
-
     var reducers: Reducers = [:]
-    public var wrappedValue: BindableReducer<BindedContainer, Reducer> { self }
+    
+    public var wrappedValue: BindableReducer<BindedContainer, Reducer> {
+        get {
+            self
+        }
+        set {
+            //do nothing
+        }
+    }
 
     public init(_ reducerType: Reducer.Type, containerType: BindedContainer.Type) {
         self.containerType = containerType
@@ -27,12 +34,17 @@ public struct BindableReducer<BindedContainer: BindableContainer, Reducer: Reduc
         set { reducers[id] = newValue }
     }
 
-//    public subscript(_ id: BindedContainer.ID) -> ReducerReference<BindedContainer.ContainerState, Reducer> {
-//        .init(reducer: reducers[id]!, store: store)
-//    }
-
     public subscript(_ id: BindedContainer.ID) -> ReducerScope<Reducer> {
-        ReducerScope(reducer: reducers[id])
+//        get {
+            ReducerScope(reducer: reducers[id])
+//        }
+//        set {
+            //do nothing
+//        }
+    }
+
+    public func reducer(by id: BindedContainer.ID) -> Reducer! {
+        reducers[id]!
     }
 }
 
@@ -55,6 +67,7 @@ extension BindableReducer: Collection {
         reducers.index(after: i)
     }
 }
+
 
 // MARK: - Runtime reducing
 extension BindableReducer {
@@ -83,3 +96,40 @@ extension BindableReducer {
         }
     }
 }
+
+
+
+
+/*
+ // MARK: - Collection
+ extension BindableReducer: MutableCollection {
+ public typealias Index = Int
+ public typealias Element = (key: BindedContainer.ID, value: Reducer)
+
+ // An array to store keys to ensure ordered access
+ private var keys: [BindedContainer.ID] {
+ Array(reducers.keys)
+ }
+
+ // The upper and lower bounds of the collection, used in iterations
+ public var startIndex: Index { keys.startIndex }
+ public var endIndex: Index { keys.endIndex }
+
+ // Required index(after:) implementation
+ public func index(after i: Index) -> Index {
+ return keys.index(after: i)
+ }
+
+ // Subscript for element access via index
+ public subscript(position: Index) -> Element {
+ get {
+ let key = keys[position]
+ return (key, reducers[key]!)
+ }
+ set {
+ let (key, value) = newValue
+ reducers[key] = value
+ }
+ }
+ }
+ */

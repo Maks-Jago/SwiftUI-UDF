@@ -21,20 +21,30 @@ public final class SourceOfTruth<AppState: AppReducer> {
     public var projectedValue: SourceOfTruth<AppState> { self }
 
     public subscript<C: BindableContainer, R: Reducible>(dynamicMember keyPath: WritableKeyPath<AppState, BindableReducer<C, R>>) -> BindableReducerReference<AppState, C, R> {
-        BindableReducerReference(reducer: wrappedValue[keyPath: keyPath]) { [unowned store] action in
-            store?.dispatch(action, priority: .userInteractive)
-        }
+//        get {
+            BindableReducerReference(reducer: wrappedValue[keyPath: keyPath]) { [unowned store] action in
+                store?.dispatch(action, priority: .userInteractive)
+            }
+//        }
+//        set {
+            //do nothing
+//        }
     }
 
     public subscript<R: Reducible>(dynamicMember keyPath: KeyPath<AppState, R>) -> ReducerReference<AppState, R> {
-        .init(reducer: wrappedValue[keyPath: keyPath]) { [unowned store] action in
-            store?.dispatch(action, priority: .userInteractive)
+        get {
+            .init(reducer: wrappedValue[keyPath: keyPath]) { [unowned store] action in
+                store?.dispatch(action, priority: .userInteractive)
+            }
+        }
+        set {
+            //do nothing
         }
     }
 
-//    public subscript<R: Reducible>(dynamicMember keyPath: KeyPath<AppState, R>) -> ReducerScope<R> {
-//        ReducerScope(reducer: wrappedValue[keyPath: keyPath])
-//    }
+    public subscript<R: Reducible>(dynamicMember keyPath: KeyPath<AppState, R>) -> ReducerScope<R> {
+        ReducerScope(reducer: wrappedValue[keyPath: keyPath])
+    }
 }
 
 extension SourceOfTruth: Equatable {

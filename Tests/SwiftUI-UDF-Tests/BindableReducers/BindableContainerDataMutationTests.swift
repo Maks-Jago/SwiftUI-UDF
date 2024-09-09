@@ -101,13 +101,15 @@ fileprivate extension BindableContainerDataMutationTests {
 
         func map(store: EnvironmentStore<AppState>) -> ItemsComponent.Props {
 //            let binding: Binding<String> = store.$state.itemsForm[id].reducer?.reducer?.message
-            var tt: BindableReducer<ItemsContainer, ItemsForm> = store.$state.itemsForm[id].w //itemsForm[id: id].message//projectedValue[id]?.message
+//            var tt: BindableReducer<ItemsContainer, ItemsForm> = store.$state.itemsForm[id].reducer //itemsForm[id: id].message//projectedValue[id]?.message
 
-
+            var tt = store.state.itemsForm.reducer(by: id).message //[id].message.wrappedValue //[id].reducer //itemsForm[id: id].message//projectedValue[id]?.message
+            let ll: Binding<String> = store.$state.itemsForm[id].message
 
 //            var binding: Binding<String> = store.$state.itemsForm[id].message//itemsForm[id].message
 
             for (id, itemFlow) in store.state.itemsFlow {
+
                 switch itemFlow {
                 case .loading:
                     break
