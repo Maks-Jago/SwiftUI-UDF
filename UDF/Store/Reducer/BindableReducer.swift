@@ -71,7 +71,7 @@ extension BindableReducer {
         case let action as Actions._OnContainerDidUnLoad<BindedContainer>:
             reducers.removeValue(forKey: action.id)
 
-        case let action as Actions.BindableAction<BindedContainer>:
+        case let action as Actions._BindableAction<BindedContainer>:
             if var reducer = reducers[action.id] {
                 _ = RuntimeReducing.bindableReduce(action.value, reducer: &reducer)
                 reducers.updateValue(reducer, forKey: action.id)

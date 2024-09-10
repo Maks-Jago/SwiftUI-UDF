@@ -56,19 +56,7 @@ public extension Action {
             }))
 
         } else {
-            return ActionGroup(internalActions: [InternalAction(Actions.BindableAction(value: self, containerType: containerType, id: id))])
-        }
-    }
-}
-
-extension Actions {
-    struct BindableAction<BindedContainer: BindableContainer>: Action {
-        let value: any Action
-        let containerType: BindedContainer.Type
-        let id: BindedContainer.ID
-
-        public static func == (lhs: BindableAction<BindedContainer>, rhs: BindableAction<BindedContainer>) -> Bool {
-            areEqual(lhs.value, rhs.value)
+            return ActionGroup(internalActions: [InternalAction(Actions._BindableAction(value: self, containerType: containerType, id: id))])
         }
     }
 }

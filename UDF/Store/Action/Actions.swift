@@ -446,8 +446,8 @@ public extension Actions {
 // MARK: BindableReducer internal actions
 extension Actions {
     struct _OnContainerDidLoad<BindedContainer: BindableContainer>: Action {
-        static func == (lhs: UDF.Actions._OnContainerDidLoad<BindedContainer>, rhs: UDF.Actions._OnContainerDidLoad<BindedContainer>) -> Bool {
-            true
+        static func == (lhs: Actions._OnContainerDidLoad<BindedContainer>, rhs: Actions._OnContainerDidLoad<BindedContainer>) -> Bool {
+            lhs.id == rhs.id && lhs.containerType == rhs.containerType
         }
 
         var containerType: BindedContainer.Type
@@ -455,11 +455,21 @@ extension Actions {
     }
 
     struct _OnContainerDidUnLoad<BindedContainer: BindableContainer>: Action {
-        static func == (lhs: UDF.Actions._OnContainerDidUnLoad<BindedContainer>, rhs: UDF.Actions._OnContainerDidUnLoad<BindedContainer>) -> Bool {
-            true
+        static func == (lhs: Actions._OnContainerDidUnLoad<BindedContainer>, rhs: Actions._OnContainerDidUnLoad<BindedContainer>) -> Bool {
+            lhs.id == rhs.id && lhs.containerType == rhs.containerType
         }
 
         var containerType: BindedContainer.Type
         var id: BindedContainer.ID
+    }
+
+    struct _BindableAction<BindedContainer: BindableContainer>: Action {
+        let value: any Action
+        let containerType: BindedContainer.Type
+        let id: BindedContainer.ID
+
+        public static func == (lhs: _BindableAction<BindedContainer>, rhs: _BindableAction<BindedContainer>) -> Bool {
+            areEqual(lhs.value, rhs.value)
+        }
     }
 }
