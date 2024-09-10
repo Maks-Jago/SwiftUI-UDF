@@ -20,7 +20,7 @@ let package = Package(
         )
     ],
     dependencies: [
-        .package(url: "https://github.com/apple/swift-collections", from: "1.0.6"),
+        .package(url: "https://github.com/apple/swift-collections", from: "1.1.3"),
         .package(url: "https://github.com/urlaunched-com/Runtime", from: "2.2.6")
     ],
     targets: [
