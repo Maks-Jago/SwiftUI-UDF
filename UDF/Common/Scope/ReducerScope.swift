@@ -12,9 +12,9 @@ public final class ReducerScope<R: Reducible>: EquatableScope {
         lhs.reducer == rhs.reducer
     }
 
-    var reducer: R
+    var reducer: R?
 
-    init(reducer: R) {
+    init(reducer: R?) {
         self.reducer = reducer
     }
 }

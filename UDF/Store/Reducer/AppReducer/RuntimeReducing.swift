@@ -57,6 +57,20 @@ enum RuntimeReducing {
         }
     }
 
+    static func bindableReduce<R>(_ action: some Action, reducer rootReducer: inout R) -> Bool {
+        if var formable = rootReducer as? any Form {
+            formable.reduceBasicFormFields(action)
+            rootReducer = formable as! R
+        }
+
+        if var reducing = rootReducer as? Reducing {
+            reducing.reduce(action)
+            _ = reduce(action, reducer: &reducing, type: R.self)
+            rootReducer = reducing as! R
+        }
+
+        return reduce(action, reducer: &rootReducer)
+    }
 
     static func reduce<R>(_ action: some Action, reducer rootReducer: inout R) -> Bool {
         guard let info = try? typeInfo(of: R.self) else {

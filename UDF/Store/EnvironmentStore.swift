@@ -113,7 +113,7 @@ extension EnvironmentStore {
     }
 }
 
-//MARK: - Global
+// MARK: - Global
 extension EnvironmentStore {
     class var global: EnvironmentStore<State> {
         GlobalValue.value(for: EnvironmentStore<State>.self)

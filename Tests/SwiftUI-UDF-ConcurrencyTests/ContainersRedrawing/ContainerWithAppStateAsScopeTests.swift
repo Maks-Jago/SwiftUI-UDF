@@ -112,7 +112,7 @@ final class ContainerWithAppStateAsScopeTests: XCTestCase {
 }
 
 
-//MARK: - RootContainer
+// MARK: - RootContainer
 extension ContainerWithAppStateAsScopeTests {
     struct RootContainer: Container {
 
@@ -158,7 +158,7 @@ extension ContainerWithAppStateAsScopeTests {
     }
 }
 
-//MARK: - None scope container
+// MARK: - None scope container
 extension ContainerWithAppStateAsScopeTests {
     struct NoneScopeContainer: Container {
         typealias ContainerComponent = RootComponent

@@ -5,11 +5,11 @@ final class ContainerState<State: AppReducer>: ObservableObject {
     weak var store: EnvironmentStore<State>?
     private var subscriptionKey: String = ""
 
-    @Published var currentScope: Scope
+    @Published var currentScope: Scope?
 
     init(store: EnvironmentStore<State>, scope: @escaping (_ state: State) -> Scope) {
         self.store = store
-        self.currentScope = scope(store.state)
+        self.currentScope = nil
 
         self.subscriptionKey = store.add { [weak self] oldState, newState, animation in
             let oldScope = scope(oldState)
