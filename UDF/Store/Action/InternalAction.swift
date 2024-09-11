@@ -47,10 +47,32 @@ extension InternalAction: CustomDebugStringConvertible {
 extension InternalAction {
     
     func unwrapActions() -> [InternalAction] {
-        guard let group = self.value as? ActionGroup else {
-            return [self]
+        func actions(from internalAction: InternalAction) -> [InternalAction] {
+            var actions: [InternalAction] = []
+            switch self.value {
+            case let action as any _AnyBindableAction:
+                actions.append(internalAction)
+                actions.append(
+                    InternalAction(
+                        action.value,
+                        animation: self.animation,
+                        silent: self.silent,
+                        fileName: self.fileName,
+                        functionName: self.functionName,
+                        lineNumber: self.lineNumber
+                    )
+                )
+
+            case let group as ActionGroup:
+                actions.append(contentsOf: group._actions.flatMap { $0.unwrapActions() })
+
+            default:
+                actions.append(internalAction)
+            }
+
+            return actions
         }
 
-        return group._actions.flatMap { $0.unwrapActions() }
+        return actions(from: self)
     }
 }

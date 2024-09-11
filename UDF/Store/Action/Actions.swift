@@ -462,8 +462,8 @@ extension Actions {
         var containerType: BindedContainer.Type
         var id: BindedContainer.ID
     }
-
-    struct _BindableAction<BindedContainer: BindableContainer>: Action {
+    
+    struct _BindableAction<BindedContainer: BindableContainer>: _AnyBindableAction {
         let value: any Action
         let containerType: BindedContainer.Type
         let id: BindedContainer.ID
