@@ -5,7 +5,7 @@ import Foundation
 public struct BindableReducer<BindedContainer: BindableContainer, Reducer: Reducible>: Reducible {
     public typealias Reducers = [BindedContainer.ID: Reducer]
 
-    var containerType: BindedContainer.Type
+    public internal(set) var containerType: BindedContainer.Type
     var reducers: Reducers = [:]
     
     public var wrappedValue: BindableReducer<BindedContainer, Reducer> {
