@@ -22,6 +22,10 @@ public enum ScopeBuilder {
         ReducerScope(reducer: expression)
     }
 
+    public static func buildExpression<R: Reducible>(_ expression: R?) -> some EquatableScope {
+        ReducerScope(reducer: expression)
+    }
+
     public static func buildExpression<R: AppReducer>(_ expression: R) -> some EquatableScope {
         expression
     }
