@@ -15,7 +15,7 @@ public extension BindableContainer {
             onContainerDisappear: onContainerDisappear,
             onContainerDidLoad: onContainerDidLoad,
             onContainerDidUnload: onContainerDidUnload,
-            hooks: hooks
+            useHooks: useHooks
         )
     }
 }

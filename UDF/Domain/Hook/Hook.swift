@@ -18,4 +18,30 @@ public struct Hook<State: AppReducer> {
         self.condition = condition
         self.block = block
     }
+    
+    public static func hook(
+        id: AnyHashable,
+        type: HookType = .default,
+        condition: @escaping (_ state: State) -> Bool,
+        block: @escaping (_ store: EnvironmentStore<State>) -> Void
+    ) -> Hook {
+        Hook(
+            id: id,
+            type: type,
+            condition: { state in
+                condition(state)
+            },
+            block: { store in
+                block(store)
+            }
+        )
+    }
+    
+    public static func oneTimeHook(
+        id: AnyHashable,
+        condition: @escaping (_ state: State) -> Bool,
+        block: @escaping (_ store: EnvironmentStore<State>) -> Void
+    ) -> Hook {
+        hook(id: id, type: .oneTime, condition: condition, block: block)
+    }
 }

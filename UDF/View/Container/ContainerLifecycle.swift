@@ -22,11 +22,11 @@ final class ContainerLifecycle<State: AppReducer>: ObservableObject {
     init(
         didLoadCommand: @escaping CommandWith<EnvironmentStore<State>>,
         didUnloadCommand: @escaping CommandWith<EnvironmentStore<State>>,
-        hooks: @escaping () -> [Hook<State>]
+        useHooks: @escaping () -> [Hook<State>]
     ) {
         self.didLoadCommand = didLoadCommand
         self.didUnloadCommand = didUnloadCommand
-        self.containerHooks = .init(store: EnvironmentStore<State>.global, hooks: hooks)
+        self.containerHooks = .init(store: EnvironmentStore<State>.global, hooks: useHooks)
     }
 
     deinit {

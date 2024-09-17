@@ -25,21 +25,16 @@ public struct HookBuilder<State: AppReducer> {
     public static func buildArray(_ components: [[Hook<State>]]) -> [Hook<State>] {
         components.flatMap { $0 }
     }
-}
-
-public func hook<State: AppReducer>(
-    id: AnyHashable,
-    type: HookType = .default,
-    condition: @escaping (_ state: State) -> Bool,
-    block: @escaping (_ store: EnvironmentStore<State>) -> Void
-) -> Hook<State> {
-    Hook(id: id, type: type, condition: condition, block: block)
-}
-
-public func oneTimeHook<State: AppReducer>(
-    id: AnyHashable,
-    condition: @escaping (_ state: State) -> Bool,
-    block: @escaping (_ store: EnvironmentStore<State>) -> Void
-) -> Hook<State> {
-    Hook(id: id, type: .oneTime, condition: condition, block: block)
+    
+    public static func buildPartialBlock(first: Hook<State>) -> [Hook<State>] {
+        [first]
+    }
+    
+    public static func buildPartialBlock(accumulated: [Hook<State>], next: Hook<State>) -> [Hook<State>] {
+        accumulated + [next]
+    }
+    
+    public static func buildFinalResult(_ component: [Hook<State>]) -> [Hook<State>] {
+        component
+    }
 }
