@@ -35,7 +35,7 @@ final class ContainerHookTests: XCTestCase {
         await fulfill(description: "waiting for rendering", sleep: 1)
         store.$state.hookForm.triggerValue.wrappedValue = "1"
 
-        await fulfill(description: "waiting for dispatch", sleep: 1)
+        await fulfill(description: "waiting for dispatch", sleep: 0.2)
         XCTAssertEqual(store.state.hookForm.triggerValue, "2")
     }
     
@@ -53,7 +53,7 @@ final class ContainerHookTests: XCTestCase {
         // Set triggerValue to "1" to activate the one-time hook
         store.$state.hookForm.triggerValue.wrappedValue = "1"
         
-        await fulfill(description: "waiting for hook execution", sleep: 1)
+        await fulfill(description: "waiting for hook execution", sleep: 0.2)
         XCTAssertEqual(store.state.hookForm.triggerValue, "2")
         
         // Change the state to cause a redraw
@@ -64,8 +64,8 @@ final class ContainerHookTests: XCTestCase {
         
         // Set triggerValue back to "1" to test if the one-time hook fires again
         store.$state.hookForm.triggerValue.wrappedValue = "1"
-        await fulfill(description: "waiting for hook execution", sleep: 1)
-        
+        await fulfill(description: "waiting for hook execution", sleep: 0.2)
+
         // The triggerValue should remain "1" because the one-time hook should not fire again
         XCTAssertEqual(store.state.hookForm.triggerValue, "1")
     }
@@ -91,11 +91,11 @@ final class ContainerHookTests: XCTestCase {
             // Set triggerValue to "3" to meet the hook's condition
             store.$state.hookForm.triggerValue.wrappedValue = "3"
             
-            await fulfill(description: "waiting for hook execution", sleep: 1)
-            
+            await fulfill(description: "waiting for hook execution", sleep: 0.2)
+
             // Reset triggerValue to allow the condition to be met again
             store.$state.hookForm.triggerValue.wrappedValue = ""
-            await fulfill(description: "waiting for reset", sleep: 1)
+            await fulfill(description: "waiting for reset", sleep: 0.2)
         }
         
         // Assert that the hook was called the expected number of times
@@ -117,7 +117,7 @@ final class ContainerHookTests: XCTestCase {
         // Activate the one-time hook
         store.$state.hookForm.triggerValue.wrappedValue = "1"
         
-        await fulfill(description: "waiting for hook execution", sleep: 1)
+        await fulfill(description: "waiting for hook execution", sleep: 0.2)
         XCTAssertEqual(store.state.hookForm.triggerValue, "2")
         
         // Reset triggerValue for further testing
@@ -127,8 +127,8 @@ final class ContainerHookTests: XCTestCase {
         
         // Attempt to trigger the one-time hook again
         store.$state.hookForm.triggerValue.wrappedValue = "1"
-        await fulfill(description: "waiting for hook execution", sleep: 1)
-        
+        await fulfill(description: "waiting for hook execution", sleep: 0.2)
+
         // The one-time hook should not fire again, so triggerValue should remain "1"
         XCTAssertEqual(store.state.hookForm.triggerValue, "1", "One-time hook should not fire again")
         
@@ -142,7 +142,7 @@ final class ContainerHookTests: XCTestCase {
         
         // Since hooks are persistent, the one-time hook will not fire again
         // So triggerValue should remain "1"
-        await fulfill(description: "waiting for hook execution", sleep: 1)
+        await fulfill(description: "waiting for hook execution", sleep: 0.2)
         XCTAssertEqual(store.state.hookForm.triggerValue, "1", "One-time hook should not fire again in new container")
     }
 }
