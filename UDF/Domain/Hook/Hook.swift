@@ -28,12 +28,8 @@ public struct Hook<State: AppReducer> {
         Hook(
             id: id,
             type: type,
-            condition: { state in
-                condition(state)
-            },
-            block: { store in
-                block(store)
-            }
+            condition: condition,
+            block: block
         )
     }
     

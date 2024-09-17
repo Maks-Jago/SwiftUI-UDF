@@ -15,19 +15,19 @@ public protocol Container<ContainerState>: View {
     func map(store: EnvironmentStore<ContainerState>) -> ContainerComponent.Props
     @ScopeBuilder func scope(for state: ContainerState) -> Scope
 
-    @MainActor func onContainerAppear(store: EnvironmentStore<ContainerState>)
-    @MainActor func onContainerDisappear(store: EnvironmentStore<ContainerState>)
+    func onContainerAppear(store: EnvironmentStore<ContainerState>)
+    func onContainerDisappear(store: EnvironmentStore<ContainerState>)
 
-    @MainActor func onContainerDidLoad(store: EnvironmentStore<ContainerState>)
-    @MainActor func onContainerDidUnload(store: EnvironmentStore<ContainerState>)
+    func onContainerDidLoad(store: EnvironmentStore<ContainerState>)
+    func onContainerDidUnload(store: EnvironmentStore<ContainerState>)
     @HookBuilder<ContainerState> func useHooks() -> [Hook<ContainerState>]
 }
 
 public extension Container {
-    func onContainerAppear(store: EnvironmentStore<ContainerState>) {}
-    func onContainerDisappear(store: EnvironmentStore<ContainerState>) {}
-    func onContainerDidLoad(store: EnvironmentStore<ContainerState>) {}
-    func onContainerDidUnload(store: EnvironmentStore<ContainerState>) {}
+    @MainActor func onContainerAppear(store: EnvironmentStore<ContainerState>) {}
+    @MainActor func onContainerDisappear(store: EnvironmentStore<ContainerState>) {}
+    @MainActor func onContainerDidLoad(store: EnvironmentStore<ContainerState>) {}
+    @MainActor func onContainerDidUnload(store: EnvironmentStore<ContainerState>) {}
     func useHooks() -> [Hook<ContainerState>] { [] }
 }
 
