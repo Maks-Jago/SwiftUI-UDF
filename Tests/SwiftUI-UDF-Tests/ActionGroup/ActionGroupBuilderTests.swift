@@ -8,18 +8,6 @@
 import XCTest
 @testable import UDF
 
-fileprivate extension Actions {
-    struct Message: Action {
-        public var message: String?
-        public var id: AnyHashable
-
-        public init<Id: Hashable>(message: String? = nil, id: Id) {
-            self.message = message?.isEmpty == true ? nil : message
-            self.id = AnyHashable(id)
-        }
-    }
-}
-
 final class ActionGroupBuilderTests: XCTestCase {
 
     func test_WhenVoid_ActionGroupShouldBeEmpty() {
@@ -134,5 +122,17 @@ final class ActionGroupBuilderTests: XCTestCase {
         }
 
         XCTAssertEqual(group.actions.count, 5)
+    }
+
+    func test_OptionalAction() {
+        let optionalActionWithValue: (any Action)? = Actions.Message(message: "m1", id: "m1")
+        let optionalActionNil: (any Action)? = nil
+
+        let group = ActionGroup {
+            optionalActionWithValue
+            optionalActionNil
+        }
+
+        XCTAssertEqual(group.actions.count, 1)
     }
 }

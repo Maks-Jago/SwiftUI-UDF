@@ -19,7 +19,7 @@ actor InternalStore<State: AppReducer>: Store {
     private let storeQueue: StoreQueue = .init()
     private let logDistributor: LogDistributor
 
-    init(initial state: State, loggers: [ActionLogger]) throws {
+    init(initial state: State, loggers: [ActionLogger]) {
         self.loggers = loggers
         self.state = state
         self.logDistributor = LogDistributor(loggers: loggers)

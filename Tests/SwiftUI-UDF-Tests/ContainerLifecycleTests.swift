@@ -29,8 +29,8 @@ final class ContainerLifecycleTests: XCTestCase {
     }
 
     @MainActor
-    func test_ContainerLifecycle() async throws {
-        let store = try EnvironmentStore(initial: AppState(), logger: .consoleDebug)
+    func test_ContainerLifecycle() async {
+        let store = EnvironmentStore(initial: AppState(), logger: .consoleDebug)
         let rootContainer = RootContainer()
 
         var window: UIWindow? = await MainActor.run {

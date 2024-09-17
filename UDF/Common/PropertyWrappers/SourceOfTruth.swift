@@ -20,8 +20,16 @@ public final class SourceOfTruth<AppState: AppReducer> {
 
     public var projectedValue: SourceOfTruth<AppState> { self }
 
+    public subscript<C: BindableContainer, R: Reducible>(dynamicMember keyPath: WritableKeyPath<AppState, BindableReducer<C, R>>) -> BindableReducerReference<AppState, C, R> {
+        BindableReducerReference(reducer: wrappedValue[keyPath: keyPath]) { [unowned store] action in
+            store?.dispatch(action, priority: .userInteractive)
+        }
+    }
+
     public subscript<R: Reducible>(dynamicMember keyPath: KeyPath<AppState, R>) -> ReducerReference<AppState, R> {
-        .init(reducer: wrappedValue[keyPath: keyPath], store: store)
+        ReducerReference(reducer: wrappedValue[keyPath: keyPath]) { [unowned store] action in
+            store?.dispatch(action, priority: .userInteractive)
+        }
     }
 
     public subscript<R: Reducible>(dynamicMember keyPath: KeyPath<AppState, R>) -> ReducerScope<R> {

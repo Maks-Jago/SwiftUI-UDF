@@ -49,8 +49,8 @@ final class ConcurrencyMiddlewareCancellationTests: XCTestCase {
         }
     }
 
-    func testObservableMiddlewareCancellation() async throws {
-        let store = try await XCTestStore(initial: AppState())
+    func testObservableMiddlewareCancellation() async {
+        let store = await XCTestStore(initial: AppState())
         await store.subscribe(ObservableMiddlewareToCancel.self)
         await store.dispatch(Actions.Loading())
 

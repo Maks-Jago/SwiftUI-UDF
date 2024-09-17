@@ -95,8 +95,8 @@ final class NewObservableMiddlewareDDosProtectionTests: XCTestCase {
         }
     }
 
-    func testObservableMiddlewareDDDos() async throws {
-        let store = try await XCTestStore(initial: AppState())
+    func testObservableMiddlewareDDDos() async {
+        let store = await XCTestStore(initial: AppState())
 
         await store.subscribe(SendMessageMiddleware.self)
         await store.wait()

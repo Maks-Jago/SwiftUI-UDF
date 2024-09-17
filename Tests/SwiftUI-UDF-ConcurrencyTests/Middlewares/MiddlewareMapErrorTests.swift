@@ -73,8 +73,8 @@ final class MiddlewareMapErrorTests: XCTestCase {
         }
     }
 
-    func testMapError() async throws {
-        let store = try await XCTestStore(initial: AppState())
+    func testMapError() async {
+        let store = await XCTestStore(initial: AppState())
         await store.subscribe(LoadingMiddleware.self)
 
         await store.dispatch(Actions.StartLoading())

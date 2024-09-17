@@ -73,15 +73,21 @@ private struct AlertModifier: ViewModifier {
                 alertStatus = .dismissed
             }
         }).isPresented(), actions: {
-            ForEach(alertActions(for: type), id: \.id) { action in
-                Button(action.title, role: action.role, action: action.action)
+            let actions = alertActions(for: type)
+            ForEach(Array(actions.enumerated()), id: \.offset) { _, action in
+                switch action {
+                case let action as AlertButton: action.id(action.hashValue)
+                case let action as AlertTextField: action
+                default:
+                    EmptyView()
+                }
             }
         }, message: {
             Text(texts.text())
         })
     }
 
-    func alertActions(for type: AlertBuilder.AlertStyle.AlertType) -> [AlertAction] {
+    func alertActions(for type: AlertBuilder.AlertStyle.AlertType) -> [any AlertAction] {
         switch type {
         case let .custom(_, _, primaryButton, secondaryButton):
             if primaryButton.role == .destructive {
@@ -99,7 +105,7 @@ private struct AlertModifier: ViewModifier {
             return actions()
 
         default:
-            return [AlertAction(id: "default_action", title: NSLocalizedString("Ok", comment: "Ok"))]
+            return [AlertButton(title: NSLocalizedString("Ok", comment: "Ok"))]
         }
     }
 

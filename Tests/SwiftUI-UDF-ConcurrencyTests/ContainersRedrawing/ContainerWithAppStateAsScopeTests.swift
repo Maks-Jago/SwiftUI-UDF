@@ -56,8 +56,8 @@ final class ContainerWithAppStateAsScopeTests: XCTestCase {
         }
     }
 
-    func test_rootComponentRendering() async throws {
-        let store = try EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
+    func test_rootComponentRendering() async {
+        let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
         let rootContainer = RootContainer()
         let window = await createWindow(with: rootContainer)
 
@@ -94,8 +94,8 @@ final class ContainerWithAppStateAsScopeTests: XCTestCase {
         XCTAssertEqual(rootContainer.renderingNumber, 5)
     }
 
-    func test_noneScope() async throws {
-        let store = try EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
+    func test_noneScope() async {
+        let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
         let noneScopeContainer = NoneScopeContainer()
         let window = await createWindow(with: noneScopeContainer)
 
@@ -112,7 +112,7 @@ final class ContainerWithAppStateAsScopeTests: XCTestCase {
 }
 
 
-//MARK: - RootContainer
+// MARK: - RootContainer
 extension ContainerWithAppStateAsScopeTests {
     struct RootContainer: Container {
 
@@ -158,7 +158,7 @@ extension ContainerWithAppStateAsScopeTests {
     }
 }
 
-//MARK: - None scope container
+// MARK: - None scope container
 extension ContainerWithAppStateAsScopeTests {
     struct NoneScopeContainer: Container {
         typealias ContainerComponent = RootComponent

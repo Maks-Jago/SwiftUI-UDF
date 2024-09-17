@@ -60,8 +60,8 @@ final class NewReducibleMiddlewareTests: XCTestCase {
         }
     }
 
-    func testReducibleMiddleware() async throws {
-        let store = try await XCTestStore(initial: AppState())
+    func testReducibleMiddleware() async {
+        let store = await XCTestStore(initial: AppState())
         await store.subscribe(SendMessageMiddleware.self)
 
         var formTitle = await store.state.testForm.title

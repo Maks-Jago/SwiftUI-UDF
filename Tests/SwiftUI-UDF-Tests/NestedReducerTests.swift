@@ -65,8 +65,8 @@ final class NestedReducerTests: XCTestCase {
 
     var cancellation: AnyCancellable? = nil
 
-    func testAppState() async throws {
-        let store = try await XCTestStore(initial: AppState())
+    func testAppState() async {
+        let store = await XCTestStore(initial: AppState())
         await store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.title, value: "temp"))
         await store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.title, value: "temp_21"))
 

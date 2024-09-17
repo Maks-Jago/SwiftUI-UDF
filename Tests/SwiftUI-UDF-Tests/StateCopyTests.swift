@@ -40,8 +40,8 @@ final class StateCopyTests: XCTestCase {
         }
     }
 
-    func testStateCopying() async throws {
-        let store = try await XCTestStore(initial: AppState())
+    func testStateCopying() async {
+        let store = await XCTestStore(initial: AppState())
         await store.dispatch(Actions.UpdateFormField(keyPath: \SomeForm.item, value: .init(text: "new item text")))
 
         let item = await store.state.someForm.item

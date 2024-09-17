@@ -99,13 +99,13 @@ public enum AlertBuilder {
             case message(text: () -> String)
             case messageTitle(title: () -> String, message: () -> String)
 
-            @available(*, deprecated, message: "use custom(title:text:actions) case instead")
-            case custom(title: () -> String, text: () -> String, primaryButton: AlertAction, secondaryButton: AlertAction)
+            @available(*, deprecated, message: "use customActions(title:text:actions) case instead")
+            case custom(title: () -> String, text: () -> String, primaryButton: AlertButton, secondaryButton: AlertButton)
 
-            @available(*, deprecated, message: "use custom(title:text:actions) case instead")
-            case customDismiss(title: () -> String, text: () -> String, dismissButton: AlertAction)
+            @available(*, deprecated, message: "use customActions(title:text:actions) case instead")
+            case customDismiss(title: () -> String, text: () -> String, dismissButton: AlertButton)
 
-            case customActions(title: () -> String, text: () -> String, actions: () -> [AlertAction])
+            case customActions(title: () -> String, text: () -> String, actions: () -> [any AlertAction])
         }
 
         public init(validationError text: String) {
@@ -154,32 +154,32 @@ public enum AlertBuilder {
         }
 
         @available(*, deprecated, message: "use init(title:text:actions) instead")
-        public init(title: String, text: String, primaryButton: AlertAction, secondaryButton: AlertAction) {
+        public init(title: String, text: String, primaryButton: AlertButton, secondaryButton: AlertButton) {
             self.init(title: { title }, text: { text }, primaryButton: primaryButton, secondaryButton: secondaryButton)
         }
 
         @available(*, deprecated, message: "use init(title:text:actions) instead")
-        public init(title: @escaping () -> String, text: @escaping () -> String, primaryButton: AlertAction, secondaryButton: AlertAction) {
+        public init(title: @escaping () -> String, text: @escaping () -> String, primaryButton: AlertButton, secondaryButton: AlertButton) {
             id = UUID()
             type = .custom(title: title, text: text, primaryButton: primaryButton, secondaryButton: secondaryButton)
         }
 
         @available(*, deprecated, message: "use init(title:text:actions) instead")
-        public init(title: String, text: String, dismissButton: AlertAction) {
+        public init(title: String, text: String, dismissButton: AlertButton) {
             self.init(title: { title }, text: { text }, dismissButton: dismissButton)
         }
 
         @available(*, deprecated, message: "use init(title:text:actions) instead")
-        public init(title: @escaping () -> String, text: @escaping () -> String, dismissButton: AlertAction) {
+        public init(title: @escaping () -> String, text: @escaping () -> String, dismissButton: AlertButton) {
             id = UUID()
             type = .customDismiss(title: title, text: text, dismissButton: dismissButton)
         }
 
-        public init(title: String, text: String, @AlertActionsBuilder actions: @escaping () -> [AlertAction]) {
+        public init(title: String, text: String, @AlertActionsBuilder actions: @escaping () -> [any AlertAction]) {
             self.init(title: { title }, text: { text }, actions: actions)
         }
 
-        public init(title: @escaping () -> String, text: @escaping () -> String, @AlertActionsBuilder actions: @escaping () -> [AlertAction]) {
+        public init(title: @escaping () -> String, text: @escaping () -> String, @AlertActionsBuilder actions: @escaping () -> [any AlertAction]) {
             id = UUID()
             type = .customActions(title: title, text: text, actions: actions)
         }
