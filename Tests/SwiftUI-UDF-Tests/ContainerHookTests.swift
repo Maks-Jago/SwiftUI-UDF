@@ -23,7 +23,7 @@ final class ContainerHookTests: XCTestCase {
     }
 
     func test_OneTimeHook() async throws {
-        let store = try EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
+        let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
         let rootContainer = RootContainer()
 
         let window = await MainActor.run {

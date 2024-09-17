@@ -6,7 +6,10 @@ public protocol BindableContainer: Container, Identifiable {}
 public extension BindableContainer {
     @MainActor
     var body: some View {
-        ConnectedContainer<ContainerComponent, ContainerState>(
+        let builder = HookBuilder<ContainerState>()
+        containerHooks(builder)
+        
+        return ConnectedContainer<ContainerComponent, ContainerState>(
             containerType: Self.self,
             containerId: { self.id },
             map: map,
@@ -14,7 +17,8 @@ public extension BindableContainer {
             onContainerAppear: onContainerAppear,
             onContainerDisappear: onContainerDisappear,
             onContainerDidLoad: onContainerDidLoad,
-            onContainerDidUnload: onContainerDidUnload
+            onContainerDidUnload: onContainerDidUnload,
+            hooks: builder.build()
         )
     }
 }

@@ -26,7 +26,8 @@ struct ConnectedContainer<C: Component, State: AppReducer>: View {
         onContainerAppear: @escaping (EnvironmentStore<State>) -> Void,
         onContainerDisappear: @escaping (EnvironmentStore<State>) -> Void,
         onContainerDidLoad: @escaping (EnvironmentStore<State>) -> Void,
-        onContainerDidUnload: @escaping (EnvironmentStore<State>) -> Void
+        onContainerDidUnload: @escaping (EnvironmentStore<State>) -> Void,
+        hooks: [Hook<State>]
     ) {
         self.map = map
         self.scope = scope
@@ -35,7 +36,8 @@ struct ConnectedContainer<C: Component, State: AppReducer>: View {
         self._containerLifecycle = .init(
             wrappedValue: ContainerLifecycle(
                 didLoadCommand: onContainerDidLoad,
-                didUnloadCommand: onContainerDidUnload
+                didUnloadCommand: onContainerDidUnload,
+                hooks: hooks
             )
         )
         self._containerState = .init(wrappedValue: .init(store: EnvironmentStore<State>.global, scope: scope))
@@ -49,7 +51,8 @@ struct ConnectedContainer<C: Component, State: AppReducer>: View {
         onContainerAppear: @escaping (EnvironmentStore<State>) -> Void,
         onContainerDisappear: @escaping (EnvironmentStore<State>) -> Void,
         onContainerDidLoad: @escaping (EnvironmentStore<State>) -> Void,
-        onContainerDidUnload: @escaping (EnvironmentStore<State>) -> Void
+        onContainerDidUnload: @escaping (EnvironmentStore<State>) -> Void,
+        hooks: [Hook<State>]
     ) {
         self.map = map
         self.scope = scope
@@ -64,7 +67,8 @@ struct ConnectedContainer<C: Component, State: AppReducer>: View {
                 didUnloadCommand: { store in
                     onContainerDidUnload(store)
                     store.dispatch(Actions._OnContainerDidUnLoad(containerType: containerType, id: containerId()).silent())
-                }
+                },
+                hooks: hooks
             )
         )
         self._containerState = .init(wrappedValue: .init(store: EnvironmentStore<State>.global, scope: scope))
