@@ -29,7 +29,7 @@ public struct BindableReducer<BindedContainer: BindableContainer, Reducer: Reduc
         reducers[id]
     }
 
-    public subscript(_ id: BindedContainer.ID) -> ReducerScope<Reducer> {
+    public subscript(_ id: BindedContainer.ID) -> Scope {
         ReducerScope(reducer: reducers[id])
     }
 }
