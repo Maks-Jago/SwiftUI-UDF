@@ -1,41 +1,45 @@
 import Foundation
 
-public class HookBuilder<State: AppReducer> {
-    private var hooks: [Hook<State>] = []
-    
-    @discardableResult
-    func addHook(
-        id: AnyHashable,
-        type: HookType = .default,
-        condition: @escaping (_ state: State) -> Bool,
-        block: @escaping (_ store: EnvironmentStore<State>) -> Void
-    ) -> HookBuilder<State> {
-        let hook = Hook<State>(id: id, type: type, condition: condition, block: block)
-        hooks.append(hook)
-        return self
+@resultBuilder
+public struct HookBuilder<State: AppReducer> {
+    public static func buildBlock(_ components: Hook<State>...) -> [Hook<State>] {
+        components
     }
     
-    func build() -> [Hook<State>] {
-        return hooks
+    public static func buildExpression(_ expression: Hook<State>) -> Hook<State> {
+        expression
+    }
+    
+    public static func buildOptional(_ component: Hook<State>?) -> [Hook<State>] {
+        component.map { [$0] } ?? []
+    }
+    
+    public static func buildEither(first component: [Hook<State>]) -> [Hook<State>] {
+        component
+    }
+    
+    public static func buildEither(second component: [Hook<State>]) -> [Hook<State>] {
+        component
+    }
+    
+    public static func buildArray(_ components: [[Hook<State>]]) -> [Hook<State>] {
+        components.flatMap { $0 }
     }
 }
 
-extension HookBuilder {
-    @discardableResult
-    func addHook(
-        id: AnyHashable,
-        condition: @escaping (_ state: State) -> Bool,
-        block: @escaping (_ store: EnvironmentStore<State>) -> Void
-    ) -> HookBuilder<State> {
-        addHook(id: id, type: .default, condition: condition, block: block)
-    }
-    
-    @discardableResult
-    func addOneTimeHook(
-        id: AnyHashable,
-        condition: @escaping (_ state: State) -> Bool,
-        block: @escaping (_ store: EnvironmentStore<State>) -> Void
-    ) -> HookBuilder<State> {
-        addHook(id: id, type: .oneTime, condition: condition, block: block)
-    }
+public func hook<State: AppReducer>(
+    id: AnyHashable,
+    type: HookType = .default,
+    condition: @escaping (_ state: State) -> Bool,
+    block: @escaping (_ store: EnvironmentStore<State>) -> Void
+) -> Hook<State> {
+    Hook(id: id, type: type, condition: condition, block: block)
+}
+
+public func oneTimeHook<State: AppReducer>(
+    id: AnyHashable,
+    condition: @escaping (_ state: State) -> Bool,
+    block: @escaping (_ store: EnvironmentStore<State>) -> Void
+) -> Hook<State> {
+    Hook(id: id, type: .oneTime, condition: condition, block: block)
 }

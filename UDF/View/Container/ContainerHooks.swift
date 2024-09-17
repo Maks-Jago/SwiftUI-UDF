@@ -7,13 +7,18 @@ final class ContainerHooks<State: AppReducer> {
     private var subscriptionKey: String = ""
 
     var hooks: [AnyHashable: Hook<State>] = [:]
+    var buildHooks: () -> [Hook<State>]
 
-    init(store: EnvironmentStore<State>, hooks: [Hook<State>]) {
+    init(store: EnvironmentStore<State>, hooks: @escaping () -> [Hook<State>]) {
         self.store = store
-        self.hooks = Dictionary(uniqueKeysWithValues: hooks.map { ($0.id, $0) })
+        self.buildHooks = hooks
         self.subscriptionKey = store.add { [weak self] _, newState, _ in
             self?.checkHooks(.init(newState))
         }
+    }
+    
+    func createHooks() {
+        self.hooks = Dictionary(uniqueKeysWithValues: buildHooks().map { ($0.id, $0) })
     }
 
     private func checkHooks(_ state: Box<State>) {

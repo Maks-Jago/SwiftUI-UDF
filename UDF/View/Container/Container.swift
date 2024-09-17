@@ -20,7 +20,7 @@ public protocol Container<ContainerState>: View {
 
     @MainActor func onContainerDidLoad(store: EnvironmentStore<ContainerState>)
     @MainActor func onContainerDidUnload(store: EnvironmentStore<ContainerState>)
-    @MainActor func containerHooks(_ builder: HookBuilder<ContainerState>)
+    @HookBuilder<ContainerState> func hooks() -> [Hook<ContainerState>]
 }
 
 public extension Container {
@@ -28,7 +28,7 @@ public extension Container {
     func onContainerDisappear(store: EnvironmentStore<ContainerState>) {}
     func onContainerDidLoad(store: EnvironmentStore<ContainerState>) {}
     func onContainerDidUnload(store: EnvironmentStore<ContainerState>) {}
-    func containerHooks(_ builder: HookBuilder<ContainerState>) {}
+    func hooks() -> [Hook<ContainerState>] { [] }
 }
 
 public extension Container {
@@ -37,17 +37,14 @@ public extension Container {
 
     @MainActor
     var body: some View {
-        let builder = HookBuilder<ContainerState>()
-        containerHooks(builder)
-        
-        return ConnectedContainer<ContainerComponent, ContainerState>(
+        ConnectedContainer<ContainerComponent, ContainerState>(
             map: map,
             scope: scope(for:),
             onContainerAppear: onContainerAppear,
             onContainerDisappear: onContainerDisappear,
             onContainerDidLoad: onContainerDidLoad,
             onContainerDidUnload: onContainerDidUnload,
-            hooks: builder.build()
+            hooks: hooks
         )
     }
 }

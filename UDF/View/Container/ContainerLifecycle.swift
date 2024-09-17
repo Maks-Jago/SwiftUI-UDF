@@ -10,6 +10,7 @@ final class ContainerLifecycle<State: AppReducer>: ObservableObject {
     func set(didLoad: Bool, store: EnvironmentStore<State>) {
         if !self.didLoad, didLoad {
             didLoadCommand(store)
+            containerHooks.createHooks()
         }
 
         self.didLoad = didLoad
@@ -21,7 +22,7 @@ final class ContainerLifecycle<State: AppReducer>: ObservableObject {
     init(
         didLoadCommand: @escaping CommandWith<EnvironmentStore<State>>,
         didUnloadCommand: @escaping CommandWith<EnvironmentStore<State>>,
-        hooks: [Hook<State>]
+        hooks: @escaping () -> [Hook<State>]
     ) {
         self.didLoadCommand = didLoadCommand
         self.didUnloadCommand = didUnloadCommand

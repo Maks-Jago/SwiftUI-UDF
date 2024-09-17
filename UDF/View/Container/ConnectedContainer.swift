@@ -27,7 +27,7 @@ struct ConnectedContainer<C: Component, State: AppReducer>: View {
         onContainerDisappear: @escaping (EnvironmentStore<State>) -> Void,
         onContainerDidLoad: @escaping (EnvironmentStore<State>) -> Void,
         onContainerDidUnload: @escaping (EnvironmentStore<State>) -> Void,
-        hooks: [Hook<State>]
+        hooks: @escaping () -> [Hook<State>]
     ) {
         self.map = map
         self.scope = scope
@@ -52,7 +52,7 @@ struct ConnectedContainer<C: Component, State: AppReducer>: View {
         onContainerDisappear: @escaping (EnvironmentStore<State>) -> Void,
         onContainerDidLoad: @escaping (EnvironmentStore<State>) -> Void,
         onContainerDidUnload: @escaping (EnvironmentStore<State>) -> Void,
-        hooks: [Hook<State>]
+        hooks: @escaping () -> [Hook<State>]
     ) {
         self.map = map
         self.scope = scope
