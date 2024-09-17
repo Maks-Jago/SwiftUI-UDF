@@ -107,7 +107,7 @@ final class ContainerHookTests: XCTestCase {
         
         // Create and use the first container
         let rootContainer = RootContainer()
-        let window = await UIWindow.render(container: rootContainer)
+        var window = await UIWindow.render(container: rootContainer)
         
         XCTAssertEqual(store.state.hookForm.triggerValue, "")
         print(window) // To force a window redraw
@@ -132,21 +132,18 @@ final class ContainerHookTests: XCTestCase {
         // The one-time hook should not fire again, so triggerValue should remain "1"
         XCTAssertEqual(store.state.hookForm.triggerValue, "1", "One-time hook should not fire again")
         
-        // Create and use the second container
-        do {
-            let newRootContainer = RootContainer()
-            let window = await UIWindow.render(container: newRootContainer)
-            
-            XCTAssertEqual(store.state.hookForm.triggerValue, "1") // triggerValue from previous step
-            print(window) // To force a window redraw
-            
-            await fulfill(description: "waiting for rendering", sleep: 1)
-            
-            // Since hooks are persistent, the one-time hook will not fire again
-            // So triggerValue should remain "1"
-            await fulfill(description: "waiting for hook execution", sleep: 1)
-            XCTAssertEqual(store.state.hookForm.triggerValue, "1", "One-time hook should not fire again in new container")
-        }
+        let newRootContainer = RootContainer()
+        window = await UIWindow.render(container: newRootContainer)
+        
+        XCTAssertEqual(store.state.hookForm.triggerValue, "1") // triggerValue from previous step
+        print(window) // To force a window redraw
+        
+        await fulfill(description: "waiting for rendering", sleep: 1)
+        
+        // Since hooks are persistent, the one-time hook will not fire again
+        // So triggerValue should remain "1"
+        await fulfill(description: "waiting for hook execution", sleep: 1)
+        XCTAssertEqual(store.state.hookForm.triggerValue, "1", "One-time hook should not fire again in new container")
     }
 }
 
