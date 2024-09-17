@@ -36,7 +36,7 @@ final class BindableContainerLifecycleTests: XCTestCase {
         var window: UIWindow? = await UIWindow.render(container: itemsContainer)
 
         await fulfill(description: "waiting for rendering", sleep: 1)
-        print(window) //To force a window redraw
+        print(window!) //To force a window redraw
         await fulfill(description: "waiting for rendering", sleep: 1)
 
         var form: ItemsForm? = store.state.itemsForm[itemId]
@@ -44,7 +44,7 @@ final class BindableContainerLifecycleTests: XCTestCase {
 
         window = nil
         await fulfill(description: "waiting for rendering", sleep: 1)
-        print(window) //To force a window redraw
+        print(window as Any) //To force a window redraw
         await fulfill(description: "waiting for rendering", sleep: 1)
 
         form = store.state.itemsForm[itemId]

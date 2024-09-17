@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-@preconcurrency import Combine
+import Combine
 
 @globalActor public actor XCTestStoreActor {
     public private(set) static var shared = XCTestStoreActor()

@@ -20,6 +20,7 @@ public protocol Container<ContainerState>: View {
 
     func onContainerDidLoad(store: EnvironmentStore<ContainerState>)
     func onContainerDidUnload(store: EnvironmentStore<ContainerState>)
+    @HookBuilder<ContainerState> func useHooks() -> [Hook<ContainerState>]
 }
 
 public extension Container {
@@ -27,6 +28,7 @@ public extension Container {
     @MainActor func onContainerDisappear(store: EnvironmentStore<ContainerState>) {}
     @MainActor func onContainerDidLoad(store: EnvironmentStore<ContainerState>) {}
     @MainActor func onContainerDidUnload(store: EnvironmentStore<ContainerState>) {}
+    func useHooks() -> [Hook<ContainerState>] { [] }
 }
 
 public extension Container {
@@ -41,7 +43,8 @@ public extension Container {
             onContainerAppear: onContainerAppear,
             onContainerDisappear: onContainerDisappear,
             onContainerDidLoad: onContainerDidLoad,
-            onContainerDidUnload: onContainerDidUnload
+            onContainerDidUnload: onContainerDidUnload,
+            useHooks: useHooks
         )
     }
 }
