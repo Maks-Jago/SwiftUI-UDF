@@ -8,9 +8,9 @@ final class ContainerHooks<State: AppReducer> {
 
     var hooks: [AnyHashable: Hook<State>] = [:]
 
-    init(store: EnvironmentStore<State>) {
+    init(store: EnvironmentStore<State>, hooks: [Hook<State>]) {
         self.store = store
-
+        self.hooks = Dictionary(uniqueKeysWithValues: hooks.map { ($0.id, $0) })
         self.subscriptionKey = store.add { [weak self] _, newState, _ in
             self?.checkHooks(.init(newState))
         }
@@ -32,12 +32,16 @@ final class ContainerHooks<State: AppReducer> {
         }
     }
 
-    func add(hook: Hook<State>, id: some Hashable) {
-        hooks[AnyHashable(id)] = hook
-    }
-
     func removeHook(by id: some Hashable) {
         hooks.removeValue(forKey: AnyHashable(id))
+    }
+    
+    func removeAllHooks() {
+        hooks.removeAll()
+        if let store = store {
+            store.removePublisher(forKey: subscriptionKey)
+            self.store = nil
+        }
     }
 
     deinit {

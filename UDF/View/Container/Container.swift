@@ -20,6 +20,7 @@ public protocol Container<ContainerState>: View {
 
     @MainActor func onContainerDidLoad(store: EnvironmentStore<ContainerState>)
     @MainActor func onContainerDidUnload(store: EnvironmentStore<ContainerState>)
+    @MainActor func containerHooks(_ builder: HookBuilder<ContainerState>)
 }
 
 public extension Container {
@@ -27,6 +28,7 @@ public extension Container {
     func onContainerDisappear(store: EnvironmentStore<ContainerState>) {}
     func onContainerDidLoad(store: EnvironmentStore<ContainerState>) {}
     func onContainerDidUnload(store: EnvironmentStore<ContainerState>) {}
+    func containerHooks(_ builder: HookBuilder<ContainerState>) {}
 }
 
 public extension Container {
@@ -35,25 +37,18 @@ public extension Container {
 
     @MainActor
     var body: some View {
-        ConnectedContainer<ContainerComponent, ContainerState>(
+        let builder = HookBuilder<ContainerState>()
+        containerHooks(builder)
+        
+        return ConnectedContainer<ContainerComponent, ContainerState>(
             map: map,
             scope: scope(for:),
             onContainerAppear: onContainerAppear,
             onContainerDisappear: onContainerDisappear,
             onContainerDidLoad: onContainerDidLoad,
-            onContainerDidUnload: onContainerDidUnload
+            onContainerDidUnload: onContainerDidUnload,
+            hooks: builder.build()
         )
-    }
-
-    @MainActor
-    func addHoook(
-        id: some Hashable,
-        type: HookType = .default,
-        condition: @escaping (_ state: ContainerState) -> Bool, 
-        block: @escaping (_ store: EnvironmentStore<ContainerState>) -> Void
-    ) {
-        (self.body as? ConnectedContainer<ContainerComponent, ContainerState>)?
-            .addHoook(id: id, type: type, condition: condition, block: block)
     }
 }
 
@@ -66,7 +61,6 @@ fileprivate struct ConnectedContainer<C: Component, State: AppReducer>: View {
     var onContainerDisappear: (EnvironmentStore<State>) -> Void
 
     @StateObject var containerLifecycle: ContainerLifecycle<State>
-//    @StateObject var containerHooks: ContainerHooks<State>
     @ObservedObject var containerState: ContainerState<State>
 
     private var store: EnvironmentStore<State> { .global }
@@ -77,7 +71,8 @@ fileprivate struct ConnectedContainer<C: Component, State: AppReducer>: View {
         onContainerAppear: @escaping (EnvironmentStore<State>) -> Void,
         onContainerDisappear: @escaping (EnvironmentStore<State>) -> Void,
         onContainerDidLoad: @escaping (EnvironmentStore<State>) -> Void,
-        onContainerDidUnload: @escaping (EnvironmentStore<State>) -> Void
+        onContainerDidUnload: @escaping (EnvironmentStore<State>) -> Void,
+        hooks: [Hook<State>]
     ) {
         self.map = map
         self.scope = scope
@@ -86,7 +81,8 @@ fileprivate struct ConnectedContainer<C: Component, State: AppReducer>: View {
         self._containerLifecycle = .init(
             wrappedValue: ContainerLifecycle(
                 didLoadCommand: onContainerDidLoad,
-                didUnloadCommand: onContainerDidUnload
+                didUnloadCommand: onContainerDidUnload,
+                hooks: hooks
             )
         )
         self._containerState = .init(wrappedValue: .init(store: EnvironmentStore<State>.global, scope: scope))
@@ -98,15 +94,5 @@ fileprivate struct ConnectedContainer<C: Component, State: AppReducer>: View {
         return C(props: map(store))
             .onAppear { onContainerAppear(store) }
             .onDisappear { onContainerDisappear(store) }
-    }
-
-    func addHoook(
-        id: some Hashable,
-        type: HookType = .default,
-        condition: @escaping (_ state: State) -> Bool,
-        block: @escaping (_ store: EnvironmentStore<State>) -> Void
-    ) {
-        let hook = Hook(type: type, condition: condition, block: block)
-        containerLifecycle.containerHooks.add(hook: hook, id: id)
     }
 }
