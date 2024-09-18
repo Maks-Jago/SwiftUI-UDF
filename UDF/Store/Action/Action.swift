@@ -59,4 +59,8 @@ public extension Action {
             return ActionGroup(internalActions: [InternalAction(Actions._BindableAction(value: self, containerType: containerType, id: id))])
         }
     }
+
+    func binded<BindedContainer: BindableContainer>(to container: BindedContainer) -> some Action {
+        binded(to: BindedContainer.self, by: container.id)
+    }
 }
