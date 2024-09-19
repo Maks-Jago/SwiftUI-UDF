@@ -32,7 +32,7 @@ public class ReducerReference<AppState: AppReducer, Reducer: Reducible> {
         BindableReducerReference(reducer: reducer[keyPath: keyPath], dispatcher: dispatcher)
     }
 
-    public subscript<R: Reducible>(dynamicMember keyPath: KeyPath<Reducer, R>) -> ReducerScope<R> {
+    public subscript<R: Reducible>(dynamicMember keyPath: KeyPath<Reducer, R>) -> Scope {
         ReducerScope(reducer: reducer[keyPath: keyPath])
     }
 }

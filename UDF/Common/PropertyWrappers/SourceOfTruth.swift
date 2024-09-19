@@ -32,7 +32,7 @@ public final class SourceOfTruth<AppState: AppReducer> {
         }
     }
 
-    public subscript<R: Reducible>(dynamicMember keyPath: KeyPath<AppState, R>) -> ReducerScope<R> {
+    public subscript<R: Reducible>(dynamicMember keyPath: KeyPath<AppState, R>) -> Scope {
         ReducerScope(reducer: wrappedValue[keyPath: keyPath])
     }
 }

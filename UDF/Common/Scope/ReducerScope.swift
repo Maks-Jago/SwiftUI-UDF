@@ -7,8 +7,8 @@
 
 import Foundation
 
-public final class ReducerScope<R: Reducible>: EquatableScope {
-    public static func == (lhs: ReducerScope<R>, rhs: ReducerScope<R>) -> Bool {
+final class ReducerScope<R: Reducible>: EquatableScope {
+    static func == (lhs: ReducerScope<R>, rhs: ReducerScope<R>) -> Bool {
         lhs.reducer == rhs.reducer
     }
 
