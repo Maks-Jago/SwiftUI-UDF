@@ -54,13 +54,13 @@
       <br>
       <sub><b>MetaStudio</b></sub>
     </td>
+  </tr>
+  <tr>
     <td align="center">
       <img src="https://github.com/Maks-Jago/Resources/blob/main/FlatPlanet.png" alt="FlatPlanet" width="100" height="100"/>
       <br>
       <sub><b>FlatPlanet</b></sub>
     </td>
-  </tr>
-  <tr>
     <td align="center">
       <img src="https://github.com/Maks-Jago/Resources/blob/main/Kopi.png" alt="Kopi" width="100" height="100"/>
       <br>
@@ -86,6 +86,8 @@
       <br>
       <sub><b>Ecorial</b></sub>
     </td>
+  </tr>
+  <tr>
     <td align="center">
       <img src="https://github.com/Maks-Jago/Resources/blob/main/MeditationSchool.png" alt="MeditationSchool" width="100" height="100"/>
       <br>
@@ -96,8 +98,6 @@
       <br>
       <sub><b>CNDA Event</b></sub>
     </td>
-  </tr>
-  <tr>
     <td align="center">
       <img src="https://github.com/Maks-Jago/Resources/blob/main/FireFly.png" alt="FireFly" width="100" height="100"/>
       <br>
@@ -118,6 +118,8 @@
       <br>
       <sub><b>Breverie</b></sub>
     </td>
+  </tr>
+  <tr>
     <td align="center">
       <img src="https://github.com/Maks-Jago/Resources/blob/main/CasualAthletes.png" alt="CasualAthletes" width="100" height="100"/>
       <br>
@@ -133,8 +135,6 @@
       <br>
       <sub><b>Zippit</b></sub>
     </td>
-  </tr>
-  <tr>
     <td align="center">
       <img src="https://github.com/Maks-Jago/Resources/blob/main/SkillApp.png" alt="SkillApp" width="100" height="100"/>
       <br>
