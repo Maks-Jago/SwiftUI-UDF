@@ -18,8 +18,8 @@ final class DispatchActionsTests: XCTestCase {
         var title: String = ""
     }
 
-    func test_UpdateFormFieldDispatch() async throws {
-        let store = try InternalStore(initial: AppState(), loggers: [])
+    func test_UpdateFormFieldDispatch() async {
+        let store = InternalStore(initial: AppState(), loggers: [])
         var formTitle = await store.state.plainForm.title
         XCTAssertEqual(formTitle, "")
 
@@ -39,7 +39,7 @@ final class DispatchActionsTests: XCTestCase {
 
         XCTAssertTrue(messageInternalUnwrappedAction.silent)
 
-        let testStore = try await XCTestStore(initial: AppState())
+        let testStore = await XCTestStore(initial: AppState())
         await testStore.dispatch(Actions.Message(id: "1"))
         await testStore.dispatch(Actions.Message(id: "2").silent())
         await testStore.dispatch(Actions.Message(id: "3"))

@@ -28,3 +28,19 @@ public extension Dictionary {
         append(values.map(\.id), by: key)
     }
 }
+
+public extension Dictionary {
+    mutating func append<VKey, VValue>(_ value: Value, by key: Key) where Value == Dictionary<VKey, VValue> {
+        var dict: Value = self[key] ?? [:]
+        dict.merge(dict: value)
+        self[key] = dict
+    }
+}
+
+public extension Dictionary {
+    mutating func merge(dict: [Key: Value]){
+        for (k, v) in dict {
+            updateValue(v, forKey: k)
+        }
+    }
+}

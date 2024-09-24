@@ -86,7 +86,7 @@ final class StoreInitializationTests: XCTestCase {
     var store: InternalStore<AppState>!
 
     override func setUpWithError() throws {
-        store = try InternalStore(initial: AppState(), loggers: [])
+        store = InternalStore(initial: AppState(), loggers: [])
     }
 
     func test_middlewareAsyncSubscription() async {

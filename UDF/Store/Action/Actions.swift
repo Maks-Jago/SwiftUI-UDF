@@ -354,3 +354,90 @@ public extension Actions {
         }
     }
 }
+
+// MARK: - Global Navigation
+public extension Actions {
+    struct Navigate: Action {
+        public static func == (lhs: Actions.Navigate, rhs: Actions.Navigate) -> Bool {
+            true
+        }
+
+        public let to: [any Hashable]
+
+        public init(to: any Hashable) {
+            self.to = [to]
+        }
+
+        public init(path: [any Hashable]) {
+            self.to = path
+        }
+    }
+
+    struct NavigateResetStack: Action {
+        public static func == (lhs: Actions.NavigateResetStack, rhs: Actions.NavigateResetStack) -> Bool {
+            true
+        }
+
+        public let to: [any Hashable]
+
+        public init(to: any Hashable) {
+            self.to = [to]
+        }
+
+        public init(path: [any Hashable]) {
+            self.to = path
+        }
+    }
+
+    struct NavigationBackToRoot: Action {
+        public init() {}
+    }
+
+    struct NavigateBack: Action {
+        public init() {}
+    }
+}
+
+
+// MARK: - Global Navigation Typed
+public extension Actions {
+    struct NavigateTyped<Routing>: Action {
+        public static func == (lhs: Actions.NavigateTyped<Routing>, rhs: Actions.NavigateTyped<Routing>) -> Bool {
+            true
+        }
+
+        public let to: [any Hashable]
+
+        public init(to: any Hashable) {
+            self.to = [to]
+        }
+
+        public init(path: [any Hashable]) {
+            self.to = path
+        }
+    }
+
+    struct NavigateResetStackTyped<Routing>: Action {
+        public static func == (lhs: Actions.NavigateResetStackTyped<Routing>, rhs: Actions.NavigateResetStackTyped<Routing>) -> Bool {
+            true
+        }
+
+        public let to: [any Hashable]
+
+        public init(to: any Hashable) {
+            self.to = [to]
+        }
+
+        public init(path: [any Hashable]) {
+            self.to = path
+        }
+    }
+
+    struct NavigationBackToRootTyped<Routing>: Action {
+        public init() {}
+    }
+
+    struct NavigateBackTyped<Routing>: Action {
+        public init() {}
+    }
+}

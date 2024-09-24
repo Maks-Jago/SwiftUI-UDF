@@ -30,7 +30,7 @@ public final class XCTestStore<State: AppReducer> {
     private var store: InternalStore<State>
     private var cancelation: Cancellable? = nil
 
-    public init(initial state: State) throws {
+    public init(initial state: State) {
         guard ProcessInfo.processInfo.xcTest else {
             fatalError("XCTestStore is only for using in Test targets")
         }
@@ -38,7 +38,7 @@ public final class XCTestStore<State: AppReducer> {
         var mutableState = state
         mutableState.initialSetup()
 
-        let store = try InternalStore(initial: mutableState, loggers: [TestStoreLogger()])
+        let store = InternalStore(initial: mutableState, loggers: [TestStoreLogger()])
         self.store = store
         self._state = .init(wrappedValue: mutableState, store: store)
 

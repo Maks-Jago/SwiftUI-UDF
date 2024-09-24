@@ -87,8 +87,8 @@ class ObservableMiddlewareTests: XCTestCase {
         }
     }
 
-    func testObservableMiddlewareOnceCalling() async throws {
-        let store = try await XCTestStore(initial: AppState())
+    func testObservableMiddlewareOnceCalling() async {
+        let store = await XCTestStore(initial: AppState())
         await store.subscribe(SendMessageMiddleware.self)
 
         let message = "Flow message 1"

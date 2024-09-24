@@ -9,9 +9,9 @@ fileprivate extension Actions {
 extension AlertBuilder.AlertStyle {
     static func alertWithAction(_ action: @escaping () -> Void) -> Self {
         .init(title: "Custom alert title with action", text: "Custom alert text with action") {
-            AlertAction(title: "Action button", action: action)
+            AlertButton(title: "Action button", action: action)
 
-            AlertAction(title: "Cancel")
+            AlertButton(title: "Cancel")
                 .role(.cancel)
         }
     }
@@ -41,8 +41,8 @@ final class AlertTests: XCTestCase {
         }
     }
 
-    func test_WhenAlerBuilderRegistered_AlertCanBePresentedById() async throws {
-        let store = try await XCTestStore(initial: AppState())
+    func test_WhenAlerBuilderRegistered_AlertCanBePresentedById() async {
+        let store = await XCTestStore(initial: AppState())
         var status = await store.state.form.alert.status
 
         XCTAssertEqual(status, .dismissed)

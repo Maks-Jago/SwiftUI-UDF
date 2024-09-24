@@ -135,8 +135,8 @@ class PaginatorTests: XCTestCase {
         XCTAssertEqual(paginator.items.count, 10)
     }
 
-    func testPaginatorLoading() async throws {
-        let store = try await XCTestStore(initial: AppState())
+    func testPaginatorLoading() async {
+        let store = await XCTestStore(initial: AppState())
         await store.dispatch(Actions.LoadPage(id: ItemFlow.id))
 
         let isLoading = await store.state.itemsForm.paginator.isLoading

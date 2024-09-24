@@ -75,8 +75,8 @@ class ReducibleMiddlewareTests: XCTestCase {
         }
     }
 
-    func testReducibleMiddleware() async throws {
-        let store = try await XCTestStore(initial: AppState())
+    func testReducibleMiddleware() async {
+        let store = await XCTestStore(initial: AppState())
         await store.subscribe(ServiceMiddleware.self)
 
         let message = "Service title 1"

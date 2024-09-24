@@ -57,8 +57,8 @@ final class MiddlewareCancellationTests: XCTestCase {
         }
     }
 
-    func testObservableMiddlewareCancellation() async throws {
-        let store = try await XCTestStore(initial: AppState())
+    func testObservableMiddlewareCancellation() async {
+        let store = await XCTestStore(initial: AppState())
 
         await store.subscribe(ObservableMiddlewareToCancel.self)
         await store.dispatch(Actions.Loading())
@@ -73,8 +73,8 @@ final class MiddlewareCancellationTests: XCTestCase {
         XCTAssertEqual(middlewareFlow, .none)
     }
 
-    func testObservableRunMiddlewareToCancel() async throws {
-        let store = try await XCTestStore(initial: AppState())
+    func testObservableRunMiddlewareToCancel() async {
+        let store = await XCTestStore(initial: AppState())
         await store.subscribe(ObservableRunMiddlewareToCancel.self)
         await store.dispatch(Actions.Loading())
 
@@ -92,8 +92,8 @@ final class MiddlewareCancellationTests: XCTestCase {
         XCTAssertEqual(middlewareFlow, .none)
     }
 
-    func testReducibleMiddlewareToCancel() async throws {
-        let store = try await XCTestStore(initial: AppState())
+    func testReducibleMiddlewareToCancel() async {
+        let store = await XCTestStore(initial: AppState())
         await store.subscribe(ReducibleMiddlewareToCancel.self)
         await store.dispatch(Actions.Loading())
 

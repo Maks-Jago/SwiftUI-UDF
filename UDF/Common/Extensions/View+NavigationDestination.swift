@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Foundation
 
 #if os(iOS)
 public extension View {
@@ -16,7 +17,12 @@ public extension View {
             }
         }
     }
+
+    func navigationDestination<R: Routing>(router: Router<R>) -> some View where R.Route: Hashable {
+        modifier(GlobalRoutingModifier(router: router))
+    }
 }
+
 #endif
 
 fileprivate extension Binding {
