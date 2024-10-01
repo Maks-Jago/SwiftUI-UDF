@@ -9,7 +9,7 @@ public extension OrderedDictionary where Value: Mergeable {
             preconditionFailure("You have to use optional subscript")
         }
         set {
-            self[key] = self[key]?.merging(newValue) ?? newValue
+            self.updateValue(self[key]?.merging(newValue) ?? newValue, forKey: key)
         }
     }
 }
