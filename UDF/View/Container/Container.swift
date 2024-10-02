@@ -2,8 +2,8 @@
 //  Container.swift
 //  UDF
 //
-//  Created by Max Kuznetsov on 04.06.2020.
-//  Copyright © 2020 Max Kuznetsov. All rights reserved.
+//  Created by Maksym Kuznetsov on 04.06.2020.
+//  Copyright © 2024 Max Kuznetsov. All rights reserved.
 //
 
 import SwiftUI
@@ -34,7 +34,6 @@ import SwiftUI
 ///         // Map the state to component props
 ///     }
 ///
-///     @ScopeBuilder
 ///     func scope(for state: MyAppState) -> Scope {
 ///         // Define the scope for this container's state
 ///     }
