@@ -3,7 +3,7 @@
 //  UDF
 //
 //  Created by Max Kuznetsov on 04.06.2020.
-//  Copyright © 2020 Max Kuznetsov. All rights reserved.
+//  Copyright © 2024 Max Kuznetsov. All rights reserved.
 //
 
 import SwiftUI
