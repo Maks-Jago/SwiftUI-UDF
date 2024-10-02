@@ -1,10 +1,13 @@
+//===--- Container.swift ----------------------------------------------===//
 //
-//  Container.swift
-//  UDF
+// This source file is part of the UDF open source project
 //
-//  Created by Maksym Kuznetsov on 04.06.2020.
-//  Copyright © 2024 Max Kuznetsov. All rights reserved.
+// Copyright (c) 2024 You Are Launched
+// Licensed under Apache License v2.0 with Runtime Library Exception
 //
+// See https://opensource.org/licenses/Apache-2.0 for license information
+//
+//===----------------------------------------------------------------------===//
 
 import SwiftUI
 
