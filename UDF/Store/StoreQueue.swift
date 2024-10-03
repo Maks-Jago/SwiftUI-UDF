@@ -1,14 +1,21 @@
+//===--- StoreQueue.swift -------------------------------------------------===//
 //
-//  StoreQueue.swift
-//  
+// This source file is part of the UDF open source project
 //
-//  Created by Max Kuznetsov on 07.10.2021.
+// Copyright (c) 2024 You Are Launched
+// Licensed under Apache License v2.0
 //
+// See https://opensource.org/licenses/Apache-2.0 for license information
+//
+//===----------------------------------------------------------------------===//
 
 import Foundation
 
+/// A class that provides a serial queue for store operations, ensuring that only one operation
+/// is executed at a time.
 final class StoreQueue: OperationQueue {
-
+    
+    /// Initializes a new `StoreQueue` with a maximum concurrency of one and a user-interactive quality of service.
     override init() {
         super.init()
         maxConcurrentOperationCount = 1
@@ -17,19 +24,27 @@ final class StoreQueue: OperationQueue {
     }
 }
 
+/// An abstract base class representing an asynchronous operation.
+/// This class manages the operation's execution state and allows subclasses to define
+/// custom asynchronous work.
 open class AsynchronousOperation: Operation {
+    
+    /// Indicates that the operation is asynchronous.
     public override var isAsynchronous: Bool {
         return true
     }
-
+    
+    /// Indicates if the operation is currently executing.
     public override var isExecuting: Bool {
         return state == .executing
     }
-
+    
+    /// Indicates if the operation has finished executing.
     public override var isFinished: Bool {
         return state == .finished
     }
-
+    
+    /// Starts the operation and updates the state accordingly.
     public override func start() {
         if self.isCancelled {
             state = .finished
@@ -38,7 +53,8 @@ open class AsynchronousOperation: Operation {
             main()
         }
     }
-
+    
+    /// The main entry point for the operation.
     open override func main() {
         if self.isCancelled {
             state = .finished
@@ -46,21 +62,25 @@ open class AsynchronousOperation: Operation {
             state = .executing
         }
     }
-
+    
+    /// Marks the operation as finished.
     public func finish() {
         state = .finished
     }
-
-    // MARK: - State management
-
+    
+    // MARK: - State Management
+    
+    /// An enumeration representing the state of an asynchronous operation.
     public enum State: String {
         case ready = "Ready"
         case executing = "Executing"
         case finished = "Finished"
+        
+        /// Returns the key path for KVO notifications.
         fileprivate var keyPath: String { return "is" + self.rawValue }
     }
-
-    /// Thread-safe computed state value
+    
+    /// The current state of the operation. This is a thread-safe property.
     public var state: State {
         get {
             stateQueue.sync {
@@ -78,10 +98,11 @@ open class AsynchronousOperation: Operation {
             didChangeValue(forKey: oldValue.keyPath)
         }
     }
-
+    
+    /// A concurrent queue used to ensure thread-safe access to `stateStore`.
     private let stateQueue = DispatchQueue(label: "AsynchronousOperation State Queue", attributes: .concurrent)
-
-    /// Non thread-safe state storage, use only with locks
+    
+    /// The non-thread-safe storage for the operation's state.
     private var stateStore: State = .ready
 }
 
