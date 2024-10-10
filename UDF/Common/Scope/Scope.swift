@@ -13,7 +13,7 @@ import Foundation
 
 /// A protocol that extends `IsEquatable`, representing a unit of data that can be compared for equality.
 ///
-/// `Scope` is used to define a particular "scope" of data within an application state that is tracked for changes.
+/// Defines a specific slice of the `ContainerState`, which will be tracked for changes.
 /// Types conforming to `Scope` can leverage the `isEqual` method for equality checks.
 public protocol Scope: IsEquatable {}
 
