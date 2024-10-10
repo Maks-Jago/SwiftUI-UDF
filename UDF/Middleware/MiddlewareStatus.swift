@@ -19,11 +19,12 @@ import Foundation
 /// ## Cases
 /// - `active`: Indicates that the middleware is currently active and processing actions.
 /// - `suspend`: Indicates that the middleware is temporarily suspended and not processing actions.
+///             All executing or running effects will be automatically canceled
 ///
 /// ## Example Usage
 /// ```swift
 /// func status(for state: MyAppState) -> MiddlewareStatus {
-///     return state.isUserLoggedIn ? .active : .suspend
+///     state.isUserLoggedIn ? .active : .suspend
 /// }
 /// ```
 public enum MiddlewareStatus: Sendable {
