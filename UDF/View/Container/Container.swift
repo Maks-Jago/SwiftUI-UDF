@@ -25,7 +25,7 @@ import SwiftUI
 /// ## Requirements:
 /// - `map(store:)`: Maps the global state in the `EnvironmentStore` to the properties required by the `Component`.
 /// - `scope(for:)`: Defines a `Scope` for a specific slice of the `ContainerState`.
-///                 When the scope is mutated, the container will redraw the Component, and the map map(store:) function will be called again.
+///                 When the scope is mutated, the container will redraw the Component, and the map(store:) function will be called again.
 /// - Lifecycle Methods: Methods to handle view lifecycle events like appearing, disappearing, loading, and unloading.
 /// - `useHooks()`: Specifies hooks to be used within the container to handle state changes or other effects.
 ///
