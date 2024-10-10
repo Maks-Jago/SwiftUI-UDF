@@ -5,7 +5,7 @@ import Foundation
 //
 // This source file is part of the UDF open source project
 //
-// Copyright (c) 2024 You Are Launched
+// Copyright (c) 2024 You are launched
 // Licensed under Apache License v2.0
 //
 // See https://opensource.org/licenses/Apache-2.0 for license information
