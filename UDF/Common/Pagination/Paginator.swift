@@ -113,7 +113,7 @@ public struct Paginator<Item: Hashable & Identifiable, FlowId: Hashable>: Reduci
         items.removeLast(itemsToRemove)
     }
     
-    /// Removes all items from the paginator.
+    /// Removes all items from the paginator and sets the initial page number.
     public mutating func removeAllItems() {
         self.page = .number(initialPage)
         items.removeAll()
