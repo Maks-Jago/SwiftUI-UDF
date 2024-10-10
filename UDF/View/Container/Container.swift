@@ -34,16 +34,44 @@ import SwiftUI
 /// struct MyContainer: Container {
 ///     typealias ContainerComponent = MyComponent
 ///
-///     func map(store: EnvironmentStore<MyAppState>) -> MyComponent.Props {
-///         // Map the state to component props
+///     // Define the scope for this container's state
+///     func scope(for state: AppState) -> Scope {
+///         state.hookForm
 ///     }
 ///
-///     func scope(for state: MyAppState) -> Scope {
-///         // Define the scope for this container's state
+///     // Map the state to component props
+///     func map(store: EnvironmentStore<MyAppState>) -> MyComponent.Props {///
+///         .init()
 ///     }
 ///
 ///     func onContainerAppear(store: EnvironmentStore<MyAppState>) {
-///         // Handle view appearance
+///         // What needs to be done when view appears
+///     }
+///
+///     func onContainerDisappear(store: EnvironmentStore<MyAppState>) {
+///         // What needs to be done when view disappears
+///     }
+///
+///     func onContainerDidLoad(store: EnvironmentStore<AppState>) {
+///         // What needs to be done when view didLoad
+///     }
+///
+///     func onContainerDidUnload(store: EnvironmentStore<AppState>) {
+///         // What needs to be done when view didUnload
+///     }
+///
+///     func useHooks() -> [Hook<ContainerHookTests.AppState>] {
+///         Hook.oneTimeHook(id: "OneTimeHook") { state in
+///             state.hookForm.triggerValue == "1"
+///         } block: { store in
+///             store.$state.hookForm.triggerValue.wrappedValue = "2"
+///         }
+///
+///         Hook.hook(id: "DefaultHook") { state in
+///             state.hookForm.triggerValue == "3"
+///         } block: { store in
+///             store.$state.hookForm.callbacksCount.wrappedValue += 1
+///         }
 ///     }
 /// }
 /// ```
@@ -65,21 +93,23 @@ public protocol Container<ContainerState>: View {
     func scope(for state: ContainerState) -> Scope
     
     /// Called when the container's view appears.
+    /// Equals to native SwiftUI View's onAppear lifecycle method.
     ///
     /// - Parameter store: The global store containing the state.
     func onContainerAppear(store: EnvironmentStore<ContainerState>)
     
     /// Called when the container's view disappears.
+    /// Equals to native SwiftUI View's onDisappear lifecycle method.
     ///
     /// - Parameter store: The global store containing the state.
     func onContainerDisappear(store: EnvironmentStore<ContainerState>)
     
-    /// Called when the container is loaded for the first time.
+    /// Called when the container is initialized and loaded for the first time.
     ///
     /// - Parameter store: The global store containing the state.
     func onContainerDidLoad(store: EnvironmentStore<ContainerState>)
     
-    /// Called when the container is unloaded.
+    /// Called when the container is deinitialized and unloaded.
     ///
     /// - Parameter store: The global store containing the state.
     func onContainerDidUnload(store: EnvironmentStore<ContainerState>)
