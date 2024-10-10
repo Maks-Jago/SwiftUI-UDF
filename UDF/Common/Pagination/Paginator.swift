@@ -45,10 +45,10 @@ public struct Paginator<Item: Hashable & Identifiable, FlowId: Hashable>: Reduci
         page.pageNumber == initialPage && isLoading
     }
     
-    /// Initializes the paginator with the specified item type, flow ID, items per page, and other options.
+    /// Initializes the paginator with the specified item type, Flow ID, items per page, and other options.
     /// - Parameters:
     ///   - itemType: The type of the items.
-    ///   - flowId: The flow ID associated with this paginator.
+    ///   - flowId: The Flow ID associated with this paginator.
     ///   - perPage: The number of items per page.
     ///   - usePrefixForFirstPage: Indicates whether to use a prefix for the first page.
     ///   - initialPage: The initial page number.
