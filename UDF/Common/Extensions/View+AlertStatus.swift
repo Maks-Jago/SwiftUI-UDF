@@ -44,9 +44,16 @@ private struct AlertModifier: ViewModifier {
     ///
     ///     var body: some View {
     ///         Button("Show Alert") {
-    ///             props.alertStatus.wrappedValue = .presented(.customActions(title: { "Alert" }, text: { "This is a custom alert" }, actions: { [
-    ///                 AlertButton(title: "OK") { print("OK tapped") }
-    ///             ]}))
+    ///             props.alertStatus.wrappedValue = .init(
+    ///                 style: .init(
+    ///                     title: "Alert",
+    ///                     text: "This is a custom alert"
+    ///                 ) {
+    ///                     AlertButton(title: "OK") {
+    ///                         print("OK tapped")
+    ///                     }
+    ///                 }
+    ///             )
     ///         }
     ///         .alert(status: props.alertStatus)
     ///     }
