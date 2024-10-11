@@ -18,10 +18,10 @@ import Foundation
 /// to dispatch actions and bind them to commands.
 public protocol Store<State>: Actor {
     associatedtype State: AppReducer
-    
+
     /// The current state of the store.
     var state: State { get }
-    
+
     /// Dispatches an action to the store with optional priority and additional debug information.
     ///
     /// - Parameters:
@@ -41,7 +41,6 @@ public protocol Store<State>: Actor {
 }
 
 public extension Store {
-    
     /// Dispatches an action to the store with default priority and additional debug information.
     ///
     /// - Parameters:
@@ -59,9 +58,9 @@ public extension Store {
     ) {
         dispatch(action, priority: priority, fileName: fileName, functionName: functionName, lineNumber: lineNumber)
     }
-    
+
     // MARK: - Binding Actions
-    
+
     /// Binds an action to be executed as a command.
     ///
     /// - Parameters:
@@ -122,7 +121,7 @@ public extension Store {
         functionName: String = #function,
         lineNumber: Int = #line
     ) -> Command {
-        return {
+        {
             self.dispatch(
                 action,
                 priority: priority,
@@ -132,7 +131,7 @@ public extension Store {
             )
         }
     }
-    
+
     /// Binds a parameterized action to be executed as a command with a single parameter.
     ///
     /// - Parameters:
@@ -149,7 +148,7 @@ public extension Store {
         functionName: String = #function,
         lineNumber: Int = #line
     ) -> CommandWith<T> {
-        return { value in
+        { value in
             self.dispatch(
                 action(value),
                 priority: priority,
@@ -159,7 +158,7 @@ public extension Store {
             )
         }
     }
-    
+
     /// Binds a parameterized action to be executed as a command with two parameters.
     ///
     /// - Parameters:
@@ -176,7 +175,7 @@ public extension Store {
         functionName: String = #function,
         lineNumber: Int = #line
     ) -> CommandWith2<T1, T2> {
-        return { v1, v2 in
+        { v1, v2 in
             self.dispatch(
                 action(v1, v2),
                 priority: priority,
@@ -186,7 +185,7 @@ public extension Store {
             )
         }
     }
-    
+
     /// Binds a parameterized action to be executed as a command with three parameters.
     ///
     /// - Parameters:
@@ -203,7 +202,7 @@ public extension Store {
         functionName: String = #function,
         lineNumber: Int = #line
     ) -> CommandWith3<T1, T2, T3> {
-        return { v1, v2, v3 in
+        { v1, v2, v3 in
             self.dispatch(
                 action(v1, v2, v3),
                 priority: priority,
@@ -213,7 +212,7 @@ public extension Store {
             )
         }
     }
-    
+
     /// Binds a parameterized action to be executed as a command with four parameters.
     ///
     /// - Parameters:
@@ -230,7 +229,7 @@ public extension Store {
         functionName: String = #function,
         lineNumber: Int = #line
     ) -> CommandWith4<T1, T2, T3, T4> {
-        return { v1, v2, v3, v4 in
+        { v1, v2, v3, v4 in
             self.dispatch(
                 action(v1, v2, v3, v4),
                 priority: priority,
@@ -240,7 +239,7 @@ public extension Store {
             )
         }
     }
-    
+
     /// Binds a parameterized action to be executed as a command with five parameters.
     ///
     /// - Parameters:
@@ -257,7 +256,7 @@ public extension Store {
         functionName: String = #function,
         lineNumber: Int = #line
     ) -> CommandWith5<T1, T2, T3, T4, T5> {
-        return { v1, v2, v3, v4, v5 in
+        { v1, v2, v3, v4, v5 in
             self.dispatch(
                 action(v1, v2, v3, v4, v5),
                 priority: priority,

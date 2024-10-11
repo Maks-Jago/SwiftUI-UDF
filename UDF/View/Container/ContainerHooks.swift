@@ -37,23 +37,24 @@ import SwiftUI
 ///
 /// ## Methods:
 /// - `createHooks()`: Builds and stores hooks based on the provided closure.
-/// - `checkHooks(oldState:newState:)`: Checks the conditions of each hook against the old and new state, triggering and removing hooks as needed.
+/// - `checkHooks(oldState:newState:)`: Checks the conditions of each hook against the old and new state, triggering and removing hooks as
+/// needed.
 /// - `removeHook(by:)`: Removes a hook with a specific identifier.
 /// - `removeAllHooks()`: Removes all hooks and cancels the state subscription.
 /// - `deinit`: Cleans up by removing the state subscription when the `ContainerHooks` instance is deallocated.
 final class ContainerHooks<State: AppReducer> {
     /// A weak reference to the environment store containing the global state.
     weak var store: EnvironmentStore<State>?
-    
+
     /// A private key used to manage the subscription in the store.
     private var subscriptionKey: String = ""
-    
+
     /// A dictionary of hooks, keyed by unique identifiers.
     var hooks: [AnyHashable: Hook<State>] = [:]
-    
+
     /// A closure that returns an array of hooks to be used in the container.
     var buildHooks: () -> [Hook<State>]
-    
+
     /// Initializes the `ContainerHooks` with a store and a closure that builds the hooks.
     ///
     /// - Parameters:
@@ -66,22 +67,22 @@ final class ContainerHooks<State: AppReducer> {
             self?.checkHooks(oldState: .init(oldState), newState: .init(newState))
         }
     }
-    
+
     /// Creates hooks by building them from the provided closure and storing them in a dictionary.
     func createHooks() {
         self.hooks = Dictionary(uniqueKeysWithValues: buildHooks().map { ($0.id, $0) })
     }
-    
+
     /// Checks each hook's condition against the old and new state, triggering the hook if necessary.
     ///
     /// - Parameters:
     ///   - oldState: The previous state wrapped in a `Box`.
     ///   - newState: The current state wrapped in a `Box`.
     private func checkHooks(oldState: Box<State>, newState: Box<State>) {
-        hooks.forEach { (key: AnyHashable, hook: Hook<State>) in
+        for (key, hook) in hooks {
             if hook.condition(newState.value), !hook.condition(oldState.value), let store {
                 hook.block(store)
-                
+
                 switch hook.type {
                 case .oneTime:
                     removeHook(by: key)
@@ -91,24 +92,24 @@ final class ContainerHooks<State: AppReducer> {
             }
         }
     }
-    
+
     /// Removes a hook with the specified identifier.
     ///
     /// - Parameter id: The identifier of the hook to remove.
     func removeHook(by id: some Hashable) {
         hooks.removeValue(forKey: AnyHashable(id))
-        
+
         if hooks.isEmpty {
             store?.removePublisher(forKey: subscriptionKey)
         }
     }
-    
+
     /// Removes all hooks and cancels the state subscription.
     func removeAllHooks() {
         hooks.removeAll()
         store?.removePublisher(forKey: subscriptionKey)
     }
-    
+
     /// Cleans up by removing the state subscription when the `ContainerHooks` instance is deallocated.
     deinit {
         store?.removePublisher(forKey: subscriptionKey)

@@ -39,13 +39,13 @@ import SwiftUI
 final class ContainerState<State: AppReducer>: ObservableObject {
     /// A weak reference to the environment store containing the global state.
     weak var store: EnvironmentStore<State>?
-    
+
     /// A private key used to manage the subscription in the store.
     private var subscriptionKey: String = ""
-    
+
     /// The current scoped state that is observed by SwiftUI views.
     @Published var currentScope: Scope?
-    
+
     /// Initializes the `ContainerState` with a given store and scope closure.
     ///
     /// - Parameters:
@@ -54,12 +54,12 @@ final class ContainerState<State: AppReducer>: ObservableObject {
     init(store: EnvironmentStore<State>, scope: @escaping (_ state: State) -> Scope) {
         self.store = store
         self.currentScope = nil
-        
+
         // Subscribe to state changes in the store
         self.subscriptionKey = store.add { [weak self] oldState, newState, animation in
             let oldScope = scope(oldState)
             let newScope = scope(newState)
-            
+
             // Update the scope if it has changed
             if !oldScope.isEqual(newScope) {
                 withAnimation(animation) {
@@ -68,7 +68,7 @@ final class ContainerState<State: AppReducer>: ObservableObject {
             }
         }
     }
-    
+
     /// Cleans up the subscription when the `ContainerState` is deinitialized.
     deinit {
         store?.removePublisher(forKey: subscriptionKey)

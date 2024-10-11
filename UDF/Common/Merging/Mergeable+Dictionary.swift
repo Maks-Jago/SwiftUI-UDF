@@ -12,7 +12,6 @@
 import Foundation
 
 public extension Dictionary where Value: Mergeable {
-    
     /// A subscript that merges a new value with the existing value for a given key.
     ///
     /// - Parameter key: The key associated with the value in the dictionary.
@@ -29,17 +28,16 @@ public extension Dictionary where Value: Mergeable {
 }
 
 public extension Dictionary where Value: Identifiable, Key == Value.ID {
-    
     /// Inserts an array of identifiable items into the dictionary.
     ///
     /// - Parameter items: An array of items to be inserted into the dictionary.
     ///                    If an item already exists, it will be replaced.
     mutating func insert(items: [Value]) {
-        items.forEach { item in
+        for item in items {
             self[item.id] = item
         }
     }
-    
+
     /// Inserts a single identifiable item into the dictionary.
     ///
     /// - Parameter item: The item to be inserted into the dictionary.
@@ -49,20 +47,19 @@ public extension Dictionary where Value: Identifiable, Key == Value.ID {
     }
 }
 
-public typealias MI = Mergeable & Identifiable
+public typealias MI = Identifiable & Mergeable
 
 public extension Dictionary where Value: MI, Key == Value.ID {
-    
     /// Inserts an array of mergeable and identifiable items into the dictionary.
     ///
     /// - Parameter items: An array of items to be inserted into the dictionary.
     ///                    If an item with the same ID already exists, it will be merged with the new item.
     mutating func insert(items: [Value]) {
-        items.forEach { item in
+        for item in items {
             self[item.id] = self[item.id]?.merging(item) ?? item
         }
     }
-    
+
     /// Inserts a single mergeable and identifiable item into the dictionary.
     ///
     /// - Parameter item: The item to be inserted into the dictionary.

@@ -10,6 +10,7 @@
 //===----------------------------------------------------------------------===//
 
 import SwiftUI
+
 /// A protocol that represents a reusable view component in SwiftUI.
 ///
 /// Conforming types must define an `associatedtype` called `Props` to represent the data
@@ -47,10 +48,10 @@ import SwiftUI
 /// - Initializer: An initializer that accepts a `Props` instance to configure the component.
 public protocol Component: View {
     associatedtype Props
-    
+
     /// The properties used to configure the component.
     var props: Props { get }
-    
+
     /// Initializes the component with the given properties.
     ///
     /// - Parameter props: The properties to use for configuring the component.

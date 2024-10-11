@@ -16,13 +16,13 @@ import Foundation
 ///   - `id`: The unique identifier for the container instance to which this action is bound.
 protocol _AnyBindableAction: Action {
     associatedtype BindedContainer: BindableContainer
-    
+
     /// The encapsulated action that will be executed for the bound container.
     var value: any Action { get }
-    
+
     /// The type of the `BindableContainer` associated with this action.
     var containerType: BindedContainer.Type { get }
-    
+
     /// The unique identifier for the container instance this action is bound to.
     var id: BindedContainer.ID { get }
 }

@@ -31,57 +31,58 @@ extension LocalizedStringKey {
     /// - Returns: A `String` representing the localized key with any format arguments, or `nil` if resolution fails.
     var resolved: String? {
         let mirror = Mirror(reflecting: self)
-        
+
         // Extracts the key from the mirrored object
         guard let key = mirror.descendant("key") as? String else {
             return nil
         }
-        
+
         // Extracts the arguments used in the localized string
         guard let args = mirror.descendant("arguments") as? [Any] else {
             return nil
         }
-        
+
         // Processes the arguments for formatting
         let values = args.map { arg -> Any? in
             let mirror = Mirror(reflecting: arg)
             if let value = mirror.descendant("storage", "value", ".0") {
                 return value
             }
-            
+
             guard let format = mirror.descendant("storage", "formatStyleValue", "format") as? any FormatStyle,
-                  let input = mirror.descendant("storage", "formatStyleValue", "input") else {
+                  let input = mirror.descendant("storage", "formatStyleValue", "input")
+            else {
                 return nil
             }
-            
+
             return format.format(any: input)
         }
-        
+
         // Converts the values to CVarArg to use with String formatting
         let va = values.compactMap { arg -> CVarArg? in
             switch arg {
-            case let i as Int:      return i
-            case let i as Int64:    return i
-            case let i as Int8:     return i
-            case let i as Int16:    return i
-            case let i as Int32:    return i
-            case let u as UInt:     return u
-            case let u as UInt64:   return u
-            case let u as UInt8:    return u
-            case let u as UInt16:   return u
-            case let u as UInt32:   return u
-            case let f as Float:    return f
-            case let f as CGFloat:  return f
-            case let d as Double:   return d
+            case let i as Int: return i
+            case let i as Int64: return i
+            case let i as Int8: return i
+            case let i as Int16: return i
+            case let i as Int32: return i
+            case let u as UInt: return u
+            case let u as UInt64: return u
+            case let u as UInt8: return u
+            case let u as UInt16: return u
+            case let u as UInt32: return u
+            case let f as Float: return f
+            case let f as CGFloat: return f
+            case let d as Double: return d
             case let o as NSObject: return o
-            default:                return nil
+            default: return nil
             }
         }
-        
+
         if va.count != values.count {
             return nil
         }
-        
+
         return String.localizedStringWithFormat(key, va)
     }
 }
@@ -95,7 +96,7 @@ extension Text {
     /// - Returns: A `String` representing the content of the `Text` view, or `nil` if extraction fails.
     var content: String? {
         let mirror = Mirror(reflecting: self)
-        
+
         // Attempts to extract a verbatim string
         if let s = mirror.descendant("storage", "verbatim") as? String {
             return s
@@ -110,12 +111,14 @@ extension Text {
         }
         // Attempts to use a format style to extract the string
         else if let format = mirror.descendant("storage", "anyTextStorage", "storage", "format") as? any FormatStyle,
-                let input = mirror.descendant("storage", "anyTextStorage", "storage", "input") {
+                let input = mirror.descendant("storage", "anyTextStorage", "storage", "input")
+        {
             return format.format(any: input) as? String
         }
         // Attempts to use a formatter to extract the string
         else if let formatter = mirror.descendant("storage", "anyTextStorage", "formatter") as? Formatter,
-                let object = mirror.descendant("storage", "anyTextStorage", "object") {
+                let object = mirror.descendant("storage", "anyTextStorage", "object")
+        {
             return formatter.string(for: object)
         }
         return nil

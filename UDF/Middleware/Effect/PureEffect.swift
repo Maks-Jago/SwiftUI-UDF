@@ -9,8 +9,8 @@
 //
 //===----------------------------------------------------------------------===//
 
-import Foundation
 import Combine
+import Foundation
 
 /// A protocol representing a side effect in the application that produces an output via a Combine publisher.
 public protocol PureEffect<Output>: Publisher {
@@ -25,7 +25,7 @@ public extension PureEffect {
     func receive<S>(subscriber: S) where S: Subscriber, Failure == S.Failure, Output == S.Input {
         self.upstream.subscribe(subscriber)
     }
-    
+
     /// Transforms the effect into an action-producing publisher, handling both output and failure cases.
     ///
     /// This method maps the effect's output to an action and handles failures by catching errors and mapping them to another action.
@@ -34,7 +34,10 @@ public extension PureEffect {
     ///   - output: A closure that transforms the effect's output into an action.
     ///   - failure: A closure that transforms the effect's failure into an action.
     /// - Returns: A publisher that emits actions, encapsulating the effect's output and potential failures.
-    func eraseToEffectable(output: @escaping (Output) -> any Action, failure: @escaping (Failure) -> any Action) -> AnyPublisher<any Action, Never> {
+    func eraseToEffectable(
+        output: @escaping (Output) -> any Action,
+        failure: @escaping (Failure) -> any Action
+    ) -> AnyPublisher<any Action, Never> {
         self
             .map(output)
             .catch { error in

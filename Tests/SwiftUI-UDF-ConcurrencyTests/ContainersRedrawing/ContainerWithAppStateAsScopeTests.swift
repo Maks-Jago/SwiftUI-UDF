@@ -1,9 +1,8 @@
-import XCTest
 import SwiftUI
 @testable import UDF
+import XCTest
 
 final class ContainerWithAppStateAsScopeTests: XCTestCase {
-
     @propertyWrapper
     final class Box<Value> {
         private var box: Value
@@ -24,7 +23,9 @@ final class ContainerWithAppStateAsScopeTests: XCTestCase {
 
         func log(_ action: LoggingAction, description: String) {
             print("Reduce\t\t", description)
-            print("---------------------------------------------------------------------------------------------------------------------------------------------------------------------------")
+            print(
+                "---------------------------------------------------------------------------------------------------------------------------------------------------------------------------"
+            )
         }
     }
 
@@ -41,7 +42,7 @@ final class ContainerWithAppStateAsScopeTests: XCTestCase {
         var isUserLoggedIn: Bool = false
     }
 
-    func createWindow(with container: some Container) async  -> UIWindow {
+    func createWindow(with container: some Container) async -> UIWindow {
         await MainActor.run {
             let window = UIWindow(frame: .zero)
             let viewController = UIHostingController(rootView: container)
@@ -68,28 +69,28 @@ final class ContainerWithAppStateAsScopeTests: XCTestCase {
         store.dispatch(Actions.UpdateFormField(keyPath: \PlainForm.title, value: "title 1"))
         await fulfill(description: "waiting for rendering", sleep: 1)
 
-        print(window) //To force a window redraw
+        print(window) // To force a window redraw
         await fulfill(description: "waiting for rendering", sleep: 1)
         XCTAssertEqual(rootContainer.renderingNumber, 2)
 
         store.dispatch(Actions.UpdateFormField(keyPath: \UserData.isUserLoggedIn, value: true))
         await fulfill(description: "waiting for rendering", sleep: 1)
 
-        print(window) //To force a window redraw
+        print(window) // To force a window redraw
         await fulfill(description: "waiting for rendering", sleep: 1)
         XCTAssertEqual(rootContainer.renderingNumber, 3)
 
         store.dispatch(Actions.UpdateFormField(keyPath: \UserData.isUserLoggedIn, value: false))
         await fulfill(description: "waiting for rendering", sleep: 1)
 
-        print(window) //To force a window redraw
+        print(window) // To force a window redraw
         await fulfill(description: "waiting for rendering", sleep: 1)
         XCTAssertEqual(rootContainer.renderingNumber, 4)
 
         store.dispatch(Actions.UpdateFormField(keyPath: \PlainForm.title, value: "title 2"))
         await fulfill(description: "waiting for rendering", sleep: 1)
 
-        print(window) //To force a window redraw
+        print(window) // To force a window redraw
         await fulfill(description: "waiting for rendering", sleep: 1)
         XCTAssertEqual(rootContainer.renderingNumber, 5)
     }
@@ -106,16 +107,14 @@ final class ContainerWithAppStateAsScopeTests: XCTestCase {
         store.dispatch(Actions.UpdateFormField(keyPath: \PlainForm.title, value: "title 1"))
         await fulfill(description: "waiting for rendering", sleep: 1)
 
-        print(window) //To force a window redraw
+        print(window) // To force a window redraw
         XCTAssertEqual(noneScopeContainer.renderingNumber, 1)
     }
 }
 
-
 // MARK: - RootContainer
 extension ContainerWithAppStateAsScopeTests {
     struct RootContainer: Container {
-
         func onContainerAppear(store: EnvironmentStore<AppState>) {}
         func onContainerDisappear(store: EnvironmentStore<AppState>) {}
         func onContainerDidLoad(store: EnvironmentStore<AppState>) {}
@@ -173,7 +172,9 @@ extension ContainerWithAppStateAsScopeTests {
             .none
         }
 
-        func map(store: EnvironmentStore<ContainerWithAppStateAsScopeTests.AppState>) -> ContainerWithAppStateAsScopeTests.RootComponent.Props {
+        func map(store: EnvironmentStore<ContainerWithAppStateAsScopeTests.AppState>) -> ContainerWithAppStateAsScopeTests.RootComponent
+            .Props
+        {
             renderingNumber += 1
             print("NoneScopeContainer: renderingNumber - \(renderingNumber)")
             return .init(isUserLoggedIn: false)

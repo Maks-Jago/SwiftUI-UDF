@@ -13,7 +13,6 @@ import Foundation
 
 /// An action filter that includes only error actions of type `Actions.Error`.
 public struct ErrorOnlyActionFilter: ActionFilter {
-    
     /// Determines whether a given action should be included.
     ///
     /// - Parameter action: The action to be evaluated.

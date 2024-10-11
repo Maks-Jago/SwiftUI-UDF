@@ -14,7 +14,6 @@ import Foundation
 /// A class that provides a serial queue for store operations, ensuring that only one operation
 /// is executed at a time.
 final class StoreQueue: OperationQueue {
-    
     /// Initializes a new `StoreQueue` with a maximum concurrency of one and a user-interactive quality of service.
     override init() {
         super.init()
@@ -28,24 +27,23 @@ final class StoreQueue: OperationQueue {
 /// This class manages the operation's execution state and allows subclasses to define
 /// custom asynchronous work.
 open class AsynchronousOperation: Operation {
-    
     /// Indicates that the operation is asynchronous.
-    public override var isAsynchronous: Bool {
-        return true
+    override public var isAsynchronous: Bool {
+        true
     }
-    
+
     /// Indicates if the operation is currently executing.
-    public override var isExecuting: Bool {
-        return state == .executing
+    override public var isExecuting: Bool {
+        state == .executing
     }
-    
+
     /// Indicates if the operation has finished executing.
-    public override var isFinished: Bool {
-        return state == .finished
+    override public var isFinished: Bool {
+        state == .finished
     }
-    
+
     /// Starts the operation and updates the state accordingly.
-    public override func start() {
+    override public func start() {
         if self.isCancelled {
             state = .finished
         } else {
@@ -53,38 +51,38 @@ open class AsynchronousOperation: Operation {
             main()
         }
     }
-    
+
     /// The main entry point for the operation.
-    open override func main() {
+    override open func main() {
         if self.isCancelled {
             state = .finished
         } else {
             state = .executing
         }
     }
-    
+
     /// Marks the operation as finished.
     public func finish() {
         state = .finished
     }
-    
+
     // MARK: - State Management
-    
+
     /// An enumeration representing the state of an asynchronous operation.
     public enum State: String {
         case ready = "Ready"
         case executing = "Executing"
         case finished = "Finished"
-        
+
         /// Returns the key path for KVO notifications.
-        fileprivate var keyPath: String { return "is" + self.rawValue }
+        fileprivate var keyPath: String { "is" + self.rawValue }
     }
-    
+
     /// The current state of the operation. This is a thread-safe property.
     public var state: State {
         get {
             stateQueue.sync {
-                return stateStore
+                stateStore
             }
         }
         set {
@@ -98,14 +96,13 @@ open class AsynchronousOperation: Operation {
             didChangeValue(forKey: oldValue.keyPath)
         }
     }
-    
+
     /// A concurrent queue used to ensure thread-safe access to `stateStore`.
     private let stateQueue = DispatchQueue(label: "AsynchronousOperation State Queue", attributes: .concurrent)
-    
+
     /// The non-thread-safe storage for the operation's state.
     private var stateStore: State = .ready
 }
-
 
 final class StoreOperation: AsynchronousOperation {
     var priority: Priority
@@ -145,15 +142,15 @@ extension StoreOperation {
 
         var taskPriority: TaskPriority {
             switch self {
-            case .default: return .high
-            case .userInteractive: return .userInteractive
+            case .default: .high
+            case .userInteractive: .userInteractive
             }
         }
 
         var queuePriority: Operation.QueuePriority {
             switch self {
-            case .default: return .normal
-            case .userInteractive: return .veryHigh
+            case .default: .normal
+            case .userInteractive: .veryHigh
             }
         }
 

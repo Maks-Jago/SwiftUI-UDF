@@ -1,9 +1,9 @@
 
-import XCTest
-@testable import UDF
 import Combine
+@testable import UDF
+import XCTest
 
-fileprivate extension Actions {
+private extension Actions {
     struct SendMessage: Action {
         var message: String
         var id: AnyHashable? = nil
@@ -11,7 +11,6 @@ fileprivate extension Actions {
 }
 
 class ObservableMiddlewareTests: XCTestCase {
-
     struct AppState: AppReducer {
         var testForm = TestForm()
         var testFlow = TestFlow()
@@ -41,9 +40,7 @@ class ObservableMiddlewareTests: XCTestCase {
     }
 
     class SendMessageMiddleware: BaseObservableMiddleware<AppState> {
-        struct Environment {
-
-        }
+        struct Environment {}
 
         var environment: Environment!
 
@@ -54,7 +51,6 @@ class ObservableMiddlewareTests: XCTestCase {
         static func buildTestEnvironment(for store: some Store<AppState>) -> Environment {
             Environment()
         }
-
 
         func scope(for state: ObservableMiddlewareTests.AppState) -> Scope {
             state.testFlow
@@ -68,7 +64,7 @@ class ObservableMiddlewareTests: XCTestCase {
             print("observeCount: \(observeCount)")
 
             switch state.testFlow {
-            case .sending(let message):
+            case let .sending(message):
                 execute(ServiceEffect(title: message, number: 4), cancellation: "service")
 
             default:
@@ -94,7 +90,7 @@ class ObservableMiddlewareTests: XCTestCase {
         let message = "Flow message 1"
         await store.dispatch(Actions.SendMessage(message: message, id: TestFlow.id))
         await store.wait()
-        
+
         let title = await store.state.testForm.title
         XCTAssertEqual(title, message)
     }

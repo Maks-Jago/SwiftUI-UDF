@@ -13,10 +13,9 @@ import Foundation
 
 /// An `ActionDescriptor` that generates a string description for a given action.
 open class StringDescribingActionDescriptor: @unchecked Sendable, ActionDescriptor {
-    
     /// Initializes a new instance of `StringDescribingActionDescriptor`.
     public init() {}
-    
+
     /// Returns a string description for the specified logging action.
     ///
     /// - Parameter action: The `LoggingAction` for which to generate a description.

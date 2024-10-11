@@ -1,9 +1,8 @@
 
-import XCTest
 @testable import UDF
+import XCTest
 
 final class AppStateInitialSetupTests: XCTestCase {
-
     struct AppState: AppReducer {
         var form1 = Form1()
         var form2 = Form2()

@@ -51,19 +51,19 @@ public struct AlertButton: AlertAction {
     public var title: String
     public var role: ButtonRole?
     public var disabled: Bool = false
-    public var action: () -> ()
-    
+    public var action: () -> Void
+
     /// Checks if two `AlertButton` instances are equal by comparing their title, role, and disabled state.
     public static func == (lhs: AlertButton, rhs: AlertButton) -> Bool {
         lhs.title == rhs.title && lhs.role == rhs.role && lhs.disabled == rhs.disabled
     }
-    
+
     /// Hashes the essential properties of the `AlertButton`.
     public func hash(into hasher: inout Hasher) {
         hasher.combine(title)
         hasher.combine(disabled)
     }
-    
+
     /// Creates an `AlertButton` with a specified title and an optional action.
     ///
     /// - Parameters:
@@ -76,7 +76,7 @@ public struct AlertButton: AlertAction {
         self.title = title
         self.action = action
     }
-    
+
     /// The view body of the `AlertButton`.
     public var body: some View {
         Button(title, role: role, action: action)
@@ -97,7 +97,7 @@ public extension AlertButton {
             button.role = role
         }
     }
-    
+
     /// Sets the disabled state of the button and returns a new `AlertButton`.
     ///
     /// - Parameter disabled: A Boolean indicating if the button should be disabled.
@@ -120,7 +120,7 @@ public extension AlertAction where Self == AlertButton {
     static func `default`(_ title: String, action: @escaping () -> Void = {}) -> Self {
         AlertButton(title: title, action: action)
     }
-    
+
     /// Creates a default alert button with the specified text and action.
     ///
     /// - Warning: This method is deprecated. Use the `default` method with a `String` instead of `Text`.
@@ -132,7 +132,7 @@ public extension AlertAction where Self == AlertButton {
     static func `default`(_ text: Text, action: @escaping () -> Void = {}) -> Self {
         AlertButton(title: text.content ?? "", action: action)
     }
-    
+
     /// Creates a cancel alert button with the specified title and action.
     ///
     /// - Parameters:
@@ -143,7 +143,7 @@ public extension AlertAction where Self == AlertButton {
         AlertButton(title: title, action: action)
             .role(.cancel)
     }
-    
+
     /// Creates a cancel alert button with the specified text and action.
     ///
     /// - Warning: This method is deprecated. Use the `cancel` method with a `String` instead of `Text`.
@@ -156,7 +156,7 @@ public extension AlertAction where Self == AlertButton {
         AlertButton(title: text.content ?? "", action: action)
             .role(.cancel)
     }
-    
+
     /// Creates a destructive alert button with the specified title and action.
     ///
     /// - Parameters:
@@ -167,7 +167,7 @@ public extension AlertAction where Self == AlertButton {
         AlertButton(title: title, action: action)
             .role(.destructive)
     }
-    
+
     /// Creates a destructive alert button with the specified text and action.
     ///
     /// - Warning: This method is deprecated. Use the `destructive` method with a `String` instead of `Text`.

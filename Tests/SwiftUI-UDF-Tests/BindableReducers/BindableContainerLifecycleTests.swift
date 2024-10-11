@@ -5,13 +5,12 @@
 //  Created by Max Kuznetsov on 07.09.2024.
 //
 
-import XCTest
-@testable import UDF
 import SwiftUI
+@testable import UDF
 import UDFXCTest
+import XCTest
 
 final class BindableContainerLifecycleTests: XCTestCase {
-
     struct Item: Identifiable {
         struct ID: Hashable {
             var value: Int
@@ -23,7 +22,6 @@ final class BindableContainerLifecycleTests: XCTestCase {
     struct ItemsForm: UDF.Form {}
 
     struct AppState: AppReducer {
-
         @BindableReducer(ItemsForm.self, bindedTo: ItemsContainer.self)
         fileprivate var itemsForm
     }
@@ -36,7 +34,7 @@ final class BindableContainerLifecycleTests: XCTestCase {
         var window: UIWindow? = await UIWindow.render(container: itemsContainer)
 
         await fulfill(description: "waiting for rendering", sleep: 1)
-        print(window!) //To force a window redraw
+        print(window!) // To force a window redraw
         await fulfill(description: "waiting for rendering", sleep: 1)
 
         var form: ItemsForm? = store.state.itemsForm[itemId]
@@ -44,7 +42,7 @@ final class BindableContainerLifecycleTests: XCTestCase {
 
         window = nil
         await fulfill(description: "waiting for rendering", sleep: 1)
-        print(window as Any) //To force a window redraw
+        print(window as Any) // To force a window redraw
         await fulfill(description: "waiting for rendering", sleep: 1)
 
         form = store.state.itemsForm[itemId]
@@ -53,8 +51,7 @@ final class BindableContainerLifecycleTests: XCTestCase {
 }
 
 // MARK: Container
-fileprivate extension BindableContainerLifecycleTests {
-
+private extension BindableContainerLifecycleTests {
     struct ItemsContainer: BindableContainer {
         typealias ContainerComponent = ItemsComponent
 
@@ -70,9 +67,7 @@ fileprivate extension BindableContainerLifecycleTests {
     }
 
     struct ItemsComponent: Component {
-        struct Props {
-
-        }
+        struct Props {}
 
         var props: Props
 
@@ -81,4 +76,3 @@ fileprivate extension BindableContainerLifecycleTests {
         }
     }
 }
-

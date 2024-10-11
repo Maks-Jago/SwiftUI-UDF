@@ -9,8 +9,8 @@
 //
 //===----------------------------------------------------------------------===//
 
-import Foundation
 import enum CoreLocation.CLAccuracyAuthorization
+import Foundation
 
 extension CLAccuracyAuthorization: CustomDebugStringConvertible {
     /// Provides a custom debug description for the `CLAccuracyAuthorization` enumeration.
@@ -20,10 +20,10 @@ extension CLAccuracyAuthorization: CustomDebugStringConvertible {
         switch self {
         case .fullAccuracy:
             return "CLAccuracyAuthorization.fullAccuracy"
-            
+
         case .reducedAccuracy:
             return "CLAccuracyAuthorization.reducedAccuracy"
-            
+
         @unknown default:
             return "\(self)"
         }

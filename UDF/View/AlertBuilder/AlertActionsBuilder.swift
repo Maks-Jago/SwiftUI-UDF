@@ -22,7 +22,6 @@ import Foundation
 /// including conditionals, optionals, and expressions.
 @resultBuilder
 public enum AlertActionsBuilder {
-    
     /// Chooses the first component in an `if-else` conditional block.
     ///
     /// - Parameter component: An array of `AlertAction` elements to include if the condition is true.
@@ -30,7 +29,7 @@ public enum AlertActionsBuilder {
     public static func buildEither(first component: [any AlertAction]) -> [any AlertAction] {
         component
     }
-    
+
     /// Chooses the second component in an `if-else` conditional block.
     ///
     /// - Parameter component: An array of `AlertAction` elements to include if the condition is false.
@@ -38,7 +37,7 @@ public enum AlertActionsBuilder {
     public static func buildEither(second component: [any AlertAction]) -> [any AlertAction] {
         component
     }
-    
+
     /// Builds an optional component.
     ///
     /// - Parameter component: An optional array of `AlertAction` elements.
@@ -46,7 +45,7 @@ public enum AlertActionsBuilder {
     public static func buildOptional(_ component: [any AlertAction]?) -> [any AlertAction] {
         component ?? []
     }
-    
+
     /// Builds a single `AlertAction` expression into an array.
     ///
     /// - Parameter expression: An `AlertAction` element.
@@ -54,7 +53,7 @@ public enum AlertActionsBuilder {
     public static func buildExpression(_ expression: some AlertAction) -> [any AlertAction] {
         [expression]
     }
-    
+
     /// Builds an empty array when an expression is of type `Void`.
     ///
     /// - Parameter expression: A `Void` type expression.
@@ -62,7 +61,7 @@ public enum AlertActionsBuilder {
     public static func buildExpression(_ expression: ()) -> [any AlertAction] {
         []
     }
-    
+
     /// Builds an array of `AlertAction` elements with limited availability.
     ///
     /// - Parameter components: An array of `AlertAction` elements with limited availability.
@@ -70,7 +69,7 @@ public enum AlertActionsBuilder {
     static func buildLimitedAvailability(_ components: [any AlertAction]) -> [any AlertAction] {
         components
     }
-    
+
     /// Combines multiple arrays of `AlertAction` elements into a single array.
     ///
     /// - Parameter components: A variadic list of arrays containing `AlertAction` elements.
@@ -78,7 +77,7 @@ public enum AlertActionsBuilder {
     public static func buildBlock(_ components: [any AlertAction]...) -> [any AlertAction] {
         components.flatMap { $0 }
     }
-    
+
     /// Combines an array of `AlertAction` arrays into a single array.
     ///
     /// - Parameter components: An array of arrays, each containing `AlertAction` elements.

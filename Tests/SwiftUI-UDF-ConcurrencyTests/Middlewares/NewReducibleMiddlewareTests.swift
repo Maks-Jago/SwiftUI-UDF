@@ -1,16 +1,15 @@
 
-import XCTest
-@testable import UDF
 import Combine
+@testable import UDF
+import XCTest
 
-fileprivate extension Actions {
+private extension Actions {
     struct SendMessage: Action {
         var message: String
     }
 }
 
 final class NewReducibleMiddlewareTests: XCTestCase {
-    
     struct AppState: AppReducer {
         var testForm = TestForm()
     }
@@ -23,13 +22,13 @@ final class NewReducibleMiddlewareTests: XCTestCase {
         static func buildLiveEnvironment(for store: some Store<AppState>) -> Environment {
             Environment(loadItems: { [] })
         }
-        
+
         static func buildTestEnvironment(for store: some Store<AppState>) -> Environment {
             Environment(loadItems: { [] })
         }
-        
+
         var environment: Environment!
-        
+
         struct Environment {
             var loadItems: () -> [String]
         }

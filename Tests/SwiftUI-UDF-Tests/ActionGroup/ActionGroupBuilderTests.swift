@@ -5,16 +5,15 @@
 //  Created by Max Kuznetsov on 18.09.2022.
 //
 
-import XCTest
 @testable import UDF
+import XCTest
 
 final class ActionGroupBuilderTests: XCTestCase {
-
     func test_WhenVoid_ActionGroupShouldBeEmpty() {
         let group = ActionGroup {
             ()
         }
-        
+
         XCTAssertTrue(group.actions.isEmpty, "An ActionGroup shouldn't have action when there is some Void in the builder")
     }
 
@@ -98,7 +97,7 @@ final class ActionGroupBuilderTests: XCTestCase {
             case 0:
                 Actions.Message(message: "m0", id: "m0")
 
-            case 1...4:
+            case 1 ... 4:
                 Actions.Message(message: "m4", id: "m4")
 
             case 4...:
@@ -114,7 +113,7 @@ final class ActionGroupBuilderTests: XCTestCase {
 
     func test_Loop() {
         let group = ActionGroup {
-            for i in 0...3 {
+            for i in 0 ... 3 {
                 Actions.Message(message: "m\(i)", id: "m\(i)")
             }
 

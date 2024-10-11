@@ -23,7 +23,7 @@ typealias StateSubscriber<State: AppReducer> = (_ oldState: State, _ newState: S
 actor SubscribersCoordinator<T> {
     /// A dictionary of subscribers, stored by unique keys.
     private var subscribers: [String: T] = [:]
-    
+
     /// Adds a subscriber to the coordinator.
     ///
     /// - Parameters:
@@ -35,14 +35,14 @@ actor SubscribersCoordinator<T> {
         subscribers[key] = subscriber
         return key
     }
-    
+
     /// Removes a subscriber for the given key.
     ///
     /// - Parameter key: The key identifying the subscriber to be removed.
     func removeSubscriber(forKey key: String) {
         subscribers.removeValue(forKey: key)
     }
-    
+
     /// Retrieves all the subscribers currently stored in the coordinator.
     ///
     /// - Returns: A collection of all subscribers.

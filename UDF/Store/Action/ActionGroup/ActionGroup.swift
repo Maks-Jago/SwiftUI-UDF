@@ -15,16 +15,15 @@ import Foundation
 /// This is useful when multiple actions need to be dispatched or handled together.
 /// It provides various methods to append, insert, and manipulate actions within the group.
 public struct ActionGroup: Action {
-    
     /// An array of actions contained in this group.
     /// The internal `_actions` array is mapped to extract the underlying actions.
     public var actions: [any Action] {
-        _actions.map { $0.value }
+        _actions.map(\.value)
     }
-    
+
     /// The internal storage of actions. Each action is wrapped in an `InternalAction` object.
     var _actions: [InternalAction]
-    
+
     /// Initializes an `ActionGroup` with a single action.
     ///
     /// - Parameters:
@@ -44,10 +43,10 @@ public struct ActionGroup: Action {
                 fileName: fileName,
                 functionName: functionName,
                 lineNumber: lineNumber
-            )
+            ),
         ]
     }
-    
+
     /// Initializes an `ActionGroup` with an array of actions.
     ///
     /// - Parameters:
@@ -70,21 +69,21 @@ public struct ActionGroup: Action {
             )
         }
     }
-    
+
     /// Initializes an `ActionGroup` using a result builder.
     ///
     /// - Parameter builder: A closure that returns an `ActionGroup`.
     public init(@ActionGroupBuilder _ builder: () -> ActionGroup) {
         self = builder()
     }
-    
+
     /// Internal initializer that accepts an array of `InternalAction`.
     ///
     /// - Parameter internalActions: An array of `InternalAction`.
     init(internalActions: [InternalAction]) {
         _actions = internalActions
     }
-    
+
     /// Initializes an empty `ActionGroup`.
     public init() {
         _actions = []
@@ -97,23 +96,22 @@ extension ActionGroup: CustomDebugStringConvertible {
     public var debugDescription: String {
         """
         ActionGroup {
-                        \(_actions.map(\.debugDescription).joined(separator: "\n\t\t\t\t") )
+                        \(_actions.map(\.debugDescription).joined(separator: "\n\t\t\t\t"))
         }
         """
     }
 }
 
 // MARK: - Equatable
-extension ActionGroup {
+public extension ActionGroup {
     /// Compares two `ActionGroup` instances for equality.
-    public static func == (lhs: ActionGroup, rhs: ActionGroup) -> Bool {
+    static func == (lhs: ActionGroup, rhs: ActionGroup) -> Bool {
         lhs._actions == rhs._actions
     }
 }
 
 // MARK: - Append Actions
-extension ActionGroup {
-    
+public extension ActionGroup {
     /// Appends a single action to the group.
     ///
     /// - Parameters:
@@ -121,7 +119,7 @@ extension ActionGroup {
     ///   - fileName: The name of the file where this action is appended. Defaults to the current file.
     ///   - functionName: The name of the function where this action is appended. Defaults to the current function.
     ///   - lineNumber: The line number where this action is appended. Defaults to the current line.
-    public mutating func append(
+    mutating func append(
         action: some Action,
         fileName: String = #file,
         functionName: String = #function,
@@ -136,7 +134,7 @@ extension ActionGroup {
             )
         )
     }
-    
+
     /// Appends multiple actions to the group.
     ///
     /// - Parameters:
@@ -144,7 +142,7 @@ extension ActionGroup {
     ///   - fileName: The name of the file where these actions are appended. Defaults to the current file.
     ///   - functionName: The name of the function where these actions are appended. Defaults to the current function.
     ///   - lineNumber: The line number where these actions are appended. Defaults to the current line.
-    public mutating func append(
+    mutating func append(
         actions: [any Action],
         fileName: String = #file,
         functionName: String = #function,
@@ -164,8 +162,7 @@ extension ActionGroup {
 }
 
 // MARK: - Insert Actions
-extension ActionGroup {
-    
+public extension ActionGroup {
     /// Inserts a single action at a specified position in the group.
     ///
     /// - Parameters:
@@ -174,7 +171,7 @@ extension ActionGroup {
     ///   - fileName: The name of the file where this action is inserted. Defaults to the current file.
     ///   - functionName: The name of the function where this action is inserted. Defaults to the current function.
     ///   - lineNumber: The line number where this action is inserted. Defaults to the current line.
-    public mutating func insert(
+    mutating func insert(
         action: some Action,
         at: Int = 0,
         fileName: String = #file,

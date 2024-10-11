@@ -17,7 +17,6 @@ import Foundation
 /// the use of a declarative syntax to define middleware instances and types within a `buildBlock`.
 @resultBuilder
 public enum MiddlewareBuilder<State: AppReducer> {
-    
     /// Combines multiple `MiddlewareWrapper` components into a single array.
     ///
     /// - Parameter components: Variadic list of `MiddlewareWrapper` components.
@@ -25,7 +24,7 @@ public enum MiddlewareBuilder<State: AppReducer> {
     public static func buildBlock(_ components: MiddlewareWrapper<State>...) -> [MiddlewareWrapper<State>] {
         components.map { $0 }
     }
-    
+
     /// Wraps a middleware instance in a `MiddlewareWrapper`.
     ///
     /// - Parameter expression: An instance of a middleware.
@@ -33,7 +32,7 @@ public enum MiddlewareBuilder<State: AppReducer> {
     public static func buildExpression(_ expression: some Middleware<State>) -> MiddlewareWrapper<State> {
         .init(instance: expression)
     }
-    
+
     /// Wraps a middleware type in a `MiddlewareWrapper`.
     ///
     /// - Parameter expression: A type of middleware conforming to `Middleware`.
@@ -49,13 +48,12 @@ public enum MiddlewareBuilder<State: AppReducer> {
 /// This allows for a flexible way to register middleware in the UDF architecture, supporting both
 /// instantiated and non-instantiated middleware components.
 public struct MiddlewareWrapper<State: AppReducer> {
-    
     /// An optional instance of the middleware.
     var instance: (any Middleware<State>)?
-    
+
     /// The type of the middleware.
     var type: any Middleware<State>.Type
-    
+
     /// Initializes the wrapper with an instance of a middleware.
     ///
     /// - Parameter instance: An instance of a middleware.
@@ -63,7 +61,7 @@ public struct MiddlewareWrapper<State: AppReducer> {
         self.instance = instance
         self.type = Swift.type(of: instance)
     }
-    
+
     /// Initializes the wrapper with a middleware type.
     ///
     /// - Parameter type: A middleware type conforming to `Middleware`.

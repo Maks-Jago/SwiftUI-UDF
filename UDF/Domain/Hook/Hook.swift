@@ -21,7 +21,7 @@ public struct Hook<State: AppReducer> {
     let condition: (_ state: State) -> Bool
     /// The block to be executed when the condition is met.
     let block: (_ store: EnvironmentStore<State>) -> Void
-    
+
     /// Initializes a new `Hook`.
     /// - Parameters:
     ///   - id: A unique identifier for the hook.
@@ -39,7 +39,7 @@ public struct Hook<State: AppReducer> {
         self.condition = condition
         self.block = block
     }
-    
+
     /// A static method to create a new `Hook`.
     /// - Parameters:
     ///   - id: A unique identifier for the hook.
@@ -60,7 +60,7 @@ public struct Hook<State: AppReducer> {
             block: block
         )
     }
-    
+
     /// Creates a one-time `Hook` that executes its block only once when the condition is met.
     /// - Parameters:
     ///   - id: A unique identifier for the hook.

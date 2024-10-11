@@ -18,19 +18,18 @@ import SwiftUI
 /// It uses `@dynamicMemberLookup` to provide a convenient syntax for accessing and modifying nested state in the reducer hierarchy.
 @dynamicMemberLookup
 public class ReducerReference<AppState: AppReducer, Reducer: Reducible> {
-    
     /// The underlying reducer that this reference points to.
     private(set) var reducer: Reducer
-    
+
     /// A closure that handles the dispatching of actions.
     var dispatcher: (any Action) -> Void
-    
+
     /// Provides a projected value, allowing access to the reducer.
     public var projectedValue: Reducer {
         get { self.reducer }
         set { self.reducer = newValue }
     }
-    
+
     /// Initializes a new `ReducerReference` with the specified reducer and dispatcher.
     ///
     /// - Parameters:
@@ -40,7 +39,7 @@ public class ReducerReference<AppState: AppReducer, Reducer: Reducible> {
         self.reducer = reducer
         self.dispatcher = dispatcher
     }
-    
+
     /// Provides dynamic access to nested reducers within the referenced reducer.
     ///
     /// - Parameter keyPath: A key path to a nested reducer within the referenced reducer.
@@ -48,35 +47,38 @@ public class ReducerReference<AppState: AppReducer, Reducer: Reducible> {
     public subscript<R: Reducible>(dynamicMember keyPath: KeyPath<Reducer, R>) -> ReducerReference<AppState, R> {
         .init(reducer: reducer[keyPath: keyPath], dispatcher: dispatcher)
     }
-    
+
     /// Provides dynamic access to a `BindableReducer` within the referenced reducer.
     ///
     /// - Parameter keyPath: A writable key path to a `BindableReducer` within the referenced reducer.
     /// - Returns: A `BindableReducerReference` for the specified nested `BindableReducer`.
-    public subscript<C: BindableContainer, R: Reducible>(dynamicMember keyPath: WritableKeyPath<Reducer, BindableReducer<C, R>>) -> BindableReducerReference<AppState, C, R> {
+    public subscript<
+        C: BindableContainer,
+        R: Reducible
+    >(dynamicMember keyPath: WritableKeyPath<Reducer, BindableReducer<C, R>>) -> BindableReducerReference<AppState, C, R> {
         BindableReducerReference(reducer: reducer[keyPath: keyPath], dispatcher: dispatcher)
     }
-    
+
     /// Provides dynamic access to the `Scope` of a nested reducer.
     ///
     /// - Parameter keyPath: A key path to a nested reducer within the referenced reducer.
     /// - Returns: A `Scope` representing the state of the nested reducer.
-    public subscript<R: Reducible>(dynamicMember keyPath: KeyPath<Reducer, R>) -> Scope {
+    public subscript(dynamicMember keyPath: KeyPath<Reducer, some Reducible>) -> Scope {
         ReducerScope(reducer: reducer[keyPath: keyPath])
     }
 }
 
 // MARK: - Extensions for Forms
 
-extension ReducerReference where Reducer: Form {
-    
+public extension ReducerReference where Reducer: Form {
     /// Binds a property of the referenced reducer to a SwiftUI view using a key path.
     ///
-    /// This allows direct binding of form fields to SwiftUI views. When the bound property is updated, an `UpdateFormField` action is dispatched.
+    /// This allows direct binding of form fields to SwiftUI views. When the bound property is updated, an `UpdateFormField` action is
+    /// dispatched.
     ///
     /// - Parameter keyPath: A writable key path to a property of the reducer.
     /// - Returns: A `Binding` that allows the property to be directly modified in SwiftUI.
-    public subscript<T: Equatable>(dynamicMember keyPath: WritableKeyPath<Reducer, T>) -> Binding<T> {
+    subscript<T: Equatable>(dynamicMember keyPath: WritableKeyPath<Reducer, T>) -> Binding<T> {
         Binding(
             get: { self.reducer[keyPath: keyPath] },
             set: { value in

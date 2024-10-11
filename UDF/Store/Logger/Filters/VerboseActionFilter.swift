@@ -13,10 +13,9 @@ import Foundation
 
 /// An action filter that includes all actions, regardless of their type or properties.
 public struct VerboseActionFilter: ActionFilter {
-    
     /// Creates a new instance of `VerboseActionFilter`.
     public init() {}
-    
+
     /// Determines whether a given action should be included.
     ///
     /// - Parameter action: The action to be evaluated.

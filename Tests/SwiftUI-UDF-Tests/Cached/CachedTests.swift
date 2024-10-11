@@ -5,17 +5,16 @@
 //  Created by Max Kuznetsov on 30.03.2022.
 //
 
-import XCTest
-@testable import UDF
 import OrderedCollections
+@testable import UDF
 import UDFXCTest
+import XCTest
 
-fileprivate extension Actions {
+private extension Actions {
     struct ResetCache: Action {}
 }
 
 class CachedTests: XCTestCase {
-
     struct Item: Equatable, Codable, Identifiable {
         struct ID: Hashable, Codable, Equatable {
             var value: Int
@@ -61,7 +60,7 @@ class CachedTests: XCTestCase {
     func testItemsCaching() async {
         var store = await XCTestStore(initial: AppState())
 
-        let items = (0...3).map { Item(id: .init(value: $0)) }
+        let items = (0 ... 3).map { Item(id: .init(value: $0)) }
         await store.dispatch(Actions.DidLoadItems(items: items, id: "items"))
 
         var isEmpty = await store.state.nestedForm.items.isEmpty
@@ -83,7 +82,7 @@ class CachedTests: XCTestCase {
 
     func testResetCache() async {
         let store = await XCTestStore(initial: AppState())
-        let items = (0...3).map { Item(id: .init(value: $0)) }
+        let items = (0 ... 3).map { Item(id: .init(value: $0)) }
         await store.dispatch(Actions.DidLoadItems(items: items, id: "items"))
 
         var isEmpty = await store.state.nestedForm.items.isEmpty
@@ -126,7 +125,7 @@ class CachedTests: XCTestCase {
         var isEmpty = await store.state.nestedForm.byId.isEmpty
         XCTAssertFalse(isEmpty)
 
-        await store.dispatch(Actions.DeleteItem(item: try XCTUnwrap(items.first)))
+        try await store.dispatch(Actions.DeleteItem(item: XCTUnwrap(items.first)))
         isEmpty = await store.state.nestedForm.byId.isEmpty
 
         XCTAssertTrue(isEmpty)

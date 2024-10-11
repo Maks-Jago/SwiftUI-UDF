@@ -18,34 +18,36 @@ import Foundation
 @propertyWrapper
 @dynamicMemberLookup
 public final class SourceOfTruth<AppState: AppReducer> {
-    
     /// The current value of the application state.
     public var wrappedValue: AppState
-    
+
     /// A reference to the store that holds and manages the application state.
     private unowned var store: Optional<any Store<AppState>>
-    
+
     /// Initializes the `SourceOfTruth` with the given state and store.
     /// - Parameters:
     ///   - wrappedValue: The initial state of the application.
     ///   - store: An optional reference to the store managing the application state.
-    init(wrappedValue: AppState, store: Optional<any Store<AppState>>) {
+    init(wrappedValue: AppState, store: (any Store<AppState>)?) {
         self.wrappedValue = wrappedValue
         self.store = store
     }
-    
+
     /// Provides a reference to the `SourceOfTruth`.
     public var projectedValue: SourceOfTruth<AppState> { self }
-    
+
     /// Provides dynamic member lookup for `BindableReducer` properties within the `AppState`.
     /// - Parameter keyPath: A key path to a `BindableReducer` in the application state.
     /// - Returns: A `BindableReducerReference` to the specified `BindableReducer`.
-    public subscript<C: BindableContainer, R: Reducible>(dynamicMember keyPath: WritableKeyPath<AppState, BindableReducer<C, R>>) -> BindableReducerReference<AppState, C, R> {
+    public subscript<
+        C: BindableContainer,
+        R: Reducible
+    >(dynamicMember keyPath: WritableKeyPath<AppState, BindableReducer<C, R>>) -> BindableReducerReference<AppState, C, R> {
         BindableReducerReference(reducer: wrappedValue[keyPath: keyPath]) { [unowned store] action in
             store?.dispatch(action, priority: .userInteractive)
         }
     }
-    
+
     /// Provides dynamic member lookup for `Reducer` properties within the `AppState`.
     /// - Parameter keyPath: A key path to a `Reducer` in the application state.
     /// - Returns: A `ReducerReference` to the specified `Reducer`.
@@ -54,11 +56,11 @@ public final class SourceOfTruth<AppState: AppReducer> {
             store?.dispatch(action, priority: .userInteractive)
         }
     }
-    
+
     /// Provides dynamic member lookup for `Scope` properties within the `AppState`.
     /// - Parameter keyPath: A key path to a `Reducer` in the application state.
     /// - Returns: A `Scope` representing the specified `Reducer`.
-    public subscript<R: Reducible>(dynamicMember keyPath: KeyPath<AppState, R>) -> Scope {
+    public subscript(dynamicMember keyPath: KeyPath<AppState, some Reducible>) -> Scope {
         ReducerScope(reducer: wrappedValue[keyPath: keyPath])
     }
 }

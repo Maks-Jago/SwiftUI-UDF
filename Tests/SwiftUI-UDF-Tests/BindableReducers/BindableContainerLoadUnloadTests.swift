@@ -1,11 +1,10 @@
 
-import XCTest
-@testable import UDF
 import SwiftUI
+@testable import UDF
 import UDFXCTest
+import XCTest
 
 final class BindableContainerLoadUnloadTests: XCTestCase {
-
     struct Item: Identifiable {
         struct ID: Hashable {
             var value: Int
@@ -17,7 +16,6 @@ final class BindableContainerLoadUnloadTests: XCTestCase {
     struct ItemsForm: UDF.Form {}
 
     struct AppState: AppReducer {
-
         @BindableReducer(ItemsForm.self, bindedTo: ItemsContainer.self)
         fileprivate var itemsForm
     }
@@ -41,7 +39,7 @@ final class BindableContainerLoadUnloadTests: XCTestCase {
 
     func test_WhenBindableContainerUnloaded_BindableReducerCountShouldBeEqual0() async throws {
         let store = await XCTestStore(initial: AppState())
-        
+
         var bindedReducersCount = try await XCTUnwrapAsync(await store.state.itemsForm).reducers.count
         XCTAssertEqual(bindedReducersCount, 0)
 
@@ -51,15 +49,14 @@ final class BindableContainerLoadUnloadTests: XCTestCase {
         XCTAssertEqual(bindedReducersCount, 1)
 
         await store.dispatch(Actions._OnContainerDidUnLoad(containerType: ItemsContainer.self, id: .init(value: 1)))
-        
+
         bindedReducersCount = try await XCTUnwrapAsync(await store.state.itemsForm).reducers.count
         XCTAssertEqual(bindedReducersCount, 0)
     }
 }
 
 // MARK: Container
-fileprivate extension BindableContainerLoadUnloadTests {
-
+private extension BindableContainerLoadUnloadTests {
     struct ItemsContainer: BindableContainer {
         typealias ContainerComponent = ItemsComponent
 
@@ -75,9 +72,7 @@ fileprivate extension BindableContainerLoadUnloadTests {
     }
 
     struct ItemsComponent: Component {
-        struct Props {
-
-        }
+        struct Props {}
 
         var props: Props
 

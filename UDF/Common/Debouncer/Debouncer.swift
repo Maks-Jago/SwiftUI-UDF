@@ -20,22 +20,22 @@ import Foundation
 final class Debouncer<T> {
     /// The latest received value.
     private(set) var value: T?
-    
+
     /// Timestamp of the latest value received.
-    private var valueTimestamp: Date = Date()
-    
+    private var valueTimestamp: Date = .init()
+
     /// The debounce interval.
     private var interval: TimeInterval
-    
+
     /// The queue on which debounce operations are performed.
     private var queue: DispatchQueue
-    
+
     /// Callbacks to be executed when the debounce interval passes.
-    private var callbacks: [(T) -> ()] = []
-    
+    private var callbacks: [(T) -> Void] = []
+
     /// The work item used to manage debounce delays.
     private var debounceWorkItem: DispatchWorkItem = DispatchWorkItem {}
-    
+
     /// Initializes a new `Debouncer` with the specified interval and dispatch queue.
     ///
     /// - Parameters:
@@ -45,7 +45,7 @@ final class Debouncer<T> {
         self.interval = interval
         self.queue = queue
     }
-    
+
     /// Receives a new value and resets the debounce timer.
     ///
     /// - Parameter value: The value to be debounced.
@@ -53,18 +53,17 @@ final class Debouncer<T> {
         self.value = value
         dispatchDebounce()
     }
-    
+
     /// Adds a callback to be executed when the debounce interval passes.
     ///
     /// - Parameter throttled: The callback to execute with the debounced value.
-    func on(throttled: @escaping (T) -> ()) {
+    func on(throttled: @escaping (T) -> Void) {
         self.callbacks.append(throttled)
     }
 }
 
 // MARK: - Helper Methods
 private extension Debouncer {
-    
     /// Dispatches the debounce work item to run after the specified interval.
     func dispatchDebounce() {
         self.valueTimestamp = Date()
@@ -74,14 +73,14 @@ private extension Debouncer {
         }
         queue.asyncAfter(deadline: .now() + interval, execute: debounceWorkItem)
     }
-    
+
     /// Called when the debounce interval has passed, executing the stored callbacks.
     func onDebounce() {
-        if (Date().timeIntervalSince(self.valueTimestamp) > interval) {
+        if Date().timeIntervalSince(self.valueTimestamp) > interval {
             sendValue()
         }
     }
-    
+
     /// Executes all callbacks with the debounced value.
     func sendValue() {
         if let value = self.value {

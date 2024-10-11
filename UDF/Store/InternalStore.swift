@@ -5,8 +5,8 @@
 //  Created by Max Kuznetsov on 26.10.2022.
 //
 
-import Foundation
 import Combine
+import Foundation
 import SwiftUI
 
 actor InternalStore<State: AppReducer>: Store {
@@ -115,7 +115,6 @@ private extension InternalStore {
 
 // MARK: Notify Methods
 private extension InternalStore {
-
     func notifyMiddlewares(_ actions: [InternalAction], oldState: Box<State>, newState: Box<State>) async {
         for middleware in middlewares {
             switch middleware {
@@ -131,14 +130,16 @@ private extension InternalStore {
         }
     }
 
-    func notifyReducible<CR: ReducibleMiddleware>(middleware: CR, actions: [InternalAction], newState: Box<State>) async where CR.State == State {
+    func notifyReducible<CR: ReducibleMiddleware>(middleware: CR, actions: [InternalAction], newState: Box<State>) async
+        where CR.State == State
+    {
         let status = middleware.status(for: newState.value)
 
         await safetyCall(queue: middleware.queue) {
             if status == .suspend {
                 middleware.cancelAll()
             } else {
-                actions.forEach { action in
+                for action in actions {
                     middleware.reduce(action.value, for: newState.value)
                 }
             }
@@ -157,7 +158,9 @@ private extension InternalStore {
         }
     }
 
-    func notifyObservable<CO: ObservableMiddleware>(middleware: CO, oldState: Box<State>, newState: Box<State>) async where CO.State == State {
+    func notifyObservable<CO: ObservableMiddleware>(middleware: CO, oldState: Box<State>, newState: Box<State>) async
+        where CO.State == State
+    {
         let oldScope = middleware.scope(for: oldState.value)
         let newScope = middleware.scope(for: newState.value)
 
@@ -184,7 +187,7 @@ private extension InternalStore {
     }
 }
 
-fileprivate func safetyCall(queue: DispatchQueue, block: @Sendable @escaping () -> Void) async {
+private func safetyCall(queue: DispatchQueue, block: @Sendable @escaping () -> Void) async {
     await withUnsafeContinuation { continuation in
         if queue == .main {
             queue.async {

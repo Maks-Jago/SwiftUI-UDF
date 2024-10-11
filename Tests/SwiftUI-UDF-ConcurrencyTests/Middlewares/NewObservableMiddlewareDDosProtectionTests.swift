@@ -1,8 +1,8 @@
-import XCTest
-@testable import UDF
 import Combine
+@testable import UDF
+import XCTest
 
-fileprivate extension Actions {
+private extension Actions {
     struct SendMessage: Action {
         var message: String
         var id: AnyHashable? = nil
@@ -10,7 +10,6 @@ fileprivate extension Actions {
 }
 
 final class NewObservableMiddlewareDDosProtectionTests: XCTestCase {
-
     struct AppState: AppReducer {
         var testForm = TestForm()
         var testFlow = TestFlow()
@@ -46,9 +45,7 @@ final class NewObservableMiddlewareDDosProtectionTests: XCTestCase {
     }
 
     class SendMessageMiddleware: BaseObservableMiddleware<AppState> {
-        struct Environment {
-
-        }
+        struct Environment {}
 
         var environment: Environment!
 
@@ -71,7 +68,7 @@ final class NewObservableMiddlewareDDosProtectionTests: XCTestCase {
             observeCount += 1
 
             switch state.testFlow {
-            case .sending(let message):
+            case let .sending(message):
                 execute(ServiceEffect(title: message, number: observeCount), cancellation: "service")
 
             default:

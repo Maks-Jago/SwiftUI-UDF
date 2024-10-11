@@ -14,7 +14,8 @@ import Foundation
 /// A protocol that defines an `isEqual` method for checking equality between two instances of `IsEquatable`.
 ///
 /// `IsEquatable` allows objects of different types that conform to it to be compared for equality in a type-safe manner.
-/// This protocol is particularly useful in cases where you need to compare objects for equality without knowing their exact type at compile-time.
+/// This protocol is particularly useful in cases where you need to compare objects for equality without knowing their exact type at
+/// compile-time.
 ///
 /// ## Example
 /// ```swift

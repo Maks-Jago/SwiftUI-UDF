@@ -45,7 +45,7 @@ extension Form {
         case let action as Actions.UpdateFormField<Self>:
             // Assigns the new value to the form field using the action's keyPath
             action.assignToForm(&self)
-            
+
         default:
             break
         }

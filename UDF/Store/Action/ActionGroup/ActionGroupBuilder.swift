@@ -16,7 +16,6 @@ import Foundation
 /// converting them into internal actions that can be processed by the UDF framework.
 @resultBuilder
 public enum ActionGroupBuilder {
-    
     /// Converts an array of `Equatable` elements to an array of `InternalAction`.
     ///
     /// - Parameters:
@@ -31,24 +30,23 @@ public enum ActionGroupBuilder {
         functionName: String = #function,
         lineNumber: Int = #line
     ) -> [InternalAction] {
-        
         actions.compactMap {
-            switch ($0) {
+            switch $0 {
             case let action as InternalAction:
-                return action
+                action
             case let action as any Action:
-                return InternalAction(
+                InternalAction(
                     action,
                     fileName: fileName,
                     functionName: functionName,
                     lineNumber: lineNumber
                 )
             default:
-                return nil
+                nil
             }
         }
     }
-    
+
     /// Constructs an array of `Equatable` elements from an array of arrays.
     ///
     /// - Parameters:
@@ -63,7 +61,6 @@ public enum ActionGroupBuilder {
         functionName: String = #function,
         lineNumber: Int = #line
     ) -> [any Equatable] {
-        
         let actions = components.flatMap { $0 }
         return toInternalActions(
             actions,
@@ -72,7 +69,7 @@ public enum ActionGroupBuilder {
             lineNumber: lineNumber
         )
     }
-    
+
     /// Constructs an array of `Equatable` elements from variadic components.
     ///
     /// - Parameters:
@@ -95,7 +92,7 @@ public enum ActionGroupBuilder {
             lineNumber: lineNumber
         )
     }
-    
+
     /// Converts a single action expression into an array of `Equatable`.
     ///
     /// - Parameters:
@@ -116,10 +113,10 @@ public enum ActionGroupBuilder {
                 fileName: fileName,
                 functionName: functionName,
                 lineNumber: lineNumber
-            )
+            ),
         ]
     }
-    
+
     /// Handles a `Void` expression, returning an empty array.
     ///
     /// - Parameter expression: A `Void` expression.
@@ -127,15 +124,15 @@ public enum ActionGroupBuilder {
     public static func buildExpression(_ expression: Void) -> [any Equatable] {
         []
     }
-    
+
     /// Converts an optional `Equatable` expression into an array.
     ///
     /// - Parameter expression: An optional `Equatable` expression.
     /// - Returns: An array containing the unwrapped expression, if available.
     public static func buildExpression(_ expression: (any Equatable)?) -> [any Equatable] {
-        [expression].compactMap({ $0 })
+        [expression].compactMap { $0 }
     }
-    
+
     /// Handles an optional component, returning either the component or an empty array.
     ///
     /// - Parameter component: An optional array of `Equatable`.
@@ -143,7 +140,7 @@ public enum ActionGroupBuilder {
     public static func buildOptional(_ component: [any Equatable]?) -> [any Equatable] {
         component ?? []
     }
-    
+
     /// Handles the first component in a conditional statement.
     ///
     /// - Parameter component: An array of `Equatable`.
@@ -151,7 +148,7 @@ public enum ActionGroupBuilder {
     public static func buildEither(first component: [any Equatable]) -> [any Equatable] {
         component
     }
-    
+
     /// Handles the second component in a conditional statement.
     ///
     /// - Parameter component: An array of `Equatable`.
@@ -159,7 +156,7 @@ public enum ActionGroupBuilder {
     public static func buildEither(second component: [any Equatable]) -> [any Equatable] {
         component
     }
-    
+
     /// Handles components with limited availability, such as those behind a compiler flag.
     ///
     /// - Parameter component: An array of `Equatable`.
@@ -167,7 +164,7 @@ public enum ActionGroupBuilder {
     public static func buildLimitedAvailability(_ component: [any Equatable]) -> [any Equatable] {
         component
     }
-    
+
     /// Builds the final result of the builder and wraps it in an `ActionGroup`.
     ///
     /// - Parameters:
@@ -182,7 +179,6 @@ public enum ActionGroupBuilder {
         functionName: String = #function,
         lineNumber: Int = #line
     ) -> ActionGroup {
-        
         ActionGroup(
             internalActions: toInternalActions(
                 component,

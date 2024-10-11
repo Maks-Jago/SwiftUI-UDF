@@ -56,7 +56,8 @@ import Foundation
 /// ```
 ///
 /// In this example:
-/// - `FaqFlow` is an `IdentifiableFlow` that defines different states (`none`, `loadingFaqItems`) to represent the flow of fetching FAQ items.
+/// - `FaqFlow` is an `IdentifiableFlow` that defines different states (`none`, `loadingFaqItems`) to represent the flow of fetching FAQ
+/// items.
 /// - The `reduce(_:)` method handles various actions:
 ///   - `Actions.Error`: Resets the flow to `none`.
 ///   - `Actions.LoadPage`: Updates the state to `loadingFaqItems` with the specified page number.

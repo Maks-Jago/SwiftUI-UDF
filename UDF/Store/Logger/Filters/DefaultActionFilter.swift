@@ -14,10 +14,9 @@ import Foundation
 /// An action filter that includes actions based on their `silent` property.
 /// If the action is marked as `silent`, it will be excluded from filtering; otherwise, it will be included.
 public struct DefaultActionFilter: ActionFilter {
-    
     /// Initializes a new `DefaultActionFilter`.
     public init() {}
-    
+
     /// Determines whether a given action should be included.
     ///
     /// - Parameter action: The action to be evaluated.

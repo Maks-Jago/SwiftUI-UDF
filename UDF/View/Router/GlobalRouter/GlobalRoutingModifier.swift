@@ -34,16 +34,16 @@ import SwiftUI
 ///   set up navigation destinations for the specified routes.
 struct GlobalRoutingModifier<R: Routing>: ViewModifier where R.Route: Hashable {
     @Environment(\.globalRouter) var globalRouter
-    
+
     var router: Router<R>
-    
+
     /// Initializes the modifier with the specified router.
     ///
     /// - Parameter router: The router to be added to the global navigation system.
     init(router: Router<R>) {
         self.router = router
     }
-    
+
     /// Modifies the content view to add the router to the global router and set up navigation destinations.
     ///
     /// - Parameter content: The content view to be modified.

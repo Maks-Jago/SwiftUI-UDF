@@ -1,10 +1,9 @@
-import XCTest
-@testable import UDF
 import Combine
+@testable import UDF
 import UDFXCTest
+import XCTest
 
 final class MiddlewareCancellationTests: XCTestCase {
-
     struct AppState: AppReducer {
         var middlewareFlow = MiddlewareFlow()
         var runForm = RunForm()
@@ -20,7 +19,8 @@ final class MiddlewareCancellationTests: XCTestCase {
             case let action as Actions.DidCancelEffect where action.cancellation == ObservableMiddlewareToCancel.Сancellation.message:
                 self = .didCancel
 
-            case let action as Actions.DidCancelEffect where action.cancellation == ReducibleMiddlewareToCancel.Сancellation.reducibleMessage:
+            case let action as Actions.DidCancelEffect
+                where action.cancellation == ReducibleMiddlewareToCancel.Сancellation.reducibleMessage:
                 self = .didCancel
 
             case let action as Actions.DidCancelEffect where action.cancellation == ObservableRunMiddlewareToCancel.Сancellation.runMessage:
@@ -105,19 +105,15 @@ final class MiddlewareCancellationTests: XCTestCase {
     }
 }
 
-fileprivate extension Actions {
-
+private extension Actions {
     struct Loading: Action {}
     struct CancelLoading: Action {}
 }
 
 // MARK: - Middlewares
 private extension MiddlewareCancellationTests {
-
     final class ObservableMiddlewareToCancel: BaseObservableMiddleware<AppState> {
-        struct Environment {
-
-        }
+        struct Environment {}
 
         var environment: Environment!
 
@@ -155,9 +151,7 @@ private extension MiddlewareCancellationTests {
     }
 
     final class ObservableRunMiddlewareToCancel: BaseObservableMiddleware<AppState> {
-        struct Environment {
-
-        }
+        struct Environment {}
 
         var environment: Environment!
 
@@ -168,7 +162,6 @@ private extension MiddlewareCancellationTests {
         static func buildTestEnvironment(for store: some Store<AppState>) -> Environment {
             Environment()
         }
-
 
         enum Сancellation: CaseIterable {
             case runMessage
@@ -207,9 +200,7 @@ private extension MiddlewareCancellationTests {
     }
 
     final class ReducibleMiddlewareToCancel: BaseReducibleMiddleware<AppState> {
-        struct Environment {
-
-        }
+        struct Environment {}
 
         var environment: Environment!
 

@@ -18,7 +18,7 @@ public extension Hashable {
     ///   - lhs: The `AnyHashable` instance.
     ///   - rhs: The `Hashable` instance.
     /// - Returns: A Boolean value indicating whether the two values are equal.
-    static func ==(lhs: AnyHashable, rhs: Self) -> Bool {
+    static func == (lhs: AnyHashable, rhs: Self) -> Bool {
         lhs == AnyHashable(rhs)
     }
 }
@@ -30,7 +30,7 @@ public extension Hashable {
     ///   - lhs: The `Hashable` instance.
     ///   - rhs: The `AnyHashable` instance.
     /// - Returns: A Boolean value indicating whether the two values are equal.
-    static func ==(lhs: Self, rhs: AnyHashable) -> Bool {
+    static func == (lhs: Self, rhs: AnyHashable) -> Bool {
         AnyHashable(lhs) == rhs
     }
 }
@@ -42,12 +42,12 @@ public extension Hashable {
     ///   - lhs: An optional `AnyHashable` instance.
     ///   - rhs: The `Hashable` instance.
     /// - Returns: A Boolean value indicating whether the two values are equal.
-    static func ==(lhs: AnyHashable?, rhs: Self) -> Bool {
+    static func == (lhs: AnyHashable?, rhs: Self) -> Bool {
         switch lhs {
-        case .some(let value):
-            return value == rhs
+        case let .some(value):
+            value == rhs
         default:
-            return false
+            false
         }
     }
 }
@@ -59,12 +59,12 @@ public extension Hashable {
     ///   - lhs: The `Hashable` instance.
     ///   - rhs: An optional `AnyHashable` instance.
     /// - Returns: A Boolean value indicating whether the two values are equal.
-    static func ==(lhs: Self, rhs: AnyHashable?) -> Bool {
+    static func == (lhs: Self, rhs: AnyHashable?) -> Bool {
         switch rhs {
-        case .some(let value):
-            return lhs == value
+        case let .some(value):
+            lhs == value
         default:
-            return false
+            false
         }
     }
 }

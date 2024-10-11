@@ -1,8 +1,8 @@
-import XCTest
-@testable import UDF
 import SwiftUI
+@testable import UDF
+import XCTest
 
-fileprivate extension Actions {
+private extension Actions {
     struct PresentAlertWithAction: Action {}
 }
 
@@ -18,7 +18,6 @@ extension AlertBuilder.AlertStyle {
 }
 
 final class AlertTests: XCTestCase {
-
     struct AppState: AppReducer {
         var form = FormWithAlert()
     }
@@ -48,9 +47,9 @@ final class AlertTests: XCTestCase {
         XCTAssertEqual(status, .dismissed)
 
         AlertBuilder.registerAlert(by: FormWithAlert.AlertId.alertWithAction) {
-            .alertWithAction({
+            .alertWithAction {
                 print("Custom alert action")
-            })
+            }
         }
 
         await store.dispatch(Actions.PresentAlertWithAction())

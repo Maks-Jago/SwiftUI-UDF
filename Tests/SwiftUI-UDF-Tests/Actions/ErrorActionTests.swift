@@ -1,8 +1,7 @@
-import XCTest
 @testable import UDF
+import XCTest
 
 final class ErrorActionTests: XCTestCase {
-
     func test_WhenErrorHasCustomCode_ErrorCodeEqualCustomCode() {
         let error = Actions.Error(error: "Some error", id: "flow_id", code: 101)
         XCTAssertEqual(error.code, 101)

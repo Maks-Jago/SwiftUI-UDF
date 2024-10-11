@@ -5,18 +5,19 @@
 //  Created by Max Kuznetsov on 23.03.2023.
 //
 
-import XCTest
 @testable import UDF
+import XCTest
 
 final class StateCopyTests: XCTestCase {
-
     private struct ConsoleLogger: ActionLogger {
         var actionFilters: [ActionFilter] = [VerboseActionFilter()]
         var actionDescriptor: ActionDescriptor = StringDescribingActionDescriptor()
 
         func log(_ action: LoggingAction, description: String) {
             print("Reduce\t\t", description)
-            print("---------------------------------------------------------------------------------------------------------------------------------------------------------------------------")
+            print(
+                "---------------------------------------------------------------------------------------------------------------------------------------------------------------------------"
+            )
         }
     }
 

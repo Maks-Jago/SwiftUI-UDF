@@ -9,8 +9,8 @@
 //
 //===----------------------------------------------------------------------===//
 
-import Foundation
 import Combine
+import Foundation
 
 /// A namespace for defining various effect-related utilities and operations.
 public enum Effects {}
@@ -25,18 +25,18 @@ public protocol Effectable: PureEffect where Output == any Action, Failure == Ne
 // MARK: - Operators
 
 public extension Effectable {
-    
     /// Filters actions emitted by the effect based on the provided condition.
     ///
     /// This operator allows filtering of the effect's output, ensuring only actions that meet the specified condition
     /// are passed downstream.
     ///
-    /// - Parameter isIncluded: A closure that takes an action of type `A` and returns a Boolean indicating whether the action should be included.
+    /// - Parameter isIncluded: A closure that takes an action of type `A` and returns a Boolean indicating whether the action should be
+    /// included.
     /// - Returns: An effect that emits only actions that satisfy the given condition.
     func filterAction<A: Action>(_ isIncluded: @escaping (A) -> Bool) -> some Effectable {
         Effects.Filter<A>(self, isIncluded)
     }
-    
+
     /// Delays the emission of actions by a specified duration.
     ///
     /// This operator introduces a delay for actions emitted by the effect, allowing you to control when actions are processed.

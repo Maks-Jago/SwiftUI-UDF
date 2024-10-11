@@ -19,17 +19,17 @@ import Foundation
 public protocol EnvironmentMiddleware<State> {
     associatedtype Environment
     associatedtype State: AppReducer
-    
+
     /// The environment instance containing dependencies required by the middleware.
     var environment: Environment! { get set }
-    
+
     /// Initializes the middleware with a store and a specific environment.
     ///
     /// - Parameters:
     ///   - store: The store that the middleware will interact with.
     ///   - environment: The environment instance to be used by the middleware.
     init(store: some Store<State>, environment: Environment)
-    
+
     /// Initializes the middleware with a store, a specific environment, and a dispatch queue.
     ///
     /// - Parameters:
@@ -37,14 +37,14 @@ public protocol EnvironmentMiddleware<State> {
     ///   - environment: The environment instance to be used by the middleware.
     ///   - queue: The dispatch queue for performing middleware operations.
     init(store: some Store<State>, environment: Environment, queue: DispatchQueue)
-    
+
     /// Builds a live environment for the middleware.
     ///
     /// This method is intended to set up an environment containing live instances of services or dependencies.
     /// - Parameter store: The store that the middleware will interact with.
     /// - Returns: A live environment instance.
     static func buildLiveEnvironment(for store: some Store<State>) -> Environment
-    
+
     /// Builds a test environment for the middleware.
     ///
     /// This method is intended to set up an environment containing mock or test instances of services or dependencies.
@@ -56,14 +56,13 @@ public protocol EnvironmentMiddleware<State> {
 // MARK: - Default Implementation for Void Environment
 
 public extension EnvironmentMiddleware where Environment == Void {
-    
     /// Provides a default implementation of `buildLiveEnvironment` when the environment type is `Void`.
     ///
     /// This allows middleware that does not require an environment to conform to `EnvironmentMiddleware`.
     /// - Parameter store: The store that the middleware will interact with.
     /// - Returns: An empty environment (`Void`).
     static func buildLiveEnvironment(for store: some Store<State>) -> Environment { () }
-    
+
     /// Provides a default implementation of `buildTestEnvironment` when the environment type is `Void`.
     ///
     /// This allows middleware that does not require an environment to conform to `EnvironmentMiddleware`.

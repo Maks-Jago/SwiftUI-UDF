@@ -9,8 +9,8 @@
 //
 //===----------------------------------------------------------------------===//
 
-import Foundation
 import Combine
+import Foundation
 
 /// A utility class that debounces user input, emitting the latest value after a specified delay.
 ///
@@ -22,15 +22,14 @@ import Combine
 /// - Parameters:
 ///   - T: The type of the value being debounced.
 final class UserInputDebouncer<T>: ObservableObject {
-    
     /// The debounced value that gets updated after the debounce delay.
     @Published var debouncedValue: T
-    
+
     /// The value that the user is inputting. Updating this triggers the debouncing process.
     @Published var value: T
-    
+
     private var cancelation: AnyCancellable!
-    
+
     /// Initializes a new `UserInputDebouncer` with a default value and debounce delay.
     ///
     /// - Parameters:
@@ -39,7 +38,7 @@ final class UserInputDebouncer<T>: ObservableObject {
     init(defaultValue: T, debounceTime: TimeInterval = 0.1) {
         value = defaultValue
         debouncedValue = defaultValue
-        
+
         cancelation = $value
             .debounce(for: .seconds(debounceTime), scheduler: DispatchQueue.main)
             .sink { [weak self] value in

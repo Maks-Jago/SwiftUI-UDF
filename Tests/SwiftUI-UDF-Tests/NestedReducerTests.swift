@@ -1,13 +1,12 @@
 
-import XCTest
-@testable import UDF
 import Combine
 import CoreLocation
 import SwiftUI
+@testable import UDF
 import UDFXCTest
+import XCTest
 
 final class NestedReducerTests: XCTestCase {
-
     struct AppState: AppReducer {
         var nested: NestedReducer = .init()
     }

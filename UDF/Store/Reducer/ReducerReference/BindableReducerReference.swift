@@ -18,8 +18,10 @@ import Foundation
 /// in applications that use UDF architecture.
 ///
 /// - Note: This class is useful for managing state associated with containers that can have multiple instances, each with its own reducer.
-public final class BindableReducerReference<AppState: AppReducer, BindedContainer: BindableContainer, Reducer: Reducible>: ReducerReference<AppState, BindableReducer<BindedContainer, Reducer>> {
-    
+public final class BindableReducerReference<AppState: AppReducer, BindedContainer: BindableContainer, Reducer: Reducible>: ReducerReference<
+    AppState,
+    BindableReducer<BindedContainer, Reducer>
+> {
     /// Initializes a new `BindableReducerReference` with the specified `BindableReducer` and action dispatcher.
     ///
     /// - Parameters:
@@ -28,7 +30,7 @@ public final class BindableReducerReference<AppState: AppReducer, BindedContaine
     override init(reducer: BindableReducer<BindedContainer, Reducer>, dispatcher: @escaping (any Action) -> Void) {
         super.init(reducer: reducer, dispatcher: dispatcher)
     }
-    
+
     /// Provides access to a specific reducer associated with a container ID.
     ///
     /// - Parameter id: The ID of the container whose reducer is to be accessed.

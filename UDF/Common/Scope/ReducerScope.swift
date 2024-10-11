@@ -15,16 +15,15 @@ import Foundation
 /// This is used to encapsulate a reducer within a specific scope, providing
 /// methods for equality checks and management of the reducer instance.
 final class ReducerScope<R: Reducible>: EquatableScope {
-    
     /// The reducer instance that this scope manages.
     var reducer: R?
-    
+
     /// Initializes a new `ReducerScope` with the provided reducer.
     /// - Parameter reducer: An optional `Reducible` instance to be managed by this scope.
     init(reducer: R?) {
         self.reducer = reducer
     }
-    
+
     /// Checks for equality between two `ReducerScope` instances.
     /// - Parameters:
     ///   - lhs: The left-hand side `ReducerScope` to compare.

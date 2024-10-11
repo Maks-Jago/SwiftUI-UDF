@@ -9,11 +9,10 @@
 //
 //===----------------------------------------------------------------------===//
 
-import Foundation
 import Combine
+import Foundation
 
 public extension Publishers {
-    
     /// Returns an `AnyPublisher` that publishes an isolated, immutable state from the given store.
     ///
     /// This method creates a publisher that captures the current state of the store in an isolated manner,

@@ -5,13 +5,12 @@
 //  Created by Max Kuznetsov on 09.09.2024.
 //
 
-import XCTest
-@testable import UDF
 import SwiftUI
+@testable import UDF
 import UDFXCTest
+import XCTest
 
 final class BindableReducersMiddlewareTests: XCTestCase {
-
     struct Item: Hashable, Identifiable {
         struct ID: Hashable {
             var value: Int
@@ -56,7 +55,6 @@ final class BindableReducersMiddlewareTests: XCTestCase {
     }
 
     struct AppState: AppReducer {
-
         @BindableReducer(ItemsForm.self, bindedTo: ItemsContainer.self)
         fileprivate var itemsForm
 
@@ -109,17 +107,14 @@ final class BindableReducersMiddlewareTests: XCTestCase {
 }
 
 // MARK: Actions
-fileprivate extension Actions {
-
+private extension Actions {
     struct LoadItem: Action {
         var id: BindableReducersMiddlewareTests.Item.ID
     }
 }
 
-
 // MARK: Container
-fileprivate extension BindableReducersMiddlewareTests {
-
+private extension BindableReducersMiddlewareTests {
     struct ItemsContainer: BindableContainer {
         typealias ContainerComponent = ItemsComponent
 
@@ -136,9 +131,7 @@ fileprivate extension BindableReducersMiddlewareTests {
     }
 
     struct ItemsComponent: Component {
-        struct Props {
-
-        }
+        struct Props {}
 
         var props: Props
 
@@ -149,8 +142,7 @@ fileprivate extension BindableReducersMiddlewareTests {
 }
 
 // MARK: Middleware
-fileprivate extension BindableReducersMiddlewareTests {
-
+private extension BindableReducersMiddlewareTests {
     final class ItemsMiddleware: BaseObservableMiddleware<AppState> {
         enum Cancellation: Hashable {
             case itemDetails(Item.ID)

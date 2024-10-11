@@ -1,10 +1,9 @@
 
-import XCTest
-@testable import UDF
 import Combine
+@testable import UDF
+import XCTest
 
 final class ConcurrencyMiddlewareCancellationTests: XCTestCase {
-
     struct AppState: AppReducer {
         var middlewareFlow = MiddlewareFlow()
         var runForm = RunForm()
@@ -65,15 +64,13 @@ final class ConcurrencyMiddlewareCancellationTests: XCTestCase {
     }
 }
 
-fileprivate extension Actions {
-
+private extension Actions {
     struct Loading: Action {}
     struct CancelLoading: Action {}
 }
 
 // MARK: - Middlewares
 private extension ConcurrencyMiddlewareCancellationTests {
-
     final class ObservableMiddlewareToCancel: BaseObservableMiddleware<AppState> {
         struct Environment {
             var loadItems: () async -> [String]
@@ -112,7 +109,6 @@ private extension ConcurrencyMiddlewareCancellationTests {
                 break
             }
         }
-
 
         struct SomeEffect<Id: Hashable>: ConcurrencyEffect {
             var id: Id

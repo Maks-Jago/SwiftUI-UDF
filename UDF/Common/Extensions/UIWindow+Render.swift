@@ -13,7 +13,6 @@ import Foundation
 import SwiftUI
 
 extension UIWindow {
-    
     /// Asynchronously renders a `Container` into a `UIWindow`.
     ///
     /// This method creates a new `UIWindow`, sets up a `UIHostingController` with the provided `container`,
@@ -22,22 +21,22 @@ extension UIWindow {
     ///
     /// - Parameter container: A SwiftUI container that conforms to the `Container` protocol.
     /// - Returns: A `UIWindow` containing the rendered container.
-    static func render<C: Container>(container: C) async -> UIWindow {
+    static func render(container: some Container) async -> UIWindow {
         await MainActor.run {
             let window = UIWindow(frame: .zero)
-            
+
             // Create a UIHostingController to host the SwiftUI container
             let viewController = UIHostingController(rootView: container)
             window.rootViewController = viewController
-            
+
             // Begin and end appearance transitions to simulate the view appearing on screen
             viewController.beginAppearanceTransition(true, animated: false)
             viewController.endAppearanceTransition()
-            
+
             // Trigger layout passes to ensure the view is rendered properly
             viewController.view.setNeedsLayout()
             viewController.view.layoutIfNeeded()
-            
+
             return window
         }
     }

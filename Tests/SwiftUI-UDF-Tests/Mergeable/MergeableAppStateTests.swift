@@ -1,9 +1,8 @@
 
-import XCTest
 @testable import UDF
+import XCTest
 
 class MergeableAppStateTests: XCTestCase {
-
     struct Item: Mergeable, Identifiable, Equatable {
         struct Id: Hashable {
             var value: Int

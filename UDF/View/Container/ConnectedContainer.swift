@@ -34,7 +34,8 @@ import SwiftUI
 /// ## Initialization:
 /// - `init(map:scope:onContainerAppear:onContainerDisappear:onContainerDidLoad:onContainerDidUnload:useHooks:)`:
 ///   Initializes the `ConnectedContainer` with closures to manage state mapping, scope, lifecycle events, and hooks.
-/// - `init<BindedContainer: BindableContainer>(...)`: Initializes a `ConnectedContainer` for a bindable container type, managing state and lifecycle events.
+/// - `init<BindedContainer: BindableContainer>(...)`: Initializes a `ConnectedContainer` for a bindable container type, managing state and
+/// lifecycle events.
 ///
 /// ## Methods:
 /// - `body`: The main view builder, responsible for creating the component and attaching lifecycle events.
@@ -45,25 +46,25 @@ import SwiftUI
 struct ConnectedContainer<C: Component, State: AppReducer>: View {
     /// A closure that maps the global store to the properties needed by the component.
     let map: (_ store: EnvironmentStore<State>) -> C.Props
-    
+
     /// A closure that defines the scope within the global state.
     let scope: (_ state: State) -> Scope
-    
+
     /// A closure executed when the container appears in the view hierarchy.
     var onContainerAppear: (EnvironmentStore<State>) -> Void
-    
+
     /// A closure executed when the container disappears from the view hierarchy.
     var onContainerDisappear: (EnvironmentStore<State>) -> Void
-    
+
     /// The container's lifecycle manager that handles loading, unloading, and hooks.
     @StateObject var containerLifecycle: ContainerLifecycle<State>
-    
+
     /// The container state that observes changes in the scoped state.
     @ObservedObject var containerState: ContainerState<State>
-    
+
     /// Provides access to the global `EnvironmentStore`.
     private var store: EnvironmentStore<State> { .global }
-    
+
     /// Initializes the `ConnectedContainer` with closures for mapping state, managing scope,
     /// handling lifecycle events, and creating hooks.
     ///
@@ -97,7 +98,7 @@ struct ConnectedContainer<C: Component, State: AppReducer>: View {
         )
         self._containerState = .init(wrappedValue: .init(store: EnvironmentStore<State>.global, scope: scope))
     }
-    
+
     /// Initializes a `ConnectedContainer` for a bindable container type, managing state and lifecycle events.
     ///
     /// - Parameters:
@@ -128,7 +129,10 @@ struct ConnectedContainer<C: Component, State: AppReducer>: View {
         self._containerLifecycle = .init(
             wrappedValue: ContainerLifecycle(
                 didLoadCommand: { store in
-                    store.dispatch(Actions._OnContainerDidLoad(containerType: containerType, id: containerId()).silent(), priority: .userInteractive)
+                    store.dispatch(
+                        Actions._OnContainerDidLoad(containerType: containerType, id: containerId()).silent(),
+                        priority: .userInteractive
+                    )
                     onContainerDidLoad(store)
                 },
                 didUnloadCommand: { store in
@@ -140,11 +144,11 @@ struct ConnectedContainer<C: Component, State: AppReducer>: View {
         )
         self._containerState = .init(wrappedValue: .init(store: EnvironmentStore<State>.global, scope: scope))
     }
-    
+
     /// The main view body that renders the component and attaches lifecycle events.
     var body: some View {
         containerLifecycle.set(didLoad: true, store: store)
-        
+
         return C(props: map(store))
             .onAppear { onContainerAppear(store) }
             .onDisappear { onContainerDisappear(store) }

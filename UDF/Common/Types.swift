@@ -13,32 +13,32 @@ import Foundation
 @_exported import OrderedCollections
 
 /// A closure that performs an action without taking any parameters.
-public typealias Command = () -> ()
+public typealias Command = () -> Void
 
 /// A closure that performs an action with a single parameter of type `T`.
-public typealias CommandWith<T> = (T) -> ()
+public typealias CommandWith<T> = (T) -> Void
 
 /// A closure that performs an action with two parameters of types `T1` and `T2`.
-public typealias CommandWith2<T1, T2> = (T1, T2) -> ()
+public typealias CommandWith2<T1, T2> = (T1, T2) -> Void
 
 /// A closure that performs an action with three parameters of types `T1`, `T2`, and `T3`.
-public typealias CommandWith3<T1, T2, T3> = (T1, T2, T3) -> ()
+public typealias CommandWith3<T1, T2, T3> = (T1, T2, T3) -> Void
 
 /// A closure that performs an action with four parameters of types `T1`, `T2`, `T3`, and `T4`.
-public typealias CommandWith4<T1, T2, T3, T4> = (T1, T2, T3, T4) -> ()
+public typealias CommandWith4<T1, T2, T3, T4> = (T1, T2, T3, T4) -> Void
 
 /// A closure that performs an action with five parameters of types `T1`, `T2`, `T3`, `T4`, and `T5`.
-public typealias CommandWith5<T1, T2, T3, T4, T5> = (T1, T2, T3, T4, T5) -> ()
+public typealias CommandWith5<T1, T2, T3, T4, T5> = (T1, T2, T3, T4, T5) -> Void
 
 /// A function that compares two equatable values for equality.
 /// - Parameters:
 ///   - lhs: The left-hand side value of the comparison.
 ///   - rhs: The right-hand side value of the comparison.
 /// - Returns: `true` if the values are equal; otherwise, `false`.
-func areEqual<Lhs: Equatable, Rhs: Equatable>(_ lhs: Lhs, _ rhs: Rhs) -> Bool {
+func areEqual<Lhs: Equatable>(_ lhs: Lhs, _ rhs: some Equatable) -> Bool {
     guard let rhsAs = rhs as? Lhs else {
         return false
     }
-    
+
     return lhs == rhsAs
 }

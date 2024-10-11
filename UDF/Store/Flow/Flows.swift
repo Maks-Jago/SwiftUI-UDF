@@ -22,7 +22,7 @@ public extension Flows {
     struct Id: Hashable, Codable {
         /// The unique string value representing the flow's identifier.
         var value: String
-        
+
         /// Initializes a new `Flows.Id` with the given string value.
         ///
         /// - Parameter value: A string representing the unique identifier of the flow.

@@ -15,13 +15,12 @@ import Foundation
 /// This is used to aggregate multiple scopes for complex state management
 /// where the combination of different scopes is necessary.
 final class CombinedScope<S1: EquatableScope, S2: EquatableScope>: EquatableScope {
-    
     /// The left-hand scope instance.
     var lhsScope: S1
-    
+
     /// The right-hand scope instance.
     var rhsScope: S2
-    
+
     /// Initializes a new `CombinedScope` with two scopes.
     /// - Parameters:
     ///   - lhs: The left-hand scope to combine.
@@ -30,7 +29,7 @@ final class CombinedScope<S1: EquatableScope, S2: EquatableScope>: EquatableScop
         lhsScope = lhs
         rhsScope = rhs
     }
-    
+
     /// Checks for equality between two `CombinedScope` instances.
     /// - Parameters:
     ///   - lhs: The left-hand side `CombinedScope` to compare.

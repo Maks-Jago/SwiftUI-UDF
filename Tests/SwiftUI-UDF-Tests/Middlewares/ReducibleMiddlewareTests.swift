@@ -1,9 +1,9 @@
 
-import XCTest
-@testable import UDF
 import Combine
+@testable import UDF
+import XCTest
 
-fileprivate extension Actions {
+private extension Actions {
     struct SendMessage: Action {
         var message: String
         var id: AnyHashable? = nil
@@ -11,7 +11,6 @@ fileprivate extension Actions {
 }
 
 class ReducibleMiddlewareTests: XCTestCase {
-
     struct AppState: AppReducer {
         var testForm = TestForm()
         var testFlow = TestFlow()
@@ -41,9 +40,7 @@ class ReducibleMiddlewareTests: XCTestCase {
     }
 
     class ServiceMiddleware: BaseReducibleMiddleware<AppState> {
-        struct Environment {
-
-        }
+        struct Environment {}
 
         var environment: Environment!
 

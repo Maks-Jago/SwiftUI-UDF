@@ -78,42 +78,42 @@ import SwiftUI
 public protocol Container<ContainerState>: View {
     associatedtype ContainerState: AppReducer
     associatedtype ContainerComponent: Component
-    
+
     /// Maps the `EnvironmentStore` to the properties required by the `ContainerComponent`.
     ///
     /// - Parameter store: The global store containing the state.
     /// - Returns: The properties (`Props`) needed by the `ContainerComponent`.
     func map(store: EnvironmentStore<ContainerState>) -> ContainerComponent.Props
-    
+
     /// Defines a scope for the `ContainerState`.
     ///
     /// - Parameter state: The state managed by the container.
     /// - Returns: A `Scope` object defining the relevant slice of the state.
     @ScopeBuilder
     func scope(for state: ContainerState) -> Scope
-    
+
     /// Called when the container's view appears.
     /// Equals to native SwiftUI View's onAppear lifecycle method.
     ///
     /// - Parameter store: The global store containing the state.
     func onContainerAppear(store: EnvironmentStore<ContainerState>)
-    
+
     /// Called when the container's view disappears.
     /// Equals to native SwiftUI View's onDisappear lifecycle method.
     ///
     /// - Parameter store: The global store containing the state.
     func onContainerDisappear(store: EnvironmentStore<ContainerState>)
-    
+
     /// Called when the container is initialized and loaded for the first time.
     ///
     /// - Parameter store: The global store containing the state.
     func onContainerDidLoad(store: EnvironmentStore<ContainerState>)
-    
+
     /// Called when the container is deinitialized and unloaded.
     ///
     /// - Parameter store: The global store containing the state.
     func onContainerDidUnload(store: EnvironmentStore<ContainerState>)
-    
+
     /// Defines hooks to be used within the container.
     ///
     /// - Returns: An array of hooks that respond to state changes or other effects.
@@ -126,19 +126,19 @@ public extension Container {
     /// Default implementation for `onContainerAppear`. Does nothing by default.
     @MainActor
     func onContainerAppear(store: EnvironmentStore<ContainerState>) {}
-    
+
     /// Default implementation for `onContainerDisappear`. Does nothing by default.
     @MainActor
     func onContainerDisappear(store: EnvironmentStore<ContainerState>) {}
-    
+
     /// Default implementation for `onContainerDidLoad`. Does nothing by default.
     @MainActor
     func onContainerDidLoad(store: EnvironmentStore<ContainerState>) {}
-    
+
     /// Default implementation for `onContainerDidUnload`. Does nothing by default.
     @MainActor
     func onContainerDidUnload(store: EnvironmentStore<ContainerState>) {}
-    
+
     /// Default implementation for `useHooks`. Returns an empty array by default.
     func useHooks() -> [Hook<ContainerState>] { [] }
 }
@@ -147,7 +147,7 @@ public extension Container {
 public extension Container {
     /// Provides access to the global `EnvironmentStore` for the container's state.
     var store: EnvironmentStore<ContainerState> { .global }
-    
+
     /// The body of the container view. Connects the `ContainerComponent` with the `ContainerState` using a `ConnectedContainer`.
     @MainActor
     var body: some View {

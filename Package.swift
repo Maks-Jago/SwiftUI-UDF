@@ -7,7 +7,7 @@ let package = Package(
     name: "SwiftUI-UDF",
     platforms: [
         .iOS(.v16),
-        .macOS(.v13)
+        .macOS(.v13),
     ],
     products: [
         .library(
@@ -17,18 +17,18 @@ let package = Package(
         .library(
             name: "UDFXCTest",
             targets: ["UDFXCTest"]
-        )
+        ),
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-collections", from: "1.1.3"),
-        .package(url: "https://github.com/urlaunched-com/Runtime", from: "2.2.6")
+        .package(url: "https://github.com/urlaunched-com/Runtime", from: "2.2.6"),
     ],
     targets: [
         .target(
             name: "UDF",
             dependencies: [
                 .product(name: "OrderedCollections", package: "swift-collections"),
-                .product(name: "Runtime", package: "Runtime")
+                .product(name: "Runtime", package: "Runtime"),
             ],
             path: "UDF"
         ),
@@ -36,7 +36,7 @@ let package = Package(
         .target(
             name: "UDFXCTest",
             dependencies: [
-                .target(name: "UDF")
+                .target(name: "UDF"),
             ],
             path: "UDFXCTest"
         ),
@@ -44,15 +44,15 @@ let package = Package(
         .testTarget(
             name: "SwiftUI-UDF-Tests",
             dependencies: [
-                .target(name: "UDFXCTest")
+                .target(name: "UDFXCTest"),
             ]
         ),
 
         .testTarget(
             name: "SwiftUI-UDF-ConcurrencyTests",
             dependencies: [
-                .target(name: "UDFXCTest")
+                .target(name: "UDFXCTest"),
             ]
-        )
+        ),
     ]
 )

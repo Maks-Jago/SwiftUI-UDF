@@ -16,10 +16,9 @@ import Foundation
 /// `ActionPriority` is used to define how important an action is in terms of its execution and interaction
 /// within the application’s state management.
 public enum ActionPriority: Sendable {
-    
     /// The default priority for actions. Used when no specific priority is needed.
     case `default`
-    
+
     /// A higher priority level, indicating that the action involves direct user interaction and should be processed promptly.
     case userInteractive
 }

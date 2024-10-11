@@ -34,7 +34,6 @@ public protocol AppReducer: Equatable, Scope {}
 
 // MARK: - AppReducer Extension
 extension AppReducer {
-    
     /// Reduces the current state by applying the provided action.
     ///
     /// This method uses `RuntimeReducing` to perform the reduction process, updating the state based on the given action.
@@ -45,7 +44,7 @@ extension AppReducer {
     mutating func reduce(_ action: some Action) -> Bool {
         RuntimeReducing.reduce(action, reducer: &self)
     }
-    
+
     /// Performs the initial setup for the reducer.
     ///
     /// This method leverages `RuntimeReducing` to initialize the reducer's state. It is automatically called when

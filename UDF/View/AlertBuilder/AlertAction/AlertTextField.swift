@@ -48,17 +48,17 @@ public struct AlertTextField: AlertAction {
     public var text: Binding<String>
     public var textInputAutocapitalization: TextInputAutocapitalization? = nil
     public var submitLabel: SubmitLabel = .done
-    
+
     @StateObject private var debouncer: UserInputDebouncer<String>
-    
+
     public static func == (lhs: AlertTextField, rhs: AlertTextField) -> Bool {
         lhs.title == rhs.title
     }
-    
+
     public func hash(into hasher: inout Hasher) {
         hasher.combine(title)
     }
-    
+
     /// Creates an `AlertTextField` with a specified title and binding to the input text.
     ///
     /// - Parameters:
@@ -69,7 +69,7 @@ public struct AlertTextField: AlertAction {
         self.text = text
         self._debouncer = .init(wrappedValue: .init(defaultValue: text.wrappedValue))
     }
-    
+
     /// The view body of the `AlertTextField`.
     public var body: some View {
         TextField(title, text: $debouncer.value)
@@ -99,7 +99,7 @@ public extension AlertTextField {
             field.textInputAutocapitalization = textInputAutocapitalization
         }
     }
-    
+
     /// Sets the submit label for the text field's return key and returns a new `AlertTextField`.
     ///
     /// - Parameter submitLabel: The `SubmitLabel` to use for the keyboard's return key.

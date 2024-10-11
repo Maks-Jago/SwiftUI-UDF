@@ -9,8 +9,8 @@
 //
 //===----------------------------------------------------------------------===//
 
-import Foundation
 import enum CoreLocation.CLAuthorizationStatus
+import Foundation
 
 extension CLAuthorizationStatus: CustomDebugStringConvertible {
     /// Provides a custom debug description for the `CLAuthorizationStatus` enumeration.
@@ -20,19 +20,19 @@ extension CLAuthorizationStatus: CustomDebugStringConvertible {
         switch self {
         case .authorizedAlways:
             return "CLAuthorizationStatus.authorizedAlways"
-            
+
         case .authorizedWhenInUse:
             return "CLAuthorizationStatus.authorizedWhenInUse"
-            
+
         case .denied:
             return "CLAuthorizationStatus.denied"
-            
+
         case .notDetermined:
             return "CLAuthorizationStatus.notDetermined"
-            
+
         case .restricted:
             return "CLAuthorizationStatus.restricted"
-            
+
         @unknown default:
             return "\(self)"
         }

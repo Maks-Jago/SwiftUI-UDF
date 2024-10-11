@@ -1,15 +1,14 @@
 //
 //  MergeableTests.swift
-//  
+//
 //
 //  Created by Max Kuznetsov on 20.08.2021.
 //
 
-import XCTest
 @testable import UDF
+import XCTest
 
 class MergeableTests: XCTestCase {
-
     struct Item: Mergeable, Equatable {
         struct Id: Hashable {
             var value: Int

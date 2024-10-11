@@ -21,7 +21,7 @@ public protocol Scope: IsEquatable {}
 ///
 /// `EquatableScope` is commonly used when building scopes that need both custom equality logic and automatic
 /// conformance to the `Equatable` protocol.
-public typealias EquatableScope = Scope & Equatable
+public typealias EquatableScope = Equatable & Scope
 
 /// A result builder that constructs instances of `Scope`.
 ///
@@ -38,54 +38,53 @@ public typealias EquatableScope = Scope & Equatable
 /// ```
 @resultBuilder
 public enum ScopeBuilder {
-    
     /// Builds an `EquatableScope` from a given expression conforming to both `Scope` and `Equatable`.
     ///
     /// - Parameter expression: An expression that conforms to both `Scope` and `Equatable`.
     /// - Returns: An `EquatableScope` instance.
-    public static func buildExpression<S: Scope & Equatable>(_ expression: S) -> some EquatableScope {
+    public static func buildExpression(_ expression: some Scope & Equatable) -> some EquatableScope {
         expression
     }
-    
+
     /// Builds an `EquatableScope` from a given expression conforming to `Reducible`.
     ///
     /// - Parameter expression: An expression that conforms to `Reducible`.
     /// - Returns: A `ReducerScope` wrapped in an `EquatableScope`.
-    public static func buildExpression<R: Reducible>(_ expression: R) -> some EquatableScope {
+    public static func buildExpression(_ expression: some Reducible) -> some EquatableScope {
         ReducerScope(reducer: expression)
     }
-    
+
     /// Builds an `EquatableScope` from an optional expression conforming to `Reducible`.
     ///
     /// - Parameter expression: An optional expression that conforms to `Reducible`.
     /// - Returns: A `ReducerScope` wrapped in an `EquatableScope`.
-    public static func buildExpression<R: Reducible>(_ expression: R?) -> some EquatableScope {
+    public static func buildExpression(_ expression: (some Reducible)?) -> some EquatableScope {
         ReducerScope(reducer: expression)
     }
-    
+
     /// Builds an `EquatableScope` from an expression conforming to `AppReducer`.
     ///
     /// - Parameter expression: An expression that conforms to `AppReducer`.
     /// - Returns: An `EquatableScope` instance.
-    public static func buildExpression<R: AppReducer>(_ expression: R) -> some EquatableScope {
+    public static func buildExpression(_ expression: some AppReducer) -> some EquatableScope {
         expression
     }
-    
+
     /// Creates the first partial block in a scope using an expression conforming to `EquatableScope`.
     ///
     /// - Parameter scope: The first `EquatableScope` to be included in the result builder.
     /// - Returns: An `EquatableScope` instance.
-    public static func buildPartialBlock<S: EquatableScope>(first scope: S) -> some EquatableScope {
+    public static func buildPartialBlock(first scope: some EquatableScope) -> some EquatableScope {
         scope
     }
-    
+
     /// Combines accumulated scopes into a single `EquatableScope` by adding the next scope.
     ///
     /// - Parameters:
     ///   - accumulated: The accumulated scope built so far.
     ///   - next: The next scope to be added.
     /// - Returns: A `CombinedScope` containing both the accumulated and next scopes.
-    public static func buildPartialBlock<S1: EquatableScope, S2: EquatableScope>(accumulated: S1, next: S2) -> some EquatableScope {
+    public static func buildPartialBlock(accumulated: some EquatableScope, next: some EquatableScope) -> some EquatableScope {
         CombinedScope(accumulated, next)
     }
 }

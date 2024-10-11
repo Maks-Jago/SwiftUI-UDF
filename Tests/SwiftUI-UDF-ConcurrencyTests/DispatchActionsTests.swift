@@ -5,11 +5,10 @@
 //  Created by Max Kuznetsov on 20.10.2022.
 //
 
-import XCTest
 @testable import UDF
+import XCTest
 
 final class DispatchActionsTests: XCTestCase {
-
     struct AppState: AppReducer {
         var plainForm = PlainForm()
     }

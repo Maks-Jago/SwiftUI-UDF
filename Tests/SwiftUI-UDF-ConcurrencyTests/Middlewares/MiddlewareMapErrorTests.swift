@@ -1,15 +1,14 @@
 
-import XCTest
-@testable import UDF
 import Combine
+@testable import UDF
 import UDFXCTest
+import XCTest
 
-fileprivate extension Actions {
+private extension Actions {
     struct StartLoading: Action {}
 }
 
 final class MiddlewareMapErrorTests: XCTestCase {
-
     struct AppState: AppReducer {
         var errorForm = ErrorForm()
 
@@ -59,16 +58,16 @@ final class MiddlewareMapErrorTests: XCTestCase {
             }
         }
 
-        func mapAPIError<Id: Hashable>(_ id: Id, _ error: Error) -> any Action {
+        func mapAPIError(_ id: some Hashable, _ error: Error) -> any Action {
             switch error {
             case let error as APIError:
                 switch error {
                 case let .statusCode(code):
-                    return Actions.Error(error: error.localizedDescription, id: id, code: code)
+                    Actions.Error(error: error.localizedDescription, id: id, code: code)
                 }
 
             default:
-                return Actions.Error(error: error.localizedDescription, id: id)
+                Actions.Error(error: error.localizedDescription, id: id)
             }
         }
     }

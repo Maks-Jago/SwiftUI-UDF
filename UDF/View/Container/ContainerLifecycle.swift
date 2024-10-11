@@ -28,24 +28,26 @@ import SwiftUI
 /// - `didUnloadCommand`: A command executed when the container is unloaded.
 ///
 /// ## Methods:
-/// - `set(didLoad:store:)`: Updates the `didLoad` state and executes the load command if the container has loaded for the first time. It also creates hooks for the container.
+/// - `set(didLoad:store:)`: Updates the `didLoad` state and executes the load command if the container has loaded for the first time. It
+/// also creates hooks for the container.
 /// - `deinit`: Cleans up by removing all hooks and executing the unload command when the `ContainerLifecycle` instance is deallocated.
 ///
 /// ## Initialization:
-/// - `init(didLoadCommand:didUnloadCommand:useHooks:)`: Initializes the lifecycle manager with commands to execute on load and unload, as well as a closure for creating hooks.
+/// - `init(didLoadCommand:didUnloadCommand:useHooks:)`: Initializes the lifecycle manager with commands to execute on load and unload, as
+/// well as a closure for creating hooks.
 final class ContainerLifecycle<State: AppReducer>: ObservableObject {
     /// A private flag indicating if the container has completed its loading process.
     private var didLoad: Bool = false
-    
+
     /// The hooks used within the container.
     let containerHooks: ContainerHooks<State>
-    
+
     /// A command that is executed when the container is loaded.
     var didLoadCommand: CommandWith<EnvironmentStore<State>>
-    
+
     /// A command that is executed when the container is unloaded.
     var didUnloadCommand: CommandWith<EnvironmentStore<State>>
-    
+
     /// Sets the `didLoad` state and executes the load command if the container loads for the first time.
     ///
     /// - Parameters:
@@ -58,7 +60,7 @@ final class ContainerLifecycle<State: AppReducer>: ObservableObject {
         }
         self.didLoad = didLoad
     }
-    
+
     /// Initializes the `ContainerLifecycle` with commands to execute on load and unload,
     /// and a closure to define hooks.
     ///
@@ -75,7 +77,7 @@ final class ContainerLifecycle<State: AppReducer>: ObservableObject {
         self.didUnloadCommand = didUnloadCommand
         self.containerHooks = .init(store: EnvironmentStore<State>.global, hooks: useHooks)
     }
-    
+
     /// Cleans up by removing all hooks and executing the unload command.
     deinit {
         containerHooks.removeAllHooks()

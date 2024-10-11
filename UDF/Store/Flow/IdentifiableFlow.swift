@@ -14,13 +14,14 @@ import Foundation
 /// A protocol that extends `Flow` to include a unique identifier for each flow type.
 ///
 /// `IdentifiableFlow` provides a way to uniquely identify different flows in an application using an associated type `FlowId`.
-/// This unique identifier can be used to track, manage, and distinguish flows, especially when dealing with multiple instances of flows in the application.
+/// This unique identifier can be used to track, manage, and distinguish flows, especially when dealing with multiple instances of flows in
+/// the application.
 ///
 /// By conforming to `IdentifiableFlow`, the flow now has a unique identifier that can be accessed using the `id` property.
 public protocol IdentifiableFlow: Flow {
     /// The associated type representing the unique identifier for the flow.
     associatedtype FlowId
-    
+
     /// A static property that returns the unique identifier for the flow.
     static var id: FlowId { get }
 }

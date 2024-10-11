@@ -1,0 +1,18 @@
+--swiftversion 5.9
+
+
+--indent 4
+--maxwidth 140
+--stripunusedargs closure-only
+
+--disable hoistAwait, redundantSelf, blankLinesBetweenScopes
+
+--markcategories false
+--lineaftermarks false
+
+--wrapcollections before-first
+--wrapparameters before-first
+--wrapArguments beforeFirst
+--wrapenumcases always
+
+--nilinit remove

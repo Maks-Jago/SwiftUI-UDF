@@ -22,7 +22,6 @@ public extension Scope where Self == NoneScope {
 /// A `Scope` that represents a "none" or empty state.
 /// It conforms to `EquatableScope` and is used when no specific scope is required.
 public struct NoneScope: EquatableScope {
-    
     /// Method to compare equality with another `IsEquatable` instance.
     /// Always returns `true` since `NoneScope` is a placeholder scope.
     /// - Parameter rhs: The right-hand side `IsEquatable` instance to compare.

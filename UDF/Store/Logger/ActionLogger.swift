@@ -13,7 +13,6 @@ import Foundation
 
 /// A protocol that defines a filter for actions, determining whether an action should be included in the logging process.
 public protocol ActionFilter: Sendable {
-    
     /// Determines whether a given action should be included.
     ///
     /// - Parameter action: The action to be evaluated.
@@ -23,7 +22,6 @@ public protocol ActionFilter: Sendable {
 
 /// A protocol that provides a description for actions to be used in logging.
 public protocol ActionDescriptor: Sendable {
-    
     /// Returns a description for a given action.
     ///
     /// - Parameter action: The action to be described.
@@ -33,13 +31,12 @@ public protocol ActionDescriptor: Sendable {
 
 /// A protocol for logging actions, including the use of filters and descriptors.
 public protocol ActionLogger: Sendable {
-    
     /// An array of `ActionFilter` objects used to determine which actions should be logged.
     var actionFilters: [ActionFilter] { get }
-    
+
     /// An `ActionDescriptor` used to generate descriptions for the actions to be logged.
     var actionDescriptor: ActionDescriptor { get }
-    
+
     /// Logs a given action with a specified description.
     ///
     /// - Parameters:

@@ -43,7 +43,7 @@ import SwiftUI
 public protocol Routing<Route>: Initable {
     associatedtype Route
     associatedtype Destination: View
-    
+
     /// Returns a view for the given route.
     ///
     /// - Parameter route: The route that defines the destination view to navigate to.
@@ -72,13 +72,13 @@ public protocol Routing<Route>: Initable {
 /// - `view(for:)`: Returns the view corresponding to a specified route, using the mock view if available.
 public final class Router<R: Routing> {
     private typealias MockedBuilder = (_ routing: R, _ route: R.Route) -> AnyView
-    
+
     /// The routing instance that defines the view for each route.
     public var routing: R
-    
+
     /// An optional closure used to provide a mock view for a given route.
     private var mocker: MockedBuilder?
-    
+
     /// Initializes the router with a specified routing instance.
     ///
     /// - Parameter routing: The routing instance that defines the view for each route.
@@ -86,25 +86,25 @@ public final class Router<R: Routing> {
         self.routing = routing
         self.mocker = nil
     }
-    
+
     /// Initializes the router with a default instance of the routing type.
     public init() {
-        self.routing = R.init()
+        self.routing = R()
         self.mocker = nil
     }
-    
+
     /// Initializes the router with a routing instance and a view builder for mocking views.
     ///
     /// - Parameters:
     ///   - routing: The routing instance that defines the view for each route.
     ///   - mocked: A closure that returns a mock view for a given route, used for testing purposes.
-    public init<MockView: View>(routing: R, @ViewBuilder mocked: @escaping (_ routing: R, _ route: R.Route) -> MockView) {
+    public init(routing: R, @ViewBuilder mocked: @escaping (_ routing: R, _ route: R.Route) -> some View) {
         self.routing = routing
         self.mocker = { routing, route in
             AnyView(mocked(routing, route))
         }
     }
-    
+
     /// Returns the view corresponding to the specified route, using the mock view if available.
     ///
     /// - Parameter route: The route that defines the destination view.

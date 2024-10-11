@@ -70,13 +70,13 @@ import Foundation
 /// ```
 ///
 /// In this example:
-/// - **`reduce(_:for:)`**: Handles the `Actions.LoadSession` action, triggering an asynchronous operation to load the user session based on the current state (`AppState`).
+/// - **`reduce(_:for:)`**: Handles the `Actions.LoadSession` action, triggering an asynchronous operation to load the user session based on
+/// the current state (`AppState`).
 /// - **Environment:** Contains dependencies for loading a user session, with methods to build live and test environments.
 ///
 /// ## Typealias
 /// `BaseReducibleMiddleware` is a convenience typealias combining `BaseMiddleware`, `ReducibleMiddleware`, and `EnvironmentMiddleware`.
 public protocol ReducibleMiddleware<State>: Middleware {
-    
     /// Processes an action and performs side effects based on the current state.
     ///
     /// - Parameters:
@@ -88,4 +88,4 @@ public protocol ReducibleMiddleware<State>: Middleware {
 /// A typealias for combining `BaseMiddleware`, `ReducibleMiddleware`, and `EnvironmentMiddleware`.
 ///
 /// This typealias simplifies the creation of middleware that includes environment and reducing capabilities.
-public typealias BaseReducibleMiddleware<State: AppReducer> = BaseMiddleware<State> & ReducibleMiddleware & EnvironmentMiddleware
+public typealias BaseReducibleMiddleware<State: AppReducer> = BaseMiddleware<State> & EnvironmentMiddleware & ReducibleMiddleware

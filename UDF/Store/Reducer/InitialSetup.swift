@@ -18,7 +18,7 @@ import Foundation
 /// to handle actions.
 public protocol InitialSetup: Reducing {
     associatedtype AppState: AppReducer
-    
+
     /// Performs an initial setup using the provided application state.
     ///
     /// Implement this method to set up the initial state of the conforming type based on the provided application state.

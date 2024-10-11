@@ -11,8 +11,15 @@ struct InternalAction: @unchecked Sendable, Action {
     var silent: Bool
 
     private let actionDescription: String
-    
-    init(_ value: some Action, animation: Animation? = nil, silent: Bool = false, fileName: String = #file, functionName: String = #function, lineNumber: Int = #line) {
+
+    init(
+        _ value: some Action,
+        animation: Animation? = nil,
+        silent: Bool = false,
+        fileName: String = #file,
+        functionName: String = #function,
+        lineNumber: Int = #line
+    ) {
         self.value = value
         self.animation = animation
         self.fileName = fileName
@@ -22,7 +29,8 @@ struct InternalAction: @unchecked Sendable, Action {
 
         let fileURL = NSURL(fileURLWithPath: fileName).lastPathComponent ?? "Unknown file"
         if let animation {
-            actionDescription = "\(String(describing: value)), animation: \(String(describing: animation)) from \(fileURL) - \(functionName) at line \(lineNumber)"
+            actionDescription =
+                "\(String(describing: value)), animation: \(String(describing: animation)) from \(fileURL) - \(functionName) at line \(lineNumber)"
         } else {
             actionDescription = "\(String(describing: value)) from \(fileURL) - \(functionName) at line \(lineNumber)"
         }
@@ -45,7 +53,6 @@ extension InternalAction: CustomDebugStringConvertible {
 
 // MARK: - ActionGroup
 extension InternalAction {
-    
     func unwrapActions() -> [InternalAction] {
         func actions(from internalAction: InternalAction) -> [InternalAction] {
             var actions: [InternalAction] = []

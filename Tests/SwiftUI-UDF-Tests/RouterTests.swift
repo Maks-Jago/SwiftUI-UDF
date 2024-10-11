@@ -1,10 +1,9 @@
 
-import XCTest
-@testable import UDF
 import SwiftUI
+@testable import UDF
+import XCTest
 
 final class RouterTests: XCTestCase {
-
     struct ItemDetailsRouting: Routing {
         enum Route {
             case details

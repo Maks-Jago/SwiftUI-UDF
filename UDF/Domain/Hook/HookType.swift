@@ -16,10 +16,9 @@ import Foundation
 /// `HookType` defines the behavior of hooks in an application state lifecycle, such as whether they are executed every time
 /// or only once.
 public enum HookType {
-    
     /// A hook that executes under the default conditions each time its associated state changes.
     case `default`
-    
+
     /// A hook that executes only once and is then discarded.
     case oneTime
 }

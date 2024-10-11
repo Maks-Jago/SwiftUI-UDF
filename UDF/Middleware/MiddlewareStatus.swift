@@ -28,10 +28,9 @@ import Foundation
 /// }
 /// ```
 public enum MiddlewareStatus: Sendable {
-    
     /// Middleware is active and processing actions.
     case active
-    
+
     /// Middleware is suspended and not processing actions.
     case suspend
 }

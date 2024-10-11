@@ -13,18 +13,18 @@ import Foundation
 import SwiftUI
 
 /// A global router that manages navigation across the app using a unified `NavigationPath`.
-/// 
+///
 /// The `GlobalRouter` allows for centralized control of navigation actions, including navigating to specific routes,
 /// returning to previous views, and resetting the navigation stack. It works with instances of `Router` and conforms
 /// to a path-binding mechanism to update the view hierarchy.
-/// 
+///
 /// ## Properties:
 /// - `routingPath`: A binding to the `NavigationPath` used for navigating views.
 /// - `routers`: A list of weak references to registered routers for managing navigation routes.
-/// 
+///
 /// ## Initializers:
 /// - `init(path:)`: Initializes the global router with a `Binding<NavigationPath>`.
-/// 
+///
 /// ## Methods:
 /// - `add(router:)`: Registers a router to the global router.
 /// - `navigate(to:with:)`: Navigates to a specific route using the provided router.
@@ -32,7 +32,7 @@ import SwiftUI
 /// - `back()`: Navigates back one step in the navigation stack.
 /// - `back(stepsCount:)`: Navigates back a specified number of steps in the navigation stack.
 /// - `resetStack(to:with:)`: Resets the navigation stack and navigates to a specific route.
-/// 
+///
 /// ## Example of Injection:
 /// ```swift
 /// NavigationStack(path: props.navigationPath) {
@@ -41,7 +41,7 @@ import SwiftUI
 /// .tag(TabItem.home)
 /// .environment(\.globalRouter, GlobalRouter(path: props.navigationPath))
 /// ```
-/// 
+///
 /// ## Example of Usage in a Container or Component:
 /// ```swift
 /// @Environment(\.globalRouter) private var globalRouter
@@ -49,22 +49,22 @@ import SwiftUI
 public final class GlobalRouter {
     private var routingPath: Binding<NavigationPath>
     private var routers: [Weak] = []
-    
+
     /// Initializes the global router with a given navigation path.
     ///
     /// - Parameter path: A binding to a `NavigationPath` used for navigation.
     public init(path: Binding<NavigationPath>) {
         self.routingPath = path
     }
-    
+
     /// Registers a router to the global router.
     ///
     /// - Parameter router: The router to add.
-    func add<R: Routing>(router: Router<R>) {
+    func add(router: Router<some Routing>) {
         routers.reap()
         routers.append(.init(value: router))
     }
-    
+
     /// Navigates to a specified route using the provided router.
     ///
     /// - Parameters:
@@ -75,18 +75,18 @@ public final class GlobalRouter {
             guard let value = obj.value else {
                 return false
             }
-            
+
             return ObjectIdentifier(value) == ObjectIdentifier(router)
         }
-        
+
         guard registeredRoute != nil else {
             fatalError("Router: \(router) is not attached to the view hierarchy. Use `navigationDestination(router:)` to add router")
         }
-        
+
         routers.reap()
         routingPath.wrappedValue.append(route)
     }
-    
+
     /// Navigates back to the root of the navigation stack.
     public func backToRoot() {
         guard !routingPath.wrappedValue.isEmpty else {
@@ -94,7 +94,7 @@ public final class GlobalRouter {
         }
         routingPath.wrappedValue.removeLast(routingPath.wrappedValue.count)
     }
-    
+
     /// Navigates back one step in the navigation stack.
     public func back() {
         guard !routingPath.wrappedValue.isEmpty else {
@@ -102,7 +102,7 @@ public final class GlobalRouter {
         }
         routingPath.wrappedValue.removeLast()
     }
-    
+
     /// Navigates back a specified number of steps in the navigation stack.
     ///
     /// - Parameter stepsCount: The number of steps to navigate back.
@@ -112,7 +112,7 @@ public final class GlobalRouter {
         }
         routingPath.wrappedValue.removeLast(stepsCount)
     }
-    
+
     /// Resets the navigation stack and navigates to a specific route.
     ///
     /// - Parameters:
@@ -125,7 +125,7 @@ public final class GlobalRouter {
 }
 
 private struct GlobalRouterKey: EnvironmentKey {
-    static var defaultValue: GlobalRouter = GlobalRouter(path: .constant(NavigationPath()))
+    static var defaultValue: GlobalRouter = .init(path: .constant(NavigationPath()))
 }
 
 public extension EnvironmentValues {

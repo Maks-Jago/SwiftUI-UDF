@@ -20,7 +20,6 @@ import SwiftUI
 public protocol Action: Equatable {}
 
 public extension Action {
-    
     /// Associates an animation with the action.
     ///
     /// - Parameter animation: The `Animation` to associate with the action.
@@ -44,7 +43,6 @@ public extension Action {
 }
 
 public extension Action {
-    
     /// Marks the action as silent, indicating it should not trigger side effects like logging.
     ///
     /// - Returns: A new `Action` wrapped in an `ActionGroup` marked as silent.
@@ -67,7 +65,6 @@ public extension Action {
 }
 
 public extension Action {
-    
     /// Binds the action to a specific `BindableContainer` by its type and identifier.
     ///
     /// - Parameters:
@@ -92,10 +89,14 @@ public extension Action {
                 )
             })
         } else {
-            return ActionGroup(internalActions: [InternalAction(Actions._BindableAction(value: self, containerType: containerType, id: id))])
+            return ActionGroup(internalActions: [InternalAction(Actions._BindableAction(
+                value: self,
+                containerType: containerType,
+                id: id
+            ))])
         }
     }
-    
+
     /// Binds the action to a specific `BindableContainer` instance.
     ///
     /// - Parameter container: The `BindableContainer` instance to bind to.

@@ -29,7 +29,7 @@ private struct AlertModifier: ViewModifier {
     @Binding var alertStatus: AlertBuilder.AlertStatus
     @State private var localAlert: AlertBuilder.AlertStatus?
     @State private var alertToDissmiss: AlertBuilder.AlertStatus? = nil
-    
+
     /// Initializes the alert modifier with the given binding to an `AlertBuilder.AlertStatus`.
     ///
     /// - Parameter alert: A binding to an `AlertBuilder.AlertStatus` that determines the alert's state and content.
@@ -66,11 +66,11 @@ private struct AlertModifier: ViewModifier {
             localAlert = nil
         }
     }
-    
+
     /// Builds the view content, attaching an alert that reflects the current `AlertStatus`.
     public func body(content: Content) -> some View {
         updateAlertStatus()
-        
+
         /// Extracts the alert type from the current `localAlert` status.
         ///
         /// This logic determines the type of the alert to be presented. It checks if `localAlert`'s status is `.presented`
@@ -83,21 +83,21 @@ private struct AlertModifier: ViewModifier {
         } else {
             AlertBuilder.AlertStyle.AlertType.message(text: { "" })
         }
-        
+
         let texts = texts(for: type)
-        
-        return content.alert(texts.title(), isPresented: $localAlert.willSet({ (newValue, oldValue) in
+
+        return content.alert(texts.title(), isPresented: $localAlert.willSet { newValue, oldValue in
             guard newValue != oldValue else {
                 return
             }
-            
-            if let newValue = newValue {
+
+            if let newValue {
                 alertStatus = newValue
             } else if oldValue?.status != .dismissed {
                 alertToDissmiss = localAlert
                 alertStatus = .dismissed
             }
-        }).isPresented(), actions: {
+        }.isPresented(), actions: {
             let actions = alertActions(for: type)
             ForEach(Array(actions.enumerated()), id: \.offset) { _, action in
                 switch action {
@@ -111,7 +111,7 @@ private struct AlertModifier: ViewModifier {
             Text(texts.text())
         })
     }
-    
+
     /// Generates alert actions based on the alert type.
     ///
     /// - Parameter type: The type of alert to generate actions for.
@@ -120,49 +120,49 @@ private struct AlertModifier: ViewModifier {
         switch type {
         case let .custom(_, _, primaryButton, secondaryButton):
             if primaryButton.role == .destructive {
-                return [primaryButton, secondaryButton.role(.cancel)]
+                [primaryButton, secondaryButton.role(.cancel)]
             } else if secondaryButton.role == .destructive {
-                return [primaryButton.role(.cancel), secondaryButton]
+                [primaryButton.role(.cancel), secondaryButton]
             } else {
-                return [primaryButton, secondaryButton]
+                [primaryButton, secondaryButton]
             }
-            
-        case .customDismiss(_, _, let dismissButton):
-            return [dismissButton]
-            
-        case .customActions(_, _, let actions):
-            return actions()
-            
+
+        case let .customDismiss(_, _, dismissButton):
+            [dismissButton]
+
+        case let .customActions(_, _, actions):
+            actions()
+
         default:
-            return [AlertButton(title: NSLocalizedString("Ok", comment: "Ok"))]
+            [AlertButton(title: NSLocalizedString("Ok", comment: "Ok"))]
         }
     }
-    
+
     /// Provides the title and text for the alert based on the alert type.
     ///
     /// - Parameter type: The type of the alert.
     /// - Returns: A tuple containing closures for the title and text of the alert.
     func texts(for type: AlertBuilder.AlertStyle.AlertType) -> (title: () -> String, text: () -> String) {
         switch type {
-        case .validationError(let text):
-            return ({""}, text)
-        case .success(let text):
-            return ({""}, text)
-        case .failure(let text):
-            return ({""}, text)
-        case .message(let text):
-            return ({""}, text)
+        case let .validationError(text):
+            ({ "" }, text)
+        case let .success(text):
+            ({ "" }, text)
+        case let .failure(text):
+            ({ "" }, text)
+        case let .message(text):
+            ({ "" }, text)
         case let .messageTitle(title, text):
-            return (title, text)
+            (title, text)
         case let .customActions(title, text, _):
-            return (title, text)
+            (title, text)
         case let .custom(title, text, _, _):
-            return (title, text)
+            (title, text)
         case let .customDismiss(title, text, _):
-            return (title, text)
+            (title, text)
         }
     }
-    
+
     /// Updates the local alert status based on the current `alertStatus`.
     ///
     /// This method handles state transitions to determine when to present, dismiss, or update the alert.
@@ -173,47 +173,49 @@ private struct AlertModifier: ViewModifier {
     ///   - `(nil, .dismissed)`: No local alert is present, and the alert status is `dismissed`. No action is needed.
     ///   - `(.some, .dismissed)`: A local alert is currently being presented, but the alert status has changed to `dismissed`.
     ///     Dismiss the alert asynchronously by setting `localAlert` to `nil`.
-    ///   - `(.some(let lhs), .presented) where lhs == .dismissed`: The local alert was previously dismissed, but now the alert status is set to `presented`.
+    ///   - `(.some(let lhs), .presented) where lhs == .dismissed`: The local alert was previously dismissed, but now the alert status is
+    /// set to `presented`.
     ///     Update the `localAlert` to the current `alertStatus` asynchronously.
     ///   - `(.some, .presented)`: A local alert is already being presented, but there may be changes to the alert's state.
     ///     If the current `localAlert` is different from `alertStatus`, update `localAlert` asynchronously.
-    ///   - `(.none, .presented) where alertStatus != alertToDissmiss`: No local alert is present, and the alert status is set to `presented`.
+    ///   - `(.none, .presented) where alertStatus != alertToDissmiss`: No local alert is present, and the alert status is set to
+    /// `presented`.
     ///     If the `alertStatus` is not the one that was previously dismissed, update `localAlert` asynchronously to present the alert.
     ///   - `default`: No action is taken for any other state transitions.
     private func updateAlertStatus() {
         switch (localAlert?.status, alertStatus.status) {
         case (nil, .dismissed):
             break
-            
+
         case (.some, .dismissed):
             DispatchQueue.main.async {
                 localAlert = nil
             }
-            
-        case (.some(let lhs), .presented) where lhs == .dismissed:
+
+        case let (.some(lhs), .presented) where lhs == .dismissed:
             DispatchQueue.main.async {
                 localAlert = alertStatus
             }
-            
+
         case (.some, .presented):
             if localAlert != alertStatus {
                 DispatchQueue.main.async {
                     localAlert = alertStatus
                 }
             }
-            
+
         case (.none, .presented) where alertStatus != alertToDissmiss:
             DispatchQueue.main.async {
                 localAlert = alertStatus
             }
-            
+
         default:
             break
         }
     }
 }
 
-fileprivate extension Binding {
+private extension Binding {
     /// Executes a closure before setting the new value.
     func willSet(_ willSet: @escaping ((newValue: Value, oldValue: Value)) -> Void) -> Binding<Value> {
         Binding(
@@ -224,14 +226,14 @@ fileprivate extension Binding {
             }
         )
     }
-    
+
     /// Returns a boolean binding indicating whether the optional value is present.
-    func isPresented<T>() -> Binding<Bool> where Value == Optional<T> {
+    func isPresented<T>() -> Binding<Bool> where Value == T? {
         Binding<Bool>(
             get: {
                 switch self.wrappedValue {
-                case .some: return true
-                case .none: return false
+                case .some: true
+                case .none: false
                 }
             },
             set: {

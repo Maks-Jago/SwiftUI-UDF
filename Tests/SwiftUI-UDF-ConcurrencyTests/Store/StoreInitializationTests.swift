@@ -1,17 +1,15 @@
 //
-//  EnvironmentStoreInitializationTests.swift
+//  StoreInitializationTests.swift
 //  SwiftUI-UDF-ConcurrencyTests
 //
 //  Created by Max Kuznetsov on 20.10.2022.
 //
 
-import XCTest
 @testable import UDF
+import XCTest
 
 final class StoreInitializationTests: XCTestCase {
-
     struct AppState: AppReducer {
-
         var form1 = Form1()
 
         struct Form1: Reducible {
@@ -40,17 +38,13 @@ final class StoreInitializationTests: XCTestCase {
 
         func status(for state: StoreInitializationTests.AppState) -> MiddlewareStatus { .active }
 
-        func cancel<Id>(by cancelation: Id) -> Bool where Id : Hashable {
+        func cancel(by cancelation: some Hashable) -> Bool {
             true
         }
 
-        func cancelAll() {
+        func cancelAll() {}
 
-        }
-
-        func reduce(_ action: some Action, for state: AppState) {
-            
-        }
+        func reduce(_ action: some Action, for state: AppState) {}
     }
 
     final class Middleware2: Middleware {
@@ -70,17 +64,13 @@ final class StoreInitializationTests: XCTestCase {
 
         func status(for state: StoreInitializationTests.AppState) -> MiddlewareStatus { .active }
 
-        func cancel<Id>(by cancelation: Id) -> Bool where Id : Hashable {
+        func cancel(by cancelation: some Hashable) -> Bool {
             true
         }
 
-        func cancelAll() {
+        func cancelAll() {}
 
-        }
-
-        func reduce(_ action: some Action, for state: AppState) {
-
-        }
+        func reduce(_ action: some Action, for state: AppState) {}
     }
 
     var store: InternalStore<AppState>!

@@ -15,7 +15,7 @@ import Foundation
 final class Weak {
     /// The weakly referenced object.
     weak var value: AnyObject?
-    
+
     /// Initializes the `Weak` wrapper with an `AnyObject`.
     /// - Parameter value: The object to be weakly referenced.
     init(value: AnyObject) {

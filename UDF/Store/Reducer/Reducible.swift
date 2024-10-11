@@ -37,4 +37,4 @@ public extension Reducing {
 ///
 /// `Reducible` is used when a type needs to implement state reduction logic and also conform to `Equatable` for automatic
 /// equality checks. This is often used in application state management to identify changes in state and react accordingly.
-public typealias Reducible = Reducing & Equatable
+public typealias Reducible = Equatable & Reducing

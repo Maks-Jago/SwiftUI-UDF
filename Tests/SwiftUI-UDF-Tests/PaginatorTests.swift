@@ -1,15 +1,14 @@
 //
 //  PaginatorTests.swift
-//  
+//
 //
 //  Created by Max Kuznetsov on 15.09.2021.
 //
 
-import XCTest
 @testable import UDF
+import XCTest
 
 class PaginatorTests: XCTestCase {
-
     struct Item: Identifiable, Hashable, Codable {
         struct Id: Hashable, Codable {
             var value: Int
@@ -20,13 +19,13 @@ class PaginatorTests: XCTestCase {
         var text: String
 
         init() {
-            id = .init(value: .random(in: 0..<Int.max))
+            id = .init(value: .random(in: 0 ..< Int.max))
             title = "title \(id.value)"
             text = "text \(id.value)"
         }
 
         static func fakeItems(count: Int) -> [Item] {
-            (0..<count).map { _ in Self.init()}
+            (0 ..< count).map { _ in Self() }
         }
     }
 
@@ -150,21 +149,21 @@ class PaginatorTests: XCTestCase {
         let itemsCount = await store.state.itemsForm.paginator.items.count
         XCTAssertEqual(itemsCount, 10)
     }
-    
+
     func testMoveItem() throws {
         var paginator = Paginator(Item.self, flowId: ItemFlow.id, perPage: 10)
         let items = Item.fakeItems(count: 14)
         let firstItem = try XCTUnwrap(items.first)
-        
+
         paginator.reduce(Actions.SetPaginationItems<Item>(items: items, id: ItemFlow.id))
-        
+
         let isSuccess = paginator.moveItem(fromIndex: 0, toIndex: 13)
         XCTAssertTrue(isSuccess)
         XCTAssertEqual(firstItem.id, try XCTUnwrap(paginator.items.last))
-        
+
         let isFailure = paginator.moveItem(fromIndex: 0, toIndex: 14) // toIndex >= items.count
         XCTAssertFalse(isFailure)
-        
+
         let itemAt10Index = try XCTUnwrap(paginator.elements[10])
         let isMovedIntoBeginning = paginator.moveItem(fromIndex: 10, toIndex: 0)
         XCTAssertTrue(isMovedIntoBeginning)

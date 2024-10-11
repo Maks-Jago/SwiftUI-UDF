@@ -13,13 +13,12 @@ import Foundation
 
 /// A logger that outputs actions to the console for debugging purposes.
 public struct ConsoleDebugLogger: ActionLogger {
-    
     /// An array of action filters used to filter which actions should be logged.
     public var actionFilters: [ActionFilter] = []
-    
+
     /// The action descriptor used to generate a description for the actions being logged.
     public var actionDescriptor: ActionDescriptor
-    
+
     /// Initializes a new `ConsoleDebugLogger`.
     ///
     /// - Parameters:
@@ -29,28 +28,29 @@ public struct ConsoleDebugLogger: ActionLogger {
         self.actionFilters = filters
         self.actionDescriptor = descriptor
     }
-    
+
     /// Logs an action to the console with a given description.
     ///
     /// - Parameters:
     ///   - action: The `LoggingAction` to be logged.
     ///   - description: A `String` representing the description of the action.
     public func log(_ action: LoggingAction, description: String) {
-        print("Reduce\t\t \(description)\n---------------------------------------------------------------------------------------------------------------------------------------------------------------------------")
+        print(
+            "Reduce\t\t \(description)\n---------------------------------------------------------------------------------------------------------------------------------------------------------------------------"
+        )
     }
 }
 
 public extension ActionLogger where Self == ConsoleDebugLogger {
-    
     /// Returns a `ConsoleDebugLogger` that logs actions using the default filter.
     static var consoleDebug: ActionLogger { ConsoleDebugLogger(filters: [.default]) }
-    
+
     /// Returns a `ConsoleDebugLogger` that logs all actions verbosely.
     static var consoleDebugVerbose: ActionLogger { ConsoleDebugLogger(filters: [.verbose]) }
-    
+
     /// Returns a `ConsoleDebugLogger` that logs only error actions.
     static var consoleDebugOnlyErrors: ActionLogger { ConsoleDebugLogger(filters: [.errorOnly]) }
-    
+
     /// Creates a `ConsoleDebugLogger` with additional custom filters.
     ///
     /// - Parameter extraFilters: An array of extra `ActionFilter` instances to be included along with the default debug-only filter.

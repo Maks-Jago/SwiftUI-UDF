@@ -1,11 +1,10 @@
 
-import XCTest
-@testable import UDF
 import SwiftUI
+@testable import UDF
 import UDFXCTest
+import XCTest
 
 final class BindableContainerDataMutationTests: XCTestCase {
-
     struct Item: Hashable, Identifiable {
         struct ID: Hashable {
             var value: Int
@@ -22,7 +21,6 @@ final class BindableContainerDataMutationTests: XCTestCase {
 
         mutating func reduce(_ action: some Action) {
             switch action {
-
             default:
                 break
             }
@@ -88,7 +86,7 @@ final class BindableContainerDataMutationTests: XCTestCase {
 
         await store.dispatch(
             Actions.DidLoadItems(
-                items: [Item(id: .init(value: 4)), Item(id: .init(value: 5))], 
+                items: [Item(id: .init(value: 4)), Item(id: .init(value: 5))],
                 id: ItemsFlow.id
             )
             .binded(to: ItemsContainer.self, by: .init(value: 2))
@@ -129,8 +127,7 @@ final class BindableContainerDataMutationTests: XCTestCase {
 }
 
 // MARK: Container
-fileprivate extension BindableContainerDataMutationTests {
-
+private extension BindableContainerDataMutationTests {
     struct ItemsContainer: BindableContainer {
         typealias ContainerComponent = ItemsComponent
 
@@ -147,9 +144,7 @@ fileprivate extension BindableContainerDataMutationTests {
     }
 
     struct ItemsComponent: Component {
-        struct Props {
-
-        }
+        struct Props {}
 
         var props: Props
 

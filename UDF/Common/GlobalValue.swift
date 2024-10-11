@@ -15,7 +15,7 @@ import Foundation
 enum GlobalValue {
     /// A dictionary to store singletons using their type's name as the key.
     private static var values = [String: AnyObject]()
-    
+
     /// Retrieves a stored singleton for the specified type.
     ///
     /// - Parameter vType: The type of the singleton to retrieve.
@@ -29,7 +29,7 @@ enum GlobalValue {
             fatalError("You have to initialize EnvironmentStore before using any Containers")
         }
     }
-    
+
     /// Stores a singleton value.
     ///
     /// - Parameter value: The singleton instance to store.

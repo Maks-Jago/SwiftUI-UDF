@@ -22,13 +22,12 @@ import Foundation
 /// - `observe(state:)`: A method that performs actions based on the observed changes in the state.
 ///
 public protocol ObservableMiddleware<State>: Middleware {
-    
     /// Defines the scope for the middleware to observe within the given state.
     ///
     /// - Parameter state: The state to define the scope for.
     /// - Returns: A `Scope` that the middleware should observe.
     @ScopeBuilder func scope(for state: State) -> Scope
-    
+
     /// Observes the state changes and executes the necessary side effects.
     ///
     /// - Parameter state: The current state of the application.
@@ -104,7 +103,9 @@ public protocol ObservableMiddleware<State>: Middleware {
 ///
 /// In this example:
 /// - **`scope(for:)`** defines the scope of state that this middleware observes (`faqFlow` in `AppState`).
-/// - **`observe(state:)`** reacts to state changes, performing an asynchronous operation to load FAQ items when the state is `.loadingFaqItems`.
-/// - **Environment:** Contains dependencies, such as a function for loading FAQ items from an API, with separate methods to build live and test environments.
+/// - **`observe(state:)`** reacts to state changes, performing an asynchronous operation to load FAQ items when the state is
+/// `.loadingFaqItems`.
+/// - **Environment:** Contains dependencies, such as a function for loading FAQ items from an API, with separate methods to build live and
+/// test environments.
 ///
-public typealias BaseObservableMiddleware<State: AppReducer> = BaseMiddleware<State> & ObservableMiddleware & EnvironmentMiddleware
+public typealias BaseObservableMiddleware<State: AppReducer> = BaseMiddleware<State> & EnvironmentMiddleware & ObservableMiddleware
