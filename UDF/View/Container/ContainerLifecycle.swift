@@ -38,15 +38,16 @@ import SwiftUI
 final class ContainerLifecycle<State: AppReducer>: ObservableObject {
     /// A private flag indicating if the container has completed its loading process.
     private var didLoad: Bool = false
+    let uuid: UUID = .init()
 
     /// The hooks used within the container.
     let containerHooks: ContainerHooks<State>
 
     /// A command that is executed when the container is loaded.
-    var didLoadCommand: CommandWith<EnvironmentStore<State>>
+    var didLoadCommand: CommandWith2<EnvironmentStore<State>, UUID>
 
     /// A command that is executed when the container is unloaded.
-    var didUnloadCommand: CommandWith<EnvironmentStore<State>>
+    var didUnloadCommand: CommandWith2<EnvironmentStore<State>, UUID>
 
     /// Sets the `didLoad` state and executes the load command if the container loads for the first time.
     ///
@@ -55,7 +56,7 @@ final class ContainerLifecycle<State: AppReducer>: ObservableObject {
     ///   - store: The global `EnvironmentStore` holding the state.
     func set(didLoad: Bool, store: EnvironmentStore<State>) {
         if !self.didLoad, didLoad {
-            didLoadCommand(store)
+            didLoadCommand(store, uuid)
             containerHooks.createHooks()
         }
         self.didLoad = didLoad
@@ -69,8 +70,8 @@ final class ContainerLifecycle<State: AppReducer>: ObservableObject {
     ///   - didUnloadCommand: A command to execute when the container is unloaded.
     ///   - useHooks: A closure that returns an array of hooks to use within the container.
     init(
-        didLoadCommand: @escaping CommandWith<EnvironmentStore<State>>,
-        didUnloadCommand: @escaping CommandWith<EnvironmentStore<State>>,
+        didLoadCommand: @escaping CommandWith2<EnvironmentStore<State>, UUID>,
+        didUnloadCommand: @escaping CommandWith2<EnvironmentStore<State>, UUID>,
         useHooks: @escaping () -> [Hook<State>]
     ) {
         self.didLoadCommand = didLoadCommand
@@ -81,6 +82,6 @@ final class ContainerLifecycle<State: AppReducer>: ObservableObject {
     /// Cleans up by removing all hooks and executing the unload command.
     deinit {
         containerHooks.removeAllHooks()
-        self.didUnloadCommand(EnvironmentStore<State>.global)
+        self.didUnloadCommand(EnvironmentStore<State>.global, uuid)
     }
 }

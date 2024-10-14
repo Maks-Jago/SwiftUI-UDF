@@ -68,8 +68,18 @@ final class BindableContainerDataMutationTests: XCTestCase {
         var bindedReducersFlowCount = try await XCTUnwrapAsync(await store.state.itemsFlow).reducers.count
         XCTAssertEqual(bindedReducersFlowCount, 0)
 
-        await store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 1)))
-        await store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 2)))
+        await store.dispatch(
+            Actions._OnContainerDidLoad(
+                containerType: ItemsContainer.self,
+                id: .init(itemID: .init(value: 1), containerUUID: UUID())
+            )
+        )
+        await store.dispatch(
+            Actions._OnContainerDidLoad(
+                containerType: ItemsContainer.self,
+                id: .init(itemID: .init(value: 2), containerUUID: UUID())
+            )
+        )
 
         bindedReducersFormCount = try await XCTUnwrapAsync(await store.state.itemsForm).reducers.count
         XCTAssertEqual(bindedReducersFormCount, 2)
@@ -102,8 +112,18 @@ final class BindableContainerDataMutationTests: XCTestCase {
         var bindedReducersFormCount = try await XCTUnwrapAsync(await store.state.itemsForm).reducers.count
         XCTAssertEqual(bindedReducersFormCount, 0)
 
-        await store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 1)))
-        await store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 2)))
+        await store.dispatch(
+            Actions._OnContainerDidLoad(
+                containerType: ItemsContainer.self,
+                id: .init(itemID: .init(value: 1), containerUUID: UUID())
+            )
+        )
+        await store.dispatch(
+            Actions._OnContainerDidLoad(
+                containerType: ItemsContainer.self,
+                id: .init(itemID: .init(value: 2), containerUUID: UUID())
+            )
+        )
 
         bindedReducersFormCount = try await XCTUnwrapAsync(await store.state.itemsForm).reducers.count
         XCTAssertEqual(bindedReducersFormCount, 2)

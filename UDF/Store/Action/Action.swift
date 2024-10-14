@@ -29,7 +29,12 @@ public extension Action {
     /// ```swift
     /// let action = MyAction().with(animation: .easeIn)
     /// ```
-    func with(animation: Animation?) -> some Action {
+    func with(
+        animation: Animation?, 
+        fileName: String = #file,
+        functionName: String = #function,
+        lineNumber: Int = #line
+    ) -> some Action {
         if let group = self as? ActionGroup {
             return ActionGroup(internalActions: group._actions.map { oldAction in
                 var mutableCopy = oldAction
@@ -37,7 +42,7 @@ public extension Action {
                 return mutableCopy
             })
         } else {
-            return ActionGroup(internalActions: [InternalAction(self, animation: animation)])
+            return ActionGroup(internalActions: [InternalAction(self, animation: animation, fileName: fileName, functionName: functionName, lineNumber: lineNumber)])
         }
     }
 }

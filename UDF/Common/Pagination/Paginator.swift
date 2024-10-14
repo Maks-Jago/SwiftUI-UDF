@@ -60,6 +60,7 @@ public struct Paginator<Item: Hashable & Identifiable, FlowId: Hashable>: Reduci
     }
 
     /// Disallowed initializer to prevent improper usage.
+    @available(*, deprecated, message: "Use `init(key:defaultValue:intervalToSync:storage)` instead.")
     public init() {
         fatalError("use init(flowId:perPage:usePrefixForFirstPage:initialPage:) instead of init")
     }

@@ -26,12 +26,22 @@ final class BindableContainerLoadUnloadTests: XCTestCase {
         var bindedReducersCount = try await XCTUnwrapAsync(await store.state.itemsForm).reducers.count
         XCTAssertEqual(bindedReducersCount, 0)
 
-        await store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 1)))
+        await store.dispatch(
+            Actions._OnContainerDidLoad(
+                containerType: ItemsContainer.self, 
+                id: .init(itemID: .init(value: 1), containerUUID: UUID())
+            )
+        )
 
         bindedReducersCount = try await XCTUnwrapAsync(await store.state.itemsForm).reducers.count
         XCTAssertEqual(bindedReducersCount, 1)
 
-        await store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 2)))
+        await store.dispatch(
+            Actions._OnContainerDidLoad(
+                containerType: ItemsContainer.self,
+                id: .init(itemID: .init(value: 2), containerUUID: UUID())
+            )
+        )
 
         bindedReducersCount = try await XCTUnwrapAsync(await store.state.itemsForm).reducers.count
         XCTAssertEqual(bindedReducersCount, 2)
@@ -42,13 +52,24 @@ final class BindableContainerLoadUnloadTests: XCTestCase {
 
         var bindedReducersCount = try await XCTUnwrapAsync(await store.state.itemsForm).reducers.count
         XCTAssertEqual(bindedReducersCount, 0)
+        let containerUUID = UUID()
 
-        await store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 1)))
+        await store.dispatch(
+            Actions._OnContainerDidLoad(
+                containerType: ItemsContainer.self,
+                id: .init(itemID: .init(value: 1), containerUUID: containerUUID)
+            )
+        )
 
         bindedReducersCount = try await XCTUnwrapAsync(await store.state.itemsForm).reducers.count
         XCTAssertEqual(bindedReducersCount, 1)
 
-        await store.dispatch(Actions._OnContainerDidUnLoad(containerType: ItemsContainer.self, id: .init(value: 1)))
+        await store.dispatch(
+            Actions._OnContainerDidUnLoad(
+                containerType: ItemsContainer.self,
+                id: .init(itemID: .init(value: 1), containerUUID: containerUUID)
+            )
+        )
 
         bindedReducersCount = try await XCTUnwrapAsync(await store.state.itemsForm).reducers.count
         XCTAssertEqual(bindedReducersCount, 0)

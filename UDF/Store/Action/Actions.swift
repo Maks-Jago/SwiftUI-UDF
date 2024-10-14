@@ -786,7 +786,7 @@ extension Actions {
         var containerType: BindedContainer.Type
 
         /// The unique identifier of the container.
-        var id: BindedContainer.ID
+        var id: BindableIdentifier<BindedContainer.ID>
     }
 
     /// `_OnContainerDidUnLoad` is an internal action used to signal that a `BindableContainer` has unloaded.
@@ -804,7 +804,7 @@ extension Actions {
         var containerType: BindedContainer.Type
 
         /// The unique identifier of the container.
-        var id: BindedContainer.ID
+        var id: BindableIdentifier<BindedContainer.ID>
     }
 
     /// `_BindableAction` is an internal action that wraps another action and associates it with a specific `BindableContainer`.
@@ -813,7 +813,7 @@ extension Actions {
     ///
     /// - Parameters:
     ///   - BindedContainer: The container type conforming to `BindableContainer`.
-    struct _BindableAction<BindedContainer: BindableContainer>: _AnyBindableAction {
+    struct _BindableAction<BindedContainer: BindableContainer>: _AnyBindableAction, CustomStringConvertible {
         /// The wrapped action that is being bound to the container.
         let value: any Action
 
@@ -825,6 +825,10 @@ extension Actions {
 
         public static func == (lhs: _BindableAction<BindedContainer>, rhs: _BindableAction<BindedContainer>) -> Bool {
             areEqual(lhs.value, rhs.value)
+        }
+
+        var description: String {
+            "\(value) binded for \(containerType) by \(id)"
         }
     }
 }

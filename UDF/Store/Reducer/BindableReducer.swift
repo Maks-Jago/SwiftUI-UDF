@@ -11,6 +11,11 @@
 
 import Foundation
 
+public struct BindableIdentifier<ID: Hashable>: Hashable {
+    public let itemID: ID
+    public let containerUUID: UUID
+}
+
 /// A property wrapper that manages a collection of reducers bound to a specific container type.
 ///
 /// `BindableReducer` is designed to automatically manage multiple instances of reducers associated with different instances
@@ -19,7 +24,7 @@ import Foundation
 @propertyWrapper
 public struct BindableReducer<BindedContainer: BindableContainer, Reducer: Reducible>: Reducible {
     /// A typealias representing a dictionary of reducers associated with container IDs.
-    public typealias Reducers = [BindedContainer.ID: Reducer]
+    public typealias Reducers = [BindableIdentifier<BindedContainer.ID>: Reducer]
 
     /// The type of container this reducer is bound to.
     public internal(set) var containerType: BindedContainer.Type
@@ -43,6 +48,7 @@ public struct BindableReducer<BindedContainer: BindableContainer, Reducer: Reduc
     }
 
     /// Throws a fatal error. Use `init(reducerType:bindedTo:)` instead.
+    @available(*, deprecated, message: "Use `init(reducerType:bindedTo:)` instead.")
     public init() {
         fatalError("use init(containerType:reducerType:) instead")
     }
@@ -57,7 +63,9 @@ public struct BindableReducer<BindedContainer: BindableContainer, Reducer: Reduc
     /// - Parameter id: The ID of the container.
     /// - Returns: The reducer associated with the given container ID, if it exists.
     public subscript(_ id: BindedContainer.ID) -> Reducer? {
-        reducers[id]
+        reducers.first { key, _ in
+            key.itemID == id
+        }?.value
     }
 
     /// Subscript to access the `Scope` of the reducer associated with the specified container ID.
@@ -65,7 +73,10 @@ public struct BindableReducer<BindedContainer: BindableContainer, Reducer: Reduc
     /// - Parameter id: The ID of the container.
     /// - Returns: A `ReducerScope` for the associated reducer, or `nil` if no reducer is found.
     public subscript(_ id: BindedContainer.ID) -> Scope {
-        ReducerScope(reducer: reducers[id])
+        let reducer = reducers.first { key, _ in
+            key.itemID == id
+        }?.value
+        return ReducerScope(reducer: reducer)
     }
 }
 
@@ -73,7 +84,7 @@ public struct BindableReducer<BindedContainer: BindableContainer, Reducer: Reduc
 
 extension BindableReducer: Collection {
     public typealias Index = Reducers.Index
-    public typealias Element = Reducers.Element
+    public typealias Element = (key: BindedContainer.ID, value: Reducer)
 
     /// The starting index of the collection, used in iterations.
     public var startIndex: Index { reducers.startIndex }
@@ -85,8 +96,9 @@ extension BindableReducer: Collection {
     ///
     /// - Parameter index: The position in the collection.
     /// - Returns: The element at the specified index.
-    public subscript(index: Index) -> Reducers.Element {
-        reducers[index]
+    public subscript(index: Index) -> Element {
+        let element = reducers[index]
+        return (element.key.itemID, element.value)
     }
 
     /// Returns the next index in the collection.
@@ -109,12 +121,6 @@ public extension BindableReducer {
     ///
     /// - Parameter action: The action to be reduced.
     mutating func reduce(_ action: some Action) {
-        // TODO: Thinking, should a Bindable Reducer reduce non-bindable actions?
-//        for var tuple in reducers {
-//            _ = RuntimeReducing.reduce(action, reducer: &tuple.value)
-//            reducers.updateValue(tuple.value, forKey: tuple.key)
-//        }
-
         switch action {
         case let action as Actions._OnContainerDidLoad<BindedContainer>:
             reducers[action.id] = .init()
@@ -123,9 +129,9 @@ public extension BindableReducer {
             reducers.removeValue(forKey: action.id)
 
         case let action as Actions._BindableAction<BindedContainer>:
-            if var reducer = reducers[action.id] {
+            for (key, var reducer) in reducers where key.itemID == action.id {
                 _ = RuntimeReducing.bindableReduce(action.value, reducer: &reducer)
-                reducers.updateValue(reducer, forKey: action.id)
+                reducers.updateValue(reducer, forKey: key)
             }
 
         default:
