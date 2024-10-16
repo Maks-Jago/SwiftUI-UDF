@@ -53,6 +53,35 @@ final class BindableContainerLoadUnloadTests: XCTestCase {
         bindedReducersCount = try await XCTUnwrapAsync(await store.state.itemsForm).reducers.count
         XCTAssertEqual(bindedReducersCount, 0)
     }
+
+    func test_WhenBindableContainerHasMultipleInstances_BindableReducerShouldNotBeReleased() async throws {
+        let store = await XCTestStore(initial: AppState())
+
+        var bindedReducersCount = try await XCTUnwrapAsync(await store.state.itemsForm).reducers.count
+        XCTAssertEqual(bindedReducersCount, 0)
+
+        await store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 1)))
+        await store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 1)))
+        await store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 1)))
+
+        bindedReducersCount = try await XCTUnwrapAsync(await store.state.itemsForm).reducers.count
+        XCTAssertEqual(bindedReducersCount, 1)
+
+        await store.dispatch(Actions._OnContainerDidUnLoad(containerType: ItemsContainer.self, id: .init(value: 1)))
+
+        bindedReducersCount = try await XCTUnwrapAsync(await store.state.itemsForm).reducers.count
+        XCTAssertEqual(bindedReducersCount, 1)
+
+        await store.dispatch(Actions._OnContainerDidUnLoad(containerType: ItemsContainer.self, id: .init(value: 1)))
+
+        bindedReducersCount = try await XCTUnwrapAsync(await store.state.itemsForm).reducers.count
+        XCTAssertEqual(bindedReducersCount, 1)
+
+        await store.dispatch(Actions._OnContainerDidUnLoad(containerType: ItemsContainer.self, id: .init(value: 1)))
+
+        bindedReducersCount = try await XCTUnwrapAsync(await store.state.itemsForm).reducers.count
+        XCTAssertEqual(bindedReducersCount, 0)
+    }
 }
 
 // MARK: Container

@@ -32,6 +32,7 @@ public struct Cached<T: Codable>: Initable {
     }()
 
     /// This initializer should not be used. Use one of the other initializers instead.
+    @available(*, deprecated, message: "Use `init(key:defaultValue:intervalToSync:storage)` instead.")
     public init() {
         fatalError("use init(key:defaultValue:intervalToSync:storage)")
     }

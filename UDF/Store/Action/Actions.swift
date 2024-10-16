@@ -826,5 +826,9 @@ extension Actions {
         public static func == (lhs: _BindableAction<BindedContainer>, rhs: _BindableAction<BindedContainer>) -> Bool {
             areEqual(lhs.value, rhs.value)
         }
+
+        var description: String {
+            "\(value) binded for \(containerType) by \(id)"
+        }
     }
 }
