@@ -30,19 +30,27 @@ public extension Action {
     /// let action = MyAction().with(animation: .easeIn)
     /// ```
     func with(
-        animation: Animation?, 
+        animation: Animation?,
         fileName: String = #file,
         functionName: String = #function,
         lineNumber: Int = #line
     ) -> some Action {
         if let group = self as? ActionGroup {
-            return ActionGroup(internalActions: group._actions.map { oldAction in
+            ActionGroup(internalActions: group._actions.map { oldAction in
                 var mutableCopy = oldAction
                 mutableCopy.animation = animation
                 return mutableCopy
             })
         } else {
-            return ActionGroup(internalActions: [InternalAction(self, animation: animation, fileName: fileName, functionName: functionName, lineNumber: lineNumber)])
+            ActionGroup(internalActions: [
+                InternalAction(
+                    self,
+                    animation: animation,
+                    fileName: fileName,
+                    functionName: functionName,
+                    lineNumber: lineNumber
+                ),
+            ])
         }
     }
 }
@@ -56,15 +64,23 @@ public extension Action {
     /// ```swift
     /// let action = MyAction().silent()
     /// ```
-    func silent() -> some Action {
+    func silent(fileName: String = #file, functionName: String = #function, lineNumber: Int = #line) -> some Action {
         if let group = self as? ActionGroup {
-            return ActionGroup(internalActions: group._actions.map { oldAction in
+            ActionGroup(internalActions: group._actions.map { oldAction in
                 var mutableCopy = oldAction
                 mutableCopy.silent = true
                 return mutableCopy
             })
         } else {
-            return ActionGroup(internalActions: [InternalAction(self, silent: true)])
+            ActionGroup(internalActions: [
+                InternalAction(
+                    self,
+                    silent: true,
+                    fileName: fileName,
+                    functionName: functionName,
+                    lineNumber: lineNumber
+                ),
+            ])
         }
     }
 }
@@ -74,16 +90,22 @@ public extension Action {
     ///
     /// - Parameters:
     ///   - containerType: The type of the `BindableContainer` to bind to.
-    ///   - id: The identifier of the container instance.
+    ///   - id: The identifier of the item instance.
     /// - Returns: A new `Action` wrapped in an `ActionGroup` bound to the specified container.
     ///
     /// Example:
     /// ```swift
-    /// let action = MyAction().binded(to: MyContainer.self, by: containerId)
+    /// let action = MyAction().binded(to: MyContainer.self, by: itemId)
     /// ```
-    func binded<BindedContainer: BindableContainer>(to containerType: BindedContainer.Type, by id: BindedContainer.ID) -> some Action {
+    func binded<BindedContainer: BindableContainer>(
+        to containerType: BindedContainer.Type,
+        by id: BindedContainer.ID,
+        fileName: String = #file,
+        functionName: String = #function,
+        lineNumber: Int = #line
+    ) -> some Action {
         if let group = self as? ActionGroup {
-            return ActionGroup(internalActions: group._actions.map { oldAction in
+            ActionGroup(internalActions: group._actions.map { oldAction in
                 InternalAction(
                     oldAction.value.binded(to: containerType, by: id),
                     animation: oldAction.animation,
@@ -94,11 +116,18 @@ public extension Action {
                 )
             })
         } else {
-            return ActionGroup(internalActions: [InternalAction(Actions._BindableAction(
-                value: self,
-                containerType: containerType,
-                id: id
-            ))])
+            ActionGroup(internalActions: [
+                InternalAction(
+                    Actions._BindableAction(
+                        value: self,
+                        containerType: containerType,
+                        id: id
+                    ),
+                    fileName: fileName,
+                    functionName: functionName,
+                    lineNumber: lineNumber
+                ),
+            ])
         }
     }
 

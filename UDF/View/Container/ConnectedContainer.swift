@@ -91,8 +91,8 @@ struct ConnectedContainer<C: Component, State: AppReducer>: View {
         self.onContainerDisappear = onContainerDisappear
         self._containerLifecycle = .init(
             wrappedValue: ContainerLifecycle(
-                didLoadCommand: { store, _ in onContainerDidLoad(store) },
-                didUnloadCommand: { store, _ in onContainerDidUnload(store) },
+                didLoadCommand: onContainerDidLoad,
+                didUnloadCommand: onContainerDidUnload,
                 useHooks: useHooks
             )
         )
@@ -128,24 +128,16 @@ struct ConnectedContainer<C: Component, State: AppReducer>: View {
         self.onContainerDisappear = onContainerDisappear
         self._containerLifecycle = .init(
             wrappedValue: ContainerLifecycle(
-                didLoadCommand: { store, uuid in
+                didLoadCommand: { store in
                     store.dispatch(
-                        Actions._OnContainerDidLoad(
-                            containerType: containerType,
-                            id: .init(itemID: containerId(), containerUUID: uuid)
-                        ).silent(),
+                        Actions._OnContainerDidLoad(containerType: containerType, id: containerId()).silent(),
                         priority: .userInteractive
                     )
                     onContainerDidLoad(store)
                 },
-                didUnloadCommand: { store, uuid in
+                didUnloadCommand: { store in
                     onContainerDidUnload(store)
-                    store.dispatch(
-                        Actions._OnContainerDidUnLoad(
-                            containerType: containerType,
-                            id: .init(itemID: containerId(), containerUUID: uuid)
-                        ).silent()
-                    )
+                    store.dispatch(Actions._OnContainerDidUnLoad(containerType: containerType, id: containerId()).silent())
                 },
                 useHooks: useHooks
             )

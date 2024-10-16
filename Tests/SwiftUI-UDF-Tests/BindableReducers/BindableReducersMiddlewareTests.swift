@@ -66,30 +66,10 @@ final class BindableReducersMiddlewareTests: XCTestCase {
         let store = await XCTestStore(initial: AppState())
         await store.subscribe(ItemsMiddleware.self)
 
-        await store.dispatch(
-            Actions._OnContainerDidLoad(
-                containerType: ItemsContainer.self,
-                id: .init(itemID: .init(value: 1), containerUUID: UUID())
-            )
-        )
-        await store.dispatch(
-            Actions._OnContainerDidLoad(
-                containerType: ItemsContainer.self,
-                id: .init(itemID: .init(value: 2), containerUUID: UUID())
-            )
-        )
-        await store.dispatch(
-            Actions._OnContainerDidLoad(
-                containerType: ItemsContainer.self,
-                id: .init(itemID: .init(value: 3), containerUUID: UUID())
-            )
-        )
-        await store.dispatch(
-            Actions._OnContainerDidLoad(
-                containerType: ItemsContainer.self,
-                id: .init(itemID: .init(value: 4), containerUUID: UUID())
-            )
-        )
+        await store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 1)))
+        await store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 2)))
+        await store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 3)))
+        await store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 4)))
 
         let bindedReducersFormCount = try await XCTUnwrapAsync(await store.state.itemsForm).reducers.count
         XCTAssertEqual(bindedReducersFormCount, 4)

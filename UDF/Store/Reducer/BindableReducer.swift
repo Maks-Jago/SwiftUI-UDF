@@ -11,11 +11,6 @@
 
 import Foundation
 
-public struct BindableIdentifier<ID: Hashable>: Hashable {
-    public let itemID: ID
-    public let containerUUID: UUID
-}
-
 /// A property wrapper that manages a collection of reducers bound to a specific container type.
 ///
 /// `BindableReducer` is designed to automatically manage multiple instances of reducers associated with different instances
@@ -24,13 +19,13 @@ public struct BindableIdentifier<ID: Hashable>: Hashable {
 @propertyWrapper
 public struct BindableReducer<BindedContainer: BindableContainer, Reducer: Reducible>: Reducible {
     /// A typealias representing a dictionary of reducers associated with container IDs.
-    public typealias Reducers = [BindableIdentifier<BindedContainer.ID>: Reducer]
+    public typealias Reducers = RCDictionary<BindedContainer.ID, Reducer>
 
     /// The type of container this reducer is bound to.
     public internal(set) var containerType: BindedContainer.Type
 
     /// The dictionary holding the reducers associated with each container ID.
-    var reducers: Reducers = [:]
+    var reducers: Reducers = .init()
 
     /// The wrapped value, which returns `self`.
     public var wrappedValue: BindableReducer<BindedContainer, Reducer> {
@@ -63,9 +58,7 @@ public struct BindableReducer<BindedContainer: BindableContainer, Reducer: Reduc
     /// - Parameter id: The ID of the container.
     /// - Returns: The reducer associated with the given container ID, if it exists.
     public subscript(_ id: BindedContainer.ID) -> Reducer? {
-        reducers.first { key, _ in
-            key.itemID == id
-        }?.value
+        reducers[id]
     }
 
     /// Subscript to access the `Scope` of the reducer associated with the specified container ID.
@@ -73,10 +66,7 @@ public struct BindableReducer<BindedContainer: BindableContainer, Reducer: Reduc
     /// - Parameter id: The ID of the container.
     /// - Returns: A `ReducerScope` for the associated reducer, or `nil` if no reducer is found.
     public subscript(_ id: BindedContainer.ID) -> Scope {
-        let reducer = reducers.first { key, _ in
-            key.itemID == id
-        }?.value
-        return ReducerScope(reducer: reducer)
+        ReducerScope(reducer: reducers[id])
     }
 }
 
@@ -98,7 +88,7 @@ extension BindableReducer: Collection {
     /// - Returns: The element at the specified index.
     public subscript(index: Index) -> Element {
         let element = reducers[index]
-        return (element.key.itemID, element.value)
+        return (element.key, element.value)
     }
 
     /// Returns the next index in the collection.
@@ -123,13 +113,13 @@ public extension BindableReducer {
     mutating func reduce(_ action: some Action) {
         switch action {
         case let action as Actions._OnContainerDidLoad<BindedContainer>:
-            reducers[action.id] = .init()
+            reducers.retainOrCreateReducer(for: action.id)
 
         case let action as Actions._OnContainerDidUnLoad<BindedContainer>:
-            reducers.removeValue(forKey: action.id)
+            reducers.release(key: action.id)
 
         case let action as Actions._BindableAction<BindedContainer>:
-            for (key, var reducer) in reducers where key.itemID == action.id {
+            for (key, var reducer) in reducers where key == action.id {
                 _ = RuntimeReducing.bindableReduce(action.value, reducer: &reducer)
                 reducers.updateValue(reducer, forKey: key)
             }
@@ -137,5 +127,84 @@ public extension BindableReducer {
         default:
             break
         }
+    }
+}
+
+
+public struct RCDictionary<Key: Hashable, Value: Initable & Equatable>: Equatable {
+    private var keyValues: [Key: ReducerBox] = [:]
+
+    mutating func retainOrCreateReducer(for key: Key) {
+        if keyValues[key] != nil {
+            keyValues[key]?.retain()
+        } else {
+            keyValues[key] = .init(value: .init())
+        }
+    }
+
+    mutating func release(key: Key) {
+        if keyValues[key]?.release() == true {
+            keyValues.removeValue(forKey: key)
+        }
+    }
+
+    mutating func updateValue(_ value: Value, forKey key: Key) {
+        var box = keyValues[key] ?? .init(value: value)
+        box.value = value
+        keyValues[key] = box
+    }
+
+    public subscript(_ key: Key) -> Value? {
+        keyValues[key]?.value
+    }
+}
+
+// MARK: - ReducerBox
+public extension RCDictionary {
+    struct ReducerBox: Equatable {
+        var value: Value
+        private var referenceCount: Int = 1
+
+        init(value: Value) {
+            self.value = value
+        }
+
+        mutating func retain() {
+            referenceCount += 1
+        }
+
+        mutating func release() -> Bool {
+            referenceCount -= 1
+            return referenceCount <= 0
+        }
+    }
+}
+
+// MARK: - Collection
+extension RCDictionary: Collection {
+    public typealias Index = [Key: ReducerBox].Index
+    public typealias Element = (key: Key, value: Value)
+
+    /// The starting index of the collection, used in iterations.
+    public var startIndex: Index { keyValues.startIndex }
+
+    /// The ending index of the collection, used in iterations.
+    public var endIndex: Index { keyValues.endIndex }
+
+    /// Required subscript to access an element of the collection at the specified index.
+    ///
+    /// - Parameter index: The position in the collection.
+    /// - Returns: The element at the specified index.
+    public subscript(index: Index) -> Element {
+        let element = keyValues[index]
+        return (element.key, element.value.value)
+    }
+
+    /// Returns the next index in the collection.
+    ///
+    /// - Parameter i: The current index.
+    /// - Returns: The index immediately after the given index.
+    public func index(after i: Index) -> Index {
+        keyValues.index(after: i)
     }
 }

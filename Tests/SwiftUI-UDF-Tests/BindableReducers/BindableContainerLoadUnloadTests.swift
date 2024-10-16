@@ -26,22 +26,12 @@ final class BindableContainerLoadUnloadTests: XCTestCase {
         var bindedReducersCount = try await XCTUnwrapAsync(await store.state.itemsForm).reducers.count
         XCTAssertEqual(bindedReducersCount, 0)
 
-        await store.dispatch(
-            Actions._OnContainerDidLoad(
-                containerType: ItemsContainer.self, 
-                id: .init(itemID: .init(value: 1), containerUUID: UUID())
-            )
-        )
+        await store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 1)))
 
         bindedReducersCount = try await XCTUnwrapAsync(await store.state.itemsForm).reducers.count
         XCTAssertEqual(bindedReducersCount, 1)
 
-        await store.dispatch(
-            Actions._OnContainerDidLoad(
-                containerType: ItemsContainer.self,
-                id: .init(itemID: .init(value: 2), containerUUID: UUID())
-            )
-        )
+        await store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 2)))
 
         bindedReducersCount = try await XCTUnwrapAsync(await store.state.itemsForm).reducers.count
         XCTAssertEqual(bindedReducersCount, 2)
@@ -52,24 +42,42 @@ final class BindableContainerLoadUnloadTests: XCTestCase {
 
         var bindedReducersCount = try await XCTUnwrapAsync(await store.state.itemsForm).reducers.count
         XCTAssertEqual(bindedReducersCount, 0)
-        let containerUUID = UUID()
 
-        await store.dispatch(
-            Actions._OnContainerDidLoad(
-                containerType: ItemsContainer.self,
-                id: .init(itemID: .init(value: 1), containerUUID: containerUUID)
-            )
-        )
+        await store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 1)))
 
         bindedReducersCount = try await XCTUnwrapAsync(await store.state.itemsForm).reducers.count
         XCTAssertEqual(bindedReducersCount, 1)
 
-        await store.dispatch(
-            Actions._OnContainerDidUnLoad(
-                containerType: ItemsContainer.self,
-                id: .init(itemID: .init(value: 1), containerUUID: containerUUID)
-            )
-        )
+        await store.dispatch(Actions._OnContainerDidUnLoad(containerType: ItemsContainer.self, id: .init(value: 1)))
+
+        bindedReducersCount = try await XCTUnwrapAsync(await store.state.itemsForm).reducers.count
+        XCTAssertEqual(bindedReducersCount, 0)
+    }
+
+    func test_WhenBindableContainerHasMultipleInstances_BindableReducerShouldNotBeReleased() async throws {
+        let store = await XCTestStore(initial: AppState())
+
+        var bindedReducersCount = try await XCTUnwrapAsync(await store.state.itemsForm).reducers.count
+        XCTAssertEqual(bindedReducersCount, 0)
+
+        await store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 1)))
+        await store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 1)))
+        await store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 1)))
+
+        bindedReducersCount = try await XCTUnwrapAsync(await store.state.itemsForm).reducers.count
+        XCTAssertEqual(bindedReducersCount, 1)
+
+        await store.dispatch(Actions._OnContainerDidUnLoad(containerType: ItemsContainer.self, id: .init(value: 1)))
+
+        bindedReducersCount = try await XCTUnwrapAsync(await store.state.itemsForm).reducers.count
+        XCTAssertEqual(bindedReducersCount, 1)
+
+        await store.dispatch(Actions._OnContainerDidUnLoad(containerType: ItemsContainer.self, id: .init(value: 1)))
+
+        bindedReducersCount = try await XCTUnwrapAsync(await store.state.itemsForm).reducers.count
+        XCTAssertEqual(bindedReducersCount, 1)
+
+        await store.dispatch(Actions._OnContainerDidUnLoad(containerType: ItemsContainer.self, id: .init(value: 1)))
 
         bindedReducersCount = try await XCTUnwrapAsync(await store.state.itemsForm).reducers.count
         XCTAssertEqual(bindedReducersCount, 0)
