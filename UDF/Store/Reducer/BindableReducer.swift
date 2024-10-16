@@ -113,7 +113,7 @@ public extension BindableReducer {
     mutating func reduce(_ action: some Action) {
         switch action {
         case let action as Actions._OnContainerDidLoad<BindedContainer>:
-            reducers.retainOrCreateReducer(for: action.id)
+            reducers.retainOrCreateValue(for: action.id)
 
         case let action as Actions._OnContainerDidUnLoad<BindedContainer>:
             reducers.release(key: action.id)
@@ -130,11 +130,10 @@ public extension BindableReducer {
     }
 }
 
-
 public struct RCDictionary<Key: Hashable, Value: Initable & Equatable>: Equatable {
     private var keyValues: [Key: ReducerBox] = [:]
 
-    mutating func retainOrCreateReducer(for key: Key) {
+    mutating func retainOrCreateValue(for key: Key) {
         if keyValues[key] != nil {
             keyValues[key]?.retain()
         } else {
