@@ -376,24 +376,24 @@ open class BaseMiddleware<State: AppReducer>: Middleware {
     /// - Maps any errors thrown by the task to an action using `mapError`.
     ///
     /// - Note: This method makes use of the `execute` method that handles `ConcurrencyBlockEffect` objects.
-    open func execute<TaskId: Hashable>(
-        id: TaskId,
+    open func execute(
+        flowId: AnyHashable,
         cancellation: some Hashable,
         mapAction: @escaping (any Action) -> any Action = { $0 },
-        mapError: @escaping ErrorMapper<TaskId> = { effectId, error in Actions.Error(error: error.localizedDescription, id: effectId) },
+        mapError: @escaping ErrorMapper<AnyHashable> = { flowId, error in Actions.Error(error: error.localizedDescription, id: flowId) },
         fileName: String = #file,
         functionName: String = #function,
         lineNumber: Int = #line,
-        _ task: @escaping (TaskId) async throws -> any Action
+        _ task: @escaping (AnyHashable) async throws -> any Action
     ) {
         execute(
-            ConcurrencyBlockEffect(
-                id: id,
+            effect: ConcurrencyBlockEffect(
                 block: task,
                 fileName: fileName,
                 functionName: functionName,
                 lineNumber: lineNumber
             ),
+            flowId: flowId,
             cancellation: cancellation,
             mapAction: mapAction,
             mapError: mapError
@@ -434,19 +434,20 @@ open class BaseMiddleware<State: AppReducer>: Middleware {
     /// - Removes the task from the `cancellations` dictionary when it is completed.
     ///
     /// - Note: This method uses the Swift `Task` API to run the asynchronous task.
-    open func execute<Id: Hashable, E: ConcurrencyEffect>(
-        _ effect: E,
-        cancellation: Id,
+    open func execute<E: ConcurrencyEffect>(
+        effect: E,
+        flowId: AnyHashable,
+        cancellation: some Hashable,
         mapAction: @escaping (any Action) -> any Action = { $0 },
-        mapError: @escaping ErrorMapper<E.Id> = { effectId, error in Actions.Error(error: error.localizedDescription, id: effectId) },
+        mapError: @escaping ErrorMapper<AnyHashable> = { flowId, error in Actions.Error(error: error.localizedDescription, id: flowId) },
         fileName: String = #file,
         functionName: String = #function,
         lineNumber: Int = #line
     ) {
-        let anyId = AnyHashable(cancellation)
-
-        // Prevent running the effect if an effect with the same ID is already in progress
-        guard cancellations[anyId] == nil else {
+        let anyCancellationId = AnyHashable(cancellation)
+        
+        // Prevent running the effect if an effect with the same cancellation ID is already in progress
+        guard cancellations[anyCancellationId] == nil else {
             return
         }
 
@@ -457,9 +458,9 @@ open class BaseMiddleware<State: AppReducer>: Middleware {
         XCTestGroup.enter()
         let task = Task { [weak self] in
             do {
-                // Execute the effect's task
-                let action = try await effect.task()
-
+                // Execute the effect's task, passing flowId
+                let action = try await effect.task(flowId: flowId)
+                
                 // Check if the task was cancelled and dispatch appropriate actions
                 if Task.isCancelled {
                     self?.dispatch(action: Actions.DidCancelEffect(by: cancellation), filePosition: filePosition)
@@ -472,17 +473,17 @@ open class BaseMiddleware<State: AppReducer>: Middleware {
                 if error is CancellationError {
                     self?.dispatch(action: Actions.DidCancelEffect(by: cancellation), filePosition: filePosition)
                 } else if !Task.isCancelled {
-                    self?.dispatch(action: mapError(effect.id, error), filePosition: filePosition)
+                    self?.dispatch(action: mapError(flowId, error), filePosition: filePosition)
                 }
             }
 
             // Remove the task from the cancellations dictionary
             _ = self?.queue.sync { [weak self] in
-                self?.cancellations.removeValue(forKey: anyId)
+                self?.cancellations.removeValue(forKey: anyCancellationId)
             }
         }
 
         // Store the task in the cancellations dictionary for future cancellation
-        cancellations[anyId] = task
+        cancellations[anyCancellationId] = task
     }
 }
