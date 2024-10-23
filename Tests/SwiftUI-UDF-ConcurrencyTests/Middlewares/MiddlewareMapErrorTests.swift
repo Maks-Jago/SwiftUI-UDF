@@ -46,7 +46,7 @@ final class MiddlewareMapErrorTests: XCTestCase {
             switch action {
             case is Actions.StartLoading:
                 execute(
-                    id: MiddlewareMapErrorTests.AppState.ErrorFlow.id,
+                    flowId: MiddlewareMapErrorTests.AppState.ErrorFlow.id,
                     cancellation: Сancellation.message,
                     mapError: mapAPIError
                 ) { _ in

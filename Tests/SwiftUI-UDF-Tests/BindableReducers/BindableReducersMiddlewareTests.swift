@@ -164,7 +164,7 @@ private extension BindableReducersMiddlewareTests {
             for (id, flow) in state.itemsFlow {
                 switch flow {
                 case .loading:
-                    execute(id: ItemsFlow.id, cancellation: Cancellation.itemDetails(id)) { flowId in
+                    execute(flowId: ItemsFlow.id, cancellation: Cancellation.itemDetails(id)) { flowId in
                         let item = try await self.environment.loadItemDetails(id)
                         return Actions.DidLoadItem(item: item, id: flowId)
                             .binded(to: ItemsContainer.self, by: id)

@@ -98,7 +98,8 @@ private extension ConcurrencyMiddlewareCancellationTests {
             switch state.middlewareFlow {
             case .loading:
                 execute(
-                    SomeEffect(id: "message_id"),
+                    effect: SomeEffect(),
+                    flowId: "message_id",
                     cancellation: Сancellation.message
                 )
 
@@ -110,16 +111,14 @@ private extension ConcurrencyMiddlewareCancellationTests {
             }
         }
 
-        struct SomeEffect<Id: Hashable>: ConcurrencyEffect {
-            var id: Id
-
-            func task() async throws -> any Action {
+        struct SomeEffect: ConcurrencyEffect {
+            func task(flowId: AnyHashable) async throws -> any UDF.Action {
                 try await Task.sleep(seconds: 1)
-
+                
                 try Task.checkCancellation()
-
-                return Actions.Message(message: "Success message", id: id)
+                
+                return Actions.Message(message: "Success message", id: flowId)
             }
         }
     }
-}
+} 
