@@ -273,64 +273,6 @@ public extension EnvironmentStore {
         }
     }
 
-    /// Asynchronously subscribes to a middleware type on a specified queue and executes a closure upon completion.
-    ///
-    /// - Parameters:
-    ///   - middlewareType: The middleware type to subscribe to.
-    ///   - queue: The dispatch queue on which the middleware operates.
-    ///   - onSubscribe: A closure to execute after the middleware has been subscribed.
-    @available(
-        *,
-        deprecated,
-        message: "`subscribeAsync` func is deprecated and will be removed in future updates. Use `subscribe` method instead"
-    )
-    func subscribeAsync<M>(_ middlewareType: M.Type, on queue: DispatchQueue, onSubscribe: @escaping () -> Void = {}) where M: Middleware,
-        State == M.State
-    {
-        subscribe(middlewareType, on: queue)
-        onSubscribe()
-    }
-
-    /// Asynchronously subscribes to a middleware type with a specified environment and queue, then executes a closure upon completion.
-    ///
-    /// - Parameters:
-    ///   - middlewareType: The middleware type to subscribe to.
-    ///   - environment: The environment to use for the middleware.
-    ///   - queue: The dispatch queue on which the middleware operates.
-    ///   - onSubscribe: A closure to execute after the middleware has been subscribed.
-    @available(
-        *,
-        deprecated,
-        message: "`subscribeAsync` func is deprecated and will be removed in future updates. Use `subscribe` method instead"
-    )
-    func subscribeAsync<M>(
-        _ middlewareType: M.Type,
-        environment: M.Environment,
-        on queue: DispatchQueue,
-        onSubscribe: @escaping () -> Void = {}
-    ) where M: Middleware, State == M.State, M: EnvironmentMiddleware {
-        subscribe(middlewareType, environment: environment, on: queue)
-        onSubscribe()
-    }
-
-    /// Subscribes to middleware using a custom builder asynchronously.
-    ///
-    /// - Parameter build: A closure that takes the store and returns an array of middleware wrappers.
-    @available(
-        *,
-        deprecated,
-        message: "`subscribeAsync` func is deprecated and will be removed in future updates. Use `subscribe` method instead"
-    )
-    func subscribeAsync(@MiddlewareBuilder<State> build: @escaping (_ store: any Store<State>) -> [MiddlewareWrapper<State>]) {
-        executeSynchronously {
-            await self.store.subscribe(
-                build(self.store).map { wrapper in
-                    wrapper.instance ?? self.middleware(store: self.store, type: wrapper.type)
-                }
-            )
-        }
-    }
-
     /// Subscribes to middleware using a custom builder.
     ///
     /// - Parameter build: A closure that takes the store and returns an array of middleware wrappers.

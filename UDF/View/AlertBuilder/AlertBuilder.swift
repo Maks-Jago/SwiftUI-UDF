@@ -122,12 +122,6 @@ public enum AlertBuilder {
             case message(text: () -> String)
             case messageTitle(title: () -> String, message: () -> String)
 
-            @available(*, deprecated, message: "use customActions(title:text:actions) case instead")
-            case custom(title: () -> String, text: () -> String, primaryButton: AlertButton, secondaryButton: AlertButton)
-
-            @available(*, deprecated, message: "use customActions(title:text:actions) case instead")
-            case customDismiss(title: () -> String, text: () -> String, dismissButton: AlertButton)
-
             case customActions(title: () -> String, text: () -> String, actions: () -> [any AlertAction])
         }
 
@@ -185,28 +179,6 @@ public enum AlertBuilder {
         public init(title: @escaping () -> String, message: @escaping () -> String) {
             id = UUID()
             type = .messageTitle(title: title, message: message)
-        }
-
-        @available(*, deprecated, message: "use init(title:text:actions) instead")
-        public init(title: String, text: String, primaryButton: AlertButton, secondaryButton: AlertButton) {
-            self.init(title: { title }, text: { text }, primaryButton: primaryButton, secondaryButton: secondaryButton)
-        }
-
-        @available(*, deprecated, message: "use init(title:text:actions) instead")
-        public init(title: @escaping () -> String, text: @escaping () -> String, primaryButton: AlertButton, secondaryButton: AlertButton) {
-            id = UUID()
-            type = .custom(title: title, text: text, primaryButton: primaryButton, secondaryButton: secondaryButton)
-        }
-
-        @available(*, deprecated, message: "use init(title:text:actions) instead")
-        public init(title: String, text: String, dismissButton: AlertButton) {
-            self.init(title: { title }, text: { text }, dismissButton: dismissButton)
-        }
-
-        @available(*, deprecated, message: "use init(title:text:actions) instead")
-        public init(title: @escaping () -> String, text: @escaping () -> String, dismissButton: AlertButton) {
-            id = UUID()
-            type = .customDismiss(title: title, text: text, dismissButton: dismissButton)
         }
 
         /// Initializes a custom alert style with a title, text, and custom actions.

@@ -121,18 +121,6 @@ public extension AlertAction where Self == AlertButton {
         AlertButton(title: title, action: action)
     }
 
-    /// Creates a default alert button with the specified text and action.
-    ///
-    /// - Warning: This method is deprecated. Use the `default` method with a `String` instead of `Text`.
-    /// - Parameters:
-    ///   - text: A `Text` object representing the title of the button.
-    ///   - action: A closure to execute when the button is tapped. Defaults to an empty closure.
-    /// - Returns: An `AlertButton` with the given text and action.
-    @available(*, deprecated, message: "use `default` with String instead of Text")
-    static func `default`(_ text: Text, action: @escaping () -> Void = {}) -> Self {
-        AlertButton(title: text.content ?? "", action: action)
-    }
-
     /// Creates a cancel alert button with the specified title and action.
     ///
     /// - Parameters:
@@ -144,19 +132,6 @@ public extension AlertAction where Self == AlertButton {
             .role(.cancel)
     }
 
-    /// Creates a cancel alert button with the specified text and action.
-    ///
-    /// - Warning: This method is deprecated. Use the `cancel` method with a `String` instead of `Text`.
-    /// - Parameters:
-    ///   - text: A `Text` object representing the title of the button.
-    ///   - action: A closure to execute when the button is tapped. Defaults to an empty closure.
-    /// - Returns: An `AlertButton` with the given text and cancel role.
-    @available(*, deprecated, message: "use `cancel` with String instead of Text")
-    static func cancel(_ text: Text, action: @escaping () -> Void = {}) -> Self {
-        AlertButton(title: text.content ?? "", action: action)
-            .role(.cancel)
-    }
-
     /// Creates a destructive alert button with the specified title and action.
     ///
     /// - Parameters:
@@ -165,19 +140,6 @@ public extension AlertAction where Self == AlertButton {
     /// - Returns: An `AlertButton` with the given title and destructive role.
     static func destructive(_ title: String, action: @escaping () -> Void = {}) -> Self {
         AlertButton(title: title, action: action)
-            .role(.destructive)
-    }
-
-    /// Creates a destructive alert button with the specified text and action.
-    ///
-    /// - Warning: This method is deprecated. Use the `destructive` method with a `String` instead of `Text`.
-    /// - Parameters:
-    ///   - text: A `Text` object representing the title of the button.
-    ///   - action: A closure to execute when the button is tapped. Defaults to an empty closure.
-    /// - Returns: An `AlertButton` with the given text and destructive role.
-    @available(*, deprecated, message: "use `destructive` with String instead of Text")
-    static func destructive(_ text: Text, action: @escaping () -> Void = {}) -> Self {
-        AlertButton(title: text.content ?? "", action: action)
             .role(.destructive)
     }
 }

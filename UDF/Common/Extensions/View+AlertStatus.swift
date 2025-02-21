@@ -118,18 +118,6 @@ private struct AlertModifier: ViewModifier {
     /// - Returns: An array of alert actions appropriate for the alert type.
     func alertActions(for type: AlertBuilder.AlertStyle.AlertType) -> [any AlertAction] {
         switch type {
-        case let .custom(_, _, primaryButton, secondaryButton):
-            if primaryButton.role == .destructive {
-                [primaryButton, secondaryButton.role(.cancel)]
-            } else if secondaryButton.role == .destructive {
-                [primaryButton.role(.cancel), secondaryButton]
-            } else {
-                [primaryButton, secondaryButton]
-            }
-
-        case let .customDismiss(_, _, dismissButton):
-            [dismissButton]
-
         case let .customActions(_, _, actions):
             actions()
 
@@ -155,10 +143,6 @@ private struct AlertModifier: ViewModifier {
         case let .messageTitle(title, text):
             (title, text)
         case let .customActions(title, text, _):
-            (title, text)
-        case let .custom(title, text, _, _):
-            (title, text)
-        case let .customDismiss(title, text, _):
             (title, text)
         }
     }
