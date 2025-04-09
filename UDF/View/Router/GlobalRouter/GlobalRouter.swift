@@ -46,6 +46,7 @@ import SwiftUI
 /// ```swift
 /// @Environment(\.globalRouter) private var globalRouter
 /// ```
+@available(macOS 13, *)
 public final class GlobalRouter {
     private var routingPath: Binding<NavigationPath>
     private var routers: [Weak] = []
@@ -136,10 +137,12 @@ public final class GlobalRouter {
     }
 }
 
+@available(macOS 13, *)
 private struct GlobalRouterKey: EnvironmentKey {
     static var defaultValue: GlobalRouter = .init(path: .constant(NavigationPath()))
 }
 
+@available(macOS 13, *)
 public extension EnvironmentValues {
     /// Provides access to the global router from the environment.
     var globalRouter: GlobalRouter {
