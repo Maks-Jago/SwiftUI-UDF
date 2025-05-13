@@ -35,6 +35,20 @@ final class BindableReducersMiddlewareTests: XCTestCase {
             }
         }
     }
+    
+    struct ItemReducible: UDF.Reducible {
+        var didLoadItemReduced: Int = 0
+        
+        mutating func reduce(_ action: some Action) {
+            switch action {
+            case is Actions.DidLoadItem<Item>:
+                didLoadItemReduced += 1
+                
+            default:
+                break
+            }
+        }
+    }
 
     enum ItemsFlow: IdentifiableFlow {
         case none, loading
@@ -60,6 +74,8 @@ final class BindableReducersMiddlewareTests: XCTestCase {
 
         @BindableReducer(ItemsFlow.self, bindedTo: ItemsContainer.self)
         fileprivate var itemsFlow
+        
+        var itemReducible = ItemReducible()
     }
 
     func test_WhenLoadingDataForBindableReducers_OnleConcreteInstanceOfBindableFormShouldBeUpdated() async throws {
@@ -103,6 +119,33 @@ final class BindableReducersMiddlewareTests: XCTestCase {
 
         let itemsForm4: ItemsForm = try await XCTUnwrapAsync(await store.state.itemsForm[Item.ID(value: 4)])
         XCTAssertNotNil(itemsForm4.item)
+    }
+    
+    func test_WhenDispatchingBindedAction_DuplicationShouldBePrevented() async throws {
+        let store = await XCTestStore(initial: AppState())
+        await store.subscribe(ItemsMiddleware.self)
+        
+        await store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 1)))
+        
+        let bindedReducersFormCount = try await XCTUnwrapAsync(await store.state.itemsForm).reducers.count
+        XCTAssertEqual(bindedReducersFormCount, 1)
+        
+        let bindedReducersFlowCount = try await XCTUnwrapAsync(await store.state.itemsFlow).reducers.count
+        XCTAssertEqual(bindedReducersFlowCount, 1)
+        
+        await store.dispatch(
+            ActionGroup {
+                Actions.LoadItem(id: .init(value: 1))
+            }.binded(to: ItemsContainer.self, by: Item.ID(value: 1))
+        )
+        
+        await store.wait()
+        
+        let itemsForm1: ItemsForm = try await XCTUnwrapAsync(await store.state.itemsForm[Item.ID(value: 1)])
+        let itemsReducer = try await XCTUnwrapAsync(await store.state.itemReducible)
+        
+        XCTAssertNotNil(itemsForm1.item)
+        XCTAssertEqual(itemsReducer.didLoadItemReduced, 1)
     }
 }
 

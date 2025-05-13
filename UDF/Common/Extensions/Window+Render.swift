@@ -43,6 +43,7 @@ import SwiftUI
                 // Trigger layout passes to ensure the view is rendered properly
                 viewController.view.setNeedsLayout()
                 viewController.view.layoutIfNeeded()
+                window.makeKeyAndVisible()
 
                 return window
             }
@@ -78,3 +79,15 @@ import SwiftUI
     }
 
 #endif
+
+extension PlatformWindow {
+    @MainActor func redraw() {
+        RunLoop.main.redraw()
+    }
+}
+
+extension RunLoop {
+    @MainActor func redraw() {
+        run(until: Date().addingTimeInterval(0.01))
+    }
+}
