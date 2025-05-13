@@ -27,12 +27,12 @@ final class ContainerHookTests: XCTestCase {
 
     func test_OneTimeHook() async throws {
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
-        let rootContainer = RootContainer()
+        let rootContainer = await RootContainer()
 
         let window = await PlatformWindow.render(container: rootContainer)
 
         XCTAssertEqual(store.state.hookForm.triggerValue, "")
-        print(window) // To force a window redraw
+        await window.redraw()
 
         await fulfill(description: "waiting for rendering", sleep: 1)
         store.$state.hookForm.triggerValue.wrappedValue = "1"
@@ -43,12 +43,12 @@ final class ContainerHookTests: XCTestCase {
 
     func test_OneTimeHook_NotCalledAgainOnRedraw() async throws {
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
-        let rootContainer = RootContainer()
+        let rootContainer = await RootContainer()
 
         let window = await PlatformWindow.render(container: rootContainer)
 
         XCTAssertEqual(store.state.hookForm.triggerValue, "")
-        print(window) // To force a window redraw
+        await window.redraw()
 
         await fulfill(description: "waiting for rendering", sleep: 1)
 
@@ -74,12 +74,12 @@ final class ContainerHookTests: XCTestCase {
 
     func test_DefaultHook_CalledCorrectNumberOfTimes() async throws {
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
-        let rootContainer = RootContainer()
+        let rootContainer = await RootContainer()
 
         let window = await PlatformWindow.render(container: rootContainer)
 
         XCTAssertEqual(store.state.hookForm.triggerValue, "")
-        print(window) // To force a window redraw
+        await window.redraw()
 
         await fulfill(description: "waiting for rendering", sleep: 1)
 
@@ -108,11 +108,11 @@ final class ContainerHookTests: XCTestCase {
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
 
         // Create and use the first container
-        let rootContainer = RootContainer()
+        let rootContainer = await RootContainer()
         var window = await PlatformWindow.render(container: rootContainer)
 
         XCTAssertEqual(store.state.hookForm.triggerValue, "")
-        print(window) // To force a window redraw
+        await window.redraw()
 
         await fulfill(description: "waiting for rendering", sleep: 1)
 
@@ -134,11 +134,11 @@ final class ContainerHookTests: XCTestCase {
         // The one-time hook should not fire again, so triggerValue should remain "1"
         XCTAssertEqual(store.state.hookForm.triggerValue, "1", "One-time hook should not fire again")
 
-        let newRootContainer = RootContainer()
+        let newRootContainer = await RootContainer()
         window = await PlatformWindow.render(container: newRootContainer)
 
         XCTAssertEqual(store.state.hookForm.triggerValue, "1") // triggerValue from previous step
-        print(window) // To force a window redraw
+        await window.redraw()
 
         await fulfill(description: "waiting for rendering", sleep: 1)
 
