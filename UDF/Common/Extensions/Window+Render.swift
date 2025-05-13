@@ -52,10 +52,6 @@ import SwiftUI
         func release() {
             self.rootViewController = nil
         }
-
-        @MainActor func redraw() {
-            RunLoop.main.redraw()
-        }
     }
 #endif
 
@@ -83,6 +79,12 @@ import SwiftUI
     }
 
 #endif
+
+extension PlatformWindow {
+    @MainActor func redraw() {
+        RunLoop.main.redraw()
+    }
+}
 
 extension RunLoop {
     @MainActor func redraw() {
