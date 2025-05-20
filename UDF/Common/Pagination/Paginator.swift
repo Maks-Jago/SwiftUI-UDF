@@ -126,7 +126,13 @@ public struct Paginator<Item: Hashable & Identifiable, FlowId: Hashable>: Reduci
     /// - Returns: A Boolean value indicating whether the item was successfully moved.
     @discardableResult
     public mutating func moveItem(fromIndex: Int, toIndex: Int) -> Bool {
-        guard toIndex < items.count, toIndex >= 0, items.count > 0 else {
+        guard
+            fromIndex >= 0,
+            fromIndex < items.count,
+            toIndex < items.count,
+            toIndex >= 0,
+            items.count > 0
+        else {
             return false
         }
         let item = items.elements[fromIndex]
