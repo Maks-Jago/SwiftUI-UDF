@@ -75,3 +75,14 @@ Ensures seamless integration of SwiftPM packages with Xcode’s build and runtim
 4. `XcodeIntegrationAgent`
 
 ---
+
+## Offline Build Considerations
+
+When running in environments without network access the `SPMResolverAgent`
+cannot fetch remote dependencies. To avoid build failures, run
+`swift package resolve` in a network-enabled setup phase and preserve the
+resulting `.build` or `~/.swiftpm` cache directories. Subsequent invocations of
+`swift build` or `swift test` can then use these cached checkouts without
+contacting the remote package hosts.
+
+---
