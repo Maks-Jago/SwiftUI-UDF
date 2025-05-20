@@ -22,6 +22,7 @@ let package = Package(
     dependencies: [
         .package(url: "https://github.com/apple/swift-collections", from: "1.1.4"),
         .package(url: "https://github.com/urlaunched-com/Runtime", from: "2.2.6"),
+        .package(url: "https://github.com/apple/swift-testing", from: "0.7.0"),
     ],
     targets: [
         .target(
@@ -45,6 +46,10 @@ let package = Package(
             name: "SwiftUI-UDF-Tests",
             dependencies: [
                 .target(name: "UDFXCTest"),
+                .product(name: "Testing", package: "swift-testing"),
+            ],
+            plugins: [
+                .plugin(name: "TestingPlugin", package: "swift-testing"),
             ]
         ),
 
@@ -52,6 +57,10 @@ let package = Package(
             name: "SwiftUI-UDF-ConcurrencyTests",
             dependencies: [
                 .target(name: "UDFXCTest"),
+                .product(name: "Testing", package: "swift-testing"),
+            ],
+            plugins: [
+                .plugin(name: "TestingPlugin", package: "swift-testing"),
             ]
         ),
     ]

@@ -87,10 +87,10 @@ final class BindableReducersMiddlewareTests: XCTestCase {
         await store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 3)))
         await store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 4)))
 
-        let bindedReducersFormCount = try await XCTUnwrapAsync(await store.state.itemsForm).reducers.count
+        let bindedReducersFormCount = try await unwrapAsync(await store.state.itemsForm).reducers.count
         XCTAssertEqual(bindedReducersFormCount, 4)
 
-        let bindedReducersFlowCount = try await XCTUnwrapAsync(await store.state.itemsFlow).reducers.count
+        let bindedReducersFlowCount = try await unwrapAsync(await store.state.itemsFlow).reducers.count
         XCTAssertEqual(bindedReducersFlowCount, 4)
 
         await store.dispatch(
@@ -108,16 +108,16 @@ final class BindableReducersMiddlewareTests: XCTestCase {
 
         await store.wait()
 
-        let itemsForm1: ItemsForm = try await XCTUnwrapAsync(await store.state.itemsForm[Item.ID(value: 1)])
+        let itemsForm1: ItemsForm = try await unwrapAsync(await store.state.itemsForm[Item.ID(value: 1)])
         XCTAssertNotNil(itemsForm1.item)
 
-        let itemsForm2: ItemsForm = try await XCTUnwrapAsync(await store.state.itemsForm[Item.ID(value: 2)])
+        let itemsForm2: ItemsForm = try await unwrapAsync(await store.state.itemsForm[Item.ID(value: 2)])
         XCTAssertNil(itemsForm2.item)
 
-        let itemsForm3: ItemsForm = try await XCTUnwrapAsync(await store.state.itemsForm[Item.ID(value: 3)])
+        let itemsForm3: ItemsForm = try await unwrapAsync(await store.state.itemsForm[Item.ID(value: 3)])
         XCTAssertNotNil(itemsForm3.item)
 
-        let itemsForm4: ItemsForm = try await XCTUnwrapAsync(await store.state.itemsForm[Item.ID(value: 4)])
+        let itemsForm4: ItemsForm = try await unwrapAsync(await store.state.itemsForm[Item.ID(value: 4)])
         XCTAssertNotNil(itemsForm4.item)
     }
     
@@ -127,10 +127,10 @@ final class BindableReducersMiddlewareTests: XCTestCase {
         
         await store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 1)))
         
-        let bindedReducersFormCount = try await XCTUnwrapAsync(await store.state.itemsForm).reducers.count
+        let bindedReducersFormCount = try await unwrapAsync(await store.state.itemsForm).reducers.count
         XCTAssertEqual(bindedReducersFormCount, 1)
         
-        let bindedReducersFlowCount = try await XCTUnwrapAsync(await store.state.itemsFlow).reducers.count
+        let bindedReducersFlowCount = try await unwrapAsync(await store.state.itemsFlow).reducers.count
         XCTAssertEqual(bindedReducersFlowCount, 1)
         
         await store.dispatch(
@@ -141,8 +141,8 @@ final class BindableReducersMiddlewareTests: XCTestCase {
         
         await store.wait()
         
-        let itemsForm1: ItemsForm = try await XCTUnwrapAsync(await store.state.itemsForm[Item.ID(value: 1)])
-        let itemsReducer = try await XCTUnwrapAsync(await store.state.itemReducible)
+        let itemsForm1: ItemsForm = try await unwrapAsync(await store.state.itemsForm[Item.ID(value: 1)])
+        let itemsReducer = try await unwrapAsync(await store.state.itemReducible)
         
         XCTAssertNotNil(itemsForm1.item)
         XCTAssertEqual(itemsReducer.didLoadItemReduced, 1)
