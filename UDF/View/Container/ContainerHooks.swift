@@ -66,16 +66,14 @@ final class ContainerHooks<State: AppReducer> {
         self.subscriptionKey = store.add { [weak self] oldState, newState, _ in
             self?.checkHooks(oldState: .init(oldState), newState: .init(newState))
         }
-        
-        // Trigger initial hook check to ensure hooks fire at least once
-        DispatchQueue.main.async { [weak self] in
-            self?.checkHooks(oldState: .init(store.state), newState: .init(store.state))
-        }
     }
 
     /// Creates hooks by building them from the provided closure and storing them in a dictionary.
     func createHooks() {
         self.hooks = Dictionary(uniqueKeysWithValues: buildHooks().map { ($0.id, $0) })
+        
+        // Trigger initial hook check to ensure hooks fire at least once
+        checkInitialHooks()
     }
 
     /// Checks each hook's condition against the old and new state, triggering the hook if necessary.
@@ -84,18 +82,47 @@ final class ContainerHooks<State: AppReducer> {
     ///   - oldState: The previous state wrapped in a `Box`.
     ///   - newState: The current state wrapped in a `Box`.
     private func checkHooks(oldState: Box<State>, newState: Box<State>) {
+        var hooksToRemove: [AnyHashable] = []
+        
         for (key, hook) in hooks {
-            // Fire hook if condition is true and (first check or condition changed from false to true)
-            if hook.condition(newState.value), (oldState.value == newState.value || !hook.condition(oldState.value)), let store {
+            if hook.condition(newState.value), !hook.condition(oldState.value), let store {
                 hook.block(store)
 
                 switch hook.type {
                 case .oneTime:
-                    removeHook(by: key)
+                    hooksToRemove.append(key)
                 case .default:
                     break
                 }
             }
+        }
+        
+        for key in hooksToRemove {
+            removeHook(by: key)
+        }
+    }
+    
+    /// Checks hooks on initial container appearance, firing hooks if their condition is already true.
+    private func checkInitialHooks() {
+        guard let store = store else { return }
+        let currentState = Box(store.state)
+        var hooksToRemove: [AnyHashable] = []
+        
+        for (key, hook) in hooks {
+            if hook.condition(currentState.value) {
+                hook.block(store)
+                
+                switch hook.type {
+                case .oneTime:
+                    hooksToRemove.append(key)
+                case .default:
+                    break
+                }
+            }
+        }
+        
+        for key in hooksToRemove {
+            removeHook(by: key)
         }
     }
 
