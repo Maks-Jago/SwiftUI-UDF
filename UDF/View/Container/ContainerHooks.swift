@@ -66,6 +66,11 @@ final class ContainerHooks<State: AppReducer> {
         self.subscriptionKey = store.add { [weak self] oldState, newState, _ in
             self?.checkHooks(oldState: .init(oldState), newState: .init(newState))
         }
+        
+        // Trigger initial hook check to ensure hooks fire at least once
+        DispatchQueue.main.async { [weak self] in
+            self?.checkHooks(oldState: .init(store.state), newState: .init(store.state))
+        }
     }
 
     /// Creates hooks by building them from the provided closure and storing them in a dictionary.
@@ -80,7 +85,8 @@ final class ContainerHooks<State: AppReducer> {
     ///   - newState: The current state wrapped in a `Box`.
     private func checkHooks(oldState: Box<State>, newState: Box<State>) {
         for (key, hook) in hooks {
-            if hook.condition(newState.value), !hook.condition(oldState.value), let store {
+            // Fire hook if condition is true and (first check or condition changed from false to true)
+            if hook.condition(newState.value), (oldState.value == newState.value || !hook.condition(oldState.value)), let store {
                 hook.block(store)
 
                 switch hook.type {

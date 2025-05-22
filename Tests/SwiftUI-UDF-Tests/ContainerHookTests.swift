@@ -147,6 +147,30 @@ final class ContainerHookTests: XCTestCase {
         await fulfill(description: "waiting for hook execution", sleep: 0.2)
         XCTAssertEqual(store.state.hookForm.triggerValue, "1", "One-time hook should not fire again in new container")
     }
+    
+    func test_HookFiresWhenConditionAlreadyTrueOnContainerAppear() async throws {
+        let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
+        
+        // Set the trigger value BEFORE creating the container
+        // This simulates the scenario where the condition is already true
+        store.$state.hookForm.triggerValue.wrappedValue = "1"
+        
+        await fulfill(description: "waiting for settings initial value", sleep: 1)
+        
+        XCTAssertEqual(store.state.hookForm.triggerValue, "1")
+        
+        // Now create the container - the hook condition is already satisfied
+        let rootContainer = await RootContainer()
+        let window = await PlatformWindow.render(container: rootContainer)
+        
+        await window.redraw()
+        await fulfill(description: "waiting for hook execution", sleep: 1)
+        
+        // The hook should have fired even though the condition was already true
+        // when the container appeared, changing "1" to "2"
+        XCTAssertEqual(store.state.hookForm.triggerValue, "2", 
+                       "Hook should fire at least once even if condition was already true when container appeared")
+    }
 }
 
 // MARK: - RootContainer
