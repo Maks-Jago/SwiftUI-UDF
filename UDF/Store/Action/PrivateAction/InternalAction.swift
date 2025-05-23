@@ -60,10 +60,10 @@ extension InternalAction {
         var result: [InternalAction] = []
         var processedDescriptions = Set<String>()
         var stack = [self]
-        
+
         while !stack.isEmpty {
             let current = stack.removeLast()
-            
+
             switch current.value {
             case let bindableAction as any _AnyBindableAction:
                 // Add the bindable action
@@ -72,7 +72,7 @@ extension InternalAction {
                     processedDescriptions.insert(bindableDescription)
                     result.append(current)
                 }
-                
+
                 // Create and add the unwrapped action
                 let unwrapped = InternalAction(
                     bindableAction.value,
@@ -82,17 +82,17 @@ extension InternalAction {
                     functionName: current.functionName,
                     lineNumber: current.lineNumber
                 )
-                
+
                 let unwrappedDescription = String(describing: unwrapped.value)
                 if !processedDescriptions.contains(unwrappedDescription) {
                     processedDescriptions.insert(unwrappedDescription)
                     result.append(unwrapped)
                 }
-                
+
             case let actionGroup as ActionGroup:
                 // Add all actions from the group to the stack
                 stack.append(contentsOf: actionGroup._actions)
-                
+
             default:
                 let description = String(describing: current.value)
                 if !processedDescriptions.contains(description) {
@@ -101,10 +101,10 @@ extension InternalAction {
                 }
             }
         }
-        
+
         return result.filter(isIncluded)
     }
-    
+
     func findDelayedActions() -> [InternalAction] {
         self.unwrapActions().filter { $0.delay != nil }
     }
