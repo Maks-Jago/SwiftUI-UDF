@@ -71,6 +71,9 @@ final class ContainerHooks<State: AppReducer> {
     /// Creates hooks by building them from the provided closure and storing them in a dictionary.
     func createHooks() {
         self.hooks = Dictionary(uniqueKeysWithValues: buildHooks().map { ($0.id, $0) })
+        
+        // Trigger initial hook check to ensure hooks fire at least once
+        checkInitialHooks()
     }
 
     /// Checks each hook's condition against the old and new state, triggering the hook if necessary.
@@ -79,17 +82,47 @@ final class ContainerHooks<State: AppReducer> {
     ///   - oldState: The previous state wrapped in a `Box`.
     ///   - newState: The current state wrapped in a `Box`.
     private func checkHooks(oldState: Box<State>, newState: Box<State>) {
+        var hooksToRemove: [AnyHashable] = []
+        
         for (key, hook) in hooks {
             if hook.condition(newState.value), !hook.condition(oldState.value), let store {
                 hook.block(store)
 
                 switch hook.type {
                 case .oneTime:
-                    removeHook(by: key)
+                    hooksToRemove.append(key)
                 case .default:
                     break
                 }
             }
+        }
+        
+        for key in hooksToRemove {
+            removeHook(by: key)
+        }
+    }
+    
+    /// Checks hooks on initial container appearance, firing hooks if their condition is already true.
+    private func checkInitialHooks() {
+        guard let store = store else { return }
+        let currentState = Box(store.state)
+        var hooksToRemove: [AnyHashable] = []
+        
+        for (key, hook) in hooks {
+            if hook.condition(currentState.value) {
+                hook.block(store)
+                
+                switch hook.type {
+                case .oneTime:
+                    hooksToRemove.append(key)
+                case .default:
+                    break
+                }
+            }
+        }
+        
+        for key in hooksToRemove {
+            removeHook(by: key)
         }
     }
 
