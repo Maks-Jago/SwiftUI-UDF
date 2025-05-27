@@ -105,7 +105,8 @@ public final class GlobalRouter {
         guard !routingPath.wrappedValue.isEmpty else {
             return
         }
-        routingPath.wrappedValue.removeLast(routingPath.wrappedValue.count)
+        // Replace with empty path instead of removing items
+        routingPath.wrappedValue = NavigationPath()
     }
 
     /// Navigates back one step in the navigation stack.
@@ -132,8 +133,9 @@ public final class GlobalRouter {
     ///   - route: The route to navigate to.
     ///   - router: The router to use for navigation.
     public func resetStack<R: Routing>(to route: R.Route, with router: Router<R>) where R.Route: Hashable {
-        routingPath.wrappedValue.removeLast(routingPath.wrappedValue.count)
-        navigate(to: route, with: router)
+        var newPath = NavigationPath()
+        newPath.append(route)
+        routingPath.wrappedValue = newPath
     }
 }
 
