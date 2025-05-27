@@ -43,6 +43,7 @@ struct GlobalRoutingModifier<R: Routing>: ViewModifier where R.Route: Hashable {
     /// - Parameter router: The router to be added to the global navigation system.
     init(routing: R.Type) {
         self.router = .init(routing: R())
+        self.globalRouter.add(router: router)
     }
 
     /// Modifies the content view to add the router to the global router and set up navigation destinations.
