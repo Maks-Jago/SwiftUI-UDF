@@ -105,8 +105,7 @@ public final class GlobalRouter {
         guard !routingPath.wrappedValue.isEmpty else {
             return
         }
-        // Replace with empty path instead of removing items
-        routingPath.wrappedValue = NavigationPath()
+        routingPath.wrappedValue.removeLast(routingPath.wrappedValue.count)
     }
 
     /// Navigates back one step in the navigation stack.
