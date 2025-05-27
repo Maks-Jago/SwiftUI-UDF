@@ -49,7 +49,7 @@ import SwiftUI
 @available(macOS 13, *)
 public final class GlobalRouter {
     private var routingPath: Binding<NavigationPath>
-    private var routers: [Weak] = []
+//    private var routers: [Weak] = []
 
     /// Initializes the global router with a given navigation path.
     ///
@@ -62,8 +62,9 @@ public final class GlobalRouter {
     ///
     /// - Parameter router: The router to add.
     func add(router: Router<some Routing>) {
-        routers.reap()
-        routers.append(.init(value: router))
+        //TODO: Add deprecated message
+//        routers.reap()
+//        routers.append(.init(value: router))
     }
 
     /// Navigates to a specified route using the provided router.
@@ -72,22 +73,26 @@ public final class GlobalRouter {
     ///   - route: The route to navigate to.
     ///   - router: The router to use for navigation.
     public func navigate<R: Routing>(to route: R.Route, with router: Router<R>) where R.Route: Hashable {
-        let registeredRoute = routers.first { obj in
-            guard let value = obj.value else {
-                return false
-            }
+        //TODO: Add deprecated message
 
-            return value is Router<R>
-        }
+        navigate(for: R.self, to: route)
 
-        guard registeredRoute != nil else {
-            fatalError(
-                "Routing: \(R.self) is not attached to the view hierarchy. Use `navigationDestination(for: MyRouting.self)` to add routing"
-            )
-        }
-
-        routers.reap()
-        routingPath.wrappedValue.append(route)
+//        let registeredRoute = routers.first { obj in
+//            guard let value = obj.value else {
+//                return false
+//            }
+//
+//            return value is Router<R>
+//        }
+//
+//        guard registeredRoute != nil else {
+//            fatalError(
+//                "Routing: \(R.self) is not attached to the view hierarchy. Use `navigationDestination(for: MyRouting.self)` to add routing"
+//            )
+//        }
+//
+//        routers.reap()
+//        routingPath.wrappedValue.append(route)
     }
 
     /// Navigates to a specified route.
@@ -96,7 +101,7 @@ public final class GlobalRouter {
     ///   - routing: The routing type to use for navigation.
     ///   - route: The route to navigate to.
     public func navigate<R: Routing>(for routing: R.Type, to route: R.Route) where R.Route: Hashable {
-        routers.reap()
+//        routers.reap()
         routingPath.wrappedValue.append(route)
     }
 
