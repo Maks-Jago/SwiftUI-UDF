@@ -143,8 +143,9 @@ public final class GlobalRouter {
     ///   - routing: The routing type to use for navigation.
     ///   - route: The route to navigate to.
     public func resetStack<R: Routing>(routing: R.Type, to route: R.Route) where R.Route: Hashable {
-        backToRoot()
-        navigate(for: routing, to: route)
+        var newPath = NavigationPath()
+        newPath.append(route)
+        routingPath.wrappedValue = newPath
     }
 }
 
