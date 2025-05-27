@@ -132,7 +132,17 @@ public final class GlobalRouter {
     /// - Parameters:
     ///   - route: The route to navigate to.
     ///   - router: The router to use for navigation.
+    @available(*, deprecated, message: "Use resetStack(routing:to:) instead which provides crash-free navigation.")
     public func resetStack<R: Routing>(to route: R.Route, with router: Router<R>) where R.Route: Hashable {
+        resetStack(routing: R.self, to: route)
+    }
+
+    /// Resets the navigation stack and navigates to a specific route.
+    ///
+    /// - Parameters:
+    ///   - routing: The routing type to use for navigation.
+    ///   - route: The route to navigate to.
+    public func resetStack<R: Routing>(routing: R.Type, to route: R.Route) where R.Route: Hashable {
         var newPath = NavigationPath()
         newPath.append(route)
         routingPath.wrappedValue = newPath
