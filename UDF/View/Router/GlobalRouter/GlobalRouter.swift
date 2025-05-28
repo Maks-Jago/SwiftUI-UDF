@@ -20,18 +20,16 @@ import SwiftUI
 ///
 /// ## Properties:
 /// - `routingPath`: A binding to the `NavigationPath` used for navigating views.
-/// - `routers`: A list of weak references to registered routers for managing navigation routes.
 ///
 /// ## Initializers:
 /// - `init(path:)`: Initializes the global router with a `Binding<NavigationPath>`.
 ///
 /// ## Methods:
-/// - `add(router:)`: Registers a router to the global router.
-/// - `navigate(to:with:)`: Navigates to a specific route using the provided router.
+/// - `navigate(for:to:)`: Navigates to a specific route using the provided router.
 /// - `backToRoot()`: Navigates back to the root of the navigation stack.
 /// - `back()`: Navigates back one step in the navigation stack.
 /// - `back(stepsCount:)`: Navigates back a specified number of steps in the navigation stack.
-/// - `resetStack(to:with:)`: Resets the navigation stack and navigates to a specific route.
+/// - `resetStack(routing:to:)`: Resets the navigation stack and navigates to a specific route.
 ///
 /// ## Example of Injection:
 /// ```swift
@@ -49,7 +47,6 @@ import SwiftUI
 @available(macOS 13, *)
 public final class GlobalRouter {
     private var routingPath: Binding<NavigationPath>
-    private var routers: [Weak] = []
 
     /// Initializes the global router with a given navigation path.
     ///
@@ -58,36 +55,14 @@ public final class GlobalRouter {
         self.routingPath = path
     }
 
-    /// Registers a router to the global router.
-    ///
-    /// - Parameter router: The router to add.
-    func add(router: Router<some Routing>) {
-        routers.reap()
-        routers.append(.init(value: router))
-    }
-
     /// Navigates to a specified route using the provided router.
     ///
     /// - Parameters:
     ///   - route: The route to navigate to.
     ///   - router: The router to use for navigation.
+    @available(*, deprecated, message: "This method is deprecated and will be deleted in future versions. Use navigate(for:to:) instead.")
     public func navigate<R: Routing>(to route: R.Route, with router: Router<R>) where R.Route: Hashable {
-        let registeredRoute = routers.first { obj in
-            guard let value = obj.value else {
-                return false
-            }
-
-            return value is Router<R>
-        }
-
-        guard registeredRoute != nil else {
-            fatalError(
-                "Routing: \(R.self) is not attached to the view hierarchy. Use `navigationDestination(for: MyRouting.self)` to add routing"
-            )
-        }
-
-        routers.reap()
-        routingPath.wrappedValue.append(route)
+        navigate(for: R.self, to: route)
     }
 
     /// Navigates to a specified route.
@@ -96,7 +71,6 @@ public final class GlobalRouter {
     ///   - routing: The routing type to use for navigation.
     ///   - route: The route to navigate to.
     public func navigate<R: Routing>(for routing: R.Type, to route: R.Route) where R.Route: Hashable {
-        routers.reap()
         routingPath.wrappedValue.append(route)
     }
 
@@ -131,9 +105,20 @@ public final class GlobalRouter {
     /// - Parameters:
     ///   - route: The route to navigate to.
     ///   - router: The router to use for navigation.
+    @available(*, deprecated, message: "This method is deprecated and will be deleted in future versions. Use resetStack(routing:to:) instead.")
     public func resetStack<R: Routing>(to route: R.Route, with router: Router<R>) where R.Route: Hashable {
-        routingPath.wrappedValue.removeLast(routingPath.wrappedValue.count)
-        navigate(to: route, with: router)
+        resetStack(routing: R.self, to: route)
+    }
+
+    /// Resets the navigation stack and navigates to a specific route.
+    ///
+    /// - Parameters:
+    ///   - routing: The routing type to use for navigation.
+    ///   - route: The route to navigate to.
+    public func resetStack<R: Routing>(routing: R.Type, to route: R.Route) where R.Route: Hashable {
+        var newPath = NavigationPath()
+        newPath.append(route)
+        routingPath.wrappedValue = newPath
     }
 }
 
