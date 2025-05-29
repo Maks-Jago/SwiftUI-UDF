@@ -21,7 +21,7 @@ public enum AlertBuilder {
     /// Represents the current state of an alert, including its ID and status (presented or dismissed).
     public struct AlertStatus: Equatable, Identifiable {
         /// Returns a dismissed alert status.
-        public static var dismissed: Self { .init() }
+        public static var dismissed: Self = .init(id: "uuid_dismissed") 
 
         /// Compares two alert statuses to determine if they are equal.
         public static func == (lhs: Self, rhs: Self) -> Bool {
