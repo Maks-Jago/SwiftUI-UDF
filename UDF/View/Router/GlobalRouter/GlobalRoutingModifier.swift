@@ -32,16 +32,16 @@ import SwiftUI
 /// ## Methods:
 /// - `body(content:)`: Modifies the content view to add the router to the global router and
 ///   set up navigation destinations for the specified routes.
+@available(macOS 13, *)
 struct GlobalRoutingModifier<R: Routing>: ViewModifier where R.Route: Hashable {
     @Environment(\.globalRouter) var globalRouter
 
-    var router: Router<R>
-
+    var routing: R.Type
     /// Initializes the modifier with the specified router.
     ///
     /// - Parameter router: The router to be added to the global navigation system.
     init(routing: R.Type) {
-        self.router = .init(routing: R())
+        self.routing = routing
     }
 
     /// Modifies the content view to add the router to the global router and set up navigation destinations.
@@ -49,12 +49,11 @@ struct GlobalRoutingModifier<R: Routing>: ViewModifier where R.Route: Hashable {
     /// - Parameter content: The content view to be modified.
     /// - Returns: A view that adds the router to the global navigation system and sets up navigation destinations.
     func body(content: Content) -> some View {
-        let _ = self.globalRouter.add(router: router)
-        return content
+        content
             .navigationDestination(
                 for: R.Route.self,
                 destination: {
-                    router.view(for: $0)
+                    R().view(for: $0)
                 }
             )
     }

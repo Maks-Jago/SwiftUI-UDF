@@ -57,33 +57,52 @@ extension InternalAction: CustomDebugStringConvertible {
 // MARK: - ActionGroup
 extension InternalAction {
     func unwrapActions(isIncluded: ((_ action: InternalAction) -> Bool) = { _ in true }) -> [InternalAction] {
-        func actions(from internalAction: InternalAction) -> [InternalAction] {
-            var actions: [InternalAction] = []
-            switch self.value {
-            case let action as any _AnyBindableAction:
-                actions.append(internalAction)
-                actions.append(
-                    InternalAction(
-                        action.value,
-                        animation: self.animation,
-                        silent: self.silent,
-                        fileName: self.fileName,
-                        functionName: self.functionName,
-                        lineNumber: self.lineNumber
-                    )
+        var result: [InternalAction] = []
+        var processedDescriptions = Set<String>()
+        var stack = [self]
+
+        while !stack.isEmpty {
+            let current = stack.removeLast()
+
+            switch current.value {
+            case let bindableAction as any _AnyBindableAction:
+                // Add the bindable action
+                let bindableDescription = String(describing: current.value)
+                if !processedDescriptions.contains(bindableDescription) {
+                    processedDescriptions.insert(bindableDescription)
+                    result.append(current)
+                }
+
+                // Create and add the unwrapped action
+                let unwrapped = InternalAction(
+                    bindableAction.value,
+                    animation: current.animation,
+                    silent: current.silent,
+                    fileName: current.fileName,
+                    functionName: current.functionName,
+                    lineNumber: current.lineNumber
                 )
 
-            case let group as ActionGroup:
-                actions.append(contentsOf: group._actions.flatMap { $0.unwrapActions() })
+                let unwrappedDescription = String(describing: unwrapped.value)
+                if !processedDescriptions.contains(unwrappedDescription) {
+                    processedDescriptions.insert(unwrappedDescription)
+                    result.append(unwrapped)
+                }
+
+            case let actionGroup as ActionGroup:
+                // Add all actions from the group to the stack
+                stack.append(contentsOf: actionGroup._actions)
 
             default:
-                actions.append(internalAction)
+                let description = String(describing: current.value)
+                if !processedDescriptions.contains(description) {
+                    processedDescriptions.insert(description)
+                    result.append(current)
+                }
             }
-
-            return actions
         }
 
-        return actions(from: self).filter(isIncluded)
+        return result.filter(isIncluded)
     }
 
     func findDelayedActions() -> [InternalAction] {
