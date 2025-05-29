@@ -44,7 +44,6 @@ import SwiftUI
 /// ```swift
 /// @Environment(\.globalRouter) private var globalRouter
 /// ```
-@available(macOS 13, *)
 public final class GlobalRouter {
     private var routingPath: Binding<NavigationPath>
 
@@ -53,16 +52,6 @@ public final class GlobalRouter {
     /// - Parameter path: A binding to a `NavigationPath` used for navigation.
     public init(path: Binding<NavigationPath>) {
         self.routingPath = path
-    }
-
-    /// Navigates to a specified route using the provided router.
-    ///
-    /// - Parameters:
-    ///   - route: The route to navigate to.
-    ///   - router: The router to use for navigation.
-    @available(*, deprecated, message: "This method is deprecated and will be deleted in future versions. Use navigate(for:to:) instead.")
-    public func navigate<R: Routing>(to route: R.Route, with router: Router<R>) where R.Route: Hashable {
-        navigate(for: R.self, to: route)
     }
 
     /// Navigates to a specified route.
@@ -103,16 +92,6 @@ public final class GlobalRouter {
     /// Resets the navigation stack and navigates to a specific route.
     ///
     /// - Parameters:
-    ///   - route: The route to navigate to.
-    ///   - router: The router to use for navigation.
-    @available(*, deprecated, message: "This method is deprecated and will be deleted in future versions. Use resetStack(routing:to:) instead.")
-    public func resetStack<R: Routing>(to route: R.Route, with router: Router<R>) where R.Route: Hashable {
-        resetStack(routing: R.self, to: route)
-    }
-
-    /// Resets the navigation stack and navigates to a specific route.
-    ///
-    /// - Parameters:
     ///   - routing: The routing type to use for navigation.
     ///   - route: The route to navigate to.
     public func resetStack<R: Routing>(routing: R.Type, to route: R.Route) where R.Route: Hashable {
@@ -122,12 +101,10 @@ public final class GlobalRouter {
     }
 }
 
-@available(macOS 13, *)
 private struct GlobalRouterKey: EnvironmentKey {
     static var defaultValue: GlobalRouter = .init(path: .constant(NavigationPath()))
 }
 
-@available(macOS 13, *)
 public extension EnvironmentValues {
     /// Provides access to the global router from the environment.
     var globalRouter: GlobalRouter {

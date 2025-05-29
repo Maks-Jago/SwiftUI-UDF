@@ -52,7 +52,6 @@ public final class XCTestStore<State: AppReducer> {
         await store.subscribe(build(store))
     }
 
-    @available(macOS 13, *)
     public func subscribe(buildMiddlewares: (_ store: any Store<State>) -> [any Middleware<State>]) async {
         await store.subscribe(buildMiddlewares(store))
     }
@@ -83,7 +82,6 @@ public extension XCTestStore {
 }
 
 public extension XCTestStore {
-    @available(macOS 13, *)
     func subscribe(@MiddlewareBuilder<State> build: (_ store: any Store<State>) -> [MiddlewareWrapper<State>]) async {
         await self.subscribe(buildMiddlewares: { store in
             build(store).map { wrapper in

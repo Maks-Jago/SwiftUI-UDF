@@ -32,7 +32,6 @@ import SwiftUI
 /// ## Methods:
 /// - `body(content:)`: Modifies the content view to add the router to the global router and
 ///   set up navigation destinations for the specified routes.
-@available(macOS 13, *)
 struct GlobalRoutingModifier<R: Routing>: ViewModifier where R.Route: Hashable {
     @Environment(\.globalRouter) var globalRouter
 
