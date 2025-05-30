@@ -194,6 +194,20 @@ public extension EnvironmentStore {
     /// - Parameter middlewareType: The middleware type to subscribe to. Must conform to `Middleware` and `EnvironmentMiddleware`.
     /// - Note: This method is designed to work asynchronously and is intended for environments where middleware needs to interact
     ///   with the state in an isolated, asynchronous manner.
+    #if !os(iOS)
+        @available(macOS, introduced: 12, deprecated: 13, message: "use subscribe(_:) instead")
+        func subscribe<M: Middleware<State>>(middlewareType: M.Type) where M.State == State, M: EnvironmentMiddleware {
+            executeSynchronously {
+                if ProcessInfo.processInfo.xcTest {
+                    await self.store.subscribe(M(store: self.store, environment: M.buildTestEnvironment(for: self.store)))
+                } else {
+                    await self.store.subscribe(M(store: self.store, environment: M.buildLiveEnvironment(for: self.store)))
+                }
+            }
+        }
+    #endif
+
+    @available(macOS 13, *)
     func subscribe<M: Middleware<State>>(_ middlewareType: M.Type) where M.State == State, M: EnvironmentMiddleware {
         if ProcessInfo.processInfo.xcTest {
             self.subscribe { store in
@@ -211,6 +225,7 @@ public extension EnvironmentStore {
     /// - Parameters:
     ///   - middlewareType: The middleware type to subscribe to. Must conform to `Middleware` and `EnvironmentMiddleware`.
     ///   - environment: The environment to be used by the middleware.
+    @available(macOS 13, *)
     func subscribe<M: Middleware<State>>(_ middlewareType: M.Type, environment: M.Environment) where M.State == State,
         M: EnvironmentMiddleware
     {
@@ -224,6 +239,7 @@ public extension EnvironmentStore {
     /// - Parameters:
     ///   - middlewareType: The middleware type to subscribe to. Must conform to `Middleware` and `EnvironmentMiddleware`.
     ///   - queue: The dispatch queue on which the middleware operates.
+    @available(macOS 13, *)
     func subscribe<M: Middleware<State>>(_ middlewareType: M.Type, on queue: DispatchQueue) where M.State == State,
         M: EnvironmentMiddleware
     {
@@ -242,6 +258,7 @@ public extension EnvironmentStore {
     ///
     /// - Parameters:
     ///   - middlewareType: The middleware type to subscribe to.
+    @available(macOS 13, *)
     func subscribe<M: Middleware<State>>(_ middlewareType: M.Type) where M.State == State {
         self.subscribe { store in
             middlewareType.init(store: store)
@@ -253,6 +270,7 @@ public extension EnvironmentStore {
     /// - Parameters:
     ///   - middlewareType: The middleware type to subscribe to.
     ///   - queue: The dispatch queue on which the middleware operates.
+    @available(macOS 13, *)
     func subscribe<M: Middleware<State>>(_ middlewareType: M.Type, on queue: DispatchQueue) where M.State == State {
         self.subscribe { store in
             middlewareType.init(store: store, queue: queue)
@@ -265,6 +283,7 @@ public extension EnvironmentStore {
     ///   - middlewareType: The middleware type to subscribe to. Must conform to `Middleware` and `EnvironmentMiddleware`.
     ///   - environment: The environment to use for the middleware.
     ///   - queue: The dispatch queue on which the middleware operates.
+    @available(macOS 13, *)
     func subscribe<M: Middleware<State>>(_ middlewareType: M.Type, environment: M.Environment, on queue: DispatchQueue)
         where M.State == State, M: EnvironmentMiddleware
     {
@@ -284,6 +303,7 @@ public extension EnvironmentStore {
         deprecated,
         message: "`subscribeAsync` func is deprecated and will be removed in future updates. Use `subscribe` method instead"
     )
+    @available(macOS 13, *)
     func subscribeAsync<M>(_ middlewareType: M.Type, on queue: DispatchQueue, onSubscribe: @escaping () -> Void = {}) where M: Middleware,
         State == M.State
     {
@@ -303,6 +323,7 @@ public extension EnvironmentStore {
         deprecated,
         message: "`subscribeAsync` func is deprecated and will be removed in future updates. Use `subscribe` method instead"
     )
+    @available(macOS 13, *)
     func subscribeAsync<M>(
         _ middlewareType: M.Type,
         environment: M.Environment,
@@ -321,6 +342,7 @@ public extension EnvironmentStore {
         deprecated,
         message: "`subscribeAsync` func is deprecated and will be removed in future updates. Use `subscribe` method instead"
     )
+    @available(macOS 13, *)
     func subscribeAsync(@MiddlewareBuilder<State> build: @escaping (_ store: any Store<State>) -> [MiddlewareWrapper<State>]) {
         executeSynchronously {
             await self.store.subscribe(
@@ -334,6 +356,7 @@ public extension EnvironmentStore {
     /// Subscribes to middleware using a custom builder.
     ///
     /// - Parameter build: A closure that takes the store and returns an array of middleware wrappers.
+    @available(macOS 13, *)
     func subscribe(@MiddlewareBuilder<State> build: @escaping (_ store: any Store<State>) -> [MiddlewareWrapper<State>]) {
         executeSynchronously {
             await self.store.subscribe(

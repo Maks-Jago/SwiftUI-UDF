@@ -169,4 +169,17 @@ class PaginatorTests: XCTestCase {
         XCTAssertTrue(isMovedIntoBeginning)
         XCTAssertEqual(itemAt10Index, try XCTUnwrap(paginator.items.first))
     }
+
+    func testMoveItemInvalidIndices() {
+        var paginator = Paginator(Item.self, flowId: ItemFlow.id, perPage: 10)
+        let items = Item.fakeItems(count: 5)
+
+        paginator.reduce(Actions.SetPaginationItems<Item>(items: items, id: ItemFlow.id))
+
+        let negativeResult = paginator.moveItem(fromIndex: -1, toIndex: 0)
+        XCTAssertFalse(negativeResult)
+
+        let outOfBoundsResult = paginator.moveItem(fromIndex: items.count, toIndex: 0)
+        XCTAssertFalse(outOfBoundsResult)
+    }
 }

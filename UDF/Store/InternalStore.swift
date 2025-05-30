@@ -58,6 +58,7 @@ actor InternalStore<State: AppReducer>: Store {
         }
     }
 
+    @available(macOS 13, *)
     func subscribe(_ middlewares: [any Middleware<State>]) async {
         for middleware in middlewares {
             await subscribe(middleware)

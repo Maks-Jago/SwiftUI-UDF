@@ -7,7 +7,7 @@ let package = Package(
     name: "SwiftUI-UDF",
     platforms: [
         .iOS(.v16),
-        .macOS(.v13),
+        .macOS(.v12),
     ],
     products: [
         .library(
