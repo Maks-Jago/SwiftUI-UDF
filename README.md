@@ -158,6 +158,13 @@
 
 &nbsp;
 
+## Example project - [Flick](https://github.com/urlaunched-com/SwiftUI-UDF-ExampleProject/tree/main?tab=readme-ov-file)
+Flick serves as a showcase of UDF principles:
+- Built with dynamic state and reducer composition
+- Modular structure using SPM for features, localization, design system, and API layers
+- Uses `@BindableReducer` for dynamic container-based reducer management
+- Includes snapshot testing and production-level code hygiene
+
 ## The license
 
 The **SwiftUI-UDF** stays under the **Apache 2.0** license and is free to use.
