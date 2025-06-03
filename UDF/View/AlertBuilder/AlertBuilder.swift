@@ -95,7 +95,7 @@ public enum AlertBuilder {
         }
 
         /// Initializes an alert status using a registered alert builder identified by a unique ID.
-        public init(id: some Hashable) {
+        @MainActor public init(id: some Hashable) {
             if let builder = AlertBuilder.alertBuilders[id] {
                 self = .init(style: builder())
             } else {
@@ -205,14 +205,14 @@ public enum AlertBuilder {
     // MARK: - Alert Builder Registration
     typealias AlertBuilderBlock = () -> AlertStyle
 
-    static var alertBuilders: [AnyHashable: AlertBuilderBlock] = [:]
+    @MainActor static var alertBuilders: [AnyHashable: AlertBuilderBlock] = [:]
 
     /// Registers a custom alert builder for a given ID.
     ///
     /// - Parameters:
     ///   - id: A unique identifier for the alert builder.
     ///   - builder: A closure that returns an `AlertStyle`.
-    public static func registerAlert(by id: some Hashable, _ builder: @escaping () -> AlertStyle) {
+    @MainActor public static func registerAlert(by id: some Hashable, _ builder: @escaping () -> AlertStyle) {
         alertBuilders[AnyHashable(id)] = builder
     }
 }

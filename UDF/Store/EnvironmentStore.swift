@@ -41,7 +41,9 @@ public final class EnvironmentStore<State: AppReducer> {
         self._state = .init(wrappedValue: mutableState, store: store)
 
         sinkSubject()
-        GlobalValue.set(self)
+        Task { @MainActor in
+            GlobalValue.set(self)
+        }
     }
 
     /// Convenience initializer with a single action logger.
@@ -135,7 +137,7 @@ public final class EnvironmentStore<State: AppReducer> {
 
     /// Subscribes the environment store to changes in the state using a subject.
     private func sinkSubject() {
-        self.cancelation = store.subject
+        self.cancelation = store.subject.publisher
             .receive(on: DispatchQueue.main)
             .sink { [unowned self] newState, oldState, animation in
                 self.state = newState

@@ -110,7 +110,7 @@ public enum Actions {
     /// `Error` is an action that represents an error occurrence within the UDF architecture.
     /// It conforms to both `Action` and `LocalizedError`, providing error information alongside an identifier, a code, and additional
     /// metadata.
-    public struct Error: Action, LocalizedError {
+    public struct Error: Action, LocalizedError, @unchecked Sendable {
         /// Compares two `Error` instances for equality.
         ///
         /// - Parameters:

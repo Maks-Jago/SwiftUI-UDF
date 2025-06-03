@@ -42,7 +42,7 @@ import Foundation
 ///     }
 /// }
 /// ```
-public protocol ConcurrencyEffect {
+public protocol ConcurrencyEffect: Sendable {
     /// An asynchronous method that performs a task and returns an action.
     ///
     /// - Parameter flowId: The unique identifier for the flow.
@@ -57,7 +57,7 @@ public protocol ConcurrencyEffect {
 /// created.
 struct ConcurrencyBlockEffect: ConcurrencyEffect, FileFunctionLine {
     /// The asynchronous block to be executed, producing an action.
-    let block: (AnyHashable) async throws -> any Action
+    let block: @Sendable (AnyHashable) async throws -> any Action
 
     // Metadata for debugging: file name, function name, and line number.
     var fileName: String

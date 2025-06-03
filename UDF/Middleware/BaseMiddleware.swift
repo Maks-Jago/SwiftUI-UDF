@@ -17,7 +17,7 @@ import Foundation
 /// and perform asynchronous operations.
 ///
 /// This class is generic over a `State` type that conforms to `AppReducer`.
-open class BaseMiddleware<State: AppReducer>: Middleware {
+open class BaseMiddleware<State: AppReducer>: Middleware, @unchecked Sendable {
     /// The store that this middleware interacts with. It holds the state of the application.
     public var store: any Store<State>
 
@@ -60,7 +60,7 @@ open class BaseMiddleware<State: AppReducer>: Middleware {
     ///   - id: The unique identifier for the effect.
     ///   - error: The error that occurred.
     /// - Returns: An action representing the error.
-    public typealias ErrorMapper<Id> = (_ id: Id, _ error: Error) -> any Action
+    public typealias ErrorMapper<Id> = @Sendable (_ id: Id, _ error: Error) -> any Action
 
     /// A dictionary to track ongoing tasks by their unique identifiers, allowing for cancellation.
     public var cancellations: [AnyHashable: CancellableTask] = [:]
@@ -134,7 +134,9 @@ open class BaseMiddleware<State: AppReducer>: Middleware {
         let filePosition = fileFunctionLine(effect, fileName: fileName, functionName: functionName, lineNumber: lineNumber)
 
         // Registering for XCTest to wait for asynchronous code in tests
-        XCTestGroup.shared.enter()
+        Task { @MainActor in
+            XCTestGroup.shared.enter()    
+        }
 
         // Subscribe to the effect and store the cancellation token
         cancellations[anyId] = effect
@@ -150,12 +152,16 @@ open class BaseMiddleware<State: AppReducer>: Middleware {
                     lineNumber: filePosition.lineNumber
                 )
                 // Signal XCTest that this task has been cancelled
-                XCTestGroup.shared.leave()
+                Task { @MainActor in
+                    XCTestGroup.shared.leave()
+                }
             })
             .sink(receiveCompletion: { [weak self] _ in
                 // Handle completion: Remove the task from cancellations and signal XCTest
                 self?.cancellations[anyId] = nil
-                XCTestGroup.shared.leave()
+                Task { @MainActor in 
+                    XCTestGroup.shared.leave()
+                }
             }, receiveValue: { [weak self] action in
                 // Handle receiving a value: Dispatch the action to the store
                 if self?.cancellations[anyId] != nil {
@@ -379,12 +385,12 @@ open class BaseMiddleware<State: AppReducer>: Middleware {
     open func execute(
         flowId: AnyHashable,
         cancellation: some Hashable,
-        mapAction: @escaping (any Action) -> any Action = { $0 },
+        mapAction: @escaping @Sendable (any Action) -> any Action = { $0 },
         mapError: @escaping ErrorMapper<AnyHashable> = { flowId, error in Actions.Error(error: error.localizedDescription, id: flowId) },
         fileName: String = #file,
         functionName: String = #function,
         lineNumber: Int = #line,
-        _ task: @escaping (AnyHashable) async throws -> any Action
+        _ task: @escaping @Sendable (AnyHashable) async throws -> any Action
     ) {
         execute(
             effect: ConcurrencyBlockEffect(
@@ -408,7 +414,9 @@ open class BaseMiddleware<State: AppReducer>: Middleware {
                 functionName: filePosition.functionName,
                 lineNumber: filePosition.lineNumber
             )
-            XCTestGroup.shared.leave()
+            Task { @MainActor in
+                XCTestGroup.shared.leave()
+            }
         }
     }
 
@@ -438,7 +446,7 @@ open class BaseMiddleware<State: AppReducer>: Middleware {
         effect: some ConcurrencyEffect,
         flowId: AnyHashable,
         cancellation: some Hashable,
-        mapAction: @escaping (any Action) -> any Action = { $0 },
+        mapAction: @escaping @Sendable (any Action) -> any Action = { $0 },
         mapError: @escaping ErrorMapper<AnyHashable> = { flowId, error in Actions.Error(error: error.localizedDescription, id: flowId) },
         fileName: String = #file,
         functionName: String = #function,
@@ -455,15 +463,17 @@ open class BaseMiddleware<State: AppReducer>: Middleware {
         let filePosition = fileFunctionLine(effect, fileName: fileName, functionName: functionName, lineNumber: lineNumber)
 
         // Start the task and store the cancellation token
-        XCTestGroup.shared.enter()
-        let task = Task { [weak self] in
+        Task { @MainActor in
+            XCTestGroup.shared.enter()
+        }
+        let task = Task { @Sendable [weak self] in
             do {
                 // Execute the effect's task, passing flowId
                 let action = try await effect.task(flowId: flowId)
 
                 // Check if the task was cancelled and dispatch appropriate actions
                 if Task.isCancelled {
-                    self?.dispatch(action: Actions.DidCancelEffect(by: cancellation), filePosition: filePosition)
+                    self?.dispatch(action: Actions.DidCancelEffect(by: anyCancellationId), filePosition: filePosition)
                 } else {
                     self?.dispatch(action: mapAction(action), filePosition: filePosition)
                 }
@@ -471,7 +481,7 @@ open class BaseMiddleware<State: AppReducer>: Middleware {
             } catch {
                 // Handle errors and task cancellation
                 if error is CancellationError {
-                    self?.dispatch(action: Actions.DidCancelEffect(by: cancellation), filePosition: filePosition)
+                    self?.dispatch(action: Actions.DidCancelEffect(by: anyCancellationId), filePosition: filePosition)
                 } else if !Task.isCancelled {
                     self?.dispatch(action: mapError(flowId, error), filePosition: filePosition)
                 }
@@ -487,3 +497,5 @@ open class BaseMiddleware<State: AppReducer>: Middleware {
         cancellations[anyCancellationId] = task
     }
 }
+
+extension AnyHashable: @unchecked @retroactive Sendable {}

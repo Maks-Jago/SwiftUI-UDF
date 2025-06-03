@@ -9,10 +9,59 @@ import Combine
 import Foundation
 import SwiftUI
 
+final class SendableSubject<Output, Failure: Error>: @unchecked Sendable {
+    private let _subject: PassthroughSubject<Output, Failure>
+    private let lock = NSLock()
+    
+    init() {
+        self._subject = PassthroughSubject<Output, Failure>()
+    }
+    
+    func send(_ value: Output) {
+        lock.lock()
+        defer { lock.unlock() }
+        _subject.send(value)
+    }
+    
+    func send(completion: Subscribers.Completion<Failure>) {
+        lock.lock()
+        defer { lock.unlock() }
+        _subject.send(completion: completion)
+    }
+    
+    var publisher: AnyPublisher<Output, Failure> {
+        lock.lock()
+        defer { lock.unlock() }
+        return _subject.eraseToAnyPublisher()
+    }
+    
+    func subscribe<S: Subscriber>(_ subscriber: S) where S.Input == Output, S.Failure == Failure {
+        lock.lock()
+        defer { lock.unlock() }
+        _subject.subscribe(subscriber)
+    }
+    
+    func sink(
+        receiveCompletion: @escaping (Subscribers.Completion<Failure>) -> Void = { _ in },
+        receiveValue: @escaping (Output) -> Void
+    ) -> AnyCancellable {
+        lock.lock()
+        defer { lock.unlock() }
+        return _subject.sink(receiveCompletion: receiveCompletion, receiveValue: receiveValue)
+    }
+    
+    func map<T>(_ transform: @escaping (Output) -> T) -> Publishers.Map<PassthroughSubject<Output, Failure>, T> {
+        lock.lock()
+        defer { lock.unlock() }
+        return _subject.map(transform)
+    }
+}
+
 actor InternalStore<State: AppReducer>: Store {
     var state: State
 
-    let subject: PassthroughSubject<(State, State, Animation?), Never> = .init()
+//    nonisolated(unsafe) let subject: PassthroughSubject<(State, State, Animation?), Never> = .init()
+    nonisolated let subject = SendableSubject<(State, State, Animation?), Never>()
 
     var middlewares: OrderedSet<AnyMiddleware> = []
     private let storeQueue: StoreQueue = .init()
@@ -28,7 +77,9 @@ actor InternalStore<State: AppReducer>: Store {
     }
 
     nonisolated func dispatch(_ action: some Action, priority: ActionPriority, fileName: String, functionName: String, lineNumber: Int) {
-        XCTestGroup.shared.enter()
+        Task { @MainActor in
+            XCTestGroup.shared.enter()
+        }
         let internalActions = prepareActionsToReduce(action, fileName: fileName, functionName: functionName, lineNumber: lineNumber)
 
         for internalAction in internalActions {
@@ -232,18 +283,35 @@ private func safetyCall(queue: DispatchQueue, block: @Sendable @escaping () -> V
     }
 }
 
-final class Ref<T> {
-    var value: T
+final class Ref<T: Sendable>: @unchecked Sendable {
+    private let lock = NSLock()
+    private var _value: T
+    
+    var value: T {
+        get {
+            lock.lock()
+            defer { lock.unlock() }
+            return _value
+        }
+        set {
+            lock.lock()
+            defer { lock.unlock() }
+            _value = newValue
+        }
+    }
+    
     init(value: T) {
-        self.value = value
+        self._value = value
     }
 }
 
-struct Box<T> {
+struct Box<T: Sendable>: Sendable {
     private var ref: Ref<T>
+    
     init(_ value: T) {
         ref = Ref(value: value)
     }
+    
     var value: T {
         get { ref.value }
         set {

@@ -47,20 +47,20 @@ public struct AlertTextField: AlertAction {
     public var title: String
     public var text: Binding<String>
     #if os(iOS)
-        public var textInputAutocapitalization: TextInputAutocapitalization?
+    public var textInputAutocapitalization: TextInputAutocapitalization?
     #endif
     public var submitLabel: SubmitLabel = .done
-
-    @StateObject private var debouncer: UserInputDebouncer<String>
-
+    
+    private let initialValue: String
+    
     public static func == (lhs: AlertTextField, rhs: AlertTextField) -> Bool {
         lhs.title == rhs.title
     }
-
+    
     public func hash(into hasher: inout Hasher) {
         hasher.combine(title)
     }
-
+    
     /// Creates an `AlertTextField` with a specified title and binding to the input text.
     ///
     /// - Parameters:
@@ -69,18 +69,45 @@ public struct AlertTextField: AlertAction {
     public init(title: String, text: Binding<String>) {
         self.title = title
         self.text = text
-        self._debouncer = .init(wrappedValue: .init(defaultValue: text.wrappedValue))
+        self.initialValue = text.wrappedValue
     }
-
+    
     /// The view body of the `AlertTextField`.
     public var body: some View {
+        AlertTextFieldInternal(
+            title: title,
+            text: text,
+            textInputAutocapitalization: textInputAutocapitalization,
+            submitLabel: submitLabel,
+            initialValue: initialValue
+        )
+    }
+}
+
+private struct AlertTextFieldInternal: View {
+    let title: String
+    let text: Binding<String>
+    #if os(iOS)
+    let textInputAutocapitalization: TextInputAutocapitalization?
+    #endif
+    let submitLabel: SubmitLabel
+    let initialValue: String
+    
+    @StateObject private var debouncer = UserInputDebouncer<String>(defaultValue: "")
+    
+    var body: some View {
         TextField(title, text: $debouncer.value)
-        #if os(iOS)
+            #if os(iOS)
             .textInputAutocapitalization(textInputAutocapitalization)
-        #endif
+            #endif
             .submitLabel(submitLabel)
+            .onAppear {
+                if debouncer.value.isEmpty {
+                    debouncer.value = initialValue
+                }
+            }
             .onReceive(debouncer.$debouncedValue.dropFirst()) { value in
-                self.text.wrappedValue = value
+                text.wrappedValue = value
             }
             .onChange(of: text.wrappedValue) { newValue in
                 if debouncer.value.isEmpty, !newValue.isEmpty {
