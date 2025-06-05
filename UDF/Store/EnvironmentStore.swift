@@ -41,9 +41,7 @@ public final class EnvironmentStore<State: AppReducer> {
         self._state = .init(wrappedValue: mutableState, store: store)
 
         sinkSubject()
-        Task { @MainActor in
-            GlobalValue.set(self)
-        }
+        GlobalValue.set(self)
     }
 
     /// Convenience initializer with a single action logger.

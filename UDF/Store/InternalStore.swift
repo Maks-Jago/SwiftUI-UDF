@@ -77,9 +77,7 @@ actor InternalStore<State: AppReducer>: Store {
     }
 
     nonisolated func dispatch(_ action: some Action, priority: ActionPriority, fileName: String, functionName: String, lineNumber: Int) {
-        Task { @MainActor in
-            XCTestGroup.shared.enter()
-        }
+        XCTestGroup.shared.enter()
         let internalActions = prepareActionsToReduce(action, fileName: fileName, functionName: functionName, lineNumber: lineNumber)
 
         for internalAction in internalActions {

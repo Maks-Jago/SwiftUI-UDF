@@ -61,9 +61,7 @@ public final class XCTestStore<State: AppReducer> {
     }
 
     public func wait() {
-        Task { @MainActor in 
-            XCTestGroup.shared.wait()
-        }
+        XCTestGroup.shared.wait()
     }
 }
 
