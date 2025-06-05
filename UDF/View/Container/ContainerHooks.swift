@@ -42,7 +42,7 @@ import SwiftUI
 /// - `removeHook(by:)`: Removes a hook with a specific identifier.
 /// - `removeAllHooks()`: Removes all hooks and cancels the state subscription.
 /// - `deinit`: Cleans up by removing the state subscription when the `ContainerHooks` instance is deallocated.
-final class ContainerHooks<State: AppReducer> {
+final class ContainerHooks<State: AppReducer>: @unchecked Sendable {
     /// A weak reference to the environment store containing the global state.
     weak var store: EnvironmentStore<State>?
 

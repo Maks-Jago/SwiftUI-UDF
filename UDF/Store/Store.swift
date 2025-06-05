@@ -142,7 +142,7 @@ public extension Store {
     ///   - lineNumber: The line number where the command is created. Defaults to the caller's line.
     /// - Returns: A command that takes a parameter and dispatches the specified action.
     func bind<T>(
-        _ action: @escaping (T) -> some Action,
+        _ action: @escaping @Sendable (T) -> some Action,
         priority: ActionPriority = .default,
         fileName: String = #file,
         functionName: String = #function,

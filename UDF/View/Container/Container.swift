@@ -75,7 +75,7 @@ import SwiftUI
 ///     }
 /// }
 /// ```
-public protocol Container<ContainerState>: View {
+public protocol Container<ContainerState>: View, Sendable {
     associatedtype ContainerState: AppReducer
     associatedtype ContainerComponent: Component
 
@@ -149,7 +149,6 @@ public extension Container {
     var store: EnvironmentStore<ContainerState> { .global }
 
     /// The body of the container view. Connects the `ContainerComponent` with the `ContainerState` using a `ConnectedContainer`.
-    @MainActor
     var body: some View {
         ConnectedContainer<ContainerComponent, ContainerState>(
             map: map,

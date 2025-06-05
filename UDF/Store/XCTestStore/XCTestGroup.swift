@@ -3,7 +3,7 @@ import Foundation
 import os
 
 public final class XCTestGroup {
-    @MainActor static var shared = XCTestGroup()
+    nonisolated(unsafe) static var shared = XCTestGroup()
     #if os(iOS)
         private var group: OSAllocatedUnfairLock<DispatchGroup> = .init(initialState: DispatchGroup())
     #endif

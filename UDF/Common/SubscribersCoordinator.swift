@@ -17,7 +17,11 @@ import SwiftUI
 ///   - oldState: The previous state before the change.
 ///   - newState: The new state after the change.
 ///   - animation: An optional animation that can be applied to the state change.
-typealias StateSubscriber<State: AppReducer> = (_ oldState: State, _ newState: State, _ animation: Animation?) -> Void
+typealias StateSubscriber<State: AppReducer> = @Sendable (
+    _ oldState: State,
+    _ newState: State,
+    _ animation: Animation?
+) -> Void
 
 /// An actor responsible for coordinating subscribers that respond to state changes.
 actor SubscribersCoordinator<T> {
