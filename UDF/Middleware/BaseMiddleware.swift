@@ -487,5 +487,3 @@ open class BaseMiddleware<State: AppReducer>: Middleware, @unchecked Sendable {
         cancellations[anyCancellationId] = task
     }
 }
-
-extension AnyHashable: @unchecked @retroactive Sendable {}
