@@ -88,3 +88,6 @@ extension RCDictionary: Collection {
         keyValues.index(after: i)
     }
 }
+
+extension RCDictionary: Sendable where Key: Sendable, Value: Sendable {}
+extension RCDictionary.ReducerBox: Sendable where Value: Sendable {}

@@ -129,3 +129,5 @@ public extension BindableReducer {
         }
     }
 }
+
+extension BindableReducer: @unchecked Sendable where BindedContainer: Sendable, Reducer: Sendable {}

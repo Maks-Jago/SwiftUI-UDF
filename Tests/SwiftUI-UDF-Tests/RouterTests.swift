@@ -32,6 +32,7 @@ final class RouterTests: XCTestCase {
         }
     }
 
+    @MainActor
     func test_RouterMocking() throws {
         let itemsComponent = ItemsComponent(props: .init())
         let detailsView = itemsComponent.props.router.view(for: .details)

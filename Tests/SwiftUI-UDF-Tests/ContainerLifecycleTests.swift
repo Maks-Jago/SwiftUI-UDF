@@ -3,7 +3,7 @@ import SwiftUI
 @testable import UDF
 import XCTest
 
-final class ContainerLifecycleTests: XCTestCase {
+final class ContainerLifecycleTests: XCTestCase, @unchecked Sendable {
     struct AppState: AppReducer {
         var userData = UserData()
     }

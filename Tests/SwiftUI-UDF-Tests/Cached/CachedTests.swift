@@ -27,7 +27,7 @@ class CachedTests: XCTestCase {
         var nestedForm = NestedForm()
     }
 
-    struct NestedForm: Form {
+    struct NestedForm: Form, @unchecked Sendable {
         @Cached(key: "items", defaultValue: .init())
         var items: OrderedSet<Item.ID>
 

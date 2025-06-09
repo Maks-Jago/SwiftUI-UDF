@@ -26,3 +26,5 @@ final class AnyMiddleware: Hashable {
         hasher.combine(ObjectIdentifier(self))
     }
 }
+
+extension AnyMiddleware: @unchecked Sendable {}

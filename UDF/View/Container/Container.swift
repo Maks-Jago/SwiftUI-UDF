@@ -90,7 +90,8 @@ public protocol Container<ContainerState>: View, Sendable {
     /// - Parameter state: The state managed by the container.
     /// - Returns: A `Scope` object defining the relevant slice of the state.
     @ScopeBuilder
-    func scope(for state: ContainerState) -> Scope
+    @Sendable
+    nonisolated func scope(for state: ContainerState) -> Scope
 
     /// Called when the container's view appears.
     /// Equals to native SwiftUI View's onAppear lifecycle method.

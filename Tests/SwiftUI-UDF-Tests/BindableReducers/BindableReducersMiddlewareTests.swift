@@ -19,7 +19,7 @@ final class BindableReducersMiddlewareTests: XCTestCase {
         var id: ID
     }
 
-    struct ItemsForm: UDF.Form {
+    struct ItemsForm: UDF.Form, @unchecked Sendable {
         var paginator: Paginator = .init(Item.self, flowId: ItemsFlow.id, perPage: 10)
         var item: Item? = nil
 
@@ -186,7 +186,7 @@ private extension BindableReducersMiddlewareTests {
 
 // MARK: Middleware
 private extension BindableReducersMiddlewareTests {
-    final class ItemsMiddleware: BaseObservableMiddleware<AppState> {
+    final class ItemsMiddleware: BaseObservableMiddleware<AppState>, @unchecked Sendable {
         enum Cancellation: Hashable {
             case itemDetails(Item.ID)
         }

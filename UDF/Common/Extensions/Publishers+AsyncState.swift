@@ -9,7 +9,7 @@
 //
 //===----------------------------------------------------------------------===//
 
-import Combine
+@preconcurrency import Combine
 import Foundation
 
 public extension Publishers {
@@ -23,12 +23,15 @@ public extension Publishers {
     /// - Returns: An `AnyPublisher` that emits the isolated state of the store once.
     static func IsolatedState<State: AppReducer>(from store: any Store<State>) -> AnyPublisher<State, Never> {
         Deferred {
-            Future { promise in
-                Task.detached(priority: .high) {
-                    let immutableState = await store.state
-                    promise(.success(immutableState))
-                }
+            let subject = PassthroughSubject<State, Never>()
+            
+            Task.detached(priority: .high) { @Sendable in
+                let immutableState = await store.state
+                subject.send(immutableState)
+                subject.send(completion: .finished)
             }
+            
+            return subject.eraseToAnyPublisher()
         }
         .eraseToAnyPublisher()
     }

@@ -25,7 +25,7 @@ final class StateCopyTests: XCTestCase {
         var someForm = SomeForm()
     }
 
-    struct SomeForm: Form {
+    struct SomeForm: Form, @unchecked Sendable {
         var item: Item = .init(text: "initial text")
     }
 

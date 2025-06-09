@@ -22,14 +22,14 @@ final class AlertTests: XCTestCase {
         var form = FormWithAlert()
     }
 
-    struct FormWithAlert: UDF.Form {
+    struct FormWithAlert: UDF.Form, @unchecked Sendable {
         enum AlertId: Hashable {
             case alertWithAction
         }
 
         var alert: AlertBuilder.AlertStatus = .dismissed
 
-        mutating func reduce(_ action: some Action) {
+        nonisolated mutating func reduce(_ action: some Action) {
             switch action {
             case is Actions.PresentAlertWithAction:
                 alert = .init(id: AlertId.alertWithAction)
@@ -46,7 +46,7 @@ final class AlertTests: XCTestCase {
 
         XCTAssertEqual(status, .dismissed)
 
-        AlertBuilder.registerAlert(by: FormWithAlert.AlertId.alertWithAction) {
+        await AlertBuilder.registerAlert(by: FormWithAlert.AlertId.alertWithAction) {
             .alertWithAction {
                 print("Custom alert action")
             }
