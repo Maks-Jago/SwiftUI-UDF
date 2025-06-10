@@ -14,9 +14,9 @@ import SwiftUI
 
 /// A `Paginator` structure that manages a list of paginated items.
 /// Supports loading, appending, removing, and reordering of items, while also keeping track of the current page and loading state.
-public struct Paginator<Item: Hashable & Identifiable, FlowId: Hashable>: Reducible {
+public struct Paginator<Item: Hashable & Identifiable, FlowId: Hashable & Sendable>: Reducible {
     /// The ordered set of item IDs.
-    public private(set) var items: OrderedSet<Item.ID> = []
+    public nonisolated(unsafe) private(set) var items: OrderedSet<Item.ID> = []
 
     /// The current page of the pagination.
     public private(set) var page: PaginationPage

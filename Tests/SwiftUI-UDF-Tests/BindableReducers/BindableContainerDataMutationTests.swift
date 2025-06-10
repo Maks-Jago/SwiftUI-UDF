@@ -13,7 +13,7 @@ final class BindableContainerDataMutationTests: XCTestCase {
         var id: ID
     }
 
-    struct ItemsForm: UDF.Form, @unchecked Sendable {
+    struct ItemsForm: UDF.Form {
         var paginator: Paginator = .init(Item.self, flowId: ItemsFlow.id, perPage: 10)
         var item: Item.ID? = nil
 

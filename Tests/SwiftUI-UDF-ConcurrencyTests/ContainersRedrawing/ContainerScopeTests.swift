@@ -11,7 +11,7 @@ import XCTest
 
 final class ContainerScopeTests: XCTestCase, @unchecked Sendable {
     @propertyWrapper
-    final class Box<Value>: @unchecked Sendable {
+    final class Box<Value> {
         private var box: Value
 
         init(wrappedValue: Value) {

@@ -22,7 +22,7 @@ final class AlertTests: XCTestCase {
         var form = FormWithAlert()
     }
 
-    struct FormWithAlert: UDF.Form, @unchecked Sendable {
+    struct FormWithAlert: UDF.Form {
         enum AlertId: Hashable {
             case alertWithAction
         }

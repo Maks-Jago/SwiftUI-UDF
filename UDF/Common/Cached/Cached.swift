@@ -15,7 +15,7 @@ import Foundation
 /// The cached value is stored both in memory and in a storage source (`CacheSource`).
 /// Supports syncing the value to persistent storage with a debounce interval.
 @propertyWrapper
-public struct Cached<T: Codable>: Initable {
+public struct Cached<T: Codable & Sendable>: Initable, Sendable {
     public var key: String
     public var defaultValue: T
     public var intervalToSync: TimeInterval

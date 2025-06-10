@@ -25,7 +25,7 @@ public struct BindableReducer<BindedContainer: BindableContainer, Reducer: Reduc
     public internal(set) var containerType: BindedContainer.Type
 
     /// The dictionary holding the reducers associated with each container ID.
-    var reducers: Reducers = .init()
+    nonisolated(unsafe) var reducers: Reducers = .init()
 
     /// The wrapped value, which returns `self`.
     public var wrappedValue: BindableReducer<BindedContainer, Reducer> {
@@ -129,5 +129,3 @@ public extension BindableReducer {
         }
     }
 }
-
-extension BindableReducer: @unchecked Sendable where BindedContainer: Sendable, Reducer: Sendable {}
