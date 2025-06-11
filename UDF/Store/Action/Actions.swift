@@ -68,33 +68,137 @@ public enum Actions {
         }
     }
 
-    /// `UpdateAlertStatus` is an action used to update the status of an alert within the UDF architecture.
-    /// It contains the alert's status and an identifier, enabling the management of alerts based on their unique IDs.
-    public struct UpdateAlertStatus: Action {
-        /// The status of the alert to be updated.
-        public var status: AlertBuilder.AlertStatus
-
-        /// A unique identifier for the alert.
+    /// `UpdateNotificationState` is an action used to update the state of a notification within the UDF architecture.
+    /// It contains the notification's state and an identifier, enabling the management of notifications based on their unique IDs.
+    ///
+    /// This is a direct migration from `UpdateAlertStatus` with the same functionality but updated to work
+    /// with the new NotificationSystem.
+    ///
+    /// ## Usage:
+    /// ```swift
+    /// // Update with a specific notification state
+    /// let action = UpdateNotificationState(
+    ///     state: .init(error: "Something went wrong"),
+    ///     id: "errorNotification"
+    /// )
+    /// 
+    /// // Update with a notification type
+    /// let action = UpdateNotificationState(
+    ///     notification: .success("Operation completed"),
+    ///     id: "successNotification"
+    /// )
+    /// 
+    /// // Update with custom content
+    /// let action = UpdateNotificationState(
+    ///     content: NotificationContent("Delete Item", message: "This cannot be undone") {
+    ///         NotificationButton.destructive("Delete") { performDelete() }
+    ///         NotificationButton.cancel("Cancel")
+    ///     },
+    ///     id: "deleteConfirmation"
+    /// )
+    /// ```
+    public struct UpdateNotificationState: Action {
+        /// The state of the notification to be updated.
+        public var state: NotificationState
+        
+        /// A unique identifier for the notification.
         public var id: AnyHashable
-
-        /// Initializes a new `UpdateAlertStatus` action.
+        
+        // MARK: - Initializers
+        
+        /// Initializes a new `UpdateNotificationState` action with a specific notification state.
         ///
         /// - Parameters:
-        ///   - status: The new status of the alert.
-        ///   - id: The unique identifier for the alert.
-        public init(status: AlertBuilder.AlertStatus, id: some Hashable) {
-            self.status = status
-            self.id = id
+        ///   - state: The new state of the notification.
+        ///   - id: The unique identifier for the notification.
+        public init(state: NotificationState, id: some Hashable) {
+            self.state = state
+            self.id = AnyHashable(id)
         }
-
-        /// Initializes a new `UpdateAlertStatus` action with a specific alert style.
+        
+        /// Initializes a new `UpdateNotificationState` action with a specific notification type.
         ///
         /// - Parameters:
-        ///   - style: The style of the alert to be used for creating the alert status.
-        ///   - id: The unique identifier for the alert.
-        public init(style: AlertBuilder.AlertStyle, id: some Hashable) {
-            self.status = .init(style: style)
-            self.id = id
+        ///   - notification: The notification type to be used for creating the notification state.
+        ///   - id: The unique identifier for the notification.
+        public init(notification: NotificationType, id: some Hashable) {
+            self.state = .init(notification: notification)
+            self.id = AnyHashable(id)
+        }
+        
+        /// Initializes a new `UpdateNotificationState` action with custom notification content.
+        ///
+        /// - Parameters:
+        ///   - content: The custom content for the notification.
+        ///   - id: The unique identifier for the notification.
+        ///   - style: The notification style (defaults to .alert).
+        public init(content: NotificationContent, id: some Hashable, style: NotificationStyle = .alert) {
+            self.state = .init(notification: .custom(content: content, style: style))
+            self.id = AnyHashable(id)
+        }
+        
+        // MARK: - Convenience Initializers
+        
+        /// Initializes a new `UpdateNotificationState` action with a success message.
+        ///
+        /// - Parameters:
+        ///   - success: The success message to display.
+        ///   - id: The unique identifier for the notification.
+        ///   - style: The notification style (defaults to .alert).
+        public init(success: String, id: some Hashable, style: NotificationStyle = .alert) {
+            self.state = .init(notification: .success(success, style: style))
+            self.id = AnyHashable(id)
+        }
+        
+        /// Initializes a new `UpdateNotificationState` action with an error message.
+        ///
+        /// - Parameters:
+        ///   - error: The error message to display.
+        ///   - id: The unique identifier for the notification.
+        ///   - style: The notification style (defaults to .alert).
+        public init(error: String, id: some Hashable, style: NotificationStyle = .alert) {
+            self.state = .init(notification: .error(error, style: style))
+            self.id = AnyHashable(id)
+        }
+        
+        /// Initializes a new `UpdateNotificationState` action with a warning message.
+        ///
+        /// - Parameters:
+        ///   - warning: The warning message to display.
+        ///   - id: The unique identifier for the notification.
+        ///   - style: The notification style (defaults to .alert).
+        public init(warning: String, id: some Hashable, style: NotificationStyle = .alert) {
+            self.state = .init(notification: .warning(warning, style: style))
+            self.id = AnyHashable(id)
+        }
+        
+        /// Initializes a new `UpdateNotificationState` action with an info message.
+        ///
+        /// - Parameters:
+        ///   - info: The info message to display.
+        ///   - id: The unique identifier for the notification.
+        ///   - style: The notification style (defaults to .alert).
+        public init(info: String, id: some Hashable, style: NotificationStyle = .alert) {
+            self.state = .init(notification: .info(info, style: style))
+            self.id = AnyHashable(id)
+        }
+        
+        /// Initializes a new `UpdateNotificationState` action to dismiss a notification.
+        ///
+        /// - Parameter id: The unique identifier for the notification to dismiss.
+        public init(dismissing id: some Hashable) {
+            self.state = .dismissed
+            self.id = AnyHashable(id)
+        }
+        
+        /// Initializes a new `UpdateNotificationState` action using a registered notification.
+        ///
+        /// - Parameters:
+        ///   - registrationId: The identifier of the registered notification.
+        ///   - id: The unique identifier for this notification instance.
+        public init(registrationId: some Hashable, id: some Hashable) {
+            self.state = .init(id: registrationId)
+            self.id = AnyHashable(id)
         }
     }
 
