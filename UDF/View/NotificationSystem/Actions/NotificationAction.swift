@@ -65,7 +65,7 @@ extension NotificationAction {
 
 // MARK: - Action Type Classification
 
-/// Classifies the type of notification action for validation and presentation purposes.
+/// Classifies the type of notification action for presentation purposes.
 public enum NotificationActionType: Equatable {
     /// A button action that triggers behavior when tapped.
     case button
@@ -106,52 +106,11 @@ public struct NotificationActionCapability: OptionSet {
 // MARK: - Action Classification Protocol
 
 /// Protocol for classifying notification action types and capabilities.
-/// This is used internally for validation and presentation logic.
+/// This is used internally for presentation logic.
 internal protocol NotificationActionClassification {
     /// The type of this action.
     var actionType: NotificationActionType { get }
     
     /// The capabilities of this action.
     var capabilities: NotificationActionCapability { get }
-}
-
-// MARK: - Action Validation
-/// Validates notification actions for compatibility with different notification styles.
-public enum NotificationActionValidator {
-    /// Validates whether the given actions are compatible with the specified notification style.
-    ///
-    /// - Parameters:
-    ///   - actions: The actions to validate.
-    ///   - style: The notification style to validate against.
-    /// - Returns: True if all actions are compatible with the style.
-    public static func validate(actions: [any NotificationAction], for style: NotificationStyle) -> Bool {
-        return style.canPresentActions(actions)
-    }
-    
-    /// Validates whether the given actions have valid configurations.
-    ///
-    /// - Parameter actions: The actions to validate.
-    /// - Returns: True if all actions have valid configurations.
-    public static func validateConfiguration(actions: [any NotificationAction]) -> Bool {
-        return actions.allSatisfy { action in
-            if let button = action as? NotificationButton {
-                return !button.title.isEmpty
-            }
-            if let textField = action as? NotificationTextField {
-                return !textField.title.isEmpty
-            }
-            return true
-        }
-    }
-    
-    /// Returns the maximum number of actions supported by the given notification style.
-    ///
-    /// - Parameter style: The notification style.
-    /// - Returns: The maximum number of actions, or nil if unlimited.
-    public static func maximumActionCount(for style: NotificationStyle) -> Int? {
-        switch style {
-        case .alert:
-            return nil
-        }
-    }
 }

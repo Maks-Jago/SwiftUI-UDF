@@ -16,15 +16,36 @@ import SwiftUI
 ///
 /// `NotificationStyle` determines the presentation method and visual treatment
 /// of notifications. Each style has different capabilities and behavior patterns.
-public enum NotificationStyle: Equatable, Sendable {
+///
+/// ## Available Styles:
+/// - `.alert` - Native iOS system alerts using UIAlertController
+/// - `.toast` - Custom overlay notifications with full theming support
+///
+/// ## Usage:
+/// ```swift
+/// // Alert style (Phase 1)
+/// let notification = NotificationType.success("Message", style: .alert)
+/// 
+/// // Toast style (Phase 2)
+/// let notification = NotificationType.success("Message", style: .toast())
+/// 
+/// // Toast with custom configuration
+/// let notification = NotificationType.success("Message", style: .toast(
+///     ToastConfiguration(position: .bottom, theme: .vibrant)
+/// ))
+/// ```
+public enum NotificationStyle: Hashable, Sendable {
     case alert
+    case toast(ToastConfiguration = .default)
     
     // MARK: - Properties
     /// Whether this style supports custom theming.
     public var supportsTheming: Bool {
         switch self {
         case .alert:
-            return false // System alerts cannot be themed
+            return false
+        case .toast:
+            return true
         }
     }
     
@@ -32,7 +53,9 @@ public enum NotificationStyle: Equatable, Sendable {
     public var isModal: Bool {
         switch self {
         case .alert:
-            return true // System alerts are always modal
+            return true
+        case .toast:
+            return false
         }
     }
     
@@ -40,7 +63,9 @@ public enum NotificationStyle: Equatable, Sendable {
     public var supportsTextFields: Bool {
         switch self {
         case .alert:
-            return true // System alerts support text fields
+            return true
+        case .toast:
+            return false
         }
     }
     
@@ -48,7 +73,9 @@ public enum NotificationStyle: Equatable, Sendable {
     public var supportsButtons: Bool {
         switch self {
         case .alert:
-            return true // System alerts support buttons
+            return true
+        case .toast:
+            return true
         }
     }
     
@@ -57,6 +84,8 @@ public enum NotificationStyle: Equatable, Sendable {
         switch self {
         case .alert:
             return .modal
+        case .toast:
+            return .overlay
         }
     }
     
@@ -65,8 +94,21 @@ public enum NotificationStyle: Equatable, Sendable {
         switch (lhs, rhs) {
         case (.alert, .alert):
             return true
+        case (.toast(let lhsConfig), .toast(let rhsConfig)):
+            return lhsConfig == rhsConfig
         default:
             return false
+        }
+    }
+    
+    // MARK: - Hashable Implementation
+    public func hash(into hasher: inout Hasher) {
+        switch self {
+        case .alert:
+            hasher.combine("alert")
+        case .toast(let config):
+            hasher.combine("toast")
+            hasher.combine(config)
         }
     }
 }
@@ -80,64 +122,6 @@ public enum PresentationContext: Equatable {
     /// Overlay presentation that appears on top but allows interaction underneath.
     case overlay
     
-    /// Inline presentation that appears within the content flow.
-    case inline
-    
     /// Custom presentation with specific positioning and behavior.
     case custom
-}
-
-// MARK: - Style Validation
-public extension NotificationStyle {
-    /// Validates whether this style can present the given notification type.
-    /// 
-    /// - Parameter type: The notification type to validate.
-    /// - Returns: True if this style can present the notification type.
-    func canPresent(_ type: NotificationType) -> Bool {
-        switch (self, type) {
-        case (.alert, _):
-            // System alerts can present all notification types
-            return true
-            // Future styles may have restrictions
-        }
-    }
-    
-    /// Validates whether this style supports the given actions.
-    /// 
-    /// - Parameter actions: The actions to validate.
-    /// - Returns: True if this style can present all the given actions.
-    func canPresentActions(_ actions: [any NotificationAction]) -> Bool {
-        switch self {
-        case .alert:
-            return actions.allSatisfy { action in
-                action is NotificationButton || action is NotificationTextField
-            }
-        }
-    }
-}
-
-// MARK: - Convenience Properties
-public extension NotificationStyle {
-    static var `default`: NotificationStyle {
-        .alert
-    }
-}
-
-// MARK: - Debug Support
-extension NotificationStyle: CustomStringConvertible {
-    public var description: String {
-        switch self {
-        case .alert:
-            return "NotificationStyle.alert"
-        }
-    }
-}
-
-extension NotificationStyle: CustomDebugStringConvertible {
-    public var debugDescription: String {
-        switch self {
-        case .alert:
-            return "NotificationStyle.alert(modal: true, theming: false)"
-        }
-    }
 }

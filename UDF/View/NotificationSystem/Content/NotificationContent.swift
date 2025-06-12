@@ -12,14 +12,15 @@
 import Foundation
 import SwiftUI
 
-/// Represents the content of a complex notification with title, message, and actions.
+/// Represents the content of a complex notification with title, message, actions, and custom views.
 ///
 /// `NotificationContent` provides a structured way to define notifications that require
-/// more than a simple message string. It supports titles, optional messages, and
-/// interactive actions built using the `NotificationActionsBuilder`.
+/// more than a simple message string. It supports titles, optional messages, interactive
+/// actions, and completely custom SwiftUI views for maximum flexibility.
 ///
-/// This replaces the need for complex `AlertStyle` configurations and provides a
-/// unified content model that works across all notification styles.
+/// This replaces the need for complex configurations and provides a unified content
+/// model that works across all notification styles while supporting the rich custom
+/// content capabilities previously available in toast-specific implementations.
 ///
 /// ## Usage:
 /// ```swift
@@ -36,6 +37,14 @@ import SwiftUI
 ///     }
 ///     NotificationButton.cancel("Cancel")
 /// }
+/// 
+/// // Custom view content for rich toast notifications
+/// let content = NotificationContent(customView: AnyView(
+///     VStack {
+///         ProgressView()
+///         Text("Uploading...")
+///     }
+/// ))
 /// ```
 public struct NotificationContent: Equatable, Sendable {
     /// The title of the notification content.
@@ -46,6 +55,51 @@ public struct NotificationContent: Equatable, Sendable {
     
     /// The interactive actions available for this content.
     public let actions: [any NotificationAction]
+    
+    /// Custom SwiftUI view content for rich notifications.
+    ///
+    /// When provided, this custom view takes precedence over the standard
+    /// title/message layout. This enables complex, branded, or interactive
+    /// notification designs that can't be achieved with text and buttons alone.
+    ///
+    /// ## Examples:
+    /// - Progress indicators with real-time updates
+    /// - Rich media content with images and custom layouts
+    /// - Branded notification designs with company styling
+    /// - Interactive elements beyond simple buttons
+    ///
+    /// ## Performance Considerations:
+    /// - Keep custom views lightweight for smooth animation performance
+    /// - Avoid heavy computations or network calls in view content
+    /// - Consider the notification's brief display duration when designing interactions
+    ///
+    /// ## Accessibility:
+    /// - Ensure custom views maintain proper accessibility labels and hints
+    /// - Test with VoiceOver and other assistive technologies
+    /// - Provide appropriate contrast ratios for text and interactive elements
+    public nonisolated(unsafe) let customView: AnyView?
+    
+    /// The icon to display with this notification content.
+    ///
+    /// Supports various icon types including SF Symbols, custom images, and
+    /// arbitrary SwiftUI views. When nil, the notification system will use
+    /// semantic defaults based on the notification category.
+    ///
+    /// ## Examples:
+    /// ```swift
+    /// // Custom SF Symbol
+    /// NotificationContent("Success", icon: .systemImage("party.popper.fill"))
+    /// 
+    /// // Custom image
+    /// NotificationContent("Welcome", icon: .image("company-logo"))
+    /// 
+    /// // Custom view
+    /// NotificationContent("Loading", icon: .view(AnyView(ProgressView())))
+    /// 
+    /// // No icon (override semantic default)
+    /// NotificationContent("Clean message", icon: .none)
+    /// ```
+    public let icon: ToastIcon?
     
     // MARK: - Computed Properties
     /// Whether this content has any actions.
@@ -63,8 +117,25 @@ public struct NotificationContent: Equatable, Sendable {
         message != nil && !message!.isEmpty
     }
     
+    /// Whether this content uses a custom view instead of standard layout.
+    public var hasCustomView: Bool {
+        customView != nil
+    }
+    
+    /// Whether this content has an icon specified.
+    public var hasIcon: Bool {
+        icon != nil
+    }
+    
     /// A combined text representation of title and message.
+    ///
+    /// For custom view content, returns a placeholder description.
+    /// For standard content, combines title and message with newline separation.
     public var fullText: String {
+        if hasCustomView {
+            return "[Custom View Content]"
+        }
+        
         if let message = message, !message.isEmpty {
             return "\(title)\n\(message)"
         }
@@ -79,6 +150,8 @@ public struct NotificationContent: Equatable, Sendable {
         self.title = title
         self.message = nil
         self.actions = []
+        self.customView = nil
+        self.icon = nil
     }
     
     /// Creates notification content with a title and message.
@@ -90,6 +163,22 @@ public struct NotificationContent: Equatable, Sendable {
         self.title = title
         self.message = message
         self.actions = []
+        self.customView = nil
+        self.icon = nil
+    }
+    
+    /// Creates notification content with a title, message, and custom icon.
+    ///
+    /// - Parameters:
+    ///   - title: The title of the notification.
+    ///   - message: An optional message for additional details.
+    ///   - icon: A custom icon to display with the notification.
+    public init(_ title: String, message: String? = nil, icon: ToastIcon) {
+        self.title = title
+        self.message = message
+        self.actions = []
+        self.customView = nil
+        self.icon = icon
     }
     
     /// Creates notification content with a title and actions.
@@ -104,6 +193,8 @@ public struct NotificationContent: Equatable, Sendable {
         self.title = title
         self.message = nil
         self.actions = actions()
+        self.customView = nil
+        self.icon = nil
     }
     
     /// Creates notification content with a title, message, and actions.
@@ -120,6 +211,28 @@ public struct NotificationContent: Equatable, Sendable {
         self.title = title
         self.message = message
         self.actions = actions()
+        self.customView = nil
+        self.icon = nil
+    }
+    
+    /// Creates notification content with a title, message, icon, and actions.
+    ///
+    /// - Parameters:
+    ///   - title: The title of the notification.
+    ///   - message: An optional message for additional details.
+    ///   - icon: A custom icon to display with the notification.
+    ///   - actions: A closure that builds the notification actions using `NotificationActionsBuilder`.
+    public init(
+        _ title: String,
+        message: String? = nil,
+        icon: ToastIcon,
+        @NotificationActionsBuilder actions: () -> [any NotificationAction]
+    ) {
+        self.title = title
+        self.message = message
+        self.actions = actions()
+        self.customView = nil
+        self.icon = icon
     }
     
     /// Creates notification content with explicit parameters.
@@ -131,11 +244,79 @@ public struct NotificationContent: Equatable, Sendable {
     public init(
         title: String,
         message: String? = nil,
-        actions: [any NotificationAction] = []
+        icon: ToastIcon? = nil,
+        actions: [any NotificationAction] = [],
+        customView: AnyView? = nil
     ) {
         self.title = title
         self.message = message
         self.actions = actions
+        self.customView = customView
+        self.icon = icon
+    }
+    
+    /// Creates notification content with a custom SwiftUI view.
+    ///
+    /// This initializer is specifically designed for rich toast notifications
+    /// that need custom layouts, animations, or branding that can't be achieved
+    /// with the standard title/message/button layout.
+    ///
+    /// - Parameter customView: The custom SwiftUI view to display.
+    ///
+    /// ## Example:
+    /// ```swift
+    /// let content = NotificationContent(customView: AnyView(
+    ///     HStack {
+    ///         ProgressView()
+    ///             .progressViewStyle(CircularProgressViewStyle(tint: .white))
+    ///         VStack(alignment: .leading) {
+    ///             Text("Uploading File")
+    ///                 .font(.headline)
+    ///                 .foregroundColor(.white)
+    ///             Text("Please wait...")
+    ///                 .font(.caption)
+    ///                 .foregroundColor(.white.opacity(0.8))
+    ///         }
+    ///     }
+    ///     .padding()
+    ///     .background(Color.blue)
+    ///     .cornerRadius(12)
+    /// ))
+    /// ```
+    public init(customView: AnyView) {
+        self.title = ""
+        self.message = nil
+        self.actions = []
+        self.customView = customView
+        self.icon = nil
+    }
+    
+    /// Creates notification content with a custom SwiftUI view using a view builder.
+    ///
+    /// Convenience initializer that automatically wraps the provided view in `AnyView`,
+    /// making it easier to create custom content without explicit type erasure.
+    ///
+    /// - Parameter content: A closure that returns the custom SwiftUI view.
+    ///
+    /// ## Example:
+    /// ```swift
+    /// let content = NotificationContent {
+    ///     VStack {
+    ///         Image(systemName: "checkmark.circle.fill")
+    ///             .font(.largeTitle)
+    ///             .foregroundColor(.green)
+    ///         Text("Success!")
+    ///             .font(.headline)
+    ///     }
+    ///     .padding()
+    /// }
+    /// ```
+    public init<Content: View>(@ViewBuilder content: () -> Content) {
+        self.title = ""
+        self.message = nil
+        self.actions = []
+        self.customView = AnyView(content())
+        self.icon = nil
     }
     
     // MARK: - Equatable Implementation
@@ -155,121 +336,6 @@ public struct NotificationContent: Equatable, Sendable {
     }
 }
 
-// MARK: - Content Analysis
-public extension NotificationContent {
-    /// Analyzes the content and returns information about its structure.
-    var analysis: ContentAnalysis {
-        ContentAnalysis(
-            hasTitle: !title.isEmpty,
-            hasMessage: hasMessage,
-            hasActions: hasActions,
-            buttonCount: actions.compactMap { $0 as? NotificationButton }.count,
-            textFieldCount: actions.compactMap { $0 as? NotificationTextField }.count,
-            totalActionCount: actionCount
-        )
-    }
-    
-    /// Information about the structure and content of a notification.
-    struct ContentAnalysis {
-        public let hasTitle: Bool
-        public let hasMessage: Bool
-        public let hasActions: Bool
-        public let buttonCount: Int
-        public let textFieldCount: Int
-        public let totalActionCount: Int
-        
-        /// Whether this content represents a simple notification (title/message only).
-        public var isSimple: Bool {
-            !hasActions
-        }
-        
-        /// Whether this content represents a complex notification (has actions).
-        public var isComplex: Bool {
-            hasActions
-        }
-        
-        /// Whether this content is suitable for alert presentation.
-        public var isSuitableForAlert: Bool {
-            // Alerts work well with any combination of content
-            true
-        }
-        
-        /// Whether this content is suitable for toast presentation.
-        public var isSuitableForToast: Bool {
-            // Toasts work better with simpler content
-            // Future implementation when toasts are added
-            buttonCount <= 2 && textFieldCount == 0
-        }
-    }
-}
-
-// MARK: - Content Validation
-public extension NotificationContent {
-    /// Validates the content for a specific notification style.
-    ///
-    /// - Parameter style: The notification style to validate against.
-    /// - Returns: A validation result indicating success or failure.
-    func validate(for style: NotificationStyle) -> ValidationResult {
-        var errors: [String] = []
-        var warnings: [String] = []
-        
-        // Validate title
-        if title.isEmpty {
-            errors.append("Notification title cannot be empty")
-        }
-        
-        // Validate actions for the style
-        let actionValidation = NotificationActionsBuilderValidator.validate(actions: actions, for: style)
-        errors.append(contentsOf: actionValidation.errors)
-        warnings.append(contentsOf: actionValidation.warnings)
-        
-        // Style-specific validation
-        switch style {
-        case .alert:
-            // Alerts can handle most content types
-            if title.count > 200 {
-                warnings.append("Very long titles may not display well in alerts")
-            }
-            if let message = message, message.count > 500 {
-                warnings.append("Very long messages may not display well in alerts")
-            }
-        }
-        
-        return ValidationResult(
-            isValid: errors.isEmpty,
-            errors: errors,
-            warnings: warnings
-        )
-    }
-    
-    /// Result of validating notification content.
-    struct ValidationResult {
-        /// Whether the validation passed without errors.
-        public let isValid: Bool
-        
-        /// Critical errors that prevent the content from being used.
-        public let errors: [String]
-        
-        /// Non-critical warnings about potential issues.
-        public let warnings: [String]
-        
-        /// A human-readable description of all validation issues.
-        public var description: String {
-            var parts: [String] = []
-            
-            if !errors.isEmpty {
-                parts.append("Errors: \(errors.joined(separator: "; "))")
-            }
-            
-            if !warnings.isEmpty {
-                parts.append("Warnings: \(warnings.joined(separator: "; "))")
-            }
-            
-            return parts.isEmpty ? "Validation passed" : parts.joined(separator: " | ")
-        }
-    }
-}
-
 // MARK: - Content Transformation
 public extension NotificationContent {
     /// Creates a copy of this content with modified actions.
@@ -280,7 +346,8 @@ public extension NotificationContent {
         NotificationContent(
             title: title,
             message: message,
-            actions: actions()
+            actions: actions(),
+            customView: customView
         )
     }
     
@@ -292,7 +359,8 @@ public extension NotificationContent {
         NotificationContent(
             title: title,
             message: message,
-            actions: actions
+            actions: actions,
+            customView: customView
         )
     }
     
@@ -304,7 +372,43 @@ public extension NotificationContent {
         NotificationContent(
             title: title,
             message: message,
-            actions: actions
+            actions: actions,
+            customView: customView
+        )
+    }
+    
+    /// Creates a copy of this content with a custom view.
+    ///
+    /// - Parameter customView: The custom view to add.
+    /// - Returns: A new `NotificationContent` with the custom view.
+    func withCustomView(_ customView: AnyView) -> NotificationContent {
+        NotificationContent(
+            title: title,
+            message: message,
+            actions: actions,
+            customView: customView
+        )
+    }
+    
+    /// Creates a copy of this content with a custom view using a view builder.
+    ///
+    /// - Parameter content: A closure that builds the custom view.
+    /// - Returns: A new `NotificationContent` with the custom view.
+    func withCustomView<Content: View>(@ViewBuilder content: () -> Content) -> NotificationContent {
+        withCustomView(AnyView(content()))
+    }
+    
+    /// Creates a copy of this content with a different icon.
+    ///
+    /// - Parameter icon: The new icon to use.
+    /// - Returns: A new `NotificationContent` with the updated icon.
+    func withIcon(_ icon: ToastIcon?) -> NotificationContent {
+        NotificationContent(
+            title: title,
+            message: message,
+            icon: icon,
+            actions: actions,
+            customView: customView
         )
     }
 }
@@ -315,6 +419,8 @@ extension NotificationContent: Hashable {
         hasher.combine(title)
         hasher.combine(message)
         hasher.combine(actions.count)
+        hasher.combine(hasCustomView)
+        hasher.combine(icon)
         
         // Hash the types and hash values of actions
         for action in actions {

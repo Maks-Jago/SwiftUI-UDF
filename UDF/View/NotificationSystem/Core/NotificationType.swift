@@ -32,7 +32,7 @@ import SwiftUI
 ///     style: .alert
 /// )
 /// ```
-public enum NotificationType: Equatable, Sendable {
+public enum NotificationType: Hashable, Sendable {
     /// A success notification with a message.
     case success(String, style: NotificationStyle)
     
@@ -103,8 +103,16 @@ public enum NotificationType: Equatable, Sendable {
         }
     }
     
-    // MARK: - Equatable Implementation
+    /// The toast configuration if this notification uses toast style.
+    /// Returns nil for non-toast notifications.
+    public var toastConfiguration: ToastConfiguration? {
+        if case .toast(let configuration) = style {
+            return configuration
+        }
+        return nil
+    }
     
+    // MARK: - Equatable Implementation
     public static func == (lhs: NotificationType, rhs: NotificationType) -> Bool {
         switch (lhs, rhs) {
         case let (.success(lhsMessage, lhsStyle), .success(rhsMessage, rhsStyle)):
@@ -126,6 +134,32 @@ public enum NotificationType: Equatable, Sendable {
             return false
         }
     }
+    
+    // MARK: - Hashable Implementation
+    public func hash(into hasher: inout Hasher) {
+        switch self {
+        case .success(let message, let style):
+            hasher.combine("success")
+            hasher.combine(message)
+            hasher.combine(style)
+        case .error(let message, let style):
+            hasher.combine("error")
+            hasher.combine(message)
+            hasher.combine(style)
+        case .warning(let message, let style):
+            hasher.combine("warning")
+            hasher.combine(message)
+            hasher.combine(style)
+        case .info(let message, let style):
+            hasher.combine("info")
+            hasher.combine(message)
+            hasher.combine(style)
+        case .custom(let content, let style):
+            hasher.combine("custom")
+            hasher.combine(content)
+            hasher.combine(style)
+        }
+    }
 }
 
 // MARK: - NotificationCategory
@@ -136,22 +170,6 @@ public enum NotificationCategory: String, CaseIterable, Sendable {
     case warning
     case info
     case custom
-    
-    /// Default system image name for each category.
-    public var defaultSystemImage: String? {
-        switch self {
-        case .success:
-            return "checkmark.circle.fill"
-        case .error:
-            return "xmark.circle.fill"
-        case .warning:
-            return "exclamationmark.triangle.fill"
-        case .info:
-            return "info.circle.fill"
-        case .custom:
-            return nil
-        }
-    }
     
     /// Default color for each category.
     public var defaultColor: Color {
@@ -167,48 +185,5 @@ public enum NotificationCategory: String, CaseIterable, Sendable {
         case .custom:
             return .primary
         }
-    }
-}
-
-// MARK: - Convenience Factory Methods
-public extension NotificationType {
-    /// Creates a success notification with alert style.
-    /// 
-    /// - Parameter message: The success message to display.
-    /// - Returns: A success notification configured for alert presentation.
-    static func success(_ message: String) -> Self {
-        .success(message, style: .alert)
-    }
-    
-    /// Creates an error notification with alert style.
-    /// 
-    /// - Parameter message: The error message to display.
-    /// - Returns: An error notification configured for alert presentation.
-    static func error(_ message: String) -> Self {
-        .error(message, style: .alert)
-    }
-    
-    /// Creates a warning notification with alert style.
-    /// 
-    /// - Parameter message: The warning message to display.
-    /// - Returns: A warning notification configured for alert presentation.
-    static func warning(_ message: String) -> Self {
-        .warning(message, style: .alert)
-    }
-    
-    /// Creates an info notification with alert style.
-    /// 
-    /// - Parameter message: The info message to display.
-    /// - Returns: An info notification configured for alert presentation.
-    static func info(_ message: String) -> Self {
-        .info(message, style: .alert)
-    }
-    
-    /// Creates a custom notification with alert style.
-    /// 
-    /// - Parameter content: The custom content for the notification.
-    /// - Returns: A custom notification configured for alert presentation.
-    static func custom(content: NotificationContent) -> Self {
-        .custom(content: content, style: .alert)
     }
 }

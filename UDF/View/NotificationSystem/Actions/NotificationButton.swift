@@ -217,26 +217,3 @@ public extension NotificationAction where Self == NotificationButton {
             .role(.destructive)
     }
 }
-
-// MARK: - Validation
-public extension NotificationButton {
-    /// Validates that the button has a valid configuration.
-    /// 
-    /// - Returns: True if the button is properly configured.
-    nonisolated var isValid: Bool {
-        !title.isEmpty
-    }
-    
-    /// Returns a description of any validation issues with this button.
-    /// 
-    /// - Returns: An array of validation error messages, empty if valid.
-    nonisolated var validationErrors: [String] {
-        var errors: [String] = []
-        
-        if title.isEmpty {
-            errors.append("Button title cannot be empty")
-        }
-        
-        return errors
-    }
-}

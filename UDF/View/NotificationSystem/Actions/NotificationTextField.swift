@@ -189,26 +189,3 @@ public extension NotificationTextField {
         }
     }
 }
-
-// MARK: - Validation
-public extension NotificationTextField {
-    /// Validates that the text field has a valid configuration.
-    /// 
-    /// - Returns: True if the text field is properly configured.
-    nonisolated var isValid: Bool {
-        !title.isEmpty
-    }
-    
-    /// Returns a description of any validation issues with this text field.
-    /// 
-    /// - Returns: An array of validation error messages, empty if valid.
-    nonisolated var validationErrors: [String] {
-        var errors: [String] = []
-        
-        if title.isEmpty {
-            errors.append("Text field title cannot be empty")
-        }
-        
-        return errors
-    }
-}
