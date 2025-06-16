@@ -361,6 +361,11 @@ public class ToastQueueManager: ObservableObject {
         // Remove from visible toasts
         visibleToasts.removeAll { $0.id == toastId }
         
+        // Update stack positions after removal
+        if configuration.displayMode == .stacked {
+            updateStackPositions()
+        }
+        
         // Process queue for next toast
         if configuration.displayMode == .sequential {
             Task {
@@ -511,7 +516,7 @@ public struct QueueInfo {
     public let currentMode: ToastQueueConfiguration.DisplayMode
     
     public var isAtCapacity: Bool {
-        queuedCount >= totalCapacity
+        (visibleCount + queuedCount) >= totalCapacity
     }
     
     public var isStackFull: Bool {

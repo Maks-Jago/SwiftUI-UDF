@@ -171,29 +171,17 @@ public struct NotificationState: Equatable, Identifiable, Sendable {
     }
     
     // MARK: - Advanced Initializers
+
+    /// Initializes a notification state with an alert
+    public init(alert: AlertNotification) {
+        let content = NotificationContent(alert.title, message: alert.message)
+        self = .init(notification: .custom(content: content, style: .alert))
+    }
     
-    /// Initializes a notification state with a title and an optional message.
-    /// 
-    /// Creates a custom notification with the specified title and message using the
-    /// provided presentation style. This is useful for notifications that need more
-    /// structure than simple message strings.
-    ///
-    /// - Parameters:
-    ///   - title: The title of the notification.
-    ///   - message: An optional message providing additional details.
-    ///   - style: The notification style for presentation. Defaults to `.alert`.
-    ///
-    /// ## Example:
-    /// ```swift
-    /// notification = .init(
-    ///     title: "Download Complete", 
-    ///     message: "Your file has been saved to Downloads",
-    ///     style: .toast(.bottom)
-    /// )
-    /// ```
-    public init(title: String, message: String? = nil, style: NotificationStyle = .alert) {
-        let content = NotificationContent(title, message: message)
-        self = .init(notification: .custom(content: content, style: style))
+    /// Initializes a notification state with a toast
+    public init(toast: ToastNotification, configuration: ToastConfiguration = .default) {
+        let content = NotificationContent("", message: toast.message)
+        self = .init(notification: .custom(content: content, style: .toast(configuration)))
     }
     
     /// Initializes a notification state with custom content using a result builder.
