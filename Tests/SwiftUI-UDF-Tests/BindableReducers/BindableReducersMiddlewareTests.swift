@@ -191,8 +191,8 @@ private extension BindableReducersMiddlewareTests {
             case itemDetails(Item.ID)
         }
 
-        struct Environment {
-            var loadItemDetails: (
+        struct Environment : Sendable{
+            var loadItemDetails: @Sendable (
                 _ itemId: Item.ID
             ) async throws -> Item
         }

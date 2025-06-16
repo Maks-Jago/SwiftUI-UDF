@@ -35,7 +35,7 @@ public final class BindableReducerReference<AppState: AppReducer, BindedContaine
     ///
     /// - Parameter id: The ID of the container whose reducer is to be accessed.
     /// - Returns: A `ReducerReference` for the reducer associated with the specified container ID.
-    public subscript(_ id: BindedContainer.ID) -> ReducerReference<AppState, Reducer> {
+    public subscript(_ id: BindedContainer.ID) -> ReducerReference<AppState, Reducer> where BindedContainer.ID: Sendable {
         ReducerReference(reducer: reducer[id] ?? .init()) { [dispatcher] action in
             dispatcher(action.binded(to: BindedContainer.self, by: id))
         }

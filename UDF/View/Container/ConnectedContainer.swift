@@ -121,7 +121,7 @@ struct ConnectedContainer<C: Component, State: AppReducer>: View {
         onContainerDidLoad: @escaping (EnvironmentStore<State>) -> Void,
         onContainerDidUnload: @escaping (EnvironmentStore<State>) -> Void,
         useHooks: @escaping () -> [Hook<State>]
-    ) {
+    ) where BindedContainer.ID: Sendable {
         self.map = map
         self.scope = scope
         self.onContainerAppear = onContainerAppear

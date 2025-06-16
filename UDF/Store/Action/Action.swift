@@ -17,7 +17,7 @@ import SwiftUI
 ///
 /// Conforming to `Action` allows the creation of custom actions that are equatable,
 /// making it easier to manage state updates in a predictable manner.
-public protocol Action: Equatable {}
+public protocol Action: Equatable, Sendable {}
 
 public extension Action {
     /// Associates an animation with the action.
@@ -103,7 +103,7 @@ public extension Action {
         fileName: String = #file,
         functionName: String = #function,
         lineNumber: Int = #line
-    ) -> some Action {
+    ) -> some Action where BindedContainer.ID: Sendable {
         if let group = self as? ActionGroup {
             ActionGroup(internalActions: group._actions.map { oldAction in
                 InternalAction(
@@ -145,7 +145,7 @@ public extension Action {
         fileName: String = #file,
         functionName: String = #function,
         lineNumber: Int = #line
-    ) -> some Action {
+    ) -> some Action where BindedContainer.ID: Sendable {
         binded(
             to: BindedContainer.self,
             by: container.id,
