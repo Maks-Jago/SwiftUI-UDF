@@ -378,7 +378,7 @@ open class BaseMiddleware<State: AppReducer>: Middleware, @unchecked Sendable {
     /// - Note: This method makes use of the `execute` method that handles `ConcurrencyBlockEffect` objects.
     open func execute(
         flowId: AnyHashable,
-        cancellation: some Hashable,
+        cancellation: some Hashable & Sendable,
         mapAction: @escaping @Sendable (any Action) -> any Action = { $0 },
         mapError: @escaping ErrorMapper<AnyHashable> = { flowId, error in Actions.Error(error: error.localizedDescription, id: flowId) },
         fileName: String = #file,
@@ -437,7 +437,7 @@ open class BaseMiddleware<State: AppReducer>: Middleware, @unchecked Sendable {
     open func execute(
         effect: some ConcurrencyEffect,
         flowId: AnyHashable,
-        cancellation: some Hashable,
+        cancellation: some Hashable & Sendable,
         mapAction: @escaping @Sendable (any Action) -> any Action = { $0 },
         mapError: @escaping ErrorMapper<AnyHashable> = { flowId, error in Actions.Error(error: error.localizedDescription, id: flowId) },
         fileName: String = #file,
@@ -463,7 +463,7 @@ open class BaseMiddleware<State: AppReducer>: Middleware, @unchecked Sendable {
 
                 // Check if the task was cancelled and dispatch appropriate actions
                 if Task.isCancelled {
-                    self?.dispatch(action: Actions.DidCancelEffect(by: anyCancellationId), filePosition: filePosition)
+                    self?.dispatch(action: Actions.DidCancelEffect(by: cancellation), filePosition: filePosition)
                 } else {
                     self?.dispatch(action: mapAction(action), filePosition: filePosition)
                 }
@@ -471,7 +471,7 @@ open class BaseMiddleware<State: AppReducer>: Middleware, @unchecked Sendable {
             } catch {
                 // Handle errors and task cancellation
                 if error is CancellationError {
-                    self?.dispatch(action: Actions.DidCancelEffect(by: anyCancellationId), filePosition: filePosition)
+                    self?.dispatch(action: Actions.DidCancelEffect(by: cancellation), filePosition: filePosition)
                 } else if !Task.isCancelled {
                     self?.dispatch(action: mapError(flowId, error), filePosition: filePosition)
                 }

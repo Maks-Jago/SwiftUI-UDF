@@ -17,7 +17,7 @@ import SwiftUI
 ///
 /// The `EnvironmentStore` class is responsible for handling application state, managing subscribers, and dispatching actions.
 /// It works in conjunction with the `AppReducer` to provide unidirectional data flow throughout the app.
-public final class EnvironmentStore<State: AppReducer>: @unchecked Sendable {
+public actor EnvironmentStore<State: AppReducer>: Sendable {
     @SourceOfTruth public private(set) var state: State
 
     private var store: InternalStore<State>
@@ -49,7 +49,7 @@ public final class EnvironmentStore<State: AppReducer>: @unchecked Sendable {
     /// - Parameters:
     ///   - state: The initial state of the application.
     ///   - logger: A single action logger used for logging dispatched actions.
-    public convenience init(initial state: State, logger: ActionLogger) {
+    public init(initial state: State, logger: ActionLogger) {
         self.init(initial: state, loggers: [logger])
     }
 
@@ -185,7 +185,7 @@ extension EnvironmentStore {
 // MARK: - Global
 extension EnvironmentStore {
     /// Provides a globally accessible instance of the `EnvironmentStore`.
-    class var global: EnvironmentStore<State> {
+    static var global: EnvironmentStore<State> {
         GlobalValue.value(for: EnvironmentStore<State>.self)
     }
 }
@@ -280,7 +280,7 @@ public extension EnvironmentStore {
     /// Subscribes to middleware using a custom builder.
     ///
     /// - Parameter build: A closure that takes the store and returns an array of middleware wrappers.
-    func subscribe(@MiddlewareBuilder<State> build: @escaping (_ store: any Store<State>) -> [MiddlewareWrapper<State>]) {
+    func subscribe(@MiddlewareBuilder<State> build: @escaping @Sendable (_ store: any Store<State>) -> [MiddlewareWrapper<State>]) {
         let middlewares = build(self.store).map { wrapper in
             wrapper.instance ?? self.middleware(store: self.store, type: wrapper.type)
         }

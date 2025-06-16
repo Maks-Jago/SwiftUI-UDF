@@ -17,7 +17,7 @@ import Foundation
 /// dependencies or services needed to handle side effects. This is particularly useful for injecting dependencies such as network clients,
 /// database instances, or other external services into the middleware.
 public protocol EnvironmentMiddleware<State> {
-    associatedtype Environment
+    associatedtype Environment: Sendable
     associatedtype State: AppReducer
 
     /// The environment instance containing dependencies required by the middleware.
