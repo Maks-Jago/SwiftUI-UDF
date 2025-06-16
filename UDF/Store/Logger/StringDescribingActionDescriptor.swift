@@ -12,7 +12,7 @@
 import Foundation
 
 /// An `ActionDescriptor` that generates a string description for a given action.
-open class StringDescribingActionDescriptor: @unchecked Sendable, ActionDescriptor {
+public final class StringDescribingActionDescriptor: Sendable, ActionDescriptor {
     /// Initializes a new instance of `StringDescribingActionDescriptor`.
     public init() {}
 
@@ -20,7 +20,7 @@ open class StringDescribingActionDescriptor: @unchecked Sendable, ActionDescript
     ///
     /// - Parameter action: The `LoggingAction` for which to generate a description.
     /// - Returns: A string representation of the `LoggingAction`.
-    open func description(for action: LoggingAction) -> String {
+    public func description(for action: LoggingAction) -> String {
         String(describing: action)
     }
 }

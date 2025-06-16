@@ -23,13 +23,7 @@ public struct Cached<T: Codable & Sendable>: Initable, Sendable {
     private var storage: CacheSource
     private var inMemoryValue: T
 
-    private lazy var debouncer: Debouncer<T> = {
-        let debouncer = Debouncer<T>(intervalToSync, on: .global(qos: .background))
-        debouncer.on { [self] value in
-            storage.save(value)
-        }
-        return debouncer
-    }()
+    private var debouncer: Debouncer<T>
 
     /// This initializer should not be used. Use one of the other initializers instead.
     @available(*, deprecated, message: "Use `init(key:defaultValue:intervalToSync:storage)` instead.")
@@ -50,6 +44,10 @@ public struct Cached<T: Codable & Sendable>: Initable, Sendable {
         self.intervalToSync = intervalToSync
         self.storage = storage
         self.inMemoryValue = storage.load() ?? defaultValue
+        self.debouncer = Debouncer<T>(intervalToSync, on: .global(qos: .background))
+        self.debouncer.on { value in
+            storage.save(value)
+        }
     }
 
     /// Initializes a `Cached` property wrapper with a key, a default value, and a sync interval, using `FileCache` as the storage.
@@ -75,6 +73,10 @@ public struct Cached<T: Codable & Sendable>: Initable, Sendable {
         self.intervalToSync = intervalToSync
         self.storage = storage
         self.inMemoryValue = storage.load() ?? defaultValue
+        self.debouncer = Debouncer<T>(intervalToSync, on: .global(qos: .background))
+        self.debouncer.on { value in
+            storage.save(value)
+        }
     }
 
     /// Initializes a `Cached` property wrapper with a key, a default value conforming to `Initable`, and a sync interval, using `FileCache`

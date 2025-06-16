@@ -110,7 +110,7 @@ public extension BindableReducer {
     /// adding, removing, or reducing the appropriate reducers based on the action's type.
     ///
     /// - Parameter action: The action to be reduced.
-    mutating func reduce(_ action: some Action) {
+    mutating func reduce(_ action: some Action) where BindedContainer.ID: Sendable {
         switch action {
         case let action as Actions._OnContainerDidLoad<BindedContainer>:
             reducers.retainOrCreateValue(for: action.id)

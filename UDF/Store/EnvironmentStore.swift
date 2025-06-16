@@ -280,7 +280,7 @@ public extension EnvironmentStore {
     /// Subscribes to middleware using a custom builder.
     ///
     /// - Parameter build: A closure that takes the store and returns an array of middleware wrappers.
-    func subscribe(@MiddlewareBuilder<State> build: @escaping (_ store: any Store<State>) -> [MiddlewareWrapper<State>]) {
+    func subscribe(@MiddlewareBuilder<State> build: @escaping @Sendable (_ store: any Store<State>) -> [MiddlewareWrapper<State>]) {
         let middlewares = build(self.store).map { wrapper in
             wrapper.instance ?? self.middleware(store: self.store, type: wrapper.type)
         }

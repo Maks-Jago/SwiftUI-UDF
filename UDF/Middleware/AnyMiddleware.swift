@@ -11,7 +11,7 @@
 
 import Foundation
 
-final class AnyMiddleware: Hashable {
+final class AnyMiddleware: Hashable, Sendable {
     let middleware: any Middleware
 
     init(_ middleware: any Middleware) {
@@ -26,5 +26,3 @@ final class AnyMiddleware: Hashable {
         hasher.combine(ObjectIdentifier(self))
     }
 }
-
-extension AnyMiddleware: @unchecked Sendable {}

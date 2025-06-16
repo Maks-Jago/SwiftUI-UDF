@@ -35,7 +35,7 @@ public enum Actions {
     /// modify the corresponding property in the form.
     ///
     /// This action ensures that form updates are handled in a controlled and type-safe manner.
-    public struct UpdateFormField<F: Form>: Action {
+    public struct UpdateFormField<F: Form>: Action, @unchecked Sendable {
         /// Compares two `UpdateFormField` actions to check if they are equal.
         /// - Parameters:
         ///   - lhs: The left-hand side `UpdateFormField` to compare.
@@ -300,7 +300,7 @@ public enum Actions {
     }
 
     /// `SetPaginationItems` is an action that sets paginated items within a specific context.
-    public struct SetPaginationItems<I: Equatable>: Action {
+    public struct SetPaginationItems<I: Equatable & Sendable>: Action {
         /// A unique identifier for the pagination context.
         public var id: AnyHashable
 
@@ -344,7 +344,7 @@ public enum Actions {
     }
 
     /// `ApplicationDidLaunchWithOptions` is an action that indicates the application has launched with specific options.
-    public struct ApplicationDidLaunchWithOptions: Action {
+    public struct ApplicationDidLaunchWithOptions: Action, @unchecked Sendable {
         /// Checks the equality of two `ApplicationDidLaunchWithOptions` actions based on the `application` property.
         public static func == (lhs: ApplicationDidLaunchWithOptions, rhs: ApplicationDidLaunchWithOptions) -> Bool {
             lhs.application == rhs.application
@@ -442,7 +442,7 @@ public extension Actions {
 // MARK: - Items
 public extension Actions {
     /// `DidLoadItem` is an action that represents a single item being loaded.
-    struct DidLoadItem<M: Equatable>: Action {
+    struct DidLoadItem<M: Equatable & Sendable>: Action {
         /// The item that was loaded.
         public var item: M
 
@@ -468,7 +468,7 @@ public extension Actions {
     }
 
     /// `DidLoadItems` is an action that represents multiple items being loaded.
-    struct DidLoadItems<M: Equatable>: Action, CustomStringConvertible {
+    struct DidLoadItems<M: Equatable & Sendable>: Action, CustomStringConvertible {
         /// The list of items that were loaded.
         public var items: [M]
 
@@ -501,7 +501,7 @@ public extension Actions {
     }
 
     /// `DidUpdateItem` is an action that represents an item being updated.
-    struct DidUpdateItem<M: Equatable>: Action {
+    struct DidUpdateItem<M: Equatable & Sendable>: Action {
         /// The item that was updated.
         public var item: M
 
@@ -527,7 +527,7 @@ public extension Actions {
     }
 
     /// `DeleteItem` is an action that represents an item being deleted.
-    struct DeleteItem<M: Equatable>: Action {
+    struct DeleteItem<M: Equatable & Sendable>: Action {
         /// The item that was deleted.
         public var item: M
 
@@ -556,7 +556,7 @@ public extension Actions {
 // MARK: - Nested Items
 public extension Actions {
     /// `DidLoadNestedItem` is an action that represents a nested item being loaded.
-    struct DidLoadNestedItem<ParentId: Hashable, Nested: Equatable>: Action {
+    struct DidLoadNestedItem<ParentId: Hashable & Sendable, Nested: Equatable & Sendable>: Action {
         /// The nested item that was loaded.
         public var item: Nested
 
@@ -590,7 +590,7 @@ public extension Actions {
     }
 
     /// `DidLoadNestedItems` is an action that represents multiple nested items being loaded.
-    struct DidLoadNestedItems<ParentId: Hashable, Nested: Equatable>: Action, CustomStringConvertible {
+    struct DidLoadNestedItems<ParentId: Hashable & Sendable, Nested: Equatable & Sendable>: Action, CustomStringConvertible {
         /// The nested items that were loaded.
         public var items: [Nested]
 
@@ -640,7 +640,7 @@ public extension Actions {
     }
 
     /// `DidLoadNestedByParents` is an action representing the loading of nested items grouped by their parent identifiers.
-    struct DidLoadNestedByParents<ParentId: Hashable, Nested: Equatable>: Action, CustomStringConvertible {
+    struct DidLoadNestedByParents<ParentId: Hashable & Sendable, Nested: Equatable & Sendable>: Action, CustomStringConvertible {
         /// A dictionary mapping parent identifiers to their corresponding nested items.
         public var dictionary: [ParentId: [Nested]]
 
@@ -683,7 +683,7 @@ public extension Actions {
     }
 
     /// `DidUpdateNestedItem` is an action representing the update of a nested item for a specific parent identifier.
-    struct DidUpdateNestedItem<ParentId: Hashable, Nested: Equatable>: Action {
+    struct DidUpdateNestedItem<ParentId: Hashable & Sendable, Nested: Equatable & Sendable>: Action {
         /// The nested item that was updated.
         public var item: Nested
 
@@ -717,7 +717,7 @@ public extension Actions {
     }
 
     /// `DeleteNestedItem` is an action representing the deletion of a nested item for a specific parent identifier.
-    struct DeleteNestedItem<ParentId: Hashable, Nested: Equatable>: Action {
+    struct DeleteNestedItem<ParentId: Hashable & Sendable, Nested: Equatable & Sendable>: Action {
         /// The nested item that is to be deleted.
         public var item: Nested
 
@@ -760,19 +760,19 @@ public extension Actions {
         }
 
         /// An array representing the path to navigate to.
-        public let to: [any Hashable]
+        public let to: [any Hashable & Sendable]
 
         /// Initializes a `Navigate` action to a single destination.
         ///
         /// - Parameter to: A `Hashable` representing the destination.
-        public init(to: any Hashable) {
+        public init(to: any Hashable & Sendable) {
             self.to = [to]
         }
 
         /// Initializes a `Navigate` action to a series of destinations.
         ///
         /// - Parameter path: An array of `Hashable` objects representing the navigation path.
-        public init(path: [any Hashable]) {
+        public init(path: [any Hashable & Sendable]) {
             self.to = path
         }
     }
@@ -784,19 +784,19 @@ public extension Actions {
         }
 
         /// An array representing the path to navigate to after resetting the stack.
-        public let to: [any Hashable]
+        public let to: [any Hashable & Sendable]
 
         /// Initializes a `NavigateResetStack` action to a single destination.
         ///
         /// - Parameter to: A `Hashable` representing the destination.
-        public init(to: any Hashable) {
+        public init(to: any Hashable & Sendable) {
             self.to = [to]
         }
 
         /// Initializes a `NavigateResetStack` action to a series of destinations.
         ///
         /// - Parameter path: An array of `Hashable` objects representing the navigation path.
-        public init(path: [any Hashable]) {
+        public init(path: [any Hashable & Sendable]) {
             self.to = path
         }
     }
@@ -830,19 +830,19 @@ public extension Actions {
         }
 
         /// An array representing the path to navigate to.
-        public let to: [any Hashable]
+        public let to: [any Hashable & Sendable]
 
         /// Initializes a `NavigateTyped` action to a single destination.
         ///
         /// - Parameter to: A `Hashable` representing the destination.
-        public init(to: any Hashable) {
+        public init(to: any Hashable & Sendable) {
             self.to = [to]
         }
 
         /// Initializes a `NavigateTyped` action to a series of destinations.
         ///
         /// - Parameter path: An array of `Hashable` objects representing the navigation path.
-        public init(path: [any Hashable]) {
+        public init(path: [any Hashable & Sendable]) {
             self.to = path
         }
     }
@@ -854,19 +854,19 @@ public extension Actions {
         }
 
         /// An array representing the path to navigate to after resetting the stack.
-        public let to: [any Hashable]
+        public let to: [any Hashable & Sendable]
 
         /// Initializes a `NavigateResetStackTyped` action to a single destination.
         ///
         /// - Parameter to: A `Hashable` representing the destination.
-        public init(to: any Hashable) {
+        public init(to: any Hashable & Sendable) {
             self.to = [to]
         }
 
         /// Initializes a `NavigateResetStackTyped` action to a series of destinations.
         ///
         /// - Parameter path: An array of `Hashable` objects representing the navigation path.
-        public init(path: [any Hashable]) {
+        public init(path: [any Hashable & Sendable]) {
             self.to = path
         }
     }
@@ -899,7 +899,7 @@ extension Actions {
     ///
     /// - Parameters:
     ///   - BindedContainer: The container type conforming to `BindableContainer`.
-    struct _OnContainerDidLoad<BindedContainer: BindableContainer>: Action {
+    struct _OnContainerDidLoad<BindedContainer: BindableContainer>: Action where BindedContainer.ID: Sendable {
         static func == (lhs: Actions._OnContainerDidLoad<BindedContainer>, rhs: Actions._OnContainerDidLoad<BindedContainer>) -> Bool {
             lhs.id == rhs.id && lhs.containerType == rhs.containerType
         }
@@ -917,7 +917,7 @@ extension Actions {
     ///
     /// - Parameters:
     ///   - BindedContainer: The container type conforming to `BindableContainer`.
-    struct _OnContainerDidUnLoad<BindedContainer: BindableContainer>: Action {
+    struct _OnContainerDidUnLoad<BindedContainer: BindableContainer>: Action where BindedContainer.ID: Sendable {
         static func == (lhs: Actions._OnContainerDidUnLoad<BindedContainer>, rhs: Actions._OnContainerDidUnLoad<BindedContainer>) -> Bool {
             lhs.id == rhs.id && lhs.containerType == rhs.containerType
         }
@@ -935,7 +935,7 @@ extension Actions {
     ///
     /// - Parameters:
     ///   - BindedContainer: The container type conforming to `BindableContainer`.
-    struct _BindableAction<BindedContainer: BindableContainer>: _AnyBindableAction {
+    struct _BindableAction<BindedContainer: BindableContainer>: _AnyBindableAction where BindedContainer.ID: Sendable {
         /// The wrapped action that is being bound to the container.
         let value: any Action
 

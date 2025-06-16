@@ -29,8 +29,8 @@ final class NewReducibleMiddlewareTests: XCTestCase {
 
         var environment: Environment!
 
-        struct Environment {
-            var loadItems: () -> [String]
+        struct Environment: Sendable{
+            var loadItems: @Sendable () -> [String]
         }
 
         func reduce(_ action: some Action, for state: AppState) {

@@ -1,7 +1,7 @@
 import Foundation
 import SwiftUI
 
-struct InternalAction: @unchecked Sendable, Action {
+struct InternalAction: Action {
     let value: any Action
     let fileName: String
     let functionName: String
