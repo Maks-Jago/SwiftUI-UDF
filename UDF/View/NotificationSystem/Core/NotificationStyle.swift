@@ -20,6 +20,7 @@ import SwiftUI
 /// ## Available Styles:
 /// - `.alert` - Native iOS system alerts using UIAlertController
 /// - `.toast` - Custom overlay notifications with full theming support
+/// - `.confirmationDialog` - Native confirmation dialogs with no theming
 ///
 /// ## Usage:
 /// ```swift
@@ -28,7 +29,26 @@ import SwiftUI
 /// 
 /// // Toast style (Phase 2)
 /// let notification = NotificationType.success("Message", style: .toast())
-/// 
+///
+/// // Confirmation dialog style (Phase 3)
+/// notification = .init(style: .confirmationDialog(config)) {
+/// NotificationContent("Share Photo") {
+///     NotificationButton.default("AirDrop") {
+///         print("Sharing via AirDrop")
+///     }
+///     NotificationButton.default("Messages") {
+///         print("Sharing via Messages")
+///     }
+///     NotificationButton.default("Mail") {
+///         print("Sharing via Mail")
+///     }
+///     NotificationButton.default("Save to Files") {
+///         print("Saving to Files")
+///     }
+///     NotificationButton.cancel("Cancel")
+/// }
+/// }
+///
 /// // Toast with custom configuration
 /// let notification = NotificationType.success("Message", style: .toast(
 ///     ToastConfiguration(position: .bottom, theme: .vibrant)
@@ -37,12 +57,13 @@ import SwiftUI
 public enum NotificationStyle: Hashable, Sendable {
     case alert
     case toast(ToastConfiguration = .default)
+    case confirmationDialog(ConfirmationDialogConfiguration = .default)
     
     // MARK: - Properties
     /// Whether this style supports custom theming.
     public var supportsTheming: Bool {
         switch self {
-        case .alert:
+        case .alert, .confirmationDialog:
             return false
         case .toast:
             return true
@@ -52,7 +73,7 @@ public enum NotificationStyle: Hashable, Sendable {
     /// Whether this style is modal (blocks user interaction with underlying content).
     public var isModal: Bool {
         switch self {
-        case .alert:
+        case .alert, .confirmationDialog:
             return true
         case .toast:
             return false
@@ -64,25 +85,15 @@ public enum NotificationStyle: Hashable, Sendable {
         switch self {
         case .alert:
             return true
-        case .toast:
+        case .toast, .confirmationDialog:
             return false
-        }
-    }
-    
-    /// Whether this style supports action buttons.
-    public var supportsButtons: Bool {
-        switch self {
-        case .alert:
-            return true
-        case .toast:
-            return true
         }
     }
     
     /// The presentation context for this style.
     public var presentationContext: PresentationContext {
         switch self {
-        case .alert:
+        case .alert, .confirmationDialog:
             return .modal
         case .toast:
             return .overlay
@@ -96,6 +107,8 @@ public enum NotificationStyle: Hashable, Sendable {
             return true
         case (.toast(let lhsConfig), .toast(let rhsConfig)):
             return lhsConfig == rhsConfig
+        case (.confirmationDialog(let lhsConfig), .confirmationDialog(let rhsConfig)):
+            return lhsConfig == rhsConfig
         default:
             return false
         }
@@ -108,6 +121,9 @@ public enum NotificationStyle: Hashable, Sendable {
             hasher.combine("alert")
         case .toast(let config):
             hasher.combine("toast")
+            hasher.combine(config)
+        case .confirmationDialog(let config):
+            hasher.combine("confirmationDialog")
             hasher.combine(config)
         }
     }

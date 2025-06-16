@@ -63,183 +63,60 @@ private struct NotificationModifier: ViewModifier {
     @Binding var state: NotificationState
     var queueConfiguration: ToastQueueConfiguration
     
+    @State private var alertState: NotificationState = .dismissed
+    @State private var toastState: NotificationState = .dismissed
+    @State private var dialogState: NotificationState = .dismissed
+    
     func body(content: Content) -> some View {
         content
-            .modifier(AlertNotificationModifier(notificationState: $state))
+            .onChange(of: state) { newState in
+                routeNotification(newState)
+            }
+            .onAppear {
+                routeNotification(state)
+            }
+            .modifier(AlertNotificationModifier(notificationState: $alertState))
             .modifier(ToastNotificationModifier(
-                notificationState: $state, 
+                notificationState: $toastState,
                 queueConfiguration: queueConfiguration
             ))
-    }
-}
-
-// MARK: - Alert-Specific Modifier
-/// Handles alert-style notifications using the existing AlertModifier logic.
-///
-/// This modifier converts `NotificationState` to the format expected by the current
-/// alert system and preserves all existing alert behavior and presentation logic.
-private struct AlertNotificationModifier: ViewModifier {
-    @Binding var notificationState: NotificationState
-    @State private var alertState: AlertState?
-    @State private var dismissedNotification: NotificationState?
-    
-    func body(content: Content) -> some View {
-        content
-            .onAppear {
-                updateAlertState()
-            }
-            .onChange(of: notificationState) { newState in
-                updateAlertState()
-            }
-            .alert(
-                alertState?.title ?? "",
-                isPresented: Binding(
-                    get: { alertState != nil },
-                    set: { isPresented in
-                        if !isPresented {
-                            dismissAlert()
-                        }
-                    }
-                ),
-                actions: {
-                    if let alertState = alertState {
-                        ForEach(Array(alertState.actions.enumerated()), id: \.offset) { _, action in
-                            switch action {
-                            case let button as NotificationButton:
-                                Button(button.title, role: button.role) {
-                                    button.action()
-                                    dismissAlert()
-                                }
-                                .disabled(button.disabled)
-                                .id(button.hashValue)
-                                
-                            case let textField as NotificationTextField:
-                                textField
-                                
-                            default:
-                                EmptyView()
-                            }
-                        }
-                    }
-                },
-                message: {
-                    if let message = alertState?.message {
-                        Text(message)
-                    }
-                }
-            )
+            .modifier(ConfirmationDialogModifier(notificationState: $dialogState))
     }
     
-    /// Converts NotificationState to AlertState for the native alert system.
-    private func updateAlertState() {
-        switch notificationState.status {
+    private func routeNotification(_ notification: NotificationState) {
+        switch notification.status {
         case .presented(let notificationType):
-            // Only handle alert-style notifications
-            guard case .alert = notificationType.style else {
-                return
+            // Route to appropriate state based on style
+            switch notificationType.style {
+            case .alert:
+                print("🔀 Routing to alert state")
+                alertState = notification
+                
+            case .toast:
+                print("🔀 Routing to toast state")
+                toastState = notification
+                
+            case .confirmationDialog:
+                print("🔀 Routing to dialog state")
+                dialogState = notification
             }
-            alertState = convertToAlertState(notificationType)
             
         case .dismissed:
-            if alertState != nil {
-                alertState = nil
+            print("🔀 Dismissal received for notification ID: \(notification.id)")
+            
+            // Only dismiss states that match the dismissed notification ID
+            if alertState.id == notification.id {
+                print("🔀 Dismissing alert state")
+                alertState = .dismissed
+            }
+            if toastState.id == notification.id {
+                print("🔀 Dismissing toast state")
+                toastState = .dismissed
+            }
+            if dialogState.id == notification.id {
+                print("🔀 Dismissing dialog state")
+                dialogState = .dismissed
             }
         }
     }
-    
-    /// Converts a NotificationType to AlertState for presentation.
-    private func convertToAlertState(_ notificationType: NotificationType) -> AlertState {
-        switch notificationType {
-        case .success(let message, _),
-                .error(let message, _),
-                .warning(let message, _),
-                .info(let message, _):
-            return AlertState(
-                title: "",
-                message: message,
-                actions: [
-                    NotificationButton(title: NSLocalizedString("OK", comment: "OK button"))
-                ]
-            )
-            
-        case .custom(let content, _):
-            return AlertState(
-                title: content.title,
-                message: content.message,
-                actions: content.actions
-            )
-        }
-    }
-    
-    /// Dismisses the current alert and updates the notification state.
-    private func dismissAlert() {
-        dismissedNotification = notificationState
-        notificationState = .dismissed
-        alertState = nil
-    }
-}
-
-// MARK: - Toast-Specific Modifier
-
-/// Handles toast-style notifications using the ToastView and ToastContainer system.
-///
-/// This modifier is inspired by the original ToastModifier from the Toastie package
-/// but adapted to work with the unified NotificationState system. It provides full
-/// toast functionality including positioning, animations, gestures, and auto-dismissal.
-private struct ToastNotificationModifier: ViewModifier {
-    @Binding var notificationState: NotificationState
-    var queueConfiguration: ToastQueueConfiguration
-    @StateObject private var queueManager: ToastQueueManager
-    
-    init(notificationState: Binding<NotificationState>, queueConfiguration: ToastQueueConfiguration) {
-        self._notificationState = notificationState
-        self.queueConfiguration = queueConfiguration
-        self._queueManager = StateObject(wrappedValue: ToastQueueManager(configuration: queueConfiguration))
-    }
-    
-    func body(content: Content) -> some View {
-        content
-            .onChange(of: notificationState) { newState in
-                updateToastPresentation(newState)
-            }
-            .onAppear {
-                updateToastPresentation(notificationState)
-            }
-            .overlay {
-                ToastContainer() { _ in }
-                .environmentObject(queueManager)
-            }
-    }
-}
-
-// MARK: - Toast Modifier Helper Methods
-private extension ToastNotificationModifier {
-    /// Updates the local toast state based on the notification state changes.
-    ///
-    /// Only processes notifications with `.toast` style, filtering out alert notifications.
-    /// This ensures clean separation between alert and toast presentation systems.
-    func updateToastPresentation(_ state: NotificationState) {
-        switch notificationState.status {
-        case .presented(let notificationType):
-            // Only handle toast-style notifications
-            guard case .toast = notificationType.style else {
-                return
-            }
-            
-            queueManager.enqueue(notificationType)
-            
-        case .dismissed:
-            // Intentionally left empty - individual toasts manage their own dismissal
-            // We don't want to clear all toasts when a single notification is dismissed
-            break
-        }
-    }
-}
-
-// MARK: - Alert State Helper
-/// Internal state representation for native iOS alerts.
-private struct AlertState {
-    let title: String
-    let message: String?
-    let actions: [any NotificationAction]
 }

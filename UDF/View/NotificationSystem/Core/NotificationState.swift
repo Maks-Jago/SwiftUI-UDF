@@ -184,6 +184,34 @@ public struct NotificationState: Equatable, Identifiable, Sendable {
         self = .init(notification: .custom(content: content, style: .toast(configuration)))
     }
     
+    /// Creates a confirmation dialog with message and actions.
+    ///
+    /// - Parameters:
+    ///   - message: The message to display in the dialog.
+    ///   - configuration: Dialog configuration. Defaults to .default.
+    ///   - actions: Action buttons for the dialog.
+    public init(
+        confirmationDialog message: String,
+        configuration: ConfirmationDialogConfiguration = .default,
+        @NotificationContentBuilder actions: () -> [any NotificationAction]
+    ) {
+        let content = NotificationContent(title: "", message: message, actions: actions())
+        self = .init(notification: .custom(content: content, style: .confirmationDialog(configuration)))
+    }
+    
+    /// Creates a simple confirmation dialog with just message and actions.
+    ///
+    /// - Parameters:
+    ///   - message: The message to display.
+    ///   - configuration: Dialog configuration.
+    ///   - actions: Action buttons for the dialog.
+    public init(
+        confirmationDialog message: String,
+        @NotificationActionsBuilder actions: () -> [any NotificationAction]
+    ) {
+        self.init(confirmationDialog: message, configuration: .default, actions: actions)
+    }
+    
     /// Initializes a notification state with custom content using a result builder.
     /// 
     /// Creates a notification with complex content including actions, using the

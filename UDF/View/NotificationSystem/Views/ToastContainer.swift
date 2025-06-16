@@ -81,6 +81,7 @@ struct ToastContainer: View {
                                         onDismiss(displayInfo.id)
                                     }
                                 )
+                                .padding(.horizontal)
                                 .transition(configuration.transition)
                                 .zIndex(calculateZIndex(for: displayInfo))
                                 .id(displayInfo.id)

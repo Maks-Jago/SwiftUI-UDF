@@ -429,3 +429,32 @@ extension NotificationContent: Hashable {
         }
     }
 }
+
+extension NotificationContent {
+    /// Extracts buttons with specific roles for confirmation dialog presentation.
+    ///
+    /// Confirmation dialogs handle cancel buttons separately from other actions,
+    /// so there is a need to identify and group them properly.
+    func buttonsByRole() -> (cancel: NotificationButton?, destructive: [NotificationButton], regular: [NotificationButton]) {
+        let buttons = actions.compactMap { $0 as? NotificationButton }
+        
+        // iOS only supports one cancel button in confirmation dialogs
+        let cancelButton = buttons.first { $0.role == .cancel }
+        
+        // Separate destructive and regular actions
+        let destructiveButtons = buttons.filter { $0.role == .destructive }
+        let regularButtons = buttons.filter { $0.role == nil && $0 != cancelButton }
+        
+        return (cancelButton, destructiveButtons, regularButtons)
+    }
+    
+    /// Whether this content is suitable for confirmation dialog presentation.
+    var isValidForConfirmationDialog: Bool {
+        // Must have at least one action
+        guard hasActions else { return false }
+        
+        // Cannot have text fields
+        let hasTextFields = actions.contains { $0 is NotificationTextField }
+        return !hasTextFields
+    }
+}
