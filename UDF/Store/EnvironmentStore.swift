@@ -17,7 +17,7 @@ import SwiftUI
 ///
 /// The `EnvironmentStore` class is responsible for handling application state, managing subscribers, and dispatching actions.
 /// It works in conjunction with the `AppReducer` to provide unidirectional data flow throughout the app.
-public actor EnvironmentStore<State: AppReducer>: Sendable {
+public final class EnvironmentStore<State: AppReducer>: @unchecked Sendable {
     @SourceOfTruth public private(set) var state: State
 
     private var store: InternalStore<State>
@@ -49,7 +49,7 @@ public actor EnvironmentStore<State: AppReducer>: Sendable {
     /// - Parameters:
     ///   - state: The initial state of the application.
     ///   - logger: A single action logger used for logging dispatched actions.
-    public init(initial state: State, logger: ActionLogger) {
+    public convenience init(initial state: State, logger: ActionLogger) {
         self.init(initial: state, loggers: [logger])
     }
 
@@ -185,7 +185,7 @@ extension EnvironmentStore {
 // MARK: - Global
 extension EnvironmentStore {
     /// Provides a globally accessible instance of the `EnvironmentStore`.
-    static var global: EnvironmentStore<State> {
+    class var global: EnvironmentStore<State> {
         GlobalValue.value(for: EnvironmentStore<State>.self)
     }
 }
