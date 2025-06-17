@@ -98,32 +98,27 @@ public protocol Container<ContainerState>: View, Sendable {
     /// Equals to native SwiftUI View's onAppear lifecycle method.
     ///
     /// - Parameter store: The global store containing the state.
-    @MainActor
     func onContainerAppear(store: EnvironmentStore<ContainerState>)
 
     /// Called when the container's view disappears.
     /// Equals to native SwiftUI View's onDisappear lifecycle method.
     ///
     /// - Parameter store: The global store containing the state.
-    @MainActor
     func onContainerDisappear(store: EnvironmentStore<ContainerState>)
 
     /// Called when the container is initialized and loaded for the first time.
     ///
     /// - Parameter store: The global store containing the state.
-    @MainActor
     func onContainerDidLoad(store: EnvironmentStore<ContainerState>)
 
     /// Called when the container is deinitialized and unloaded.
     ///
     /// - Parameter store: The global store containing the state.
-    @MainActor
     func onContainerDidUnload(store: EnvironmentStore<ContainerState>)
 
     /// Defines hooks to be used within the container.
     ///
     /// - Returns: An array of hooks that respond to state changes or other effects.
-    @MainActor
     @HookBuilder<ContainerState>
     func useHooks() -> [Hook<ContainerState>]
 }
@@ -147,6 +142,7 @@ public extension Container {
     func onContainerDidUnload(store: EnvironmentStore<ContainerState>) {}
 
     /// Default implementation for `useHooks`. Returns an empty array by default.
+    @MainActor
     func useHooks() -> [Hook<ContainerState>] { [] }
 }
 
