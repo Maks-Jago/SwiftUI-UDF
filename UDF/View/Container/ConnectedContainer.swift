@@ -150,7 +150,6 @@ struct ConnectedContainer<C: Component, State: AppReducer>: View {
     }
 
     /// The main view body that renders the component and attaches lifecycle events.
-    @MainActor
     var body: some View {
         containerLifecycle.set(didLoad: true, store: store)
 
