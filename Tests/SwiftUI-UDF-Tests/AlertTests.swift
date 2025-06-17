@@ -29,7 +29,7 @@ final class AlertTests: XCTestCase {
 
         var alert: AlertBuilder.AlertStatus = .dismissed
 
-        nonisolated mutating func reduce(_ action: some Action) {
+        mutating func reduce(_ action: some Action) {
             switch action {
             case is Actions.PresentAlertWithAction:
                 alert = .init(id: AlertId.alertWithAction)
