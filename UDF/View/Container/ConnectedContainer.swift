@@ -48,7 +48,7 @@ struct ConnectedContainer<C: Component, State: AppReducer>: View {
     let map: (_ store: EnvironmentStore<State>) -> C.Props
 
     /// A closure that defines the scope within the global state.
-    let scope: (_ state: State) -> Scope
+    let scope: @MainActor (_ state: State) -> Scope
 
     /// A closure executed when the container appears in the view hierarchy.
     var onContainerAppear: @MainActor (EnvironmentStore<State>) -> Void

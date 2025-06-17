@@ -3,7 +3,7 @@ import SwiftUI
 @testable import UDF
 import XCTest
 
-final class ContainerLifecycleTests: XCTestCase, @unchecked Sendable {
+final class ContainerLifecycleTests: XCTestCase {
     struct AppState: AppReducer {
         var userData = UserData()
     }
@@ -27,18 +27,17 @@ final class ContainerLifecycleTests: XCTestCase, @unchecked Sendable {
         }
     }
 
-    @MainActor
     func test_ContainerLifecycle() async {
         let store = EnvironmentStore(initial: AppState(), logger: .consoleDebug)
         let rootContainer = RootContainer()
 
         var window: PlatformWindow? = await PlatformWindow.render(container: rootContainer)
-        print(window!) // To force a window redraw
+        await window?.redraw()
 
         await fulfill(description: "waiting for rendering", sleep: 1)
         XCTAssertTrue(store.state.userData.didLoad)
 
-        window?.release()
+        await window?.release()
         window = nil
 
         await fulfill(description: "waiting for rendering", sleep: 1)

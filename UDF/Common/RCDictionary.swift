@@ -11,7 +11,7 @@
 
 import Foundation
 
-public struct RCDictionary<Key: Hashable, Value: Initable & Equatable>: Equatable {
+public struct RCDictionary<Key: Hashable & Sendable, Value: Initable & Equatable & Sendable>: Equatable, Sendable {
     private var keyValues: [Key: ReducerBox] = [:]
 
     mutating func retainOrCreateValue(for key: Key) {
@@ -89,5 +89,4 @@ extension RCDictionary: Collection {
     }
 }
 
-extension RCDictionary: Sendable where Key: Sendable, Value: Sendable {}
 extension RCDictionary.ReducerBox: Sendable where Value: Sendable {}
