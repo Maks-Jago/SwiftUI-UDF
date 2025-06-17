@@ -16,6 +16,7 @@ import SwiftUI
 ///
 /// `AlertBuilder` provides mechanisms for constructing alert styles, managing alert status, and registering custom alerts.
 /// It contains the nested types `AlertStatus` and `AlertStyle`, which define the properties and behavior of alerts within an application.
+@available(*, deprecated, message: "Will be removed in version 1.5.1. Use Dialog System instead.")
 public enum AlertBuilder {
     // MARK: - AlertStatus
     /// Represents the current state of an alert, including its ID and status (presented or dismissed).

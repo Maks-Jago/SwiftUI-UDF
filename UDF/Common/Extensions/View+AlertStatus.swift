@@ -20,6 +20,7 @@ public extension View {
     ///
     /// - Parameter status: A binding to an `AlertBuilder.AlertStatus` that controls the presentation and content of the alert.
     /// - Returns: A modified view that displays an alert when the specified `AlertStatus` is updated.
+    @available(*, deprecated, message: "Will be removed in version 1.5.1. Use .dialog(state:) instead.")
     func alert(status: Binding<AlertBuilder.AlertStatus>) -> some View {
         self.modifier(AlertModifier(alert: status))
     }

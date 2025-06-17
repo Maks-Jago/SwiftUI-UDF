@@ -67,6 +67,37 @@ public enum Actions {
             }
         }
     }
+    
+    /// `UpdateAlertStatus` is an action used to update the status of an alert within the UDF architecture.
+    /// It contains the alert's status and an identifier, enabling the management of alerts based on their unique IDs.
+    @available(*, deprecated, message: "Will be removed in version 1.5.1. Use UpdateDialogState instead.")
+    public struct UpdateAlertStatus: Action {
+        /// The status of the alert to be updated.
+        public var status: AlertBuilder.AlertStatus
+        
+        /// A unique identifier for the alert.
+        public var id: AnyHashable
+        
+        /// Initializes a new `UpdateAlertStatus` action.
+        ///
+        /// - Parameters:
+        ///   - status: The new status of the alert.
+        ///   - id: The unique identifier for the alert.
+        public init(status: AlertBuilder.AlertStatus, id: some Hashable) {
+            self.status = status
+            self.id = id
+        }
+        
+        /// Initializes a new `UpdateAlertStatus` action with a specific alert style.
+        ///
+        /// - Parameters:
+        ///   - style: The style of the alert to be used for creating the alert status.
+        ///   - id: The unique identifier for the alert.
+        public init(style: AlertBuilder.AlertStyle, id: some Hashable) {
+            self.status = .init(style: style)
+            self.id = id
+        }
+    }
 
     /// `UpdateDialogState` is an action used to update the state of a dialog within the UDF architecture.
     /// It contains the dialog's state and an identifier, enabling the management of dialogs based on their unique IDs.
