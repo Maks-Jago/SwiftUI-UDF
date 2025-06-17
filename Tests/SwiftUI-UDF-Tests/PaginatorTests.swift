@@ -41,7 +41,7 @@ class PaginatorTests: XCTestCase {
         var itemsForm = ItemsForm()
     }
 
-    struct ItemsForm: Form, Codable, @unchecked Sendable {
+    struct ItemsForm: Form, Codable {
         var paginator: Paginator = .init(Item.self, flowId: ItemFlow.id, perPage: 10)
     }
 
