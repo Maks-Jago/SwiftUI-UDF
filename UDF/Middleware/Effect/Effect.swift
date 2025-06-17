@@ -83,7 +83,7 @@ public struct Effect: Effectable, FileFunctionLine {
         fileName: String = #file,
         functionName: String = #function,
         lineNumber: Int = #line,
-        mapper: @escaping (P.Output) -> some Equatable
+        mapper: @escaping (P.Output) -> some Equatable & Sendable
     ) where P.Failure == Error {
         self.fileName = fileName
         self.functionName = functionName
@@ -103,7 +103,7 @@ public struct Effect: Effectable, FileFunctionLine {
     ///   - fileName: The file name for debugging purposes (defaults to the current file).
     ///   - functionName: The function name for debugging purposes (defaults to the current function).
     ///   - lineNumber: The line number for debugging purposes (defaults to the current line).
-    public init<P: Publisher, Item: Equatable>(
+    public init<P: Publisher, Item: Equatable & Sendable>(
         _ publisher: P,
         id: some Hashable,
         fileName: String = #file,
@@ -130,7 +130,7 @@ public struct Effect: Effectable, FileFunctionLine {
     ///   - functionName: The function name for debugging purposes (defaults to the current function).
     ///   - lineNumber: The line number for debugging purposes (defaults to the current line).
     ///   - mapItem: A closure that maps each item to a new type.
-    public init<P: Publisher, Item, EqItem: Equatable>(
+    public init<P: Publisher, Item, EqItem: Equatable & Sendable>(
         _ publisher: P,
         id: some Hashable,
         fileName: String = #file,
@@ -156,7 +156,7 @@ public struct Effect: Effectable, FileFunctionLine {
     ///   - fileName: The file name for debugging purposes (defaults to the current file).
     ///   - functionName: The function name for debugging purposes (defaults to the current function).
     ///   - lineNumber: The line number for debugging purposes (defaults to the current line).
-    public init<P: Publisher, Item: Equatable>(
+    public init<P: Publisher, Item: Equatable & Sendable>(
         _ publisher: P,
         id: some Hashable,
         fileName: String = #file,

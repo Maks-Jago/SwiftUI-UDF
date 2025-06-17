@@ -17,7 +17,7 @@ import Foundation
 /// and perform asynchronous operations.
 ///
 /// This class is generic over a `State` type that conforms to `AppReducer`.
-open class BaseMiddleware<State: AppReducer>: Middleware {
+open class BaseMiddleware<State: AppReducer>: Middleware, @unchecked Sendable {
     /// The store that this middleware interacts with. It holds the state of the application.
     public var store: any Store<State>
 
@@ -60,7 +60,7 @@ open class BaseMiddleware<State: AppReducer>: Middleware {
     ///   - id: The unique identifier for the effect.
     ///   - error: The error that occurred.
     /// - Returns: An action representing the error.
-    public typealias ErrorMapper<Id> = (_ id: Id, _ error: Error) -> any Action
+    public typealias ErrorMapper<Id> = @Sendable (_ id: Id, _ error: Error) -> any Action
 
     /// A dictionary to track ongoing tasks by their unique identifiers, allowing for cancellation.
     public var cancellations: [AnyHashable: CancellableTask] = [:]
@@ -378,13 +378,13 @@ open class BaseMiddleware<State: AppReducer>: Middleware {
     /// - Note: This method makes use of the `execute` method that handles `ConcurrencyBlockEffect` objects.
     open func execute(
         flowId: AnyHashable,
-        cancellation: some Hashable,
-        mapAction: @escaping (any Action) -> any Action = { $0 },
+        cancellation: some Hashable & Sendable,
+        mapAction: @escaping @Sendable (any Action) -> any Action = { $0 },
         mapError: @escaping ErrorMapper<AnyHashable> = { flowId, error in Actions.Error(error: error.localizedDescription, id: flowId) },
         fileName: String = #file,
         functionName: String = #function,
         lineNumber: Int = #line,
-        _ task: @escaping (AnyHashable) async throws -> any Action
+        _ task: @escaping @Sendable (AnyHashable) async throws -> any Action
     ) {
         execute(
             effect: ConcurrencyBlockEffect(
@@ -437,8 +437,8 @@ open class BaseMiddleware<State: AppReducer>: Middleware {
     open func execute(
         effect: some ConcurrencyEffect,
         flowId: AnyHashable,
-        cancellation: some Hashable,
-        mapAction: @escaping (any Action) -> any Action = { $0 },
+        cancellation: some Hashable & Sendable,
+        mapAction: @escaping @Sendable (any Action) -> any Action = { $0 },
         mapError: @escaping ErrorMapper<AnyHashable> = { flowId, error in Actions.Error(error: error.localizedDescription, id: flowId) },
         fileName: String = #file,
         functionName: String = #function,
@@ -456,7 +456,7 @@ open class BaseMiddleware<State: AppReducer>: Middleware {
 
         // Start the task and store the cancellation token
         XCTestGroup.shared.enter()
-        let task = Task { [weak self] in
+        let task = Task { @Sendable [weak self] in
             do {
                 // Execute the effect's task, passing flowId
                 let action = try await effect.task(flowId: flowId)

@@ -19,7 +19,7 @@ public extension Flows {
     ///
     /// The `Id` struct is used to uniquely identify different flows in the application, making it possible to track and manage
     /// their states effectively. It wraps a `String` value that serves as the unique identifier.
-    struct Id: Hashable, Codable {
+    struct Id: Hashable, Codable, Sendable {
         /// The unique string value representing the flow's identifier.
         var value: String
 

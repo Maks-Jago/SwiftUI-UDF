@@ -15,7 +15,7 @@ import Foundation
 ///
 /// `HookType` defines the behavior of hooks in an application state lifecycle, such as whether they are executed every time
 /// or only once.
-public enum HookType {
+public enum HookType: Sendable {
     /// A hook that executes under the default conditions each time its associated state changes.
     case `default`
 

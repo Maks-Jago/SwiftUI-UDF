@@ -186,13 +186,13 @@ private extension BindableReducersMiddlewareTests {
 
 // MARK: Middleware
 private extension BindableReducersMiddlewareTests {
-    final class ItemsMiddleware: BaseObservableMiddleware<AppState> {
+    final class ItemsMiddleware: BaseObservableMiddleware<AppState>, @unchecked Sendable {
         enum Cancellation: Hashable {
             case itemDetails(Item.ID)
         }
 
-        struct Environment {
-            var loadItemDetails: (
+        struct Environment : Sendable{
+            var loadItemDetails: @Sendable (
                 _ itemId: Item.ID
             ) async throws -> Item
         }

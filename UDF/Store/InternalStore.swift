@@ -12,7 +12,8 @@ import SwiftUI
 actor InternalStore<State: AppReducer>: Store {
     var state: State
 
-    let subject: PassthroughSubject<(State, State, Animation?), Never> = .init()
+//    nonisolated(unsafe) let subject: PassthroughSubject<(State, State, Animation?), Never> = .init()
+    nonisolated let subject = SendableSubject<(State, State, Animation?), Never>()
 
     var middlewares: OrderedSet<AnyMiddleware> = []
     private let storeQueue: StoreQueue = .init()
@@ -232,18 +233,35 @@ private func safetyCall(queue: DispatchQueue, block: @Sendable @escaping () -> V
     }
 }
 
-final class Ref<T> {
-    var value: T
+final class Ref<T: Sendable>: @unchecked Sendable {
+    private let lock = NSLock()
+    private var _value: T
+    
+    var value: T {
+        get {
+            lock.lock()
+            defer { lock.unlock() }
+            return _value
+        }
+        set {
+            lock.lock()
+            defer { lock.unlock() }
+            _value = newValue
+        }
+    }
+    
     init(value: T) {
-        self.value = value
+        self._value = value
     }
 }
 
-struct Box<T> {
+struct Box<T: Sendable>: Sendable {
     private var ref: Ref<T>
+    
     init(_ value: T) {
         ref = Ref(value: value)
     }
+    
     var value: T {
         get { ref.value }
         set {

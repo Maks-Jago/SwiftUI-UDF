@@ -101,8 +101,8 @@ public final class GlobalRouter {
     }
 }
 
-private struct GlobalRouterKey: EnvironmentKey {
-    static var defaultValue: GlobalRouter = .init(path: .constant(NavigationPath()))
+private struct GlobalRouterKey: @preconcurrency EnvironmentKey {
+    @MainActor static var defaultValue: GlobalRouter = .init(path: .constant(NavigationPath()))
 }
 
 public extension EnvironmentValues {

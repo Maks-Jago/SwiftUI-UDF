@@ -29,12 +29,12 @@ final class StateCopyTests: XCTestCase {
         var item: Item = .init(text: "initial text")
     }
 
-    class Item: Equatable {
+    final class Item: Equatable, Sendable {
         static func == (lhs: StateCopyTests.Item, rhs: StateCopyTests.Item) -> Bool {
             lhs.text == rhs.text
         }
 
-        var text: String
+        let text: String
 
         init(text: String) {
             self.text = text

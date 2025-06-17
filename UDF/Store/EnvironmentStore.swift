@@ -17,7 +17,7 @@ import SwiftUI
 ///
 /// The `EnvironmentStore` class is responsible for handling application state, managing subscribers, and dispatching actions.
 /// It works in conjunction with the `AppReducer` to provide unidirectional data flow throughout the app.
-public final class EnvironmentStore<State: AppReducer> {
+public final class EnvironmentStore<State: AppReducer>: @unchecked Sendable {
     @SourceOfTruth public private(set) var state: State
 
     private var store: InternalStore<State>
@@ -114,7 +114,7 @@ public final class EnvironmentStore<State: AppReducer> {
     ///   - lineNumber: The line number where the action is bound. Defaults to the caller's line.
     /// - Returns: A command with a parameter that, when executed, dispatches the specified action.
     public func bind<T>(
-        _ action: @escaping (T) -> some Action,
+        _ action: @escaping @Sendable (T) -> some Action,
         priority: ActionPriority = .default,
         fileName: String = #file,
         functionName: String = #function,
@@ -135,13 +135,14 @@ public final class EnvironmentStore<State: AppReducer> {
 
     /// Subscribes the environment store to changes in the state using a subject.
     private func sinkSubject() {
-        self.cancelation = store.subject
+        self.cancelation = store.subject.publisher
             .receive(on: DispatchQueue.main)
             .sink { [unowned self] newState, oldState, animation in
                 self.state = newState
-
+                let coordinator = subscribersCoordinator
+                
                 Task(priority: .high) {
-                    let subscribers = await subscribersCoordinator.allSubscibers()
+                    let subscribers = await coordinator.allSubscibers()
                     await MainActor.run {
                         for subscriber in subscribers {
                             subscriber(oldState, newState, animation)
@@ -160,9 +161,10 @@ extension EnvironmentStore {
     /// - Returns: A unique key associated with the subscriber.
     func add(statePublisher: @escaping StateSubscriber<State>) -> String {
         let key = UUID().uuidString
-
+        let coordinator = subscribersCoordinator
+        
         Task(priority: .high) {
-            await subscribersCoordinator.add(subscriber: statePublisher, for: key)
+            await coordinator.add(subscriber: statePublisher, for: key)
         }
 
         return key
@@ -172,8 +174,10 @@ extension EnvironmentStore {
     ///
     /// - Parameter key: The unique key of the subscriber to remove.
     func removePublisher(forKey key: String) {
+        let coordinator = subscribersCoordinator
+        
         Task(priority: .high) {
-            await subscribersCoordinator.removeSubscriber(forKey: key)
+            await coordinator.removeSubscriber(forKey: key)
         }
     }
 }
@@ -276,7 +280,7 @@ public extension EnvironmentStore {
     /// Subscribes to middleware using a custom builder.
     ///
     /// - Parameter build: A closure that takes the store and returns an array of middleware wrappers.
-    func subscribe(@MiddlewareBuilder<State> build: @escaping (_ store: any Store<State>) -> [MiddlewareWrapper<State>]) {
+    func subscribe(@MiddlewareBuilder<State> build: @escaping @Sendable (_ store: any Store<State>) -> [MiddlewareWrapper<State>]) {
         executeSynchronously {
             await self.store.subscribe(
                 build(self.store).map { wrapper in

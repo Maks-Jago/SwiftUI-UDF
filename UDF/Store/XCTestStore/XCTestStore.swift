@@ -43,7 +43,7 @@ public final class XCTestStore<State: AppReducer> {
         self.store = store
         self._state = .init(wrappedValue: mutableState, store: store)
 
-        self.cancelation = store.subject
+        self.cancelation = store.subject.publisher
             .map(\.0)
             .assign(to: \.state, on: self)
     }

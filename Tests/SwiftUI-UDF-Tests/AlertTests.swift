@@ -46,7 +46,7 @@ final class AlertTests: XCTestCase {
 
         XCTAssertEqual(status, .dismissed)
 
-        AlertBuilder.registerAlert(by: FormWithAlert.AlertId.alertWithAction) {
+        await AlertBuilder.registerAlert(by: FormWithAlert.AlertId.alertWithAction) {
             .alertWithAction {
                 print("Custom alert action")
             }

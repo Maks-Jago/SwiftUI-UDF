@@ -14,7 +14,7 @@ import Foundation
 /// `FileCache` is responsible for managing cached data in a specified directory within the app's document directory.
 public struct FileCache {
     /// The `FileManager` instance used to interact with the file system.
-    public var fileManager: FileManager
+    public nonisolated(unsafe) var fileManager: FileManager
 
     /// The name of the directory where cached data will be stored.
     public var directoryName: String
@@ -76,7 +76,7 @@ extension FileCache: CacheSource {
     /// Saves an encodable value to the cache asynchronously using a barrier flag to ensure thread safety.
     ///
     /// - Parameter value: The value to be saved, which must conform to the `Encodable` protocol.
-    public func save(_ value: some Encodable) {
+    public func save(_ value: some Encodable & Sendable) {
         queue.async(flags: .barrier) {
             guard let data = try? JSONEncoder().encode(value) else {
                 return

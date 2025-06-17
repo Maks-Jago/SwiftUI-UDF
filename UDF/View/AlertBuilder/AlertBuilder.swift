@@ -19,7 +19,7 @@ import SwiftUI
 public enum AlertBuilder {
     // MARK: - AlertStatus
     /// Represents the current state of an alert, including its ID and status (presented or dismissed).
-    public struct AlertStatus: Equatable, Identifiable {
+    public struct AlertStatus: Equatable, Identifiable, @unchecked Sendable {
         /// Returns a dismissed alert status.
         public static var dismissed: Self { .init(dismissedUUID: "32DA8B0A-5C48-4FBC-8464-E80AD89AE16D") }
 
@@ -205,14 +205,14 @@ public enum AlertBuilder {
     // MARK: - Alert Builder Registration
     typealias AlertBuilderBlock = () -> AlertStyle
 
-    static var alertBuilders: [AnyHashable: AlertBuilderBlock] = [:]
+    nonisolated(unsafe) static var alertBuilders: [AnyHashable: AlertBuilderBlock] = [:]
 
     /// Registers a custom alert builder for a given ID.
     ///
     /// - Parameters:
     ///   - id: A unique identifier for the alert builder.
     ///   - builder: A closure that returns an `AlertStyle`.
-    public static func registerAlert(by id: some Hashable, _ builder: @escaping () -> AlertStyle) {
+    @MainActor public static func registerAlert(by id: some Hashable, _ builder: @escaping () -> AlertStyle) {
         alertBuilders[AnyHashable(id)] = builder
     }
 }

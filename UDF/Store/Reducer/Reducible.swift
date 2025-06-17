@@ -16,7 +16,7 @@ import Foundation
 /// The `Reducing` protocol is designed to be adopted by types that wish to respond to dispatched actions and mutate their
 /// state accordingly. It extends `IsEquatable` for custom equality logic and `Initable` to ensure that conforming types
 /// can be initialized with a default initializer.
-public protocol Reducing: Initable, IsEquatable {
+public protocol Reducing: Initable, IsEquatable, Sendable {
     /// Reduces the current state based on the provided action.
     ///
     /// Implementations of this method define how a particular action should affect the state of the conforming type.

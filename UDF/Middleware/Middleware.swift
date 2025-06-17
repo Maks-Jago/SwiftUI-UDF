@@ -18,7 +18,7 @@ import Foundation
 /// It listens for specific actions, performs tasks, and dispatches new actions based on the outcome.
 /// Middleware is designed to work in its own queue, keeping the UI responsive by offloading long-running tasks.
 ///
-public protocol Middleware<State> {
+public protocol Middleware<State>: Sendable {
     associatedtype State: AppReducer
 
     /// The store that the middleware interacts with.

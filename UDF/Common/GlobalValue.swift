@@ -12,7 +12,7 @@
 import Foundation
 
 /// A utility for storing and accessing global singleton values within the application.
-enum GlobalValue {
+actor GlobalValue {
     /// A dictionary to store singletons using their type's name as the key.
     private static var values = [String: AnyObject]()
 
