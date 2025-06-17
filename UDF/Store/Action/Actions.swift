@@ -68,134 +68,134 @@ public enum Actions {
         }
     }
 
-    /// `UpdateNotificationState` is an action used to update the state of a notification within the UDF architecture.
-    /// It contains the notification's state and an identifier, enabling the management of notifications based on their unique IDs.
+    /// `UpdateDialogState` is an action used to update the state of a dialog within the UDF architecture.
+    /// It contains the dialog's state and an identifier, enabling the management of dialogs based on their unique IDs.
     ///
     /// This is a direct migration from `UpdateAlertStatus` with the same functionality but updated to work
-    /// with the new NotificationSystem.
+    /// with the new Dialog System.
     ///
     /// ## Usage:
     /// ```swift
-    /// // Update with a specific notification state
-    /// let action = UpdateNotificationState(
+    /// // Update with a specific dialog state
+    /// let action = UpdateDialogState(
     ///     state: .init(error: "Something went wrong"),
-    ///     id: "errorNotification"
+    ///     id: "errorDialog"
     /// )
     /// 
-    /// // Update with a notification type
-    /// let action = UpdateNotificationState(
-    ///     notification: .success("Operation completed"),
-    ///     id: "successNotification"
+    /// // Update with a dialog type
+    /// let action = UpdateDialogState(
+    ///     dialog: .success("Operation completed"),
+    ///     id: "successdialog"
     /// )
     /// 
     /// // Update with custom content
-    /// let action = UpdateNotificationState(
-    ///     content: NotificationContent("Delete Item", message: "This cannot be undone") {
-    ///         NotificationButton.destructive("Delete") { performDelete() }
-    ///         NotificationButton.cancel("Cancel")
+    /// let action = UpdateDialogState(
+    ///     content: DialogContent("Delete Item", message: "This cannot be undone") {
+    ///         DialogButton.destructive("Delete") { performDelete() }
+    ///         DialogButton.cancel("Cancel")
     ///     },
     ///     id: "deleteConfirmation"
     /// )
     /// ```
-    public struct UpdateNotificationState: Action {
-        /// The state of the notification to be updated.
-        public var state: NotificationState
+    public struct UpdateDialogState: Action {
+        /// The state of the dialog to be updated.
+        public var state: DialogState
         
-        /// A unique identifier for the notification.
+        /// A unique identifier for the dialog.
         public var id: AnyHashable
         
         // MARK: - Initializers
         
-        /// Initializes a new `UpdateNotificationState` action with a specific notification state.
+        /// Initializes a new `UpdateDialogState` action with a specific dialog state.
         ///
         /// - Parameters:
-        ///   - state: The new state of the notification.
-        ///   - id: The unique identifier for the notification.
-        public init(state: NotificationState, id: some Hashable) {
+        ///   - state: The new state of the dialog.
+        ///   - id: The unique identifier for the dialog.
+        public init(state: DialogState, id: some Hashable) {
             self.state = state
             self.id = AnyHashable(id)
         }
         
-        /// Initializes a new `UpdateNotificationState` action with a specific notification type.
+        /// Initializes a new `UpdateDialogState` action with a specific dialog type.
         ///
         /// - Parameters:
-        ///   - notification: The notification type to be used for creating the notification state.
-        ///   - id: The unique identifier for the notification.
-        public init(notification: NotificationType, id: some Hashable) {
-            self.state = .init(notification: notification)
+        ///   - dialog: The dialog type to be used for creating the dialog state.
+        ///   - id: The unique identifier for the dialog.
+        public init(dialog: DialogType, id: some Hashable) {
+            self.state = .init(dialog: dialog)
             self.id = AnyHashable(id)
         }
         
-        /// Initializes a new `UpdateNotificationState` action with custom notification content.
+        /// Initializes a new `UpdateDialogState` action with custom dialog content.
         ///
         /// - Parameters:
-        ///   - content: The custom content for the notification.
-        ///   - id: The unique identifier for the notification.
-        ///   - style: The notification style (defaults to .alert).
-        public init(content: NotificationContent, id: some Hashable, style: NotificationStyle = .alert) {
-            self.state = .init(notification: .custom(content: content, style: style))
+        ///   - content: The custom content for the dialog.
+        ///   - id: The unique identifier for the dialog.
+        ///   - style: The dialog style (defaults to .alert).
+        public init(content: DialogContent, id: some Hashable, style: DialogStyle = .alert) {
+            self.state = .init(dialog: .custom(content: content, style: style))
             self.id = AnyHashable(id)
         }
         
         // MARK: - Convenience Initializers
         
-        /// Initializes a new `UpdateNotificationState` action with a success message.
+        /// Initializes a new `UpdateDialogState` action with a success message.
         ///
         /// - Parameters:
         ///   - success: The success message to display.
-        ///   - id: The unique identifier for the notification.
-        ///   - style: The notification style (defaults to .alert).
-        public init(success: String, id: some Hashable, style: NotificationStyle = .alert) {
-            self.state = .init(notification: .success(success, style: style))
+        ///   - id: The unique identifier for the dialog.
+        ///   - style: The dialog style (defaults to .alert).
+        public init(success: String, id: some Hashable, style: DialogStyle = .alert) {
+            self.state = .init(dialog: .success(success, style: style))
             self.id = AnyHashable(id)
         }
         
-        /// Initializes a new `UpdateNotificationState` action with an error message.
+        /// Initializes a new `UpdateDialogState` action with an error message.
         ///
         /// - Parameters:
         ///   - error: The error message to display.
-        ///   - id: The unique identifier for the notification.
-        ///   - style: The notification style (defaults to .alert).
-        public init(error: String, id: some Hashable, style: NotificationStyle = .alert) {
-            self.state = .init(notification: .error(error, style: style))
+        ///   - id: The unique identifier for the dialog.
+        ///   - style: The dialog style (defaults to .alert).
+        public init(error: String, id: some Hashable, style: DialogStyle = .alert) {
+            self.state = .init(dialog: .error(error, style: style))
             self.id = AnyHashable(id)
         }
         
-        /// Initializes a new `UpdateNotificationState` action with a warning message.
+        /// Initializes a new `UpdateDialogState` action with a warning message.
         ///
         /// - Parameters:
         ///   - warning: The warning message to display.
-        ///   - id: The unique identifier for the notification.
-        ///   - style: The notification style (defaults to .alert).
-        public init(warning: String, id: some Hashable, style: NotificationStyle = .alert) {
-            self.state = .init(notification: .warning(warning, style: style))
+        ///   - id: The unique identifier for the dialog.
+        ///   - style: The dialog style (defaults to .alert).
+        public init(warning: String, id: some Hashable, style: DialogStyle = .alert) {
+            self.state = .init(dialog: .warning(warning, style: style))
             self.id = AnyHashable(id)
         }
         
-        /// Initializes a new `UpdateNotificationState` action with an info message.
+        /// Initializes a new `UpdateDialogState` action with an info message.
         ///
         /// - Parameters:
         ///   - info: The info message to display.
-        ///   - id: The unique identifier for the notification.
-        ///   - style: The notification style (defaults to .alert).
-        public init(info: String, id: some Hashable, style: NotificationStyle = .alert) {
-            self.state = .init(notification: .info(info, style: style))
+        ///   - id: The unique identifier for the dialog.
+        ///   - style: The dialog style (defaults to .alert).
+        public init(info: String, id: some Hashable, style: DialogStyle = .alert) {
+            self.state = .init(dialog: .info(info, style: style))
             self.id = AnyHashable(id)
         }
         
-        /// Initializes a new `UpdateNotificationState` action to dismiss a notification.
+        /// Initializes a new `UpdateDialogState` action to dismiss a dialog.
         ///
-        /// - Parameter id: The unique identifier for the notification to dismiss.
+        /// - Parameter id: The unique identifier for the dialog to dismiss.
         public init(dismissing id: some Hashable) {
             self.state = .dismissed
             self.id = AnyHashable(id)
         }
         
-        /// Initializes a new `UpdateNotificationState` action using a registered notification.
+        /// Initializes a new `UpdateDialogState` action using a registered dialog.
         ///
         /// - Parameters:
-        ///   - registrationId: The identifier of the registered notification.
-        ///   - id: The unique identifier for this notification instance.
+        ///   - registrationId: The identifier of the registered dialog.
+        ///   - id: The unique identifier for this dialog instance.
         public init(registrationId: some Hashable, id: some Hashable) {
             self.state = .init(id: registrationId)
             self.id = AnyHashable(id)
