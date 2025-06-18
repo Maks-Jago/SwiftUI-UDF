@@ -19,23 +19,23 @@ import SwiftUI
 /// but adapted to work with the unified Dialog State system. It provides full
 /// toast functionality including positioning, animations, gestures, and auto-dismissal.
 struct ToastDialogModifier: ViewModifier {
-    @Binding var dialogState: DialogState
+    @Binding var dialogStatus: DialogStatus
     var queueConfiguration: ToastQueueConfiguration
     @StateObject private var queueManager: ToastQueueManager
     
-    init(dialogState: Binding<DialogState>, queueConfiguration: ToastQueueConfiguration) {
-        self._dialogState = dialogState
+    init(dialogStatus: Binding<DialogStatus>, queueConfiguration: ToastQueueConfiguration) {
+        self._dialogStatus = dialogStatus
         self.queueConfiguration = queueConfiguration
         self._queueManager = StateObject(wrappedValue: ToastQueueManager(configuration: queueConfiguration))
     }
     
     func body(content: Content) -> some View {
         content
-            .onChange(of: dialogState) { newState in
+            .onChange(of: dialogStatus) { newState in
                 updateToastPresentation(newState)
             }
             .onAppear {
-                updateToastPresentation(dialogState)
+                updateToastPresentation(dialogStatus)
             }
             .overlay {
                 ToastContainer() { _ in }
@@ -47,12 +47,12 @@ struct ToastDialogModifier: ViewModifier {
 
 // MARK: - Toast Modifier Helper Methods
 private extension ToastDialogModifier {
-    /// Updates the local toast state based on the dialog state changes.
+    /// Updates the local toast state based on the dialog status changes.
     ///
     /// Only processes dialogs with `.toast` style, filtering out alert dialogs.
     /// This ensures clean separation between alert and toast presentation systems.
-    func updateToastPresentation(_ state: DialogState) {
-        switch dialogState.status {
+    func updateToastPresentation(_ dialogStatus: DialogStatus) {
+        switch dialogStatus.status {
         case .presented(let dialogType):
             // Only handle toast-style dialogs
             guard case .toast = dialogType.style else {

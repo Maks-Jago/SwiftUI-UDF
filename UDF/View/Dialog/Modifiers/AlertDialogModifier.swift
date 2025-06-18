@@ -14,19 +14,19 @@ import SwiftUI
 // MARK: - Alert-Specific Modifier
 /// Handles alert-style dialogs using the existing AlertModifier logic.
 ///
-/// This modifier converts `DialogState` to the format expected by the current
+/// This modifier converts `DialogStatus` to the format expected by the current
 /// alert system and preserves all existing alert behavior and presentation logic.
 struct AlertDialogModifier: ViewModifier {
-    @Binding var dialogState: DialogState
+    @Binding var dialogStatus: DialogStatus
     @State private var alertState: AlertState?
-    @State private var dismissedDialog: DialogState?
+    @State private var dismissedDialog: DialogStatus?
     
     func body(content: Content) -> some View {
         content
             .onAppear {
                 updateAlertState()
             }
-            .onChange(of: dialogState) { newState in
+            .onChange(of: dialogStatus) { newState in
                 updateAlertState()
             }
             .alert(
@@ -68,9 +68,9 @@ struct AlertDialogModifier: ViewModifier {
             )
     }
     
-    /// Converts DialogState to AlertState for the native alert system.
+    /// Converts DialogStatus to AlertState for the native alert system.
     private func updateAlertState() {
-        switch dialogState.status {
+        switch dialogStatus.status {
         case .presented(let dialogType):
             // Only handle alert-style dialogs
             guard case .alert = dialogType.style else {
@@ -111,8 +111,8 @@ struct AlertDialogModifier: ViewModifier {
     
     /// Dismisses the current alert and updates the dialog state.
     private func dismissAlert() {
-        dismissedDialog = dialogState
-        dialogState = .dismissed
+        dismissedDialog = dialogStatus
+        dialogStatus = .dismissed
         alertState = nil
     }
 }

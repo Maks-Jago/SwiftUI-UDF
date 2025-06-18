@@ -70,7 +70,7 @@ public enum Actions {
     
     /// `UpdateAlertStatus` is an action used to update the status of an alert within the UDF architecture.
     /// It contains the alert's status and an identifier, enabling the management of alerts based on their unique IDs.
-    @available(*, deprecated, message: "Will be removed in version 1.5.1. Use UpdateDialogState instead.")
+    @available(*, deprecated, message: "Will be removed in version 1.5.1. Use UpdateDialogStatus instead.")
     public struct UpdateAlertStatus: Action {
         /// The status of the alert to be updated.
         public var status: AlertBuilder.AlertStatus
@@ -99,7 +99,7 @@ public enum Actions {
         }
     }
 
-    /// `UpdateDialogState` is an action used to update the state of a dialog within the UDF architecture.
+    /// `UpdateDialogStatus` is an action used to update the state of a dialog within the UDF architecture.
     /// It contains the dialog's state and an identifier, enabling the management of dialogs based on their unique IDs.
     ///
     /// This is a direct migration from `UpdateAlertStatus` with the same functionality but updated to work
@@ -108,19 +108,19 @@ public enum Actions {
     /// ## Usage:
     /// ```swift
     /// // Update with a specific dialog state
-    /// let action = UpdateDialogState(
+    /// let action = UpdateDialogStatus(
     ///     state: .init(error: "Something went wrong"),
     ///     id: "errorDialog"
     /// )
     /// 
     /// // Update with a dialog type
-    /// let action = UpdateDialogState(
+    /// let action = UpdateDialogStatus(
     ///     dialog: .success("Operation completed"),
     ///     id: "successdialog"
     /// )
     /// 
     /// // Update with custom content
-    /// let action = UpdateDialogState(
+    /// let action = UpdateDialogStatus(
     ///     content: DialogContent("Delete Item", message: "This cannot be undone") {
     ///         DialogButton.destructive("Delete") { performDelete() }
     ///         DialogButton.cancel("Cancel")
@@ -128,107 +128,107 @@ public enum Actions {
     ///     id: "deleteConfirmation"
     /// )
     /// ```
-    public struct UpdateDialogState: Action {
+    public struct UpdateDialogStatus: Action {
         /// The state of the dialog to be updated.
-        public var state: DialogState
+        public var status: DialogStatus
         
         /// A unique identifier for the dialog.
         public var id: AnyHashable
         
         // MARK: - Initializers
         
-        /// Initializes a new `UpdateDialogState` action with a specific dialog state.
+        /// Initializes a new `UpdateDialogStatus` action with a specific dialog state.
         ///
         /// - Parameters:
         ///   - state: The new state of the dialog.
         ///   - id: The unique identifier for the dialog.
-        public init(state: DialogState, id: some Hashable) {
-            self.state = state
+        public init(status: DialogStatus, id: some Hashable) {
+            self.status = status
             self.id = AnyHashable(id)
         }
         
-        /// Initializes a new `UpdateDialogState` action with a specific dialog type.
+        /// Initializes a new `UpdateDialogStatus` action with a specific dialog type.
         ///
         /// - Parameters:
         ///   - dialog: The dialog type to be used for creating the dialog state.
         ///   - id: The unique identifier for the dialog.
         public init(dialog: DialogType, id: some Hashable) {
-            self.state = .init(dialog: dialog)
+            self.status = .init(dialog: dialog)
             self.id = AnyHashable(id)
         }
         
-        /// Initializes a new `UpdateDialogState` action with custom dialog content.
+        /// Initializes a new `UpdateDialogStatus` action with custom dialog content.
         ///
         /// - Parameters:
         ///   - content: The custom content for the dialog.
         ///   - id: The unique identifier for the dialog.
         ///   - style: The dialog style (defaults to .alert).
         public init(content: DialogContent, id: some Hashable, style: DialogStyle = .alert) {
-            self.state = .init(dialog: .custom(content: content, style: style))
+            self.status = .init(dialog: .custom(content: content, style: style))
             self.id = AnyHashable(id)
         }
         
         // MARK: - Convenience Initializers
         
-        /// Initializes a new `UpdateDialogState` action with a success message.
+        /// Initializes a new `UpdateDialogStatus` action with a success message.
         ///
         /// - Parameters:
         ///   - success: The success message to display.
         ///   - id: The unique identifier for the dialog.
         ///   - style: The dialog style (defaults to .alert).
         public init(success: String, id: some Hashable, style: DialogStyle = .alert) {
-            self.state = .init(dialog: .success(success, style: style))
+            self.status = .init(dialog: .success(success, style: style))
             self.id = AnyHashable(id)
         }
         
-        /// Initializes a new `UpdateDialogState` action with an error message.
+        /// Initializes a new `UpdateDialogStatus` action with an error message.
         ///
         /// - Parameters:
         ///   - error: The error message to display.
         ///   - id: The unique identifier for the dialog.
         ///   - style: The dialog style (defaults to .alert).
         public init(error: String, id: some Hashable, style: DialogStyle = .alert) {
-            self.state = .init(dialog: .error(error, style: style))
+            self.status = .init(dialog: .error(error, style: style))
             self.id = AnyHashable(id)
         }
         
-        /// Initializes a new `UpdateDialogState` action with a warning message.
+        /// Initializes a new `UpdateDialogStatus` action with a warning message.
         ///
         /// - Parameters:
         ///   - warning: The warning message to display.
         ///   - id: The unique identifier for the dialog.
         ///   - style: The dialog style (defaults to .alert).
         public init(warning: String, id: some Hashable, style: DialogStyle = .alert) {
-            self.state = .init(dialog: .warning(warning, style: style))
+            self.status = .init(dialog: .warning(warning, style: style))
             self.id = AnyHashable(id)
         }
         
-        /// Initializes a new `UpdateDialogState` action with an info message.
+        /// Initializes a new `UpdateDialogStatus` action with an info message.
         ///
         /// - Parameters:
         ///   - info: The info message to display.
         ///   - id: The unique identifier for the dialog.
         ///   - style: The dialog style (defaults to .alert).
         public init(info: String, id: some Hashable, style: DialogStyle = .alert) {
-            self.state = .init(dialog: .info(info, style: style))
+            self.status = .init(dialog: .info(info, style: style))
             self.id = AnyHashable(id)
         }
         
-        /// Initializes a new `UpdateDialogState` action to dismiss a dialog.
+        /// Initializes a new `UpdateDialogStatus` action to dismiss a dialog.
         ///
         /// - Parameter id: The unique identifier for the dialog to dismiss.
         public init(dismissing id: some Hashable) {
-            self.state = .dismissed
+            self.status = .dismissed
             self.id = AnyHashable(id)
         }
         
-        /// Initializes a new `UpdateDialogState` action using a registered dialog.
+        /// Initializes a new `UpdateDialogStatus` action using a registered dialog.
         ///
         /// - Parameters:
         ///   - registrationId: The identifier of the registered dialog.
         ///   - id: The unique identifier for this dialog instance.
         public init(registrationId: some Hashable, id: some Hashable) {
-            self.state = .init(id: registrationId)
+            self.status = .init(id: registrationId)
             self.id = AnyHashable(id)
         }
     }

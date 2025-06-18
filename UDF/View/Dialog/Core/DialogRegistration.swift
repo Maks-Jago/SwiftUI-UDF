@@ -85,7 +85,7 @@ public enum DialogRegistry {
     
     /// Retrieves a registered dialog for the given identifier.
     ///
-    /// This function is called internally by `DialogState.init(id:)` to
+    /// This function is called internally by `DialogStatus.init(id:)` to
     /// resolve registered dialogs. It executes the builder closure and
     /// returns the resulting dialog type.
     ///

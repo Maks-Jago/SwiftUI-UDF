@@ -14,18 +14,18 @@ import SwiftUI
 
 // MARK: - Main Dialog API
 public extension View {
-    /// Attaches a dialog to the view using the specified `DialogState`.
+    /// Attaches a dialog to the view using the specified `DialogStatus`.
     ///
-    /// This method modifies the view to present dialogs based on the given `Binding<DialogState>`.
+    /// This method modifies the view to present dialogs based on the given `Binding<DialogStatus>`.
     /// The dialog automatically updates its presentation state and content based on changes to the binding.
     ///
-    /// - Parameter state: A binding to a `DialogState` that controls the presentation and content of the dialog.
-    /// - Returns: A modified view that displays dialogs when the specified `DialogState` is updated.
+    /// - Parameter status: A binding to a `DialogStatus` that controls the presentation and content of the dialog.
+    /// - Returns: A modified view that displays dialogs when the specified `DialogStatus` is updated.
     ///
     /// ## Usage:
     /// ```swift
     /// struct ContentView: View {
-    ///     @State private var dialog = DialogState.dismissed
+    ///     @State private var dialog = DialogStatus.dismissed
     ///
     ///     var body: some View {
     ///         VStack {
@@ -37,21 +37,21 @@ public extension View {
     ///     }
     /// }
     /// ```
-    func dialog(state: Binding<DialogState>) -> some View {
-        self.modifier(DialogModifier(state: state, queueConfiguration: .init()))
+    func dialog(status: Binding<DialogStatus>) -> some View {
+        self.modifier(DialogModifier(status: status, queueConfiguration: .init()))
     }
     
     /// Attaches toast dialogs with custom queue configuration.
     ///
     /// - Parameters:
-    ///   - state: The dialog state binding
+    ///   - status: The status state binding
     ///   - queueConfiguration: Configuration for toast queue behavior
     /// - Returns: A view that displays toast dialogs with specified queue behavior
     func dialog(
-        state: Binding<DialogState>,
+        status: Binding<DialogStatus>,
         queueConfiguration: ToastQueueConfiguration = .sequential
     ) -> some View {
-        self.modifier(DialogModifier(state: state, queueConfiguration: queueConfiguration))
+        self.modifier(DialogModifier(status: status, queueConfiguration: queueConfiguration))
     }
 }
 
@@ -60,30 +60,30 @@ public extension View {
 ///
 /// This modifier routes dialogs to the appropriate presentation system based on their style.
 private struct DialogModifier: ViewModifier {
-    @Binding var state: DialogState
+    @Binding var status: DialogStatus
     var queueConfiguration: ToastQueueConfiguration
     
-    @State private var alertState: DialogState = .dismissed
-    @State private var toastState: DialogState = .dismissed
-    @State private var dialogState: DialogState = .dismissed
+    @State private var alertState: DialogStatus = .dismissed
+    @State private var toastState: DialogStatus = .dismissed
+    @State private var confirmationDialogStatus: DialogStatus = .dismissed
     
     func body(content: Content) -> some View {
         content
-            .onChange(of: state) { newState in
+            .onChange(of: status) { newState in
                 routeDialog(newState)
             }
             .onAppear {
-                routeDialog(state)
+                routeDialog(status)
             }
-            .modifier(AlertDialogModifier(dialogState: $alertState))
+            .modifier(AlertDialogModifier(dialogStatus: $alertState))
             .modifier(ToastDialogModifier(
-                dialogState: $toastState,
+                dialogStatus: $toastState,
                 queueConfiguration: queueConfiguration
             ))
-            .modifier(ConfirmationDialogModifier(dialogState: $dialogState))
+            .modifier(ConfirmationDialogModifier(dialogStatus: $status))
     }
     
-    private func routeDialog(_ dialog: DialogState) {
+    private func routeDialog(_ dialog: DialogStatus) {
         switch dialog.status {
         case .presented(let dialogType):
             // Route to appropriate state based on style
@@ -95,7 +95,7 @@ private struct DialogModifier: ViewModifier {
                 toastState = dialog
                 
             case .confirmationDialog:
-                dialogState = dialog
+                confirmationDialogStatus = dialog
             }
             
         case .dismissed:
@@ -108,8 +108,8 @@ private struct DialogModifier: ViewModifier {
                 toastState = .dismissed
             }
         
-            if dialogState.id == dialog.id {
-                dialogState = .dismissed
+            if confirmationDialogStatus.id == dialog.id {
+                confirmationDialogStatus = .dismissed
             }
         }
     }

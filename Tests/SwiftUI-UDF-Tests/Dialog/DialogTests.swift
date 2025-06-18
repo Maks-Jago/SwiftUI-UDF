@@ -77,7 +77,7 @@ final class DialogTests: XCTestCase {
             case customViewToast
         }
         
-        var dialog: DialogState = .dismissed
+        var dialog: DialogStatus = .dismissed
         
         nonisolated mutating func reduce(_ action: some Action) {
             switch action {
@@ -129,7 +129,7 @@ final class DialogTests: XCTestCase {
     
     func test_BasicdialogInitializers() {
         // Test success dialog
-        let successdialog = DialogState(success: "Operation completed")
+        let successdialog = DialogStatus(success: "Operation completed")
         XCTAssertNotEqual(successdialog.status, .dismissed)
         
         if case .presented(let dialogType) = successdialog.status {
@@ -140,7 +140,7 @@ final class DialogTests: XCTestCase {
         }
         
         // Test error dialog
-        let errordialog = DialogState(error: "Something went wrong")
+        let errordialog = DialogStatus(error: "Something went wrong")
         XCTAssertNotEqual(errordialog.status, .dismissed)
         
         if case .presented(let dialogType) = errordialog.status {
@@ -150,17 +150,17 @@ final class DialogTests: XCTestCase {
         }
         
         // Test warning dialog
-        let warningdialog = DialogState(warning: "Storage almost full")
+        let warningdialog = DialogStatus(warning: "Storage almost full")
         XCTAssertNotEqual(warningdialog.status, .dismissed)
         
         // Test info dialog
-        let infodialog = DialogState(info: "3 new messages")
+        let infodialog = DialogStatus(info: "3 new messages")
         XCTAssertNotEqual(infodialog.status, .dismissed)
     }
     
     func test_dialogWithToastStyle() {
         // Test dialog with toast style
-        let toastdialog = DialogState(
+        let toastdialog = DialogStatus(
             success: "Toast success message",
             style: .toast()
         )
@@ -279,7 +279,7 @@ final class DialogTests: XCTestCase {
             defaultDuration: 3.0
         )
         
-        let dialog = DialogState(
+        let dialog = DialogStatus(
             error: "Toast with custom config",
             style: .toast(customConfig)
         )
@@ -297,7 +297,7 @@ final class DialogTests: XCTestCase {
     // MARK: - Complex Content Tests
     
     func test_CustomDialogWithContent() {
-        let dialog = DialogState {
+        let dialog = DialogStatus(style: .alert) {
             DialogContent("Custom Title", message: "Custom message") {
                 DialogButton.destructive("Delete") {
                     print("Delete action")
@@ -320,7 +320,7 @@ final class DialogTests: XCTestCase {
     }
     
     func test_ToastWithContentAndActions() {
-        let dialog = DialogState(style: .toast()) {
+        let dialog = DialogStatus(style: .toast()) {
             DialogContent("Toast Title", message: "Toast message") {
                 DialogButton.default("Action") {
                     print("Toast action")
@@ -349,17 +349,17 @@ final class DialogTests: XCTestCase {
     // MARK: - Dismissed State Tests
     
     func test_DismissedState() {
-        let dismissedDialog = DialogState.dismissed
+        let dismissedDialog = DialogStatus.dismissed
         XCTAssertEqual(dismissedDialog.status, .dismissed)
         
-        let emptyDialog = DialogState()
+        let emptyDialog = DialogStatus()
         XCTAssertEqual(emptyDialog.status, .dismissed)
         
         // Test with nil/empty strings
-        let nilErrorDialog = DialogState(error: nil)
+        let nilErrorDialog = DialogStatus(error: nil)
         XCTAssertEqual(nilErrorDialog.status, .dismissed)
         
-        let emptySuccessDialog = DialogState(success: "")
+        let emptySuccessDialog = DialogStatus(success: "")
         XCTAssertEqual(emptySuccessDialog.status, .dismissed)
     }
     
@@ -369,7 +369,7 @@ final class DialogTests: XCTestCase {
         let testId = "test-dialog"
         
         // Test unregistered ID returns dismissed
-        let unregisteredDialog = DialogState(id: testId)
+        let unregisteredDialog = DialogStatus(id: testId)
         XCTAssertEqual(unregisteredDialog.status, .dismissed)
         
         // Register and test
@@ -377,7 +377,7 @@ final class DialogTests: XCTestCase {
             .success("Registered dialog", style: .toast())
         }
         
-        let registeredDialog = DialogState(id: testId)
+        let registeredDialog = DialogStatus(id: testId)
         XCTAssertNotEqual(registeredDialog.status, .dismissed)
         
         if case .presented(let dialogType) = registeredDialog.status {

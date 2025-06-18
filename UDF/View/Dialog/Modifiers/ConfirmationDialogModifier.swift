@@ -14,16 +14,16 @@ import SwiftUI
 // MARK: - Confirmation Dialog-Specific Modifier
 /// Handles confirmation dialog style dialogs.
 struct ConfirmationDialogModifier: ViewModifier {
-    @Binding var dialogState: DialogState
+    @Binding var dialogStatus: DialogStatus
     @State private var confirmationDialogState: ConfirmationDialogState?
     
     func body(content: Content) -> some View {
         content
-            .onChange(of: dialogState) { _ in
-                updateDialogState()
+            .onChange(of: dialogStatus) { _ in
+                updateDialogStatus()
             }
             .onAppear {
-                updateDialogState()
+                updateDialogStatus()
             }
             .confirmationDialog(
                 confirmationDialogState?.title ?? "",
@@ -69,8 +69,8 @@ struct ConfirmationDialogModifier: ViewModifier {
 
 // MARK: - Confirmation Dialog Modifier Helper Methods
 private extension ConfirmationDialogModifier {
-    func updateDialogState() {
-        switch dialogState.status {
+    func updateDialogStatus() {
+        switch dialogStatus.status {
         case .presented(let dialogType):
             guard case .confirmationDialog(let config) = dialogType.style else {
                 return
@@ -94,7 +94,7 @@ private extension ConfirmationDialogModifier {
     }
     
     func dismissDialog() {
-        dialogState = .dismissed
+        dialogStatus = .dismissed
         confirmationDialogState = nil
     }
 }

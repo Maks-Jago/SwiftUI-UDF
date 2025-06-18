@@ -1,4 +1,4 @@
-//===--- DialogState.swift ---------------------------------===//
+//===--- DialogStatus.swift ---------------------------------===//
 //
 // This source file is part of the UDF open source project
 //
@@ -12,15 +12,15 @@
 import Foundation
 import SwiftUI
 
-/// A state manager for dialogs, replacing AlertBuilder.AlertStatus.
+/// A state manager for dialogs.
 ///
-/// `DialogState` provides the main interface for managing dialog presentation
+/// `DialogStatus` provides the main interface for managing dialog presentation
 /// and dismissal across the application. It handles both simple message dialogs
 /// and complex dialogs with custom content and actions.
 ///
 /// ## Usage:
 /// ```swift
-/// @State private var dialog = DialogState.dismissed
+/// @State private var dialog = DialogStatus.dismissed
 ///
 /// // Simple error dialog
 /// dialog = .init(error: "Something went wrong")
@@ -33,7 +33,7 @@ import SwiftUI
 ///     }
 /// }
 /// ```
-public struct DialogState: Equatable, Identifiable, Sendable {
+public struct DialogStatus: Equatable, Identifiable, Sendable {
     /// Returns a dismissed dialog state.
     public static var dismissed: Self {
         .init(dismissedUUID: "32DA8B0A-5C48-4FBC-8464-E80AD89AE16D") 
@@ -171,18 +171,6 @@ public struct DialogState: Equatable, Identifiable, Sendable {
     }
     
     // MARK: - Advanced Initializers
-
-    /// Initializes a dialog state with an alert
-    public init(alert: AlertDialog) {
-        let content = DialogContent(alert.title, message: alert.message)
-        self = .init(dialog: .custom(content: content, style: .alert))
-    }
-    
-    /// Initializes a dialog state with a toast
-    public init(toast: ToastDialog, configuration: ToastConfiguration = .default) {
-        let content = DialogContent("", message: toast.message)
-        self = .init(dialog: .custom(content: content, style: .toast(configuration)))
-    }
     
     /// Creates a confirmation dialog with message and actions.
     ///
@@ -232,7 +220,7 @@ public struct DialogState: Equatable, Identifiable, Sendable {
     /// }
     /// ```
     public init(
-        style: DialogStyle = .alert,
+        style: DialogStyle,
         @DialogContentBuilder content: () -> DialogContent
     ) {
         self = .init(dialog: .custom(content: content(), style: style))
@@ -277,19 +265,19 @@ public struct DialogState: Equatable, Identifiable, Sendable {
     /// let dialogType = DialogType.success("Done!", style: .toast(.vibrant))
     /// dialog = .init(dialog: dialogType)
     /// ```
-    public init(dialog: DialogType) {
+    internal init(dialog: DialogType) {
         self.id = UUID()
         self.status = .presented(dialog)
     }
     
-    /// Initializes a dismissed dialog state.
+    /// Initializes a dismissed dialog status.
     ///
     /// Creates a dialog state that represents no active dialog.
     /// This is equivalent to using the static `.dismissed` property.
     ///
     /// ## Example:
     /// ```swift
-    /// let dialog = DialogState() // Dismissed state
+    /// let dialog = DialogStatus() // Dismissed state
     /// ```
     public init() {
         self.id = UUID()
