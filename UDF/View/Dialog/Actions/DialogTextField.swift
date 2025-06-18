@@ -18,8 +18,6 @@ import SwiftUI
 /// text binding, text input autocapitalization, and the submit label. This component uses a debouncer to manage
 /// the input, ensuring efficient updates to the bound text.
 ///
-/// This is a direct migration from `AlertTextField` with the same API surface, ensuring compatibility
-/// with existing code while extending support to all dialog styles.
 ///
 /// ## Properties:
 /// - `title`: The placeholder text for the text field.
@@ -82,7 +80,7 @@ public struct DialogTextField: DialogAction {
     /// - Parameters:
     ///   - title: The placeholder text for the text field.
     ///   - text: A binding to the text input value.
-    public init(title: String, text: Binding<String>) {
+    nonisolated public init(title: String, text: Binding<String>) {
         self.title = title
         self.text = text
         self.initialValue = text.wrappedValue

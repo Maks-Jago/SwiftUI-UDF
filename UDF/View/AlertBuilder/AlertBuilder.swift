@@ -16,99 +16,13 @@ import SwiftUI
 ///
 /// `AlertBuilder` provides mechanisms for constructing alert styles, managing alert status, and registering custom alerts.
 /// It contains the nested types `AlertStatus` and `AlertStyle`, which define the properties and behavior of alerts within an application.
-@available(*, deprecated, message: "Will be removed in version 1.5.1. Use Dialog System instead.")
+@available(*, deprecated, message: "Will be removed in future versions. Use Dialog System instead.")
 public enum AlertBuilder {
-    // MARK: - AlertStatus
-    /// Represents the current state of an alert, including its ID and status (presented or dismissed).
-    public struct AlertStatus: Equatable, Identifiable, @unchecked Sendable {
-        /// Returns a dismissed alert status.
-        public static var dismissed: Self { .init(dismissedUUID: "32DA8B0A-5C48-4FBC-8464-E80AD89AE16D") }
-        
-        /// Compares two alert statuses to determine if they are equal.
-        public static func == (lhs: Self, rhs: Self) -> Bool {
-            switch (lhs.status, rhs.status) {
-            case let (.presented(lhsPresented), .presented(rhsPresented)):
-                lhsPresented.id == rhsPresented.id && lhs.id == rhs.id
-            case (.dismissed, .dismissed):
-                lhs.id == rhs.id
-            default:
-                false
-            }
-        }
-        
-        public var id: UUID
-        public var status: Status
-        
-        /// Enum representing the status of an alert, either presented with a specific style or dismissed.
-        public enum Status: Equatable {
-            case presented(AlertStyle)
-            case dismissed
-            
-            public static func == (lhs: Self, rhs: Self) -> Bool {
-                switch (lhs, rhs) {
-                case let (.presented(lhsPresented), .presented(rhsPresented)):
-                    lhsPresented == rhsPresented
-                case (.dismissed, .dismissed):
-                    true
-                default:
-                    false
-                }
-            }
-        }
-        
-        /// Initializes an alert status with an error message.
-        public init(error: String?) {
-            if let error, !error.isEmpty {
-                self = .init(style: .init(failure: error))
-            } else {
-                self = .init()
-            }
-        }
-        
-        /// Initializes an alert status with a message.
-        public init(message: String?) {
-            if let message, !message.isEmpty {
-                self = .init(style: .init(message: message))
-            } else {
-                self = .init()
-            }
-        }
-        
-        /// Initializes an alert status with a title and an optional message.
-        public init(title: String, message: String?) {
-            if let message, !message.isEmpty {
-                self = .init(style: .init(title: title, message: message))
-            } else {
-                self = .init()
-            }
-        }
-        
-        /// Initializes a dismissed alert status.
-        public init() {
-            id = UUID()
-            status = .dismissed
-        }
-        
-        /// Initializes an alert status with a specific alert style.
-        public init(style: AlertStyle) {
-            id = style.id
-            status = .presented(style)
-        }
-        
-        /// Initializes an alert status using a registered alert builder identified by a unique ID.
-        public init(id: some Hashable) {
-            if let builder = AlertBuilder.alertBuilders[id] {
-                self = .init(style: builder())
-            } else {
-                self = .dismissed
-            }
-        }
-        
-        private init(dismissedUUID: String) {
-            id = UUID(uuidString: dismissedUUID)!
-            status = .dismissed
-        }
-    }
+    /// Represents the current state of an alert.
+    ///
+    /// **Deprecated**: This is now just a typealias to `DialogStatus`.
+    /// Please migrate to using `DialogStatus` directly and use `.dialog(status:)` instead of `.alert(status:)`.
+    public typealias AlertStatus = DialogStatus
     
     // MARK: - AlertStyle
     /// Defines the style of an alert, including its type and content.
@@ -210,10 +124,85 @@ public enum AlertBuilder {
     
     /// Registers a custom alert builder for a given ID.
     ///
+    /// **Deprecated**: This now delegates to the new DialogRegistry system.
+    /// Please use `DialogRegistry.register(id:builder:)` directly for new code.
+    ///
     /// - Parameters:
     ///   - id: A unique identifier for the alert builder.
     ///   - builder: A closure that returns an `AlertStyle`.
-    @MainActor public static func registerAlert(by id: some Hashable, _ builder: @escaping () -> AlertStyle) {
-        alertBuilders[AnyHashable(id)] = builder
+    @available(*, deprecated, message: "Use DialogRegistry.register(id:builder:) instead")
+    @MainActor public static func registerAlert(by id: some Hashable & Sendable, _ builder: @escaping @Sendable () -> AlertStyle) {
+        DialogRegistry.register(id: id) {
+            // Convert the AlertStyle to DialogType when accessed
+            let alertStyle = builder()
+            switch alertStyle.type {
+            case .validationError(let text):
+                return .error(text(), style: .alert)
+            case .success(let text):
+                return .success(text(), style: .alert)
+            case .failure(let text):
+                return .error(text(), style: .alert)
+            case .message(let text):
+                return .info(text(), style: .alert)
+            case .messageTitle(let title, let message):
+                let content = DialogContent(title(), message: message())
+                return .custom(content: content, style: .alert)
+            case .customActions(let title, let text, let actions):
+                // Convert AlertActions to DialogActions
+                let alertActions = actions()
+                var dialogActions: [any DialogAction] = []
+                
+                for action in alertActions {
+                    if let button = action as? AlertButton {
+                        dialogActions.append(DialogButton(title: button.title, action: button.action))
+                    }
+                    // Skip text fields to avoid MainActor issues in this context
+                }
+                
+                let content = DialogContent(
+                    title: title(),
+                    message: text(),
+                    actions: dialogActions
+                )
+                return .custom(content: content, style: .alert)
+            }
+        }
+    }
+}
+
+// MARK: - DialogStatus Extensions for AlertBuilder Compatibility
+
+public extension DialogStatus {
+    /// Initializes a dialog status with a specific alert style.
+    ///
+    /// This extension provides backward compatibility for AlertBuilder.AlertStyle.
+    /// 
+    init(style: AlertBuilder.AlertStyle) {
+        switch style.type {
+        case .validationError(let text):
+            self = DialogStatus(error: text(), style: .alert)
+        case .success(let text):
+            self = DialogStatus(success: text(), style: .alert)
+        case .failure(let text):
+            self = DialogStatus(error: text(), style: .alert)
+        case .message(let text):
+            self = DialogStatus(info: text(), style: .alert)
+        case .messageTitle(let title, let message):
+            let content = DialogContent(title(), message: message())
+            self = DialogStatus(dialog: .custom(content: content, style: .alert))
+        case .customActions(let title, let text, let actions):
+            // Convert AlertActions to DialogActions
+            let content = DialogContent(title(), message: text()) {
+                // Convert actions within the builder context
+                for action in actions() {
+                    if let button = action as? AlertButton {
+                        DialogButton(title: button.title, action: button.action)
+                    } else if let textField = action as? AlertTextField {
+                        DialogTextField(title: textField.title, text: textField.text)
+                    }
+                }
+            }
+            self = DialogStatus(dialog: .custom(content: content, style: .alert))
+        }
     }
 }
