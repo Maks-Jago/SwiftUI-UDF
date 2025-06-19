@@ -23,6 +23,10 @@ struct ToastDialogModifier: ViewModifier {
     var queueConfiguration: ToastQueueConfiguration
     @StateObject private var queueManager: ToastQueueManager
     
+    // Track processed dialogs with their presentation state
+    @State private var processedDialogs: Set<UUID> = []
+    @State private var currentPresentedDialogId: UUID?
+    
     init(dialogStatus: Binding<DialogStatus>, queueConfiguration: ToastQueueConfiguration) {
         self._dialogStatus = dialogStatus
         self.queueConfiguration = queueConfiguration
@@ -59,10 +63,24 @@ private extension ToastDialogModifier {
                 return
             }
             
-            queueManager.enqueue(dialogType)
+            if !processedDialogs.contains(dialogStatus.id) ||
+                currentPresentedDialogId != dialogStatus.id {
+                
+                queueManager.enqueue(dialogType)
+                processedDialogs.insert(dialogStatus.id)
+                currentPresentedDialogId = dialogStatus.id
+            }
             
         case .dismissed:
             queueManager.handleSmartDismissal()
+            
+            if processedDialogs.count > 5 {
+                let currentId = currentPresentedDialogId
+                processedDialogs.removeAll()
+                if let currentId = currentId {
+                    processedDialogs.insert(currentId)
+                }
+            }
         }
     }
 }
