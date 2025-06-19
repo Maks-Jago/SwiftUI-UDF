@@ -96,20 +96,15 @@ public enum ColorStyle: Hashable, Sendable {
     @ViewBuilder
     func background() -> some View {
         switch self {
-        case .solid(let color):
-            color
+        case .solid(let color): color
+        case .gradient(let colors) where colors.isEmpty: Color.clear
+        case .gradient(let colors) where colors.count == 1: colors[0]
         case .gradient(let colors):
-            if colors.isEmpty {
-                Color.clear
-            } else if colors.count == 1 {
-                colors[0]
-            } else {
-                LinearGradient(
-                    colors: colors,
-                    startPoint: .leading,
-                    endPoint: .trailing
-                )
-            }
+            LinearGradient(
+                colors: colors,
+                startPoint: .leading,
+                endPoint: .trailing
+            )
         }
     }
     
