@@ -48,6 +48,9 @@ public struct ToastConfiguration: Hashable, Sendable {
     /// with specific alignment and offset values.
     public var position: ToastPosition
     
+    /// Priority level for this toast
+    public var priority: ToastPriority
+    
     // MARK: - Behavior Properties
     
     /// The default duration (in seconds) for how long toasts remain visible.
@@ -119,6 +122,7 @@ public struct ToastConfiguration: Hashable, Sendable {
     /// - Parameters:
     ///   - theme: The visual theme for toast appearance. Defaults to `.default`.
     ///   - position: Where toasts appear on screen. Defaults to `.top`.
+    ///   - priority: Priority level for this toast. Defaults to `.medium`.
     ///   - defaultDuration: Auto-dismiss duration in seconds. Defaults to 2.0.
     ///   - tapToDismiss: Enable tap-to-dismiss behavior. Defaults to true.
     ///   - swipeToDismiss: Enable swipe-to-dismiss behavior. Defaults to true.
@@ -140,6 +144,7 @@ public struct ToastConfiguration: Hashable, Sendable {
     public init(
         theme: ToastTheme = .default,
         position: ToastPosition = .top,
+        priority: ToastPriority = .medium,
         defaultDuration: TimeInterval = 2.0,
         tapToDismiss: Bool = true,
         swipeToDismiss: Bool = true,
@@ -154,6 +159,7 @@ public struct ToastConfiguration: Hashable, Sendable {
     ) {
         self.theme = theme
         self.position = position
+        self.priority = priority
         self.defaultDuration = defaultDuration
         self.tapToDismiss = tapToDismiss
         self.swipeToDismiss = swipeToDismiss
@@ -247,6 +253,24 @@ public extension ToastConfiguration {
     static let subtle = ToastConfiguration(
         theme: .subtle,
         defaultDuration: 1.5
+    )
+    
+    /// Configuration for critical toasts that require immediate attention.
+    static let critical = ToastConfiguration(
+        priority: .critical,
+        defaultDuration: 4.0
+    )
+    
+    /// Configuration for high-priority toasts that should be displayed prominently.
+    static let highPriority = ToastConfiguration(
+        priority: .high,
+        defaultDuration: 3.0
+    )
+    
+    /// Configuration for medium-priority toasts with standard settings.
+    static let lowPriority = ToastConfiguration(
+        priority: .low,
+        defaultDuration: 1.0
     )
 }
 

@@ -62,9 +62,7 @@ private extension ToastDialogModifier {
             queueManager.enqueue(dialogType)
             
         case .dismissed:
-            // Intentionally left empty - individual toasts manage their own dismissal
-            // We don't want to clear all toasts when a single dialog is dismissed
-            break
+            queueManager.handleSmartDismissal()
         }
     }
 }

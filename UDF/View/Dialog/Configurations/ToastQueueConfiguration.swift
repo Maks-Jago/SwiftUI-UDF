@@ -364,6 +364,10 @@ public class ToastQueueManager: ObservableObject {
         // Update stack positions after removal
         if configuration.displayMode == .stacked {
             updateStackPositions()
+            Task {
+                try? await Task.sleep(nanoseconds: UInt64(configuration.sequentialSpacing * 1_000_000_000))
+                processQueue()
+            }
         }
         
         // Process queue for next toast
@@ -403,10 +407,10 @@ public class ToastQueueManager: ObservableObject {
 }
 
 // MARK: - Queue Processing
-
 private extension ToastQueueManager {
     func processQueue() {
         guard !isProcessingQueue, !queuedToasts.isEmpty else { return }
+        
         
         isProcessingQueue = true
         defer { isProcessingQueue = false }
@@ -494,7 +498,6 @@ private extension ToastQueueManager {
 }
 
 // MARK: - Supporting Types
-
 /// Information about a toast currently being displayed.
 public struct ToastDisplayInfo: Identifiable, Equatable {
     public let id: UUID
@@ -521,5 +524,23 @@ public struct QueueInfo {
     
     public var isStackFull: Bool {
         visibleCount >= stackCapacity
+    }
+}
+
+// MARK: - Smart Dismissal Logic
+public extension ToastQueueManager {
+    /// Automatically handles dismissal based on toast importance.
+    /// If there are important messages, it dismisses the visible toasts.
+    /// If no important messages are present, it clears all toasts.
+    func handleSmartDismissal() {
+        visibleToasts.forEach { dismiss($0.id) }
+        
+        if configuration.displayMode == .stacked {
+            updateStackPositions()
+        }
+        
+        queuedToasts = ToastImportanceEvaluator.filterImportant(from: queuedToasts)
+        
+        processQueue()
     }
 }

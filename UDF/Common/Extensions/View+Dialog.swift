@@ -99,18 +99,9 @@ private struct DialogModifier: ViewModifier {
             }
             
         case .dismissed:
-            // Only dismiss states that match the dismissed dialog ID
-            if alertState.id == dialog.id {
-                alertState = .dismissed
-            }
-            
-            if toastState.id == dialog.id {
-                toastState = .dismissed
-            }
-        
-            if confirmationDialogStatus.id == dialog.id {
-                confirmationDialogStatus = .dismissed
-            }
+            alertState = .dismissed
+            toastState = .dismissed
+            confirmationDialogStatus = .dismissed
         }
     }
 }

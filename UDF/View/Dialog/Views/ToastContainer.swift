@@ -63,16 +63,19 @@ struct ToastContainer: View {
     var body: some View {
         GeometryReader { geometry in
             ZStack {
-                ForEach(queueManager.visibleToasts) { displayInfo in
-                    let configuration = effectiveConfiguration(for: displayInfo)
+                ForEach([ToastPosition.top, .center, .bottom], id: \.self) { position in
+                    let toastsForPosition = queueManager.visibleToasts.filter { displayInfo in
+                        let config = effectiveConfiguration(for: displayInfo)
+                        return config.position == position
+                    }
                     
-                    VStack(spacing: queueManager.configuration.stackSpacing) {
-                        ForEach(
-                            configuration.position == .bottom
-                            ? queueManager.visibleToasts.reversed()
-                            : queueManager.visibleToasts
-                        ) { displayInfo in
-                            if effectiveConfiguration(for: displayInfo).position == configuration.position {
+                    if !toastsForPosition.isEmpty {
+                        VStack(spacing: queueManager.configuration.stackSpacing) {
+                            ForEach(
+                                position == .bottom ? toastsForPosition.reversed() : toastsForPosition
+                            ) { displayInfo in
+                                let configuration = effectiveConfiguration(for: displayInfo)
+                                
                                 ToastView(
                                     toast: displayInfo.toast,
                                     configuration: configuration,
@@ -83,14 +86,13 @@ struct ToastContainer: View {
                                 )
                                 .padding(.horizontal)
                                 .transition(configuration.transition)
-                                .zIndex(calculateZIndex(for: displayInfo))
                                 .id(displayInfo.id)
                                 .allowsHitTesting(configuration.tapToDismiss || configuration.swipeToDismiss)
                             }
                         }
+                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: alignment(for: position))
+                        .offset(offset(for: position, in: geometry))
                     }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: alignment(for: configuration.position))
-                    .offset(offset(for: configuration.position, in: geometry))
                 }
             }
             .animation(.default, value: queueManager.visibleToasts)
@@ -101,18 +103,11 @@ struct ToastContainer: View {
                     queueManager.enqueue(toast)
                 }
                 _initialToasts = nil
-            } 
+            }
         }
     }
     
     // MARK: - Helper Methods
-    
-    /// Adds a new toast to the display queue.
-    ///
-    /// - Parameter toast: The toast dialog to enqueue.
-    func enqueueToast(_ toast: DialogType) {
-        queueManager.enqueue(toast)
-    }
     
     /// Determines the effective configuration for a specific toast.
     ///
@@ -141,24 +136,6 @@ struct ToastContainer: View {
             return queueManager.configuration.stackOffset(for: displayInfo.stackPosition)
         }
         return 0
-    }
-    
-    /// Calculates the z-index for proper toast layering.
-    ///
-    /// Ensures newer toasts appear above older ones in the visual stack.
-    ///
-    /// - Parameter displayInfo: The toast display information.
-    /// - Returns: The z-index value for proper layer ordering.
-    private func calculateZIndex(for displayInfo: ToastDisplayInfo) -> Double {
-        // Newer toasts (lower stack position) should appear on top
-        return 1000 - Double(displayInfo.stackPosition)
-    }
-    
-    /// Dismisses all currently visible toasts.
-    ///
-    /// Useful for clearing all dialogs when changing views or app states.
-    func dismissAll() {
-        queueManager.clearAll()
     }
     
     private func alignment(for position: ToastPosition) -> Alignment {
