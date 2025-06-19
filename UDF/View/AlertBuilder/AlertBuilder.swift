@@ -137,13 +137,13 @@ public enum AlertBuilder {
             let alertStyle = builder()
             switch alertStyle.type {
             case .validationError(let text):
-                return .error(text(), style: .alert)
+                return .error(message: text(), style: .alert)
             case .success(let text):
-                return .success(text(), style: .alert)
+                return .success(message: text(), style: .alert)
             case .failure(let text):
-                return .error(text(), style: .alert)
+                return .error(message: text(), style: .alert)
             case .message(let text):
-                return .info(text(), style: .alert)
+                return .info(message: text(), style: .alert)
             case .messageTitle(let title, let message):
                 let content = DialogContent(title(), message: message())
                 return .custom(content: content, style: .alert)

@@ -199,13 +199,13 @@ public enum DialogRegistry {
         register(id: id) {
             switch category {
             case .success:
-                return .success(message, style: style)
+                return .success(message: message, style: style)
             case .error:
-                return .error(message, style: style)
+                return .error(message: message, style: style)
             case .warning:
-                return .warning(message, style: style)
+                return .warning(message: message, style: style)
             case .info:
-                return .info(message, style: style)
+                return .info(message: message, style: style)
             case .custom:
                 let content = DialogContent(message)
                 return .custom(content: content, style: style)

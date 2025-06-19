@@ -34,16 +34,16 @@ import SwiftUI
 /// ```
 public enum DialogType: Hashable, Sendable {
     /// A success dialog with a message.
-    case success(String, style: DialogStyle)
+    case success(message: String, style: DialogStyle)
     
     /// An error dialog with a message.
-    case error(String, style: DialogStyle)
+    case error(message: String, style: DialogStyle)
     
     /// A warning dialog with a message.
-    case warning(String, style: DialogStyle)
+    case warning(message: String, style: DialogStyle)
     
     /// An informational dialog with a message.
-    case info(String, style: DialogStyle)
+    case info(message: String, style: DialogStyle)
     
     /// A custom dialog with complex content and actions.
     case custom(content: DialogContent, style: DialogStyle)

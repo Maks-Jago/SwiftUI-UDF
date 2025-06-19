@@ -89,7 +89,7 @@ public struct DialogStatus: Equatable, Identifiable, Sendable {
     /// ```
     public init(error: String?, style: DialogStyle = .alert) {
         if let error, !error.isEmpty {
-            self = .init(dialog: .error(error, style: style))
+            self = .init(dialog: .error(message: error, style: style))
         } else {
             self = .init()
         }
@@ -114,7 +114,7 @@ public struct DialogStatus: Equatable, Identifiable, Sendable {
     /// ```
     public init(success: String?, style: DialogStyle = .alert) {
         if let success, !success.isEmpty {
-            self = .init(dialog: .success(success, style: style))
+            self = .init(dialog: .success(message: success, style: style))
         } else {
             self = .init()
         }
@@ -139,7 +139,7 @@ public struct DialogStatus: Equatable, Identifiable, Sendable {
     /// ```
     public init(warning: String?, style: DialogStyle = .alert) {
         if let warning, !warning.isEmpty {
-            self = .init(dialog: .warning(warning, style: style))
+            self = .init(dialog: .warning(message: warning, style: style))
         } else {
             self = .init()
         }
@@ -164,7 +164,7 @@ public struct DialogStatus: Equatable, Identifiable, Sendable {
     /// ```
     public init(info: String?, style: DialogStyle = .alert) {
         if let info, !info.isEmpty {
-            self = .init(dialog: .info(info, style: style))
+            self = .init(dialog: .info(message: info, style: style))
         } else {
             self = .init()
         }

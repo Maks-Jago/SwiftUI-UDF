@@ -177,7 +177,7 @@ public enum Actions {
         ///   - id: The unique identifier for the dialog.
         ///   - style: The dialog style (defaults to .alert).
         public init(success: String, id: some Hashable, style: DialogStyle = .alert) {
-            self.status = .init(dialog: .success(success, style: style))
+            self.status = .init(dialog: .success(message: success, style: style))
             self.id = AnyHashable(id)
         }
         
@@ -188,7 +188,7 @@ public enum Actions {
         ///   - id: The unique identifier for the dialog.
         ///   - style: The dialog style (defaults to .alert).
         public init(error: String, id: some Hashable, style: DialogStyle = .alert) {
-            self.status = .init(dialog: .error(error, style: style))
+            self.status = .init(dialog: .error(message: error, style: style))
             self.id = AnyHashable(id)
         }
         
@@ -199,7 +199,7 @@ public enum Actions {
         ///   - id: The unique identifier for the dialog.
         ///   - style: The dialog style (defaults to .alert).
         public init(warning: String, id: some Hashable, style: DialogStyle = .alert) {
-            self.status = .init(dialog: .warning(warning, style: style))
+            self.status = .init(dialog: .warning(message: warning, style: style))
             self.id = AnyHashable(id)
         }
         
@@ -210,7 +210,7 @@ public enum Actions {
         ///   - id: The unique identifier for the dialog.
         ///   - style: The dialog style (defaults to .alert).
         public init(info: String, id: some Hashable, style: DialogStyle = .alert) {
-            self.status = .init(dialog: .info(info, style: style))
+            self.status = .init(dialog: .info(message: info, style: style))
             self.id = AnyHashable(id)
         }
         
