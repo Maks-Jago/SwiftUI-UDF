@@ -18,44 +18,35 @@ import SwiftUI
 /// alert system and preserves all existing alert behavior and presentation logic.
 struct AlertDialogModifier: ViewModifier {
     @Binding var dialogStatus: DialogStatus
+    @State private var localDialogStatus: DialogStatus?
     @State private var alertState: AlertState?
     @State private var dismissedDialog: DialogStatus?
     
     func body(content: Content) -> some View {
-        content
-            .onAppear {
-                updateAlertState()
-            }
-            .onChange(of: dialogStatus) { newState in
-                updateAlertState()
-            }
+        updateAlertStatus()
+        
+        return content
             .alert(
                 alertState?.title ?? "",
                 isPresented: Binding(
                     get: { alertState != nil },
                     set: { isPresented in
                         if !isPresented {
-                            dismissAlert()
+                            handleAlertDismissal()
                         }
                     }
                 ),
                 actions: {
-                    if let alertState = alertState {
+                    if let alertState {
                         ForEach(Array(alertState.actions.enumerated()), id: \.offset) { _, action in
-                            switch action {
-                            case let button as DialogButton:
+                            if let button = action as? DialogButton {
                                 Button(button.title, role: button.role) {
                                     button.action()
-                                    dismissAlert()
+                                    handleAlertDismissal()
                                 }
                                 .disabled(button.disabled)
-                                .id(button.hashValue)
-                                
-                            case let textField as DialogTextField:
+                            } else if let textField = action as? DialogTextField {
                                 textField
-                                
-                            default:
-                                EmptyView()
                             }
                         }
                     }
@@ -68,20 +59,51 @@ struct AlertDialogModifier: ViewModifier {
             )
     }
     
-    /// Converts DialogStatus to AlertState for the native alert system.
-    private func updateAlertState() {
-        switch dialogStatus.status {
-        case .presented(let dialogType):
-            // Only handle alert-style dialogs
-            guard case .alert = dialogType.style else {
-                return
-            }
-            alertState = convertToAlertState(dialogType)
+    /// Updates the alert status based on dialog state changes.
+    private func updateAlertStatus() {
+        switch (localDialogStatus?.status, dialogStatus.status) {
+        case (nil, .dismissed):
+            // No local dialog and external is dismissed - nothing to do
+            break
             
-        case .dismissed:
+        case (.some, .dismissed):
+            // Local dialog exists but external is dismissed - dismiss it
             if alertState != nil {
-                alertState = nil
+                DispatchQueue.main.async {
+                    alertState = nil
+                    localDialogStatus = nil
+                }
             }
+            
+        case let (.some(localStatus), .presented(newType)) where localStatus == .dismissed:
+            // Local was dismissed but new dialog presented - show it
+            if case .alert = newType.style {
+                DispatchQueue.main.async {
+                    localDialogStatus = dialogStatus
+                    alertState = convertToAlertState(newType)
+                }
+            }
+            
+        case (.some, .presented(let newType)):
+            // Both have dialogs - check if actually changed
+            if localDialogStatus != dialogStatus, case .alert = newType.style {
+                DispatchQueue.main.async {
+                    localDialogStatus = dialogStatus
+                    alertState = convertToAlertState(newType)
+                }
+            }
+            
+        case (.none, .presented(let newType)) where dialogStatus != dismissedDialog:
+            // No local dialog but external presented (and not the one we just dismissed)
+            if case .alert = newType.style {
+                DispatchQueue.main.async {
+                    localDialogStatus = dialogStatus
+                    alertState = convertToAlertState(newType)
+                }
+            }
+            
+        default:
+            break
         }
     }
     
@@ -109,18 +131,27 @@ struct AlertDialogModifier: ViewModifier {
         }
     }
     
-    /// Dismisses the current alert and updates the dialog state.
-    private func dismissAlert() {
-        dismissedDialog = dialogStatus
-        dialogStatus = .dismissed
+    /// Handles alert dismissal and updates states appropriately.
+    private func handleAlertDismissal() {
+        if let localDialogStatus = localDialogStatus {
+            dismissedDialog = localDialogStatus
+            dialogStatus = .dismissed
+        }
         alertState = nil
+        localDialogStatus = nil
     }
 }
 
 // MARK: - Alert State Helper
 /// Internal state representation for native iOS alerts.
-private struct AlertState {
+private struct AlertState: Equatable {
     let title: String
     let message: String?
     let actions: [any DialogAction]
+    
+    static func == (lhs: AlertState, rhs: AlertState) -> Bool {
+        lhs.title == rhs.title &&
+        lhs.message == rhs.message &&
+        lhs.actions.count == rhs.actions.count
+    }
 }

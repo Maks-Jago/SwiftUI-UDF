@@ -27,12 +27,15 @@ struct ConfirmationDialogModifier: ViewModifier {
                 titleVisibility: titleVisibility,
                 actions: {
                     if let currentDialogContent {
-                        ForEach(currentDialogContent.actions.compactMap { $0 as? DialogButton }, id: \.self) { button in
-                            Button(button.title, role: button.role) {
-                                button.action()
-                                dialogStatus = .dismissed
+                        let actions = currentDialogContent.actions
+                        ForEach(Array(actions.enumerated()), id: \.offset) { _, action in
+                            switch action {
+                            case let button as DialogButton:
+                                button.body
+                                
+                            default:
+                                EmptyView()
                             }
-                            .disabled(button.disabled)
                         }
                     }
                 },

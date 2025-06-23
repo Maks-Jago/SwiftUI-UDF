@@ -87,12 +87,15 @@ public struct DialogButton: DialogAction {
     ///
     /// - Parameters:
     ///   - title: The title of the button.
+    ///   - role: The button role. Defaults to nil.
     ///   - action: A closure to execute when the button is tapped. Defaults to an empty closure.
     nonisolated public init(
         title: String,
+        role: ButtonRole? = nil,
         action: @escaping () -> Void = {}
     ) {
         self.title = title
+        self.role = role
         self.action = action
     }
     
