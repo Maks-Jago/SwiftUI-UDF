@@ -62,7 +62,7 @@ private extension ConfirmationDialogModifier {
         return false
     }
     
-    var currentDialogContent: DialogContent? {
+    var currentDialogContent: DialogContent<AnyView>? {
         if case .presented(let dialogType) = dialogStatus.status,
            case .confirmationDialog = dialogType.style,
            case .custom(let content, _) = dialogType {

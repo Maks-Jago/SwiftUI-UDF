@@ -10,6 +10,7 @@
 //===----------------------------------------------------------------------===//
 
 import Foundation
+import SwiftUI
 
 /// Registration system for reusable dialogs.
 ///
@@ -207,8 +208,8 @@ public enum DialogRegistry {
             case .info:
                 return .info(message: message, style: style)
             case .custom:
-                let content = DialogContent(message)
-                return .custom(content: content, style: style)
+                let content = DialogContent<EmptyView>(message)
+                return .custom(content: content.eraseToAnyDialogContent(), style: style)
             }
         }
     }

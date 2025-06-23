@@ -46,7 +46,7 @@ public enum DialogType: Hashable, Sendable {
     case info(message: String, style: DialogStyle)
     
     /// A custom dialog with complex content and actions.
-    case custom(content: DialogContent, style: DialogStyle)
+    case custom(content: DialogContent<AnyView>, style: DialogStyle)
     
     // MARK: - Computed Properties
     
@@ -78,7 +78,7 @@ public enum DialogType: Hashable, Sendable {
     
     /// The content for custom dialogs.
     /// Returns nil for simple message dialogs.
-    public var content: DialogContent? {
+    public var content: DialogContent<AnyView>? {
         switch self {
         case .custom(let content, _):
             return content

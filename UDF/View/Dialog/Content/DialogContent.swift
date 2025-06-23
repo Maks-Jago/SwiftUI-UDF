@@ -46,7 +46,7 @@ import SwiftUI
 ///     }
 /// ))
 /// ```
-public struct DialogContent: Equatable, Sendable {
+public struct DialogContent<Icon: View>: Equatable, Sendable {
     /// The title of the dialog content.
     public let title: String
     
@@ -99,7 +99,7 @@ public struct DialogContent: Equatable, Sendable {
     /// // No icon (override semantic default)
     /// DialogContent("Clean message", icon: .none)
     /// ```
-    public let icon: ToastIcon?
+    public let iconView: (@Sendable () -> Icon)?
     
     // MARK: - Computed Properties
     /// Whether this content has any actions.
@@ -124,7 +124,7 @@ public struct DialogContent: Equatable, Sendable {
     
     /// Whether this content has an icon specified.
     public var hasIcon: Bool {
-        icon != nil
+        iconView != nil
     }
     
     /// A combined text representation of title and message.
@@ -146,12 +146,12 @@ public struct DialogContent: Equatable, Sendable {
     /// Creates dialog content with a title only.
     ///
     /// - Parameter title: The title of the dialog.
-    public init(_ title: String) {
+    public init(_ title: String) where Icon == EmptyView {
         self.title = title
         self.message = nil
         self.actions = []
         self.customView = nil
-        self.icon = nil
+        self.iconView = nil
     }
     
     /// Creates dialog content with a title and message.
@@ -159,12 +159,12 @@ public struct DialogContent: Equatable, Sendable {
     /// - Parameters:
     ///   - title: The title of the dialog.
     ///   - message: An optional message for additional details.
-    public init(_ title: String, message: String?) {
+    public init(_ title: String, message: String?) where Icon == EmptyView {
         self.title = title
         self.message = message
         self.actions = []
         self.customView = nil
-        self.icon = nil
+        self.iconView = nil
     }
     
     /// Creates dialog content with a title, message, and custom icon.
@@ -173,12 +173,16 @@ public struct DialogContent: Equatable, Sendable {
     ///   - title: The title of the dialog.
     ///   - message: An optional message for additional details.
     ///   - icon: A custom icon to display with the dialog.
-    public init(_ title: String, message: String? = nil, icon: ToastIcon) {
+    public init(
+        _ title: String,
+        message: String? = nil,
+        @ViewBuilder icon: @Sendable @escaping () -> Icon
+    ) {
         self.title = title
         self.message = message
         self.actions = []
         self.customView = nil
-        self.icon = icon
+        self.iconView = icon
     }
     
     /// Creates dialog content with a title and actions.
@@ -189,12 +193,12 @@ public struct DialogContent: Equatable, Sendable {
     public init(
         _ title: String,
         @DialogActionsBuilder actions: () -> [any DialogAction]
-    ) {
+    ) where Icon == EmptyView {
         self.title = title
         self.message = nil
         self.actions = actions()
         self.customView = nil
-        self.icon = nil
+        self.iconView = nil
     }
     
     /// Creates dialog content with a title, message, and actions.
@@ -207,12 +211,12 @@ public struct DialogContent: Equatable, Sendable {
         _ title: String,
         message: String?,
         @DialogActionsBuilder actions: () -> [any DialogAction]
-    ) {
+    ) where Icon == EmptyView {
         self.title = title
         self.message = message
         self.actions = actions()
         self.customView = nil
-        self.icon = nil
+        self.iconView = nil
     }
     
     /// Creates dialog content with a title, message, icon, and actions.
@@ -225,14 +229,34 @@ public struct DialogContent: Equatable, Sendable {
     public init(
         _ title: String,
         message: String? = nil,
-        icon: ToastIcon,
+        @ViewBuilder icon: @Sendable @escaping () -> Icon,
         @DialogActionsBuilder actions: () -> [any DialogAction]
     ) {
         self.title = title
         self.message = message
         self.actions = actions()
         self.customView = nil
-        self.icon = icon
+        self.iconView = icon
+    }
+    
+    /// Creates dialog content with explicit parameters (no icon).
+    ///
+    /// - Parameters:
+    ///   - title: The title of the dialog.
+    ///   - message: An optional message for additional details.
+    ///   - actions: An array of dialog actions.
+    ///   - customView: Custom SwiftUI view content.
+    public init(
+        title: String,
+        message: String? = nil,
+        actions: [any DialogAction] = [],
+        customView: AnyView? = nil
+    ) where Icon == EmptyView {
+        self.title = title
+        self.message = message
+        self.actions = actions
+        self.customView = customView
+        self.iconView = nil
     }
     
     /// Creates dialog content with explicit parameters.
@@ -244,7 +268,7 @@ public struct DialogContent: Equatable, Sendable {
     public init(
         title: String,
         message: String? = nil,
-        icon: ToastIcon? = nil,
+        @ViewBuilder icon: @Sendable @escaping () -> Icon,
         actions: [any DialogAction] = [],
         customView: AnyView? = nil
     ) {
@@ -252,7 +276,7 @@ public struct DialogContent: Equatable, Sendable {
         self.message = message
         self.actions = actions
         self.customView = customView
-        self.icon = icon
+        self.iconView = icon
     }
     
     /// Creates dialog content with a custom SwiftUI view.
@@ -283,12 +307,12 @@ public struct DialogContent: Equatable, Sendable {
     ///     .cornerRadius(12)
     /// ))
     /// ```
-    public init(customView: AnyView) {
+    public init(customView: AnyView) where Icon == EmptyView {
         self.title = ""
         self.message = nil
         self.actions = []
         self.customView = customView
-        self.icon = nil
+        self.iconView = nil
     }
     
     /// Creates dialog content with a custom SwiftUI view using a view builder.
@@ -311,12 +335,12 @@ public struct DialogContent: Equatable, Sendable {
     ///     .padding()
     /// }
     /// ```
-    public init<Content: View>(@ViewBuilder content: () -> Content) {
+    public init<Content: View>(@ViewBuilder content: () -> Content) where Icon == EmptyView {
         self.title = ""
         self.message = nil
         self.actions = []
         self.customView = AnyView(content())
-        self.icon = nil
+        self.iconView = nil
     }
     
     // MARK: - Equatable Implementation
@@ -342,10 +366,11 @@ public extension DialogContent {
     ///
     /// - Parameter actions: A closure that builds new actions.
     /// - Returns: A new `DialogContent` with the updated actions.
-    func withActions(@DialogActionsBuilder actions: () -> [any DialogAction]) -> DialogContent {
-        DialogContent(
+    func withActions(@DialogActionsBuilder actions: () -> [any DialogAction]) -> DialogContent<Icon> {
+        DialogContent<Icon>(
             title: title,
             message: message,
+            icon: iconView ?? { EmptyView() as! Icon },
             actions: actions(),
             customView: customView
         )
@@ -355,10 +380,11 @@ public extension DialogContent {
     ///
     /// - Parameter message: The new message.
     /// - Returns: A new `DialogContent` with the updated message.
-    func withMessage(_ message: String?) -> DialogContent {
-        DialogContent(
+    func withMessage(_ message: String?) -> DialogContent<Icon> {
+        DialogContent<Icon>(
             title: title,
             message: message,
+            icon: iconView ?? { EmptyView() as! Icon },
             actions: actions,
             customView: customView
         )
@@ -368,10 +394,11 @@ public extension DialogContent {
     ///
     /// - Parameter title: The new title.
     /// - Returns: A new `DialogContent` with the updated title.
-    func withTitle(_ title: String) -> DialogContent {
-        DialogContent(
+    func withTitle(_ title: String) -> DialogContent<Icon> {
+        DialogContent<Icon>(
             title: title,
             message: message,
+            icon: iconView ?? { EmptyView() as! Icon },
             actions: actions,
             customView: customView
         )
@@ -381,10 +408,11 @@ public extension DialogContent {
     ///
     /// - Parameter customView: The custom view to add.
     /// - Returns: A new `DialogContent` with the custom view.
-    func withCustomView(_ customView: AnyView) -> DialogContent {
-        DialogContent(
+    func withCustomView(_ customView: AnyView) -> DialogContent<Icon> {
+        DialogContent<Icon>(
             title: title,
             message: message,
+            icon: iconView ?? { EmptyView() as! Icon },
             actions: actions,
             customView: customView
         )
@@ -394,7 +422,7 @@ public extension DialogContent {
     ///
     /// - Parameter content: A closure that builds the custom view.
     /// - Returns: A new `DialogContent` with the custom view.
-    func withCustomView<Content: View>(@ViewBuilder content: () -> Content) -> DialogContent {
+    func withCustomView<Content: View>(@ViewBuilder content: () -> Content) -> DialogContent<Icon> {
         withCustomView(AnyView(content()))
     }
     
@@ -402,11 +430,23 @@ public extension DialogContent {
     ///
     /// - Parameter icon: The new icon to use.
     /// - Returns: A new `DialogContent` with the updated icon.
-    func withIcon(_ icon: ToastIcon?) -> DialogContent {
-        DialogContent(
+    func withIcon<NewIcon: View>(@ViewBuilder _ iconBuilder: @escaping @Sendable () -> NewIcon) -> DialogContent<NewIcon> {
+        DialogContent<NewIcon>(
             title: title,
             message: message,
-            icon: icon,
+            icon: iconBuilder,
+            actions: actions,
+            customView: customView
+        )
+    }
+    
+    /// Creates a copy of this content without an icon.
+    ///
+    /// - Returns: A new `DialogContent<EmptyView>` without an icon.
+    func withoutIcon() -> DialogContent<EmptyView> {
+        DialogContent<EmptyView>(
+            title: title,
+            message: message,
             actions: actions,
             customView: customView
         )
@@ -420,7 +460,7 @@ extension DialogContent: Hashable {
         hasher.combine(message)
         hasher.combine(actions.count)
         hasher.combine(hasCustomView)
-        hasher.combine(icon)
+        hasher.combine(hasIcon)
         
         // Hash the types and hash values of actions
         for action in actions {
@@ -439,5 +479,31 @@ extension DialogContent {
         // Cannot have text fields
         let hasTextFields = actions.contains { $0 is DialogTextField }
         return !hasTextFields
+    }
+}
+
+public extension DialogContent {
+    /// Type-erases this DialogContent to work with any icon type.
+    ///
+    /// This enables backwards compatibility and interoperability between
+    /// differently-typed DialogContent instances.
+    func eraseToAnyDialogContent() -> DialogContent<AnyView> {
+        if let iconView {
+            return DialogContent<AnyView>(
+                title: title,
+                message: message,
+                icon: { AnyView(iconView()) },
+                actions: actions,
+                customView: customView
+            )
+        } else {
+            return DialogContent<AnyView>(
+                title: title,
+                message: message,
+                icon: { AnyView(EmptyView()) },
+                actions: actions,
+                customView: customView
+            )
+        }
     }
 }

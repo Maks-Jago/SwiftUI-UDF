@@ -90,24 +90,20 @@ struct ToastView: View {
     /// Returns the custom icon if specified in the dialog content,
     /// otherwise falls back to semantic defaults based on the dialog category.
     /// This provides full flexibility while maintaining sensible defaults.
-    var toastIcon: ToastIcon {
+    @ViewBuilder
+    var toastIcon: some View {
         // First check if there's a custom icon specified in the content
-        if let content = toast.content, let customIcon = content.icon {
-            return customIcon
-        }
-        
-        // Fall back to semantic defaults based on category
-        switch toast.category {
-        case .success:
-            return .success
-        case .error:
-            return .error
-        case .warning:
-            return .warning
-        case .info:
-            return .info
-        case .custom:
-            return .none // Custom dialogs without explicit icons get no default
+        if let content = toast.content, let iconView = content.iconView {
+            iconView()
+        } else {
+            // Fall back to semantic defaults based on category
+            switch toast.category {
+            case .success: Image(systemName: "checkmark.circle.fill")
+            case .error: Image(systemName: "exclamationmark.triangle.fill")
+            case .warning: Image(systemName: "exclamationmark.triangle.fill")
+            case .info: Image(systemName: "info.circle.fill")
+            case .custom: EmptyView() // Custom dialogs without explicit icons get no default
+            }
         }
     }
     
@@ -186,46 +182,6 @@ private extension ToastView {
                 .cornerRadius(theme.cornerRadius)
         )
         .applyShadow(theme.shadow)
-    }
-}
-
-// MARK: - Icon Rendering
-private extension ToastView {
-    /// Renders an icon with appropriate styling and theming.
-    ///
-    /// Supports multiple icon types including system images, custom images,
-    /// and arbitrary SwiftUI views. Applies semantic color styling based on
-    /// the toast type and theme configuration.
-    ///
-    /// - Parameter icon: The icon to render, supporting various content types.
-    /// - Returns: A styled SwiftUI view representing the icon.
-    ///
-    /// ## Icon Types:
-    /// - `.systemImage(name)`: SF Symbols system images
-    /// - `.image(name)`: Custom images from app bundle
-    /// - `.view(content)`: Arbitrary SwiftUI views
-    /// - `.none`: No icon (renders EmptyView)
-    ///
-    /// ## Styling:
-    /// - Font size determined by `theme.iconSize`
-    /// - Color determined by semantic background color
-    /// - Automatic contrast for readability
-    @ViewBuilder
-    func iconView(_ icon: ToastIcon) -> some View {
-        Group {
-            switch icon {
-            case .systemImage(let name):
-                Image(systemName: name)
-            case .image(let name):
-                Image(name)
-            case .view(let view):
-                view
-            case .none:
-                EmptyView()
-            }
-        }
-        .foregroundStyle(theme.colorStyle(for: toast.category).foregroundColor)
-        .font(.system(size: theme.iconSize))
     }
 }
 
@@ -316,8 +272,8 @@ private extension ToastView {
     /// - **No Icon**: Shows spacer only for trailing alignment
     @ViewBuilder
     var leadingContent: some View {
-        if configuration.textAlignment == .leading, toastIcon != .none {
-            iconView(toastIcon)
+        if configuration.textAlignment == .leading, toast.content?.hasIcon == true {
+            toastIcon
         } else if shouldAddLeadingSpacer {
             Spacer()
         }
@@ -339,8 +295,8 @@ private extension ToastView {
     var mainContent: some View {
         VStack(alignment: configuration.textAlignment) {
             HStack {
-                if configuration.textAlignment == .center, toastIcon != .none {
-                    iconView(toastIcon)
+                if configuration.textAlignment == .center, toast.content?.hasIcon == true {
+                    toastIcon
                 }
                 
                 Text(displayMessage)
@@ -348,8 +304,8 @@ private extension ToastView {
                     .foregroundStyle(theme.colorStyle(for: toast.category).foregroundColor)
                     .multilineTextAlignment(textAlignmentFromHorizontal(configuration.textAlignment))
                 
-                if configuration.textAlignment == .trailing, toastIcon != .none {
-                    iconView(toastIcon)
+                if configuration.textAlignment == .trailing, toast.content?.hasIcon == true {
+                    toastIcon
                 }
             }
             
@@ -419,7 +375,7 @@ private extension ToastView {
     ///
     /// - Returns: true if a leading spacer should be added, false otherwise.
     var shouldAddLeadingSpacer: Bool {
-        let hasIcon = toastIcon != .none
+        let hasIcon = toast.content?.hasIcon == true
         
         // Determine whether to add a leading spacer based on text alignment
         switch configuration.textAlignment {

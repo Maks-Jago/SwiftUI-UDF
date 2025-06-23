@@ -183,8 +183,8 @@ public struct DialogStatus: Equatable, Identifiable, Sendable {
         configuration: ConfirmationDialogConfiguration = .default,
         @DialogContentBuilder actions: () -> [any DialogAction]
     ) {
-        let content = DialogContent(title: "", message: message, actions: actions())
-        self = .init(dialog: .custom(content: content, style: .confirmationDialog(configuration)))
+        let content = DialogContent<EmptyView>(title: "", message: message, actions: actions())
+        self = .init(dialog: .custom(content: content.eraseToAnyDialogContent(), style: .confirmationDialog(configuration)))
     }
     
     /// Creates a simple confirmation dialog with just message and actions.
@@ -221,7 +221,7 @@ public struct DialogStatus: Equatable, Identifiable, Sendable {
     /// ```
     public init(
         style: DialogStyle,
-        @DialogContentBuilder content: () -> DialogContent
+        @DialogContentBuilder content: () -> DialogContent<AnyView>
     ) {
         self = .init(dialog: .custom(content: content(), style: style))
     }
@@ -299,7 +299,11 @@ public struct DialogStatus: Equatable, Identifiable, Sendable {
 /// A result builder for creating DialogContent in a declarative way.
 @resultBuilder
 public enum DialogContentBuilder {
-    public static func buildBlock(_ content: DialogContent) -> DialogContent {
+    public static func buildBlock(_ content: DialogContent<AnyView>) -> DialogContent<AnyView> {
         content
+    }
+    
+    public static func buildBlock<Icon: View>(_ content: DialogContent<Icon>) -> DialogContent<AnyView> {
+        content.eraseToAnyDialogContent()
     }
 }
