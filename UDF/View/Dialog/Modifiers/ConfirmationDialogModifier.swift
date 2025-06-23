@@ -15,76 +15,68 @@ import SwiftUI
 /// Handles confirmation dialog style dialogs.
 struct ConfirmationDialogModifier: ViewModifier {
     @Binding var dialogStatus: DialogStatus
-    @State private var confirmationDialogState: ConfirmationDialogState?
     
     func body(content: Content) -> some View {
         content
-            .onChange(of: dialogStatus) { _ in
-                updateDialogStatus()
-            }
-            .onAppear {
-                updateDialogStatus()
-            }
             .confirmationDialog(
-                confirmationDialogState?.title ?? "",
+                dialogTitle,
                 isPresented: Binding(
-                    get: { confirmationDialogState != nil },
-                    set: { if !$0 { dismissDialog() }}
+                    get: { isConfirmationDialogPresented },
+                    set: { if !$0 { dialogStatus = .dismissed } }
                 ),
-                titleVisibility: confirmationDialogState?.titleVisibility ?? .automatic,
+                titleVisibility: titleVisibility,
                 actions: {
-                    if let confirmationDialogState {
-                        ForEach(confirmationDialogState.buttons, id: \.self) { button in
+                    if let currentDialogContent {
+                        ForEach(currentDialogContent.actions.compactMap { $0 as? DialogButton }, id: \.self) { button in
                             Button(button.title, role: button.role) {
                                 button.action()
-                                dismissDialog()
+                                dialogStatus = .dismissed
                             }
                             .disabled(button.disabled)
                         }
                     }
                 },
                 message: {
-                    if let message = confirmationDialogState?.message {
-                        Text(message)
+                    if let dialogMessage {
+                        Text(dialogMessage)
                     }
                 }
             )
     }
 }
 
-// MARK: - Confirmation Dialog Modifier Helper Methods
+// MARK: - Computed Properties
 private extension ConfirmationDialogModifier {
-    func updateDialogStatus() {
-        switch dialogStatus.status {
-        case .presented(let dialogType):
-            guard case .confirmationDialog(let config) = dialogType.style else {
-                return
-            }
-            
-            if case .custom(let content, _) = dialogType {
-                confirmationDialogState = ConfirmationDialogState(
-                    title: content.title,
-                    message: content.message,
-                    titleVisibility: config.titleVisibility,
-                    buttons: content.actions.compactMap { $0 as? DialogButton }
-                )
-            }
-            
-        case .dismissed:
-            confirmationDialogState = nil
-        }
+    var dialogTitle: String {
+        currentDialogContent?.title ?? ""
     }
     
-    func dismissDialog() {
-        dialogStatus = .dismissed
-        confirmationDialogState = nil
+    var isConfirmationDialogPresented: Bool {
+        if case .presented(let dialogType) = dialogStatus.status,
+           case .confirmationDialog = dialogType.style {
+            return true
+        }
+        return false
     }
-}
-
-// MARK: - Dialog State Helper
-private struct ConfirmationDialogState {
-    let title: String
-    let message: String?
-    let titleVisibility: Visibility
-    let buttons: [DialogButton]
+    
+    var currentDialogContent: DialogContent? {
+        if case .presented(let dialogType) = dialogStatus.status,
+           case .confirmationDialog = dialogType.style,
+           case .custom(let content, _) = dialogType {
+            return content
+        }
+        return nil
+    }
+    
+    var titleVisibility: Visibility {
+        if case .presented(let dialogType) = dialogStatus.status,
+           case .confirmationDialog(let config) = dialogType.style {
+            return config.titleVisibility
+        }
+        return .automatic
+    }
+    
+    var dialogMessage: String? {
+        currentDialogContent?.message
+    }
 }
