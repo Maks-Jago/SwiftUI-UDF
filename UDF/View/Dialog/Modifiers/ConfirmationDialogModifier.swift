@@ -34,27 +34,12 @@ struct ConfirmationDialogModifier: ViewModifier {
                 titleVisibility: confirmationDialogState?.titleVisibility ?? .automatic,
                 actions: {
                     if let confirmationDialogState {
-                        ForEach(confirmationDialogState.regularButtons.indices, id: \.self) { index in
-                            let button = confirmationDialogState.regularButtons[index]
-                            Button(button.title) {
+                        ForEach(confirmationDialogState.buttons, id: \.self) { button in
+                            Button(button.title, role: button.role) {
                                 button.action()
                                 dismissDialog()
                             }
-                        }
-                        
-                        ForEach(confirmationDialogState.destructiveButtons.indices, id: \.self) { index in
-                            let button = confirmationDialogState.destructiveButtons[index]
-                            Button(button.title, role: .destructive) {
-                                button.action()
-                                dismissDialog()
-                            }
-                        }
-                        
-                        if let cancelButton = confirmationDialogState.cancelButton {
-                            Button(cancelButton.title, role: .cancel) {
-                                cancelButton.action()
-                                dismissDialog()
-                            }
+                            .disabled(button.disabled)
                         }
                     }
                 },
@@ -77,14 +62,11 @@ private extension ConfirmationDialogModifier {
             }
             
             if case .custom(let content, _) = dialogType {
-                let (cancel, destructive, regular) = content.buttonsByRole()
                 confirmationDialogState = ConfirmationDialogState(
                     title: content.title,
                     message: content.message,
                     titleVisibility: config.titleVisibility,
-                    cancelButton: cancel,
-                    destructiveButtons: destructive,
-                    regularButtons: regular
+                    buttons: content.actions.compactMap { $0 as? DialogButton }
                 )
             }
             
@@ -104,7 +86,5 @@ private struct ConfirmationDialogState {
     let title: String
     let message: String?
     let titleVisibility: Visibility
-    let cancelButton: DialogButton?
-    let destructiveButtons: [DialogButton]
-    let regularButtons: [DialogButton]
+    let buttons: [DialogButton]
 }

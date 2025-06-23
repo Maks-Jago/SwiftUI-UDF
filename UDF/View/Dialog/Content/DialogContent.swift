@@ -431,23 +431,6 @@ extension DialogContent: Hashable {
 }
 
 extension DialogContent {
-    /// Extracts buttons with specific roles for confirmation dialog presentation.
-    ///
-    /// Confirmation dialogs handle cancel buttons separately from other actions,
-    /// so there is a need to identify and group them properly.
-    func buttonsByRole() -> (cancel: DialogButton?, destructive: [DialogButton], regular: [DialogButton]) {
-        let buttons = actions.compactMap { $0 as? DialogButton }
-        
-        // iOS only supports one cancel button in confirmation dialogs
-        let cancelButton = buttons.first { $0.role == .cancel }
-        
-        // Separate destructive and regular actions
-        let destructiveButtons = buttons.filter { $0.role == .destructive }
-        let regularButtons = buttons.filter { $0.role == nil && $0 != cancelButton }
-        
-        return (cancelButton, destructiveButtons, regularButtons)
-    }
-    
     /// Whether this content is suitable for confirmation dialog presentation.
     var isValidForConfirmationDialog: Bool {
         // Must have at least one action
