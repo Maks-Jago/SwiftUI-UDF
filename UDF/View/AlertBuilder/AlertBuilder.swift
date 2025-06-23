@@ -145,24 +145,25 @@ public enum AlertBuilder {
             case .message(let text):
                 return .info(message: text(), style: .alert)
             case .messageTitle(let title, let message):
-                let content = DialogContent<EmptyView>(title(), message: message())
+                let content = DialogContent<EmptyView, EmptyView>(title: title(), message: message())
                 return .custom(content: content.eraseToAnyDialogContent(), style: .alert)
             case .customActions(let title, let text, let actions):
                 // Convert AlertActions to DialogActions
                 let alertActions = actions()
-                var dialogActions: [any DialogAction] = []
                 
-                for action in alertActions {
-                    if let button = action as? AlertButton {
-                        dialogActions.append(DialogButton(title: button.title, action: button.action))
-                    }
-                    // Skip text fields to avoid MainActor issues in this context
-                }
-                
-                let content = DialogContent<EmptyView>(
+                let content = DialogContent<EmptyView, EmptyView>(
                     title: title(),
                     message: text(),
-                    actions: dialogActions
+                    actions: {
+                        var dialogActions: [any DialogAction] = []
+                        
+                        for action in alertActions {
+                            if let button = action as? AlertButton {
+                                dialogActions.append(DialogButton(title: button.title, action: button.action))
+                            }
+                            // Skip text fields to avoid MainActor issues in this context
+                        }
+                    }
                 )
                 return .custom(content: content.eraseToAnyDialogContent(), style: .alert)
             }
@@ -188,11 +189,11 @@ public extension DialogStatus {
         case .message(let text):
             self = DialogStatus(info: text(), style: .alert)
         case .messageTitle(let title, let message):
-            let content = DialogContent(title(), message: message())
+            let content = DialogContent(title: title(), message: message())
             self = DialogStatus(dialog: .custom(content: content.eraseToAnyDialogContent(), style: .alert))
         case .customActions(let title, let text, let actions):
             // Convert AlertActions to DialogActions
-            let content = DialogContent(title(), message: text()) {
+            let content = DialogContent(title: title(), message: text()) {
                 // Convert actions within the builder context
                 for action in actions() {
                     if let button = action as? AlertButton {

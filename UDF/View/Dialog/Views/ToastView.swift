@@ -82,7 +82,7 @@ struct ToastView: View {
     /// more than the standard message + button layout.
     var customContent: AnyView? {
         guard let content = toast.content else { return nil }
-        return content.customView
+        return content.customContentView != nil ? AnyView(content.customContentView!()) : nil
     }
     
     // The icon to display for this toast dialog.
@@ -114,10 +114,9 @@ struct ToastView: View {
     var displayMessage: String {
         if let message = toast.message {
             return message
-        } else if let content = toast.content {
-            return content.hasMessage ? "\(content.title)\n\(content.message!)" : content.title
         }
-        return "Dialog" // Fallback
+        
+        return ""
     }
     
     /// Action buttons to display in the toast.

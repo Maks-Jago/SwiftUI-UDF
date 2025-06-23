@@ -208,7 +208,7 @@ public enum DialogRegistry {
             case .info:
                 return .info(message: message, style: style)
             case .custom:
-                let content = DialogContent<EmptyView>(message)
+                let content = DialogContent<EmptyView, EmptyView>(message)
                 return .custom(content: content.eraseToAnyDialogContent(), style: style)
             }
         }

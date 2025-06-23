@@ -164,7 +164,7 @@ public enum Actions {
         ///   - content: The custom content for the dialog.
         ///   - id: The unique identifier for the dialog.
         ///   - style: The dialog style (defaults to .alert).
-        public init(content: DialogContent<AnyView>, id: some Hashable, style: DialogStyle = .alert) {
+        public init(content: DialogContent<AnyView, AnyView>, id: some Hashable, style: DialogStyle = .alert) {
             self.status = .init(dialog: .custom(content: content, style: style))
             self.id = AnyHashable(id)
         }

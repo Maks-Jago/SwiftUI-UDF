@@ -183,7 +183,7 @@ public struct DialogStatus: Equatable, Identifiable, Sendable {
         configuration: ConfirmationDialogConfiguration = .default,
         @DialogContentBuilder actions: () -> [any DialogAction]
     ) {
-        let content = DialogContent<EmptyView>(title: "", message: message, actions: actions())
+        let content = DialogContent<EmptyView, EmptyView>(title: "", message: message, actions: actions)
         self = .init(dialog: .custom(content: content.eraseToAnyDialogContent(), style: .confirmationDialog(configuration)))
     }
     
@@ -221,7 +221,7 @@ public struct DialogStatus: Equatable, Identifiable, Sendable {
     /// ```
     public init(
         style: DialogStyle,
-        @DialogContentBuilder content: () -> DialogContent<AnyView>
+        @DialogContentBuilder content: () -> DialogContent<AnyView, AnyView>
     ) {
         self = .init(dialog: .custom(content: content(), style: style))
     }
@@ -299,11 +299,23 @@ public struct DialogStatus: Equatable, Identifiable, Sendable {
 /// A result builder for creating DialogContent in a declarative way.
 @resultBuilder
 public enum DialogContentBuilder {
-    public static func buildBlock(_ content: DialogContent<AnyView>) -> DialogContent<AnyView> {
+    public static func buildBlock(_ content: DialogContent<AnyView, AnyView>) -> DialogContent<AnyView, AnyView> {
         content
     }
     
-    public static func buildBlock<Icon: View>(_ content: DialogContent<Icon>) -> DialogContent<AnyView> {
+    public static func buildBlock<Icon: View, CustomContent: View>(_ content: DialogContent<Icon, CustomContent>) -> DialogContent<AnyView, AnyView> {
+        content.eraseToAnyDialogContent()
+    }
+    
+    public static func buildBlock(_ content: DialogContent<EmptyView, EmptyView>) -> DialogContent<AnyView, AnyView> {
+        content.eraseToAnyDialogContent()
+    }
+    
+    public static func buildBlock<Icon: View>(_ content: DialogContent<Icon, EmptyView>) -> DialogContent<AnyView, AnyView> {
+        content.eraseToAnyDialogContent()
+    }
+    
+    public static func buildBlock<CustomContent: View>(_ content: DialogContent<EmptyView, CustomContent>) -> DialogContent<AnyView, AnyView> {
         content.eraseToAnyDialogContent()
     }
 }
