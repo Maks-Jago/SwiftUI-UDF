@@ -47,15 +47,13 @@ actor InternalStore<State: AppReducer>: Store {
         }
     }
 
-    func subscribe(_ middleware: some Middleware<State>) async {
+    func subscribe(_ middleware: some _Middleware<State>) async {
         middlewares.append(AnyMiddleware(middleware))
 
-        if middleware is any UnifiedMiddleware<State> || middleware is any ObservableMiddleware<State> {
-            await initialNotifyObservable(middleware: middleware, state: Box(self.state))
-        }
+        await initialNotifyObservable(middleware: middleware, state: Box(self.state))
     }
 
-    func subscribe(_ middlewares: [any Middleware<State>]) async {
+    func subscribe(_ middlewares: [any _Middleware<State>]) async {
         for middleware in middlewares {
             await subscribe(middleware)
         }
@@ -145,7 +143,7 @@ private extension InternalStore {
             let middleware = anyMiddleware.middleware
             
             switch middleware {
-            case let middleware as any UnifiedMiddleware<State>:
+            case let middleware as any Middleware<State>:
                 await notifyUnified(middleware: middleware, actions: actions, oldState: oldState, newState: newState)
 
             default:
@@ -154,9 +152,8 @@ private extension InternalStore {
         }
     }
     
-    func notifyUnified<CU: UnifiedMiddleware>(middleware: CU, actions: [InternalAction], oldState: Box<State>, newState: Box<State>) async where CU.State == State {
+    func notifyUnified<M: MiddlewareProtocol>(middleware: M, actions: [InternalAction], oldState: Box<State>, newState: Box<State>) async where M.State == State {
         let status = middleware.status(for: newState.value)
-        print("Notifying Unified Middleware: \(middleware) with status: \(status)")
         await safetyCall(queue: middleware.queue) {
             if status == .suspend {
                 middleware.cancelAll()
@@ -190,7 +187,7 @@ private extension InternalStore {
         }
     }
 
-    func initialNotifyObservable<CO: Middleware>(middleware: CO, state: Box<State>) async where CO.State == State {
+    func initialNotifyObservable(middleware: some _Middleware<State>, state: Box<State>) async {
         let status = middleware.status(for: state.value)
         guard status == .active else {
             return
@@ -198,7 +195,7 @@ private extension InternalStore {
         
         let stateValue = state.value
         await safetyCall(queue: middleware.queue) {
-            if let unifiedMiddleware = middleware as? any UnifiedMiddleware<State> {
+            if let unifiedMiddleware = middleware as? any Middleware<State> {
                 unifiedMiddleware.observe(state: stateValue)
             } else if let observableMiddleware = middleware as? any ObservableMiddleware<State> {
                 observableMiddleware.observe(state: stateValue)

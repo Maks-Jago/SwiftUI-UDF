@@ -1,4 +1,4 @@
-//===--- UnifiedMiddleware.swift -------------------------------===//
+//===--- Middleware.swift ----------------------------------------===//
 //
 // This source file is part of the UDF open source project
 //
@@ -13,7 +13,7 @@ import Foundation
 
 /// A protocol that combines observation and reduction capabilities in a single middleware component.
 ///
-/// `UnifiedMiddleware` merges the functionality of both observation and reduction capabilities,
+/// `Middleware` merges the functionality of both observation and reduction capabilities,
 /// enabling middleware to both observe state changes and react to specific actions. This approach simplifies
 /// middleware implementation when both capabilities are needed.
 ///
@@ -26,7 +26,7 @@ import Foundation
 /// This example shows a unified middleware for handling user authentication:
 ///
 /// ```swift
-/// final class AuthMiddleware: BaseUnifiedMiddleware<AppState> {
+/// final class AuthMiddleware: Middleware<AppState> {
 ///     enum Cancellation: Hashable {
 ///         case login
 ///         case refreshToken
@@ -38,6 +38,24 @@ import Foundation
 ///     }
 ///
 ///     var environment: Environment!
+///
+///     static func buildLiveEnvironment(for store: some Store<AppState>) -> Environment {
+///         .init(
+///             login: { email, password in
+///                 try await AuthAPIClient.login(email: email, password: password)
+///             },
+///             refreshToken: { token in
+///                 try await AuthAPIClient.refreshToken(token: token)
+///             }
+///         )
+///     }
+///
+///     static func buildTestEnvironment(for store: some Store<AppState>) -> Environment {
+///         .init(
+///             login: { _, _ in AuthToken.mock() },
+///             refreshToken: { _ in AuthToken.mock() }
+///         )
+///     }
 ///
 ///     @ScopeBuilder
 ///     func scope(for state: AppState) -> Scope {
@@ -78,27 +96,6 @@ import Foundation
 ///         }
 ///     }
 /// }
-///
-/// // MARK: - Environment build methods
-/// extension AuthMiddleware {
-///     static func buildLiveEnvironment(for store: some Store<AppState>) -> Environment {
-///         .init(
-///             login: { email, password in
-///                 try await AuthAPIClient.login(email: email, password: password)
-///             },
-///             refreshToken: { token in
-///                 try await AuthAPIClient.refreshToken(token: token)
-///             }
-///         )
-///     }
-///
-///     static func buildTestEnvironment(for store: some Store<AppState>) -> Environment {
-///         .init(
-///             login: { _, _ in AuthToken.mock() },
-///             refreshToken: { _ in AuthToken.mock() }
-///         )
-///     }
-/// }
 /// ```
 ///
 /// In this example:
@@ -106,7 +103,8 @@ import Foundation
 /// - **`observe(state:)`** watches for when the auth flow enters a token refresh state and executes the refresh operation.
 /// - **`reduce(_:for:)`** handles login actions by executing the login API call.
 /// - **Environment:** Provides dependencies for authentication operations with both live and test implementations.
-public protocol UnifiedMiddleware<State>: Middleware where State: AppReducer {
+public protocol MiddlewareProtocol<State>: _Middleware where State: AppReducer {
+    
     /// Defines the scope for the middleware to observe within the given state.
     ///
     /// - Parameter state: The state to define the scope for.
@@ -128,7 +126,7 @@ public protocol UnifiedMiddleware<State>: Middleware where State: AppReducer {
 }
 
 // MARK: - Default Implementations
-public extension UnifiedMiddleware {
+public extension MiddlewareProtocol {
     @ScopeBuilder
     func scope(for state: State) -> Scope {
         .none
@@ -148,18 +146,16 @@ public extension UnifiedMiddleware {
     }
 }
 
-/// A typealias for combining `BaseMiddleware`, `UnifiedMiddleware`, and `EnvironmentMiddleware`.
-///
-/// This typealias simplifies the creation of middleware that needs both state observation and action reduction capabilities.
-public typealias BaseUnifiedMiddleware<State: AppReducer> = BaseMiddleware<State> & EnvironmentMiddleware & UnifiedMiddleware
+/// A typealias for backward compatibility.
+public typealias Middleware<State: AppReducer> = _BaseMiddleware<State> & EnvironmentMiddleware & MiddlewareProtocol
 
 /// Legacy support for `ObservableMiddleware` and `ReducibleMiddleware` to maintain backward compatibility.
-@available(*, deprecated, message: "Use UnifiedMiddleware instead.")
-public typealias ObservableMiddleware<State> = UnifiedMiddleware<State>
-@available(*, deprecated, message: "Use UnifiedMiddleware instead.")
-public typealias ReducibleMiddleware<State> = UnifiedMiddleware<State>
+@available(*, deprecated, message: "Use Middleware instead.")
+public typealias ObservableMiddleware<State: AppReducer> = Middleware<State>
+@available(*, deprecated, message: "Use Middleware instead.")
+public typealias ReducibleMiddleware<State: AppReducer> = Middleware<State>
 
-@available(*, deprecated, message: "Use BaseUnifiedMiddleware instead.")
-public typealias BaseObservableMiddleware<State: AppReducer> = BaseUnifiedMiddleware<State>
-@available(*, deprecated, message: "Use BaseUnifiedMiddleware instead.")
-public typealias BaseReducibleMiddleware<State: AppReducer> = BaseUnifiedMiddleware<State>
+@available(*, deprecated, message: "Use BaseMiddleware instead.")
+public typealias BaseObservableMiddleware<State: AppReducer> = Middleware<State>
+@available(*, deprecated, message: "Use BaseMiddleware instead.")
+public typealias BaseReducibleMiddleware<State: AppReducer> = Middleware<State>

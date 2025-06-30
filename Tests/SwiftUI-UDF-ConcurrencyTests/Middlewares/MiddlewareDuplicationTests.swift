@@ -12,7 +12,7 @@ final class MiddlewareDuplicationTests: XCTestCase {
 
     struct TestAction: Action {}
 
-    final class TestMiddleware: BaseReducibleMiddleware<AppState> {
+    final class TestMiddleware: Middleware<AppState>, @unchecked Sendable {
         var environment: Void!
 
         func reduce(_ action: some Action, for state: AppState) {

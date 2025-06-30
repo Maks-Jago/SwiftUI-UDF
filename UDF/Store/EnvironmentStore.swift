@@ -241,28 +241,7 @@ public extension EnvironmentStore {
             }
         }
     }
-
-    /// Subscribes to a middleware type asynchronously.
-    ///
-    /// - Parameters:
-    ///   - middlewareType: The middleware type to subscribe to.
-    func subscribe<M: Middleware<State>>(_ middlewareType: M.Type) where M.State == State {
-        self.subscribe { store in
-            middlewareType.init(store: store)
-        }
-    }
-
-    /// Subscribes to a middleware type asynchronously using a specified queue.
-    ///
-    /// - Parameters:
-    ///   - middlewareType: The middleware type to subscribe to.
-    ///   - queue: The dispatch queue on which the middleware operates.
-    func subscribe<M: Middleware<State>>(_ middlewareType: M.Type, on queue: DispatchQueue) where M.State == State {
-        self.subscribe { store in
-            middlewareType.init(store: store, queue: queue)
-        }
-    }
-
+    
     /// Subscribes to a middleware type asynchronously, using a specified environment and queue.
     ///
     /// - Parameters:
@@ -298,7 +277,7 @@ public extension EnvironmentStore {
     ///   - store: The store instance.
     ///   - type: The type of middleware to create.
     /// - Returns: An instance of the middleware.
-    private func middleware<M: Middleware<State>>(store: any Store<State>, type: M.Type) -> any Middleware<State> where M.State == State {
+    private func middleware<M: _Middleware<State>>(store: any Store<State>, type: M.Type) -> any _Middleware<State> where M.State == State {
         switch type {
         case let envMiddlewareType as any MiddlewareWithEnvironment<State>.Type:
             envMiddleware(store: store, type: envMiddlewareType)
@@ -313,7 +292,7 @@ public extension EnvironmentStore {
     ///   - store: The store instance.
     ///   - type: The type of environment-aware middleware to create.
     /// - Returns: An instance of the environment-aware middleware.
-    private func envMiddleware<M: MiddlewareWithEnvironment<State>>(store: any Store<State>, type: M.Type) -> any Middleware<State>
+    private func envMiddleware<M: MiddlewareWithEnvironment<State>>(store: any Store<State>, type: M.Type) -> any _Middleware<State>
         where M.State == State
     {
         if ProcessInfo.processInfo.xcTest {

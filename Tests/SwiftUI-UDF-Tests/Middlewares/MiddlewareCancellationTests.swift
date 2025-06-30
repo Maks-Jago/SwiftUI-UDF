@@ -114,7 +114,7 @@ private extension Actions {
 
 // MARK: - Middlewares
 private extension MiddlewareCancellationTests {
-    final class ObservableMiddlewareToCancel: BaseObservableMiddleware<AppState> {
+    final class ObservableMiddlewareToCancel: Middleware<AppState>, @unchecked Sendable {
         var environment: Void!
 
         enum Сancellation: CaseIterable {
@@ -122,7 +122,7 @@ private extension MiddlewareCancellationTests {
         }
 
         func scope(for state: MiddlewareCancellationTests.AppState) -> Scope {
-            state.middlewareFlow
+            ReducerScope(reducer: state.middlewareFlow)
         }
 
         func observe(state: MiddlewareCancellationTests.AppState) {
@@ -142,7 +142,7 @@ private extension MiddlewareCancellationTests {
         }
     }
 
-    final class ObservableRunMiddlewareToCancel: BaseObservableMiddleware<AppState> {
+    final class ObservableRunMiddlewareToCancel: Middleware<AppState>, @unchecked Sendable {
         struct Environment {}
 
         var environment: Environment!
@@ -160,7 +160,7 @@ private extension MiddlewareCancellationTests {
         }
 
         func scope(for state: MiddlewareCancellationTests.AppState) -> Scope {
-            state.middlewareFlow
+            ReducerScope(reducer: state.middlewareFlow)
         }
 
         func observe(state: MiddlewareCancellationTests.AppState) {
@@ -191,7 +191,7 @@ private extension MiddlewareCancellationTests {
         }
     }
 
-    final class ReducibleMiddlewareToCancel: BaseReducibleMiddleware<AppState> {
+    final class ReducibleMiddlewareToCancel: Middleware<AppState>, @unchecked Sendable {
         struct Environment {}
 
         var environment: Environment!

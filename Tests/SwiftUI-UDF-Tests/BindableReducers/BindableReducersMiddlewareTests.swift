@@ -186,7 +186,7 @@ private extension BindableReducersMiddlewareTests {
 
 // MARK: Middleware
 private extension BindableReducersMiddlewareTests {
-    final class ItemsMiddleware: BaseObservableMiddleware<AppState>, @unchecked Sendable {
+    final class ItemsMiddleware: Middleware<AppState>, @unchecked Sendable {
         enum Cancellation: Hashable {
             case itemDetails(Item.ID)
         }
@@ -200,7 +200,7 @@ private extension BindableReducersMiddlewareTests {
         var environment: Environment!
 
         func scope(for state: BindableReducersMiddlewareTests.AppState) -> any Scope {
-            state.itemsFlow
+            ReducerScope(reducer: state.itemsFlow)
         }
 
         func observe(state: BindableReducersMiddlewareTests.AppState) {

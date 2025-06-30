@@ -1,4 +1,4 @@
-//===--- UnifiedMiddlewareTests.swift ----------------------------===//
+//===--- MiddlewareTests.swift -----------------------------------===//
 //
 // This source file is part of the UDF open source project
 //
@@ -35,7 +35,7 @@ private extension Actions {
     }
 }
 
-final class UnifiedMiddlewareTests: XCTestCase {
+final class MiddlewareTests: XCTestCase {
     struct AppState: AppReducer {
         var testForm = TestForm()
         var testFlow = TestFlow()
@@ -98,7 +98,7 @@ final class UnifiedMiddlewareTests: XCTestCase {
     // MARK: - Test Middlewares
     
     /// Tests only reduce functionality (like ReducibleMiddleware)
-    class ReduceOnlyMiddleware: BaseUnifiedMiddleware<AppState>, @unchecked Sendable {
+    class ReduceOnlyMiddleware: Middleware<AppState>, @unchecked Sendable {
         struct Environment: Sendable {
             var processMessage: @Sendable (String) -> String
         }
@@ -129,7 +129,7 @@ final class UnifiedMiddlewareTests: XCTestCase {
     }
     
     /// Tests only observe functionality (like ObservableMiddleware)
-    class ObserveOnlyMiddleware: BaseUnifiedMiddleware<AppState>, @unchecked Sendable {
+    class ObserveOnlyMiddleware: Middleware<AppState>, @unchecked Sendable {
         struct Environment: Sendable {
             var reactToFlow: @Sendable (String) -> String
         }
@@ -146,7 +146,7 @@ final class UnifiedMiddlewareTests: XCTestCase {
         }
         
         func scope(for state: AppState) -> Scope {
-            state.testFlow
+            ReducerScope(reducer: state.testFlow)
         }
         
         func observe(state: AppState) {
@@ -172,8 +172,8 @@ final class UnifiedMiddlewareTests: XCTestCase {
         }
     }
     
-    /// Tests both reduce and observe functionality (full UnifiedMiddleware)
-    class FullUnifiedMiddleware: BaseUnifiedMiddleware<AppState>, @unchecked Sendable {
+    /// Tests both reduce and observe functionality (full Middleware)
+    class FullUnifiedMiddleware: Middleware<AppState>, @unchecked Sendable {
         struct Environment: Sendable {
             var handleMessage: @Sendable (String) -> String
             var processTask: @Sendable (String) -> String
@@ -197,6 +197,7 @@ final class UnifiedMiddlewareTests: XCTestCase {
             )
         }
         
+        @ScopeBuilder
         func scope(for state: AppState) -> Scope {
             state.testFlow
             state.taskFlow
@@ -241,7 +242,7 @@ final class UnifiedMiddlewareTests: XCTestCase {
     }
     
     /// Tests middleware with conditional scope
-    class ConditionalScopeMiddleware: BaseUnifiedMiddleware<AppState>, @unchecked Sendable {
+    class ConditionalScopeMiddleware: Middleware<AppState>, @unchecked Sendable {
         struct Environment: Sendable {}
         
         var environment: Environment!
@@ -256,7 +257,7 @@ final class UnifiedMiddlewareTests: XCTestCase {
         }
         
         func scope(for state: AppState) -> Scope {
-            state.testFlow
+            ReducerScope(reducer: state.testFlow)
         }
         
         func observe(state: AppState) {
@@ -274,7 +275,7 @@ final class UnifiedMiddlewareTests: XCTestCase {
     }
     
     /// Tests middleware status changes
-    class StatusChangeMiddleware: BaseUnifiedMiddleware<AppState>, @unchecked Sendable {
+    class StatusChangeMiddleware: Middleware<AppState>, @unchecked Sendable {
         struct Environment: Sendable {}
         
         var environment: Environment!
@@ -293,7 +294,7 @@ final class UnifiedMiddlewareTests: XCTestCase {
         }
         
         func scope(for state: AppState) -> Scope {
-            state.testFlow
+            ReducerScope(reducer: state.testFlow)
         }
         
         func observe(state: AppState) {
@@ -374,7 +375,7 @@ final class UnifiedMiddlewareTests: XCTestCase {
     
     // MARK: - Tests
     
-    /// Tests that UnifiedMiddleware works correctly when only implementing reduce functionality
+    /// Tests that Middleware works correctly when only implementing reduce functionality
     func testReduceOnlyMiddleware() async {
         // Given: A middleware that only implements reduce() method
         let store = await XCTestStore(initial: AppState())
@@ -390,7 +391,7 @@ final class UnifiedMiddlewareTests: XCTestCase {
         XCTAssertEqual(title, "Test: \(message)")
     }
     
-    /// Tests that UnifiedMiddleware works correctly when only implementing observe functionality
+    /// Tests that Middleware works correctly when only implementing observe functionality
     func testObserveOnlyMiddleware() async {
         // Given: A middleware that only implements observe() method with a specific scope
         let store = await XCTestStore(initial: AppState())
@@ -406,7 +407,7 @@ final class UnifiedMiddlewareTests: XCTestCase {
         XCTAssertEqual(description, "Test reaction: \(message)")
     }
     
-    /// Tests that UnifiedMiddleware works correctly when implementing both reduce and observe functionality
+    /// Tests that Middleware works correctly when implementing both reduce and observe functionality
     func testFullUnifiedMiddleware() async {
         // Given: A middleware that implements both reduce() and observe() methods
         let store = await XCTestStore(initial: AppState())
@@ -430,16 +431,17 @@ final class UnifiedMiddlewareTests: XCTestCase {
         XCTAssertEqual(description, "Task completed: flow_task")
     }
     
-    /// Tests that UnifiedMiddleware works correctly with multiple scopes
+    /// Tests that Middleware works correctly with multiple scopes
     func testMultipleScopes() async {
         // Given: A middleware that observes multiple state flows
-        class MultiScopeMiddleware: BaseUnifiedMiddleware<AppState>, @unchecked Sendable {
+        class MultiScopeMiddleware: Middleware<AppState>, @unchecked Sendable {
             struct Environment: Sendable {}
             var environment: Environment!
             
             static func buildLiveEnvironment(for store: some Store<AppState>) -> Environment { .init() }
             static func buildTestEnvironment(for store: some Store<AppState>) -> Environment { .init() }
             
+            @ScopeBuilder
             func scope(for state: AppState) -> Scope {
                 state.testFlow
                 state.taskFlow
@@ -471,10 +473,10 @@ final class UnifiedMiddlewareTests: XCTestCase {
         XCTAssertEqual(title, "Multi: \(message)")
     }
     
-    /// Tests that UnifiedMiddleware correctly handles dynamic status changes
+    /// Tests that Middleware correctly handles dynamic status changes
     func testMiddlewareStatusChanges() async {
         // Given: A middleware that changes status based on state conditions
-        class StateBasedStatusMiddleware: BaseUnifiedMiddleware<AppState>, @unchecked Sendable {
+        class StateBasedStatusMiddleware: Middleware<AppState>, @unchecked Sendable {
             struct Environment: Sendable {}
             var environment: Environment!
             
@@ -487,7 +489,7 @@ final class UnifiedMiddlewareTests: XCTestCase {
             }
             
             func scope(for state: AppState) -> Scope {
-                state.testFlow
+                ReducerScope(reducer: state.testFlow)
             }
             
             func observe(state: AppState) {
@@ -560,7 +562,7 @@ final class UnifiedMiddlewareTests: XCTestCase {
         XCTAssertEqual(description, "Reduced: \(message3)")
     }
     
-    /// Tests that UnifiedMiddleware correctly observes changes across multiple scoped flows
+    /// Tests that Middleware correctly observes changes across multiple scoped flows
     func testMultipleScopesObservation() async {
         // Given: A middleware that observes multiple flows (testFlow and taskFlow)
         let store = await XCTestStore(initial: AppState())
@@ -579,10 +581,10 @@ final class UnifiedMiddlewareTests: XCTestCase {
         XCTAssertEqual(description, "Task completed: task1")
     }
     
-    /// Tests that UnifiedMiddleware correctly handles effect cancellation when status changes
+    /// Tests that Middleware correctly handles effect cancellation when status changes
     func testMiddlewareCancellation() async {
         // Given: A middleware that can be suspended and cancels effects accordingly
-        class CancellableMiddleware: BaseUnifiedMiddleware<AppState>, @unchecked Sendable {
+        class CancellableMiddleware: Middleware<AppState>, @unchecked Sendable {
             struct Environment: Sendable {}
             var environment: Environment!
             
@@ -623,10 +625,10 @@ final class UnifiedMiddlewareTests: XCTestCase {
         XCTAssertTrue(title.isEmpty)
     }
     
-    /// Tests that UnifiedMiddleware default implementations work correctly without custom logic
+    /// Tests that Middleware default implementations work correctly without custom logic
     func testDefaultImplementations() async {
         // Given: A minimal middleware that uses only default implementations
-        class MinimalMiddleware: BaseUnifiedMiddleware<AppState>, @unchecked Sendable {
+        class MinimalMiddleware: Middleware<AppState>, @unchecked Sendable {
             struct Environment: Sendable {}
             var environment: Environment!
             

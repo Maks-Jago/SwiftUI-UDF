@@ -35,7 +35,7 @@ final class MiddlewareMapErrorTests: XCTestCase {
         case statusCode(Int)
     }
 
-    final class LoadingMiddleware: BaseReducibleMiddleware<AppState> {
+    final class LoadingMiddleware: Middleware<AppState>, @unchecked Sendable {
         enum Сancellation: CaseIterable {
             case message
         }
