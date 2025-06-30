@@ -122,7 +122,7 @@ private extension MiddlewareCancellationTests {
         }
 
         func scope(for state: MiddlewareCancellationTests.AppState) -> Scope {
-            ReducerScope(reducer: state.middlewareFlow)
+            state.middlewareFlow
         }
 
         func observe(state: MiddlewareCancellationTests.AppState) {
@@ -160,7 +160,7 @@ private extension MiddlewareCancellationTests {
         }
 
         func scope(for state: MiddlewareCancellationTests.AppState) -> Scope {
-            ReducerScope(reducer: state.middlewareFlow)
+            state.middlewareFlow
         }
 
         func observe(state: MiddlewareCancellationTests.AppState) {

@@ -146,7 +146,7 @@ final class MiddlewareTests: XCTestCase {
         }
         
         func scope(for state: AppState) -> Scope {
-            ReducerScope(reducer: state.testFlow)
+            state.testFlow
         }
         
         func observe(state: AppState) {
@@ -257,7 +257,7 @@ final class MiddlewareTests: XCTestCase {
         }
         
         func scope(for state: AppState) -> Scope {
-            ReducerScope(reducer: state.testFlow)
+            state.testFlow
         }
         
         func observe(state: AppState) {
@@ -294,7 +294,7 @@ final class MiddlewareTests: XCTestCase {
         }
         
         func scope(for state: AppState) -> Scope {
-            ReducerScope(reducer: state.testFlow)
+            state.testFlow
         }
         
         func observe(state: AppState) {
@@ -489,7 +489,7 @@ final class MiddlewareTests: XCTestCase {
             }
             
             func scope(for state: AppState) -> Scope {
-                ReducerScope(reducer: state.testFlow)
+                state.testFlow
             }
             
             func observe(state: AppState) {

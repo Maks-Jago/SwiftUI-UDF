@@ -200,7 +200,7 @@ private extension BindableReducersMiddlewareTests {
         var environment: Environment!
 
         func scope(for state: BindableReducersMiddlewareTests.AppState) -> any Scope {
-            ReducerScope(reducer: state.itemsFlow)
+            state.itemsFlow
         }
 
         func observe(state: BindableReducersMiddlewareTests.AppState) {
