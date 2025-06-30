@@ -74,7 +74,6 @@ public struct AlertTextField: AlertAction {
     
     /// The view body of the `AlertTextField`.
     public var body: some View {
-        #if os(iOS)
         AlertTextFieldInternal(
             title: title,
             text: text,
@@ -82,14 +81,6 @@ public struct AlertTextField: AlertAction {
             submitLabel: submitLabel,
             initialValue: initialValue
         )
-        #else
-        AlertTextFieldInternal(
-            title: title,
-            text: text,
-            submitLabel: submitLabel,
-            initialValue: initialValue
-        )
-        #endif
     }
 }
 

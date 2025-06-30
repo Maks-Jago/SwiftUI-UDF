@@ -144,7 +144,7 @@ private extension InternalStore {
             
             switch middleware {
             case let middleware as any Middleware<State>:
-                await notifyUnified(middleware: middleware, actions: actions, oldState: oldState, newState: newState)
+                await notify(middleware: middleware, actions: actions, oldState: oldState, newState: newState)
 
             default:
                 continue
@@ -152,7 +152,7 @@ private extension InternalStore {
         }
     }
     
-    func notifyUnified<M: MiddlewareProtocol>(middleware: M, actions: [InternalAction], oldState: Box<State>, newState: Box<State>) async where M.State == State {
+    func notify<M: MiddlewareProtocol>(middleware: M, actions: [InternalAction], oldState: Box<State>, newState: Box<State>) async where M.State == State {
         let status = middleware.status(for: newState.value)
         await safetyCall(queue: middleware.queue) {
             if status == .suspend {
