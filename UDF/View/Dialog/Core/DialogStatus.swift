@@ -47,13 +47,13 @@ public struct DialogStatus: Equatable, Identifiable, Sendable {
     
     /// Enum representing the status of a dialog, either presented or dismissed.
     public enum Status: Equatable, Sendable {
-        case presented(DialogType)
+        case presented(DialogTypeProtocol)
         case dismissed
         
         public static func == (lhs: Self, rhs: Self) -> Bool {
             switch (lhs, rhs) {
             case let (.presented(lhsType), .presented(rhsType)):
-                return lhsType == rhsType
+                return lhsType.isEqual(rhsType)
             case (.dismissed, .dismissed):
                 return true
             default:
@@ -89,7 +89,7 @@ public struct DialogStatus: Equatable, Identifiable, Sendable {
     /// ```
     public init(error: String?, style: DialogStyle = .alert) {
         if let error, !error.isEmpty {
-            self = .init(dialog: .error(message: error, style: style))
+            self = .init(dialog: DialogType.error(message: error, style: style))
         } else {
             self = .init()
         }
@@ -114,7 +114,7 @@ public struct DialogStatus: Equatable, Identifiable, Sendable {
     /// ```
     public init(success: String?, style: DialogStyle = .alert) {
         if let success, !success.isEmpty {
-            self = .init(dialog: .success(message: success, style: style))
+            self = .init(dialog: DialogType.success(message: success, style: style))
         } else {
             self = .init()
         }
@@ -139,7 +139,7 @@ public struct DialogStatus: Equatable, Identifiable, Sendable {
     /// ```
     public init(warning: String?, style: DialogStyle = .alert) {
         if let warning, !warning.isEmpty {
-            self = .init(dialog: .warning(message: warning, style: style))
+            self = .init(dialog: DialogType.warning(message: warning, style: style))
         } else {
             self = .init()
         }
@@ -164,7 +164,7 @@ public struct DialogStatus: Equatable, Identifiable, Sendable {
     /// ```
     public init(info: String?, style: DialogStyle = .alert) {
         if let info, !info.isEmpty {
-            self = .init(dialog: .info(message: info, style: style))
+            self = .init(dialog: DialogType.info(message: info, style: style))
         } else {
             self = .init()
         }
@@ -183,8 +183,8 @@ public struct DialogStatus: Equatable, Identifiable, Sendable {
         configuration: ConfirmationDialogConfiguration = .default,
         @DialogContentBuilder actions: () -> [any DialogAction]
     ) {
-        let content = DialogContent<EmptyView, EmptyView>(title: "", message: message, actions: actions)
-        self = .init(dialog: .custom(content: content.eraseToAnyDialogContent(), style: .confirmationDialog(configuration)))
+        let content = DialogContent(title: "", message: message, actions: actions)
+        self = .init(dialog: DialogCustomType.custom(content: content, style: .confirmationDialog(configuration)))
     }
     
     /// Creates a simple confirmation dialog with just message and actions.
@@ -219,11 +219,11 @@ public struct DialogStatus: Equatable, Identifiable, Sendable {
     ///     }
     /// }
     /// ```
-    public init(
+    public init<Icon: View, Content: View>(
         style: DialogStyle,
-        @DialogContentBuilder content: () -> DialogContent<AnyView, AnyView>
+        @DialogContentBuilder content: () -> DialogContent<Icon, Content>
     ) {
-        self = .init(dialog: .custom(content: content(), style: style))
+        self = .init(dialog: DialogCustomType.custom(content: content(), style: style))
     }
     
     /// Initializes a dialog state using a registered dialog identified by a unique ID.
@@ -265,7 +265,7 @@ public struct DialogStatus: Equatable, Identifiable, Sendable {
     /// let dialogType = DialogType.success("Done!", style: .toast(.vibrant))
     /// dialog = .init(dialog: dialogType)
     /// ```
-    internal init(dialog: DialogType) {
+    internal init(dialog: DialogTypeProtocol) {
         self.id = UUID()
         self.status = .presented(dialog)
     }
@@ -299,23 +299,23 @@ public struct DialogStatus: Equatable, Identifiable, Sendable {
 /// A result builder for creating DialogContent in a declarative way.
 @resultBuilder
 public enum DialogContentBuilder {
-    public static func buildBlock(_ content: DialogContent<AnyView, AnyView>) -> DialogContent<AnyView, AnyView> {
+    public static func buildBlock<Icon: View, Content: View>(_ content: DialogContent<Icon, Content>) -> DialogContent<Icon, Content> {
         content
     }
     
-    public static func buildBlock<Icon: View, CustomContent: View>(_ content: DialogContent<Icon, CustomContent>) -> DialogContent<AnyView, AnyView> {
-        content.eraseToAnyDialogContent()
-    }
+//    public static func buildBlock<Icon: View, Content: View>(_ content: DialogContent<Icon, Content>) -> DialogContent<Icon, Content> {
+//        content
+//    }
     
-    public static func buildBlock(_ content: DialogContent<EmptyView, EmptyView>) -> DialogContent<AnyView, AnyView> {
-        content.eraseToAnyDialogContent()
-    }
+//    public static func buildBlock<Icon: View, Content: View>(_ content: DialogContent<Icon, Content>) -> DialogContent<AnyView, AnyView> {
+//        content
+//    }
     
-    public static func buildBlock<Icon: View>(_ content: DialogContent<Icon, EmptyView>) -> DialogContent<AnyView, AnyView> {
-        content.eraseToAnyDialogContent()
-    }
-    
-    public static func buildBlock<CustomContent: View>(_ content: DialogContent<EmptyView, CustomContent>) -> DialogContent<AnyView, AnyView> {
-        content.eraseToAnyDialogContent()
-    }
+//    public static func buildBlock<Icon: View>(_ content: DialogContent<Icon, EmptyView>) -> DialogContent<Icon, EmptyView> {
+//        content
+//    }
+//    
+//    public static func buildBlock<CustomContent: View>(_ content: DialogContent<EmptyView, CustomContent>) -> DialogContent<EmptyView, CustomContent> {
+//        content
+//    }
 }

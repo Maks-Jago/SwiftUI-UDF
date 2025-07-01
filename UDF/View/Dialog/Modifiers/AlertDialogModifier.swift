@@ -77,7 +77,7 @@ struct AlertDialogModifier: ViewModifier {
             
         case let (.some(localStatus), .presented(newType)) where localStatus == .dismissed:
             // Local was dismissed but new dialog presented - show it
-            if case .alert = newType.style {
+            if let newType = newType as? DialogType, case .alert = newType.style  {
                 DispatchQueue.main.async {
                     localDialogStatus = dialogStatus
                     alertState = convertToAlertState(newType)
@@ -86,7 +86,7 @@ struct AlertDialogModifier: ViewModifier {
             
         case (.some, .presented(let newType)):
             // Both have dialogs - check if actually changed
-            if localDialogStatus != dialogStatus, case .alert = newType.style {
+            if let newType = newType as? DialogType, localDialogStatus != dialogStatus, case .alert = newType.style {
                 DispatchQueue.main.async {
                     localDialogStatus = dialogStatus
                     alertState = convertToAlertState(newType)
@@ -95,7 +95,7 @@ struct AlertDialogModifier: ViewModifier {
             
         case (.none, .presented(let newType)) where dialogStatus != dismissedDialog:
             // No local dialog but external presented (and not the one we just dismissed)
-            if case .alert = newType.style {
+            if let newType = newType as? DialogType, case .alert = newType.style {
                 DispatchQueue.main.async {
                     localDialogStatus = dialogStatus
                     alertState = convertToAlertState(newType)
@@ -108,25 +108,36 @@ struct AlertDialogModifier: ViewModifier {
     }
     
     /// Converts a DialogType to AlertState for presentation.
-    private func convertToAlertState(_ dialogType: DialogType) -> AlertState {
+    private func convertToAlertState(_ dialogType: DialogTypeProtocol) -> AlertState {
         switch dialogType {
-        case .success(let message, _),
-                .error(let message, _),
-                .warning(let message, _),
-                .info(let message, _):
+        case let dialogType as DialogType:
+            switch dialogType {
+            case .success(let message, _),
+                    .error(let message, _),
+                    .warning(let message, _),
+                    .info(let message, _):
+                return AlertState(
+                    title: "",
+                    message: message,
+                    actions: [
+                        DialogButton(title: NSLocalizedString("OK", comment: "OK button"))
+                    ]
+                )
+//            case .custom(let content, _):
+//                return AlertState(
+//                    title: content.title,
+//                    message: content.message,
+//                    actions: content.actions
+//                )
+            }
+
+//            dialogType as DialogCustomType
+
+        default:
             return AlertState(
                 title: "",
-                message: message,
-                actions: [
-                    DialogButton(title: NSLocalizedString("OK", comment: "OK button"))
-                ]
-            )
-            
-        case .custom(let content, _):
-            return AlertState(
-                title: content.title,
-                message: content.message,
-                actions: content.actions
+                message: dialogType.message,
+                actions: dialogType.actions
             )
         }
     }

@@ -12,6 +12,63 @@
 import Foundation
 import SwiftUI
 
+public protocol DialogTypeProtocol: Sendable, IsEquatable {
+    var style: DialogStyle { get }
+    var category: DialogCategory { get }
+
+    var title: String { get }
+    var message: String? { get }
+    var actions: [any DialogAction] { get }
+}
+
+extension DialogTypeProtocol {
+    /// The toast configuration if this dialog uses toast style.
+    /// Returns nil for non-toast dialogs.
+    public var toastConfiguration: ToastConfiguration? {
+        if case .toast(let configuration) = style {
+            return configuration
+        }
+        return nil
+    }
+
+}
+
+enum DialogCustomType<Icon: View, Content: View>: DialogTypeProtocol, Equatable {
+    case custom(content: DialogContent<Icon, Content>, style: DialogStyle)
+
+    var style: DialogStyle {
+        switch self {
+        case .custom(_, style: let style):
+            return style
+        }
+    }
+
+    var title: String {
+        switch self {
+        case let .custom(content, _):
+            return content.title
+        }
+    }
+
+    var message: String? {
+        switch self {
+        case let .custom(content, _):
+            return content.message
+        }
+    }
+
+    var actions: [any DialogAction] {
+        switch self {
+        case let .custom(content, _):
+            return content.actions
+        }
+    }
+
+    var category: DialogCategory {
+        .custom
+    }
+}
+
 /// Defines the type and content of a dialog.
 ///
 /// `DialogType` represents different categories of dialogs with their
@@ -32,7 +89,7 @@ import SwiftUI
 ///     style: .alert
 /// )
 /// ```
-public enum DialogType: Hashable, Sendable {
+public enum DialogType: Hashable, Sendable, DialogTypeProtocol {
     /// A success dialog with a message.
     case success(message: String, style: DialogStyle)
     
@@ -46,7 +103,7 @@ public enum DialogType: Hashable, Sendable {
     case info(message: String, style: DialogStyle)
     
     /// A custom dialog with complex content and actions.
-    case custom(content: DialogContent<AnyView, AnyView>, style: DialogStyle)
+//    case custom(content: DialogContent<AnyView, AnyView>, style: DialogStyle)
     
     // MARK: - Computed Properties
     
@@ -56,8 +113,8 @@ public enum DialogType: Hashable, Sendable {
         case .success(_, let style),
                 .error(_, let style),
                 .warning(_, let style),
-                .info(_, let style),
-                .custom(_, let style):
+                .info(_, let style):
+//                .custom(_, let style):
             return style
         }
     }
@@ -71,21 +128,29 @@ public enum DialogType: Hashable, Sendable {
                 .warning(let message, _),
                 .info(let message, _):
             return message
-        case .custom:
-            return nil
+//        case .custom:
+//            return nil
         }
     }
-    
+
+    public var title: String {
+        ""
+    }
+
+    public var actions: [any DialogAction] {
+        []
+    }
+
     /// The content for custom dialogs.
     /// Returns nil for simple message dialogs.
-    public var content: DialogContent<AnyView, AnyView>? {
-        switch self {
-        case .custom(let content, _):
-            return content
-        case .success, .error, .warning, .info:
-            return nil
-        }
-    }
+//    public var content: DialogContent? {
+//        switch self {
+////        case .custom(let content, _):
+////            return content
+//        case .success, .error, .warning, .info:
+//            return nil
+//        }
+//    }
     
     /// The semantic category of this dialog.
     public var category: DialogCategory {
@@ -98,20 +163,11 @@ public enum DialogType: Hashable, Sendable {
             return .warning
         case .info:
             return .info
-        case .custom:
-            return .custom
+//        case .custom:
+//            return .custom
         }
     }
-    
-    /// The toast configuration if this dialog uses toast style.
-    /// Returns nil for non-toast dialogs.
-    public var toastConfiguration: ToastConfiguration? {
-        if case .toast(let configuration) = style {
-            return configuration
-        }
-        return nil
-    }
-    
+
     // MARK: - Equatable Implementation
     public static func == (lhs: DialogType, rhs: DialogType) -> Bool {
         switch (lhs, rhs) {
@@ -127,8 +183,8 @@ public enum DialogType: Hashable, Sendable {
         case let (.info(lhsMessage, lhsStyle), .info(rhsMessage, rhsStyle)):
             return lhsMessage == rhsMessage && lhsStyle == rhsStyle
             
-        case let (.custom(lhsContent, lhsStyle), .custom(rhsContent, rhsStyle)):
-            return lhsContent == rhsContent && lhsStyle == rhsStyle
+//        case let (.custom(lhsContent, lhsStyle), .custom(rhsContent, rhsStyle)):
+//            return lhsContent == rhsContent && lhsStyle == rhsStyle
             
         default:
             return false
@@ -154,10 +210,10 @@ public enum DialogType: Hashable, Sendable {
             hasher.combine("info")
             hasher.combine(message)
             hasher.combine(style)
-        case .custom(let content, let style):
-            hasher.combine("custom")
-            hasher.combine(content)
-            hasher.combine(style)
+//        case .custom(let content, let style):
+//            hasher.combine("custom")
+//            hasher.combine(content)
+//            hasher.combine(style)
         }
     }
 }

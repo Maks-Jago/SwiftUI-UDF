@@ -137,16 +137,16 @@ public enum AlertBuilder {
             let alertStyle = builder()
             switch alertStyle.type {
             case .validationError(let text):
-                return .error(message: text(), style: .alert)
+                return DialogType.error(message: text(), style: .alert)
             case .success(let text):
-                return .success(message: text(), style: .alert)
+                return DialogType.success(message: text(), style: .alert)
             case .failure(let text):
-                return .error(message: text(), style: .alert)
+                return DialogType.error(message: text(), style: .alert)
             case .message(let text):
-                return .info(message: text(), style: .alert)
+                return DialogType.info(message: text(), style: .alert)
             case .messageTitle(let title, let message):
-                let content = DialogContent<EmptyView, EmptyView>(title: title(), message: message())
-                return .custom(content: content.eraseToAnyDialogContent(), style: .alert)
+                let content = DialogContent(title: title(), message: message())
+                return DialogCustomType.custom(content: content, style: .alert)
             case .customActions(let title, let text, let actions):
                 // Convert AlertActions to DialogActions
                 let alertActions = actions()
@@ -165,7 +165,7 @@ public enum AlertBuilder {
                         }
                     }
                 )
-                return .custom(content: content.eraseToAnyDialogContent(), style: .alert)
+                return DialogCustomType.custom(content: content, style: .alert)
             }
         }
     }
@@ -190,7 +190,7 @@ public extension DialogStatus {
             self = DialogStatus(info: text(), style: .alert)
         case .messageTitle(let title, let message):
             let content = DialogContent(title: title(), message: message())
-            self = DialogStatus(dialog: .custom(content: content.eraseToAnyDialogContent(), style: .alert))
+            self = DialogStatus(dialog: DialogCustomType.custom(content: content, style: .alert))
         case .customActions(let title, let text, let actions):
             // Convert AlertActions to DialogActions
             let content = DialogContent(title: title(), message: text()) {
@@ -203,7 +203,7 @@ public extension DialogStatus {
                     }
                 }
             }
-            self = DialogStatus(dialog: .custom(content: content.eraseToAnyDialogContent(), style: .alert))
+            self = DialogStatus(dialog: DialogCustomType.custom(content: content, style: .alert))
         }
     }
 }

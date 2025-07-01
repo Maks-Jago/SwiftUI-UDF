@@ -7,7 +7,7 @@ final class DialogActionsBuilderTests: XCTestCase {
     // MARK: - Basic Builder Tests
     
     func test_WhenVoid_ActionGroupShouldBeEmpty() {
-        let content = DialogContent("", message: "") {
+        let content = DialogContent(title: "", message: "") {
             ()
         }
 
@@ -16,9 +16,9 @@ final class DialogActionsBuilderTests: XCTestCase {
 
     @MainActor
     func test_DialogButton() {
-        let content = DialogContent("", message: "") {
+        let content = DialogContent(title: "", message: "", actions: {
             DialogButton.cancel("Cancel")
-        }
+        })
         
         XCTAssertEqual(content.actions.count, 1)
         
@@ -34,11 +34,11 @@ final class DialogActionsBuilderTests: XCTestCase {
     
     @MainActor
     func test_MultipleDialogButtons() {
-        let content = DialogContent("Test", message: "Multiple buttons") {
+        let content = DialogContent(title: "Test", message: "Multiple buttons", actions: {
             DialogButton.default("OK")
             DialogButton.cancel("Cancel")
             DialogButton.destructive("Delete")
-        }
+        })
         
         XCTAssertEqual(content.actions.count, 3)
         

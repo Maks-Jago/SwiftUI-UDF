@@ -290,8 +290,8 @@ public class ToastQueueManager: ObservableObject {
     @Published public private(set) var visibleToasts: [ToastDisplayInfo] = []
     
     /// Toasts waiting in queue for display.
-    @Published public private(set) var queuedToasts: [DialogType] = []
-    
+    @Published public private(set) var queuedToasts: [DialogTypeProtocol] = []
+
     // MARK: - Configuration
     
     /// The configuration controlling queue behavior.
@@ -323,8 +323,8 @@ public class ToastQueueManager: ObservableObject {
     /// either immediately (if space available) or queued for later display.
     ///
     /// - Parameter toast: The toast dialog to display.
-    public func enqueue(_ toast: DialogType) {
-        let toastConfig = toast.toastConfiguration ?? .default
+    public func enqueue(_ toast: DialogTypeProtocol) {
+        let toastConfig = (toast as? DialogType)?.toastConfiguration ?? .default
         let animation = toastConfig.animation
         
         // Remove queued toasts if queue size is exceeded
@@ -460,7 +460,12 @@ private extension ToastQueueManager {
     }
     
     func scheduleAutoDismiss(for displayInfo: ToastDisplayInfo) {
-        let duration = displayInfo.toast.toastConfiguration?.defaultDuration ?? 2.0
+        let duration = if case .toast(let configs) = displayInfo.toast.style {
+            configs.defaultDuration
+        } else {
+            2.0
+        }
+
         guard duration > 0 else { return }
         
         let task = Task {
@@ -501,7 +506,7 @@ private extension ToastQueueManager {
 /// Information about a toast currently being displayed.
 public struct ToastDisplayInfo: Identifiable, Equatable {
     public let id: UUID
-    public let toast: DialogType
+    public let toast: DialogTypeProtocol
     public var stackPosition: Int
     public let appearanceTime: Date
     
