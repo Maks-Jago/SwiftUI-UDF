@@ -123,15 +123,7 @@ struct AlertDialogModifier: ViewModifier {
                         DialogButton(title: NSLocalizedString("OK", comment: "OK button"))
                     ]
                 )
-//            case .custom(let content, _):
-//                return AlertState(
-//                    title: content.title,
-//                    message: content.message,
-//                    actions: content.actions
-//                )
             }
-
-//            dialogType as DialogCustomType
 
         default:
             return AlertState(

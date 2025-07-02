@@ -325,22 +325,3 @@ extension DialogContent {
         return !hasTextFields
     }
 }
-
-//public extension DialogContent {
-//    /// Type-erases this DialogContent to work with any icon type.
-//    ///
-//    /// This enables backwards compatibility and interoperability between
-//    /// differently-typed DialogContent instances.
-//    func eraseToAnyDialogContent() -> DialogContent<AnyView, AnyView> {
-//        let iconBuilder: (@Sendable () -> AnyView)? = iconView != nil ? { @Sendable in AnyView(self.iconView!()) } : nil
-//        let customContentBuilder: (@Sendable () -> AnyView)? = customContentView != nil ? { @Sendable in AnyView(self.customContentView!()) } : nil
-//        
-//        return DialogContent<AnyView, AnyView>(
-//            title: title,
-//            message: message,
-//            actions: actions,
-//            iconBuilder: iconBuilder ?? { AnyView(EmptyView()) },
-//            customContentBuilder: customContentBuilder
-//        )
-//    }
-//}

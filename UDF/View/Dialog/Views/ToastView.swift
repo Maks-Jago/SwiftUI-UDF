@@ -374,7 +374,10 @@ private extension ToastView {
     ///
     /// - Returns: true if a leading spacer should be added, false otherwise.
     var shouldAddLeadingSpacer: Bool {
-        let hasIcon = false //TODO: WIP //toast.content?.hasIcon == true
+        var hasIcon = false
+        if case let .custom(content, _) as DialogCustomType<AnyView, AnyView> = toast, content.iconView?() != nil {
+            hasIcon = true
+        }
 
         // Determine whether to add a leading spacer based on text alignment
         switch configuration.textAlignment {

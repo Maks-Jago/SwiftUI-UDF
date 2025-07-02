@@ -302,20 +302,4 @@ public enum DialogContentBuilder {
     public static func buildBlock<Icon: View, Content: View>(_ content: DialogContent<Icon, Content>) -> DialogContent<Icon, Content> {
         content
     }
-    
-//    public static func buildBlock<Icon: View, Content: View>(_ content: DialogContent<Icon, Content>) -> DialogContent<Icon, Content> {
-//        content
-//    }
-    
-//    public static func buildBlock<Icon: View, Content: View>(_ content: DialogContent<Icon, Content>) -> DialogContent<AnyView, AnyView> {
-//        content
-//    }
-    
-//    public static func buildBlock<Icon: View>(_ content: DialogContent<Icon, EmptyView>) -> DialogContent<Icon, EmptyView> {
-//        content
-//    }
-//    
-//    public static func buildBlock<CustomContent: View>(_ content: DialogContent<EmptyView, CustomContent>) -> DialogContent<EmptyView, CustomContent> {
-//        content
-//    }
 }

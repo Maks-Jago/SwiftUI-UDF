@@ -101,10 +101,7 @@ public enum DialogType: Hashable, Sendable, DialogTypeProtocol {
     
     /// An informational dialog with a message.
     case info(message: String, style: DialogStyle)
-    
-    /// A custom dialog with complex content and actions.
-//    case custom(content: DialogContent<AnyView, AnyView>, style: DialogStyle)
-    
+
     // MARK: - Computed Properties
     
     /// The dialog style associated with this type.
@@ -114,7 +111,6 @@ public enum DialogType: Hashable, Sendable, DialogTypeProtocol {
                 .error(_, let style),
                 .warning(_, let style),
                 .info(_, let style):
-//                .custom(_, let style):
             return style
         }
     }
@@ -128,8 +124,6 @@ public enum DialogType: Hashable, Sendable, DialogTypeProtocol {
                 .warning(let message, _),
                 .info(let message, _):
             return message
-//        case .custom:
-//            return nil
         }
     }
 
@@ -141,17 +135,6 @@ public enum DialogType: Hashable, Sendable, DialogTypeProtocol {
         []
     }
 
-    /// The content for custom dialogs.
-    /// Returns nil for simple message dialogs.
-//    public var content: DialogContent? {
-//        switch self {
-////        case .custom(let content, _):
-////            return content
-//        case .success, .error, .warning, .info:
-//            return nil
-//        }
-//    }
-    
     /// The semantic category of this dialog.
     public var category: DialogCategory {
         switch self {
@@ -163,8 +146,6 @@ public enum DialogType: Hashable, Sendable, DialogTypeProtocol {
             return .warning
         case .info:
             return .info
-//        case .custom:
-//            return .custom
         }
     }
 
@@ -182,10 +163,7 @@ public enum DialogType: Hashable, Sendable, DialogTypeProtocol {
             
         case let (.info(lhsMessage, lhsStyle), .info(rhsMessage, rhsStyle)):
             return lhsMessage == rhsMessage && lhsStyle == rhsStyle
-            
-//        case let (.custom(lhsContent, lhsStyle), .custom(rhsContent, rhsStyle)):
-//            return lhsContent == rhsContent && lhsStyle == rhsStyle
-            
+
         default:
             return false
         }
@@ -210,10 +188,6 @@ public enum DialogType: Hashable, Sendable, DialogTypeProtocol {
             hasher.combine("info")
             hasher.combine(message)
             hasher.combine(style)
-//        case .custom(let content, let style):
-//            hasher.combine("custom")
-//            hasher.combine(content)
-//            hasher.combine(style)
         }
     }
 }
