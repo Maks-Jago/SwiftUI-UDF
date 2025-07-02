@@ -36,8 +36,8 @@ struct ToastContainer: View {
     let onDismiss: (UUID) -> Void
     
     // Storage for initial toasts that will be processed once the environment object is available
-    @State private var _initialToasts: [DialogType]?
-    
+    @State private var _initialToasts: [DialogTypeProtocol]?
+
     // MARK: - Initialization
     
     /// Creates a new toast container with the specified parameters.
@@ -47,7 +47,7 @@ struct ToastContainer: View {
     ///   - configuration: The configuration controlling toast appearance and behavior.
     ///   - onDismiss: Callback executed when a toast is dismissed.
     init(
-        initialToasts: [DialogType] = [],
+        initialToasts: [DialogTypeProtocol] = [],
         onDismiss: @escaping (UUID) -> Void
     ) {
         self.onDismiss = onDismiss
@@ -66,18 +66,19 @@ struct ToastContainer: View {
                 ForEach([ToastPosition.top, .center, .bottom], id: \.self) { position in
                     let toastsForPosition = queueManager.visibleToasts.filter { displayInfo in
                         let config = effectiveConfiguration(for: displayInfo)
-                        return config.position == position
+                        return config.position == position 
                     }
-                    
+
                     if !toastsForPosition.isEmpty {
                         VStack(spacing: queueManager.configuration.stackSpacing) {
                             ForEach(
                                 position == .bottom ? toastsForPosition.reversed() : toastsForPosition
                             ) { displayInfo in
                                 let configuration = effectiveConfiguration(for: displayInfo)
-                                
+                                let toast: DialogTypeProtocol = displayInfo.toast
+
                                 ToastView(
-                                    toast: displayInfo.toast,
+                                    toast: toast,
                                     configuration: configuration,
                                     onDismiss: {
                                         queueManager.dismiss(displayInfo.id)
