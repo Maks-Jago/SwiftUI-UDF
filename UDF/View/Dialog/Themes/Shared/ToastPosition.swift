@@ -201,8 +201,11 @@ public enum ToastPosition: Hashable, Sendable {
             hasher.combine("bottom")
         case .center:
             hasher.combine("center")
-        case .custom:
+        case .custom(let alignment, let offset):
             hasher.combine("custom")
+            hasher.combine(String(describing: alignment))
+            hasher.combine(offset.x)
+            hasher.combine(offset.y)
         }
     }
 }
