@@ -290,7 +290,7 @@ public class ToastQueueManager: ObservableObject {
     @Published public private(set) var visibleToasts: [ToastDisplayInfo] = []
     
     /// Toasts waiting in queue for display.
-    @Published public private(set) var queuedToasts: [DialogTypeProtocol] = []
+    @Published public private(set) var queuedToasts: [any DialogTypeProtocol] = []
 
     // MARK: - Configuration
     
@@ -323,7 +323,7 @@ public class ToastQueueManager: ObservableObject {
     /// either immediately (if space available) or queued for later display.
     ///
     /// - Parameter toast: The toast dialog to display.
-    public func enqueue(_ toast: DialogTypeProtocol) {
+    public func enqueue(_ toast: any DialogTypeProtocol) {
         let toastConfig = (toast as? DialogType)?.toastConfiguration ?? .default
         let animation = toastConfig.animation
         
@@ -344,7 +344,7 @@ public class ToastQueueManager: ObservableObject {
         // Enqueue the new toast
         queuedToasts.append(toast)
         
-        // Process the queue (ensure processQueue handles animations)
+        // Process the queue
         processQueue()
     }
     
@@ -410,7 +410,6 @@ public class ToastQueueManager: ObservableObject {
 private extension ToastQueueManager {
     func processQueue() {
         guard !isProcessingQueue, !queuedToasts.isEmpty else { return }
-        
         
         isProcessingQueue = true
         defer { isProcessingQueue = false }
@@ -504,14 +503,21 @@ private extension ToastQueueManager {
 
 // MARK: - Supporting Types
 /// Information about a toast currently being displayed.
-public struct ToastDisplayInfo: Identifiable, Equatable {
+public struct ToastDisplayInfo: Identifiable, Hashable {
     public let id: UUID
-    public let toast: DialogTypeProtocol
+    public let toast: any DialogTypeProtocol
     public var stackPosition: Int
     public let appearanceTime: Date
     
     public static func == (lhs: ToastDisplayInfo, rhs: ToastDisplayInfo) -> Bool {
         lhs.id == rhs.id
+    }
+    
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+        hasher.combine(toast)
+        hasher.combine(stackPosition)
+        hasher.combine(appearanceTime)
     }
 }
 

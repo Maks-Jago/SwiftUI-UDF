@@ -77,7 +77,7 @@ struct AlertDialogModifier: ViewModifier {
             
         case let (.some(localStatus), .presented(newType)) where localStatus == .dismissed:
             // Local was dismissed but new dialog presented - show it
-            if let newType = newType as? DialogType, case .alert = newType.style  {
+            if case .alert = newType.style {
                 DispatchQueue.main.async {
                     localDialogStatus = dialogStatus
                     alertState = convertToAlertState(newType)
@@ -86,7 +86,7 @@ struct AlertDialogModifier: ViewModifier {
             
         case (.some, .presented(let newType)):
             // Both have dialogs - check if actually changed
-            if let newType = newType as? DialogType, localDialogStatus != dialogStatus, case .alert = newType.style {
+            if localDialogStatus != dialogStatus, case .alert = newType.style {
                 DispatchQueue.main.async {
                     localDialogStatus = dialogStatus
                     alertState = convertToAlertState(newType)
@@ -95,7 +95,7 @@ struct AlertDialogModifier: ViewModifier {
             
         case (.none, .presented(let newType)) where dialogStatus != dismissedDialog:
             // No local dialog but external presented (and not the one we just dismissed)
-            if let newType = newType as? DialogType, case .alert = newType.style {
+            if case .alert = newType.style {
                 DispatchQueue.main.async {
                     localDialogStatus = dialogStatus
                     alertState = convertToAlertState(newType)
@@ -108,7 +108,7 @@ struct AlertDialogModifier: ViewModifier {
     }
     
     /// Converts a DialogType to AlertState for presentation.
-    private func convertToAlertState(_ dialogType: DialogTypeProtocol) -> AlertState {
+    private func convertToAlertState(_ dialogType: any DialogTypeProtocol) -> AlertState {
         switch dialogType {
         case let dialogType as DialogType:
             switch dialogType {
@@ -127,7 +127,7 @@ struct AlertDialogModifier: ViewModifier {
 
         default:
             return AlertState(
-                title: "",
+                title: dialogType.title,
                 message: dialogType.message,
                 actions: dialogType.actions
             )

@@ -223,6 +223,16 @@ public struct DialogStatus: Equatable, Identifiable, Sendable {
         style: DialogStyle,
         @DialogContentBuilder content: () -> DialogContent<Icon, Content>
     ) {
+        let dialogContent = content()
+        let dialog = DialogCustomType.custom(content: dialogContent, style: style)
+        self = .init(dialog: dialog)
+    }
+    
+    /// Convenience initializer for common case with EmptyView generics
+    public init(
+        style: DialogStyle,
+        @DialogContentBuilder content: () -> DialogContent<EmptyView, EmptyView>
+    ) {
         self = .init(dialog: DialogCustomType.custom(content: content(), style: style))
     }
     
@@ -265,7 +275,7 @@ public struct DialogStatus: Equatable, Identifiable, Sendable {
     /// let dialogType = DialogType.success("Done!", style: .toast(.vibrant))
     /// dialog = .init(dialog: dialogType)
     /// ```
-    internal init(dialog: DialogTypeProtocol) {
+    internal init(dialog: any DialogTypeProtocol) {
         self.id = UUID()
         self.status = .presented(dialog)
     }
@@ -300,6 +310,11 @@ public struct DialogStatus: Equatable, Identifiable, Sendable {
 @resultBuilder
 public enum DialogContentBuilder {
     public static func buildBlock<Icon: View, Content: View>(_ content: DialogContent<Icon, Content>) -> DialogContent<Icon, Content> {
+        content
+    }
+    
+    // Add overload for EmptyView cases to help with type inference
+    public static func buildBlock(_ content: DialogContent<EmptyView, EmptyView>) -> DialogContent<EmptyView, EmptyView> {
         content
     }
 }

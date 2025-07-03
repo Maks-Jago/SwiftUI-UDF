@@ -12,13 +12,19 @@
 import Foundation
 import SwiftUI
 
-public protocol DialogTypeProtocol: Sendable, IsEquatable {
+public protocol DialogTypeProtocol: Sendable, IsEquatable, Hashable {
     var style: DialogStyle { get }
     var category: DialogCategory { get }
 
     var title: String { get }
     var message: String? { get }
     var actions: [any DialogAction] { get }
+    
+    /// Returns the icon for this dialog as a type-erased AnyView
+    func getIconView(theme: ToastTheme) -> AnyView?
+    
+    /// Returns the custom content view for this dialog as a type-erased AnyView
+    func getCustomContentView() -> AnyView?
 }
 
 extension DialogTypeProtocol {
@@ -66,6 +72,23 @@ enum DialogCustomType<Icon: View, Content: View>: DialogTypeProtocol, Equatable 
 
     var category: DialogCategory {
         .custom
+    }
+    
+    func getIconView(theme: ToastTheme) -> AnyView? {
+        switch self {
+        case let .custom(content, _):
+            return content.renderIcon()
+        }
+    }
+    
+    func getCustomContentView() -> AnyView? {
+        switch self {
+        case let .custom(content, _):
+            if let customContentView = content.customContentView {
+                return AnyView(customContentView())
+            }
+            return nil
+        }
     }
 }
 
@@ -147,6 +170,26 @@ public enum DialogType: Hashable, Sendable, DialogTypeProtocol {
         case .info:
             return .info
         }
+    }
+    
+    public func getIconView(theme: ToastTheme) -> AnyView? {
+        let systemName = switch self {
+        case .success: "checkmark.circle.fill"
+        case .error: "exclamationmark.triangle.fill" 
+        case .warning: "exclamationmark.triangle.fill"
+        case .info: "info.circle.fill"
+        }
+        
+        return AnyView(
+            Image(systemName: systemName)
+                .foregroundStyle(theme.colorStyle(for: category).foregroundColor)
+                .font(.system(size: theme.iconSize))
+        )
+    }
+    
+    public func getCustomContentView() -> AnyView? {
+        // Semantic dialog types don't have custom content
+        return nil
     }
 
     // MARK: - Equatable Implementation

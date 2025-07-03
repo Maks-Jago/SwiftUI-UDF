@@ -324,4 +324,11 @@ extension DialogContent {
         let hasTextFields = actions.contains { $0 is DialogTextField }
         return !hasTextFields
     }
+    
+    /// Returns the icon as an AnyView for type-erased access.
+    /// This allows ToastView to access the icon regardless of the generic type.
+    func renderIcon() -> AnyView? {
+        guard let iconView = iconView else { return nil }
+        return AnyView(iconView())
+    }
 }

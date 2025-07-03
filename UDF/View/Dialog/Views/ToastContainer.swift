@@ -66,16 +66,14 @@ struct ToastContainer: View {
                 ForEach([ToastPosition.top, .center, .bottom], id: \.self) { position in
                     let toastsForPosition = queueManager.visibleToasts.filter { displayInfo in
                         let config = effectiveConfiguration(for: displayInfo)
-                        return config.position == position 
+                        return config.position == position
                     }
 
                     if !toastsForPosition.isEmpty {
                         VStack(spacing: queueManager.configuration.stackSpacing) {
-                            ForEach(
-                                position == .bottom ? toastsForPosition.reversed() : toastsForPosition
-                            ) { displayInfo in
+                            ForEach(position == .bottom ? toastsForPosition.reversed() : toastsForPosition, id: \.self) { displayInfo in
                                 let configuration = effectiveConfiguration(for: displayInfo)
-                                let toast: DialogTypeProtocol = displayInfo.toast
+                                let toast: any DialogTypeProtocol = displayInfo.toast
 
                                 ToastView(
                                     toast: toast,

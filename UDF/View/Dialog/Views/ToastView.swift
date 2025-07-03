@@ -44,7 +44,7 @@ struct ToastView: View {
     // MARK: - Properties
     
     /// The toast data containing message, type, and configuration.
-    let toast: DialogTypeProtocol
+    let toast: any DialogTypeProtocol
 
     /// The configuration controlling toast behavior and appearance.
     let configuration: ToastConfiguration
@@ -61,38 +61,15 @@ struct ToastView: View {
     // MARK: - State
 
     init(
-        toast: DialogTypeProtocol,
+        toast: any DialogTypeProtocol,
         configuration: ToastConfiguration,
         onDismiss: @escaping () -> Void
     ) {
         self.toast = toast
         self.configuration = configuration
         self.onDismiss = onDismiss
-        self.icon = {
-            let image: AnyView = switch toast.category {
-            case .success: AnyView(Image(systemName: "checkmark.circle.fill"))
-            case .error: AnyView(Image(systemName: "exclamationmark.triangle.fill"))
-            case .warning: AnyView(Image(systemName: "exclamationmark.triangle.fill"))
-            case .info: AnyView(Image(systemName: "info.circle.fill"))
-            case .custom:
-                {
-                    if case let .custom(content, _) as DialogCustomType<AnyView, AnyView> = toast, let iconView = content.iconView?() {
-                        iconView
-                    } else {
-                        AnyView(EmptyView())
-                    }
-                }()
-            }
-            return AnyView(image)
-        }
-        self.content = {
-            if case let .custom(content, _) as DialogCustomType<AnyView, AnyView> = toast, let contentView = content.customContentView?() {
-                contentView
-            } else {
-                AnyView(EmptyView())
-            }
-        }
-        self.dragOffset = dragOffset
+        self.icon = { toast.getIconView(theme: configuration.theme) ?? AnyView(EmptyView()) }
+        self.content = toast.getCustomContentView
     }
 
     /// Current drag offset for swipe-to-dismiss gesture tracking.
@@ -149,6 +126,14 @@ struct ToastView: View {
                 onDismiss()
             }
         }
+    }
+}
+
+// MARK: - Helper Methods
+private extension ToastView {
+    /// Checks if the toast has an icon.
+    static func hasIcon(_ toast: any DialogTypeProtocol) -> Bool {
+        return toast.getIconView(theme: ToastTheme.default) != nil
     }
 }
 
@@ -347,7 +332,10 @@ private extension ToastView {
             }
             
             ForEach(Array(actionButtons.enumerated()), id: \.offset) { index, button in
-                Button(action: button.action) {
+                Button(action: {
+                    button.action()
+                    onDismiss()
+                }) {
                     Text(button.title)
                         .font(theme.buttonFont)
                 }
@@ -374,10 +362,7 @@ private extension ToastView {
     ///
     /// - Returns: true if a leading spacer should be added, false otherwise.
     var shouldAddLeadingSpacer: Bool {
-        var hasIcon = false
-        if case let .custom(content, _) as DialogCustomType<AnyView, AnyView> = toast, content.iconView?() != nil {
-            hasIcon = true
-        }
+        let hasIcon = Self.hasIcon(toast)
 
         // Determine whether to add a leading spacer based on text alignment
         switch configuration.textAlignment {
