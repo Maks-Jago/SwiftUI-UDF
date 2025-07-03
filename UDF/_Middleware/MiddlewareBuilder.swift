@@ -49,15 +49,15 @@ public enum MiddlewareBuilder<State: AppReducer> {
 /// instantiated and non-instantiated middleware components.
 public struct MiddlewareWrapper<State: AppReducer> {
     /// An optional instance of the middleware.
-    var instance: _Middleware<State>?
+    var instance: (any _Middleware<State>)?
 
     /// The type of the middleware.
-    var type: _Middleware<State>.Type
+    var type: any _Middleware<State>.Type
 
     /// Initializes the wrapper with an instance of a middleware.
     ///
     /// - Parameter instance: An instance of a middleware.
-    init(instance: _Middleware<State>) {
+    init(instance: any _Middleware<State>) {
         self.instance = instance
         self.type = Swift.type(of: instance)
     }
@@ -65,7 +65,7 @@ public struct MiddlewareWrapper<State: AppReducer> {
     /// Initializes the wrapper with a middleware type.
     ///
     /// - Parameter type: A middleware type conforming to `Middleware`.
-    init(type: _Middleware<State>.Type) {
+    init(type: any _Middleware<State>.Type) {
         self.instance = nil
         self.type = type
     }

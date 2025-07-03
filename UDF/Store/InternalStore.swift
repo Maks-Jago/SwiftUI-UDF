@@ -50,7 +50,7 @@ actor InternalStore<State: AppReducer>: Store {
     func subscribe(_ middleware: some _Middleware<State>) async {
         middlewares.append(AnyMiddleware(middleware))
 
-        await initialNotifyObservable(middleware: middleware, state: Box(self.state))
+        await initialNotify(middleware: middleware, state: Box(self.state))
     }
 
     func subscribe(_ middlewares: [any _Middleware<State>]) async {
@@ -187,7 +187,7 @@ private extension InternalStore {
         }
     }
 
-    func initialNotifyObservable(middleware: some _Middleware<State>, state: Box<State>) async {
+    func initialNotify(middleware: some _Middleware<State>, state: Box<State>) async {
         let status = middleware.status(for: state.value)
         guard status == .active else {
             return
@@ -197,8 +197,6 @@ private extension InternalStore {
         await safetyCall(queue: middleware.queue) {
             if let unifiedMiddleware = middleware as? any Middleware<State> {
                 unifiedMiddleware.observe(state: stateValue)
-            } else if let observableMiddleware = middleware as? any ObservableMiddleware<State> {
-                observableMiddleware.observe(state: stateValue)
             }
         }
     }
