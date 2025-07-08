@@ -26,8 +26,7 @@ struct ConfirmationDialogModifier: ViewModifier {
                 ),
                 titleVisibility: titleVisibility,
                 actions: {
-                    if let currentDialogContent {
-                        let actions = currentDialogContent.actions
+                    if let actions = actions {
                         ForEach(Array(actions.enumerated()), id: \.offset) { _, action in
                             switch action {
                             case let button as DialogButton:
@@ -51,7 +50,10 @@ struct ConfirmationDialogModifier: ViewModifier {
 // MARK: - Computed Properties
 private extension ConfirmationDialogModifier {
     var dialogTitle: String {
-        currentDialogContent?.title ?? ""
+        if case .presented(let dialogType) = dialogStatus.status {
+            return dialogType.title
+        }
+        return ""
     }
     
     var isConfirmationDialogPresented: Bool {
@@ -62,11 +64,10 @@ private extension ConfirmationDialogModifier {
         return false
     }
     
-    var currentDialogContent: DialogContent<AnyView, AnyView>? {
+    var actions: [any DialogAction]? {
         if case .presented(let dialogType) = dialogStatus.status,
-           case .confirmationDialog = dialogType.style,
-           case .custom(let content, _) = dialogType {
-            return content
+           case .confirmationDialog = dialogType.style {
+            return dialogType.actions
         }
         return nil
     }
@@ -80,6 +81,9 @@ private extension ConfirmationDialogModifier {
     }
     
     var dialogMessage: String? {
-        currentDialogContent?.message
+        if case .presented(let dialogType) = dialogStatus.status {
+            return dialogType.message
+        }
+        return nil
     }
 }

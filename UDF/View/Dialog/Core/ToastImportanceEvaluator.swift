@@ -29,17 +29,25 @@ public struct ToastImportanceEvaluator {
     }
     
     /// Filters the provided toasts to include only those that are considered important.
-    public static func filterImportant(from toasts: [DialogType]) -> [DialogType] {
-        return toasts.filter { toast in
-            toast.toastConfiguration?.priority.shouldPreserveInQueue == true ||
+    public static func filterImportant(from toasts: [DialogTypeProtocol]) -> [DialogTypeProtocol] {
+        toasts.filter { toast in
+            guard case let .toast(configuration) = toast.style else {
+                return false
+            }
+            return configuration.priority.shouldPreserveInQueue == true ||
             toast.category == .error || toast.category == .warning
         }
     }
     
     /// Categorizes the provided toasts into two groups: important and regular.
-    public static func categorizeByImportance(_ toasts: [DialogType]) -> (important: [DialogType], regular: [DialogType]) {
+    public static func categorizeByImportance(_ toasts: [DialogTypeProtocol]) -> (important: [DialogTypeProtocol], regular: [DialogTypeProtocol]) {
         let important = filterImportant(from: toasts)
-        let regular = toasts.filter { !important.contains($0) }
+        let regular = toasts.filter { toast in
+            !important.contains { importantToast in
+                importantToast.isEqual(toast)
+            }
+        }
+
         return (important, regular)
     }
 }

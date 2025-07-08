@@ -290,8 +290,8 @@ public class ToastQueueManager: ObservableObject {
     @Published public private(set) var visibleToasts: [ToastDisplayInfo] = []
     
     /// Toasts waiting in queue for display.
-    @Published public private(set) var queuedToasts: [DialogType] = []
-    
+    @Published public private(set) var queuedToasts: [any DialogTypeProtocol] = []
+
     // MARK: - Configuration
     
     /// The configuration controlling queue behavior.
@@ -323,8 +323,8 @@ public class ToastQueueManager: ObservableObject {
     /// either immediately (if space available) or queued for later display.
     ///
     /// - Parameter toast: The toast dialog to display.
-    public func enqueue(_ toast: DialogType) {
-        let toastConfig = toast.toastConfiguration ?? .default
+    public func enqueue(_ toast: any DialogTypeProtocol) {
+        let toastConfig = (toast as? DialogType)?.toastConfiguration ?? .default
         let animation = toastConfig.animation
         
         // Remove queued toasts if queue size is exceeded
@@ -344,7 +344,7 @@ public class ToastQueueManager: ObservableObject {
         // Enqueue the new toast
         queuedToasts.append(toast)
         
-        // Process the queue (ensure processQueue handles animations)
+        // Process the queue
         processQueue()
     }
     
@@ -411,7 +411,6 @@ private extension ToastQueueManager {
     func processQueue() {
         guard !isProcessingQueue, !queuedToasts.isEmpty else { return }
         
-        
         isProcessingQueue = true
         defer { isProcessingQueue = false }
         
@@ -460,7 +459,12 @@ private extension ToastQueueManager {
     }
     
     func scheduleAutoDismiss(for displayInfo: ToastDisplayInfo) {
-        let duration = displayInfo.toast.toastConfiguration?.defaultDuration ?? 2.0
+        let duration = if case .toast(let configs) = displayInfo.toast.style {
+            configs.defaultDuration
+        } else {
+            2.0
+        }
+
         guard duration > 0 else { return }
         
         let task = Task {
@@ -499,14 +503,21 @@ private extension ToastQueueManager {
 
 // MARK: - Supporting Types
 /// Information about a toast currently being displayed.
-public struct ToastDisplayInfo: Identifiable, Equatable {
+public struct ToastDisplayInfo: Identifiable, Hashable {
     public let id: UUID
-    public let toast: DialogType
+    public let toast: any DialogTypeProtocol
     public var stackPosition: Int
     public let appearanceTime: Date
     
     public static func == (lhs: ToastDisplayInfo, rhs: ToastDisplayInfo) -> Bool {
         lhs.id == rhs.id
+    }
+    
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+        hasher.combine(toast)
+        hasher.combine(stackPosition)
+        hasher.combine(appearanceTime)
     }
 }
 

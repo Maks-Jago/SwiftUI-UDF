@@ -149,7 +149,15 @@ public struct DialogContent<Icon: View, CustomContent: View>: Equatable, Sendabl
         self.customContentView = nil
         self.iconView = nil
     }
-    
+
+    public init(_ message: String, @DialogActionsBuilder actions: () -> [any DialogAction]) where Icon == EmptyView, CustomContent == EmptyView {
+        self.title = ""
+        self.message = message
+        self.actions = actions()
+        self.customContentView = nil
+        self.iconView = nil
+    }
+
     /// Creates dialog content with a title, message, and custom icon.
     ///
     /// - Parameters:
@@ -221,7 +229,20 @@ public struct DialogContent<Icon: View, CustomContent: View>: Equatable, Sendabl
         self.customContentView = nil
         self.iconView = icon
     }
-    
+
+    public init(
+        title: String,
+        message: String? = nil,
+        iconImage: @autoclosure @escaping @Sendable () -> Image,
+        @DialogActionsBuilder actions: () -> [any DialogAction]
+    ) where CustomContent == EmptyView, Icon == Image {
+        self.title = title
+        self.message = message
+        self.actions = actions()
+        self.customContentView = nil
+        self.iconView = iconImage
+    }
+
     /// Creates dialog content with custom view using generic type.
     ///
     /// - Parameters:
@@ -303,23 +324,11 @@ extension DialogContent {
         let hasTextFields = actions.contains { $0 is DialogTextField }
         return !hasTextFields
     }
-}
-
-public extension DialogContent {
-    /// Type-erases this DialogContent to work with any icon type.
-    ///
-    /// This enables backwards compatibility and interoperability between
-    /// differently-typed DialogContent instances.
-    func eraseToAnyDialogContent() -> DialogContent<AnyView, AnyView> {
-        let iconBuilder: (@Sendable () -> AnyView)? = iconView != nil ? { @Sendable in AnyView(self.iconView!()) } : nil
-        let customContentBuilder: (@Sendable () -> AnyView)? = customContentView != nil ? { @Sendable in AnyView(self.customContentView!()) } : nil
-        
-        return DialogContent<AnyView, AnyView>(
-            title: title,
-            message: message,
-            actions: actions,
-            iconBuilder: iconBuilder ?? { AnyView(EmptyView()) },
-            customContentBuilder: customContentBuilder
-        )
+    
+    /// Returns the icon as an AnyView for type-erased access.
+    /// This allows ToastView to access the icon regardless of the generic type.
+    func renderIcon() -> AnyView? {
+        guard let iconView = iconView else { return nil }
+        return AnyView(iconView())
     }
 }

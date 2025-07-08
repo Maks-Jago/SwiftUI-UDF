@@ -108,25 +108,28 @@ struct AlertDialogModifier: ViewModifier {
     }
     
     /// Converts a DialogType to AlertState for presentation.
-    private func convertToAlertState(_ dialogType: DialogType) -> AlertState {
+    private func convertToAlertState(_ dialogType: any DialogTypeProtocol) -> AlertState {
         switch dialogType {
-        case .success(let message, _),
-                .error(let message, _),
-                .warning(let message, _),
-                .info(let message, _):
+        case let dialogType as DialogType:
+            switch dialogType {
+            case .success(let message, _),
+                    .error(let message, _),
+                    .warning(let message, _),
+                    .info(let message, _):
+                return AlertState(
+                    title: "",
+                    message: message,
+                    actions: [
+                        DialogButton(title: NSLocalizedString("OK", comment: "OK button"))
+                    ]
+                )
+            }
+
+        default:
             return AlertState(
-                title: "",
-                message: message,
-                actions: [
-                    DialogButton(title: NSLocalizedString("OK", comment: "OK button"))
-                ]
-            )
-            
-        case .custom(let content, _):
-            return AlertState(
-                title: content.title,
-                message: content.message,
-                actions: content.actions
+                title: dialogType.title,
+                message: dialogType.message,
+                actions: dialogType.actions
             )
         }
     }

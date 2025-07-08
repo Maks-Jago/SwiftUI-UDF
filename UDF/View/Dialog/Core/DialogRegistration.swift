@@ -45,8 +45,8 @@ public enum DialogRegistry {
     
     /// Internal registry storage for dialog builders.
     /// Protected by registrationQueue for thread safety.
-    nonisolated(unsafe) private static var registry: [AnyHashable: () -> DialogType] = [:]
-    
+    nonisolated(unsafe) private static var registry: [AnyHashable: () -> DialogTypeProtocol] = [:]
+
     /// Concurrent queue for thread-safe registry access.
     /// Uses barrier writes to ensure data consistency.
     private static let queue = DispatchQueue(
@@ -77,7 +77,7 @@ public enum DialogRegistry {
     /// ```
     public static func register<ID: Hashable & Sendable>(
         id: ID,
-        builder: @escaping @Sendable () -> DialogType
+        builder: @escaping @Sendable () -> DialogTypeProtocol
     ) {
         queue.async(flags: .barrier) {
             registry[AnyHashable(id)] = builder
@@ -95,8 +95,8 @@ public enum DialogRegistry {
     ///
     /// ## Thread Safety:
     /// This function is thread-safe and can be called from any queue.
-    internal static func get<ID: Hashable>(id: ID) -> DialogType? {
-        return queue.sync {
+    internal static func get<ID: Hashable>(id: ID) -> DialogTypeProtocol? {
+        queue.sync {
             registry[AnyHashable(id)]?()
         }
     }
@@ -200,16 +200,16 @@ public enum DialogRegistry {
         register(id: id) {
             switch category {
             case .success:
-                return .success(message: message, style: style)
+                return DialogType.success(message: message, style: style)
             case .error:
-                return .error(message: message, style: style)
+                return DialogType.error(message: message, style: style)
             case .warning:
-                return .warning(message: message, style: style)
+                return DialogType.warning(message: message, style: style)
             case .info:
-                return .info(message: message, style: style)
+                return DialogType.info(message: message, style: style)
             case .custom:
-                let content = DialogContent<EmptyView, EmptyView>(message)
-                return .custom(content: content.eraseToAnyDialogContent(), style: style)
+                let content = DialogContent(message)
+                return DialogCustomType.custom(content: content, style: style)
             }
         }
     }

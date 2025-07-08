@@ -40,20 +40,38 @@ import SwiftUI
 /// **Note**: This view is typically used internally by the dialog system
 /// and not directly instantiated by application code.
 struct ToastView: View {
-    
+
     // MARK: - Properties
     
     /// The toast data containing message, type, and configuration.
-    let toast: DialogType
-    
+    let toast: any DialogTypeProtocol
+
     /// The configuration controlling toast behavior and appearance.
     let configuration: ToastConfiguration
     
     /// Callback executed when the toast should be dismissed.
     let onDismiss: () -> Void
-    
+
+    /// The icon view builder for the toast.
+    let icon: () -> AnyView
+
+    /// The custom content view builder for the toast, if any.
+    let content: () -> AnyView?
+
     // MARK: - State
-    
+
+    init(
+        toast: any DialogTypeProtocol,
+        configuration: ToastConfiguration,
+        onDismiss: @escaping () -> Void
+    ) {
+        self.toast = toast
+        self.configuration = configuration
+        self.onDismiss = onDismiss
+        self.icon = { toast.getIconView(theme: configuration.theme) ?? AnyView(EmptyView()) }
+        self.content = toast.getCustomContentView
+    }
+
     /// Current drag offset for swipe-to-dismiss gesture tracking.
     @State private var dragOffset: CGSize = .zero
     
@@ -65,46 +83,6 @@ struct ToastView: View {
     /// Quick access to the theme configuration from the toast configuration.
     var theme: ToastTheme {
         configuration.theme
-    }
-    
-    /// Whether this dialog has custom SwiftUI content.
-    ///
-    /// Custom content dialogs can provide completely custom views
-    /// instead of the standard message + button layout.
-    var hasCustomContent: Bool {
-        guard let content = toast.content else { return false }
-        return content.hasCustomView
-    }
-    
-    /// Custom SwiftUI content for the toast, if available.
-    ///
-    /// This contains custom views for dialogs that need
-    /// more than the standard message + button layout.
-    var customContent: AnyView? {
-        guard let content = toast.content else { return nil }
-        return content.customContentView != nil ? AnyView(content.customContentView!()) : nil
-    }
-    
-    // The icon to display for this toast dialog.
-    ///
-    /// Returns the custom icon if specified in the dialog content,
-    /// otherwise falls back to semantic defaults based on the dialog category.
-    /// This provides full flexibility while maintaining sensible defaults.
-    @ViewBuilder
-    var toastIcon: some View {
-        // First check if there's a custom icon specified in the content
-        if let content = toast.content, let iconView = content.iconView {
-            iconView()
-        } else {
-            // Fall back to semantic defaults based on category
-            switch toast.category {
-            case .success: Image(systemName: "checkmark.circle.fill")
-            case .error: Image(systemName: "exclamationmark.triangle.fill")
-            case .warning: Image(systemName: "exclamationmark.triangle.fill")
-            case .info: Image(systemName: "info.circle.fill")
-            case .custom: EmptyView() // Custom dialogs without explicit icons get no default
-            }
-        }
     }
     
     /// The main message text to display in the toast.
@@ -124,8 +102,7 @@ struct ToastView: View {
     /// Extracts action buttons from custom content dialogs.
     /// Simple message dialogs don't have action buttons.
     var actionButtons: [DialogButton] {
-        guard let content = toast.content else { return [] }
-        return content.actions.compactMap { $0 as? DialogButton }
+        toast.actions.compactMap { $0 as? DialogButton }
     }
 
     // MARK: - Body
@@ -136,7 +113,7 @@ struct ToastView: View {
     /// then applies gestures, positioning, and interactive behaviors.    
     var body: some View {
         Group {
-            if hasCustomContent, let customContent = customContent {
+            if let customContent = content() {
                 customContent
             } else {
                 standardToastContent
@@ -149,6 +126,14 @@ struct ToastView: View {
                 onDismiss()
             }
         }
+    }
+}
+
+// MARK: - Helper Methods
+private extension ToastView {
+    /// Checks if the toast has an icon.
+    static func hasIcon(_ toast: any DialogTypeProtocol) -> Bool {
+        return toast.getIconView(theme: ToastTheme.default) != nil
     }
 }
 
@@ -271,8 +256,8 @@ private extension ToastView {
     /// - **No Icon**: Shows spacer only for trailing alignment
     @ViewBuilder
     var leadingContent: some View {
-        if configuration.textAlignment == .leading, toast.content?.hasIcon == true {
-            toastIcon
+        if configuration.textAlignment == .leading {
+            icon()
         } else if shouldAddLeadingSpacer {
             Spacer()
         }
@@ -294,8 +279,8 @@ private extension ToastView {
     var mainContent: some View {
         VStack(alignment: configuration.textAlignment) {
             HStack {
-                if configuration.textAlignment == .center, toast.content?.hasIcon == true {
-                    toastIcon
+                if configuration.textAlignment == .center {
+                    icon()
                 }
                 
                 Text(displayMessage)
@@ -303,8 +288,8 @@ private extension ToastView {
                     .foregroundStyle(theme.colorStyle(for: toast.category).foregroundColor)
                     .multilineTextAlignment(textAlignmentFromHorizontal(configuration.textAlignment))
                 
-                if configuration.textAlignment == .trailing, toast.content?.hasIcon == true {
-                    toastIcon
+                if configuration.textAlignment == .trailing {
+                    icon()
                 }
             }
             
@@ -347,7 +332,10 @@ private extension ToastView {
             }
             
             ForEach(Array(actionButtons.enumerated()), id: \.offset) { index, button in
-                Button(action: button.action) {
+                Button(action: {
+                    button.action()
+                    onDismiss()
+                }) {
                     Text(button.title)
                         .font(theme.buttonFont)
                 }
@@ -374,8 +362,8 @@ private extension ToastView {
     ///
     /// - Returns: true if a leading spacer should be added, false otherwise.
     var shouldAddLeadingSpacer: Bool {
-        let hasIcon = toast.content?.hasIcon == true
-        
+        let hasIcon = Self.hasIcon(toast)
+
         // Determine whether to add a leading spacer based on text alignment
         switch configuration.textAlignment {
         case .center:

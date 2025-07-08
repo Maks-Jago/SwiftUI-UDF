@@ -76,10 +76,12 @@ private struct DialogModifier: ViewModifier {
                 routeDialog(status)
             }
             .modifier(AlertDialogModifier(dialogStatus: $alertState))
-            .modifier(ToastDialogModifier(
-                dialogStatus: $toastState,
-                queueConfiguration: queueConfiguration
-            ))
+            .modifier(
+                ToastDialogModifier(
+                    dialogStatus: $toastState,
+                    queueConfiguration: queueConfiguration
+                )
+            )
             .modifier(ConfirmationDialogModifier(dialogStatus: $status))
     }
     

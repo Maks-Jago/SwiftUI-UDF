@@ -6,13 +6,13 @@ final class DialogQueueTests: XCTestCase {
     // MARK: - Test Helpers
     private func createToastDialog(_ message: String, duration: TimeInterval = 2.0) -> DialogType {
         let config = ToastConfiguration(defaultDuration: duration)
-        return .info(message, style: .toast(config))
+        return DialogType.info(message: message, style: .toast(config))
     }
     
-    private func createCustomToastDialog(_ title: String, duration: TimeInterval = 2.0) -> DialogType {
+    private func createCustomToastDialog(_ title: String, duration: TimeInterval = 2.0) -> DialogTypeProtocol {
         let config = ToastConfiguration(defaultDuration: duration)
         let content = DialogContent(title)
-        return .custom(content: content, style: .toast(config))
+        return DialogCustomType.custom(content: content, style: .toast(config))
     }
     
     // MARK: - Queue Manager Basic Tests
