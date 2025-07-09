@@ -39,7 +39,7 @@ extension DialogTypeProtocol {
 
 }
 
-enum DialogCustomType<Icon: View, Content: View>: DialogTypeProtocol, Equatable {
+enum DialogCustomType<Icon: View, Content: View>: DialogTypeProtocol {
     case custom(content: DialogContent<Icon, Content>, style: DialogStyle)
 
     var style: DialogStyle {
@@ -112,7 +112,7 @@ enum DialogCustomType<Icon: View, Content: View>: DialogTypeProtocol, Equatable 
 ///     style: .alert
 /// )
 /// ```
-public enum DialogType: Hashable, Sendable, DialogTypeProtocol {
+public enum DialogType: Sendable, DialogTypeProtocol {
     /// A success dialog with a message.
     case success(message: String, style: DialogStyle)
     

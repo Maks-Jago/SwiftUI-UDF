@@ -183,7 +183,7 @@ public struct DialogContent<Icon: View, CustomContent: View>: Equatable, Sendabl
     ///   - actions: A closure that builds the dialog actions using `DialogActionsBuilder`.
     public init(
         title: String,
-        @DialogActionsBuilder actions: () -> [any DialogAction]
+        @DialogActionsBuilder actions: @Sendable () -> [any DialogAction]
     ) where Icon == EmptyView, CustomContent == EmptyView {
         self.title = title
         self.message = nil
@@ -201,7 +201,7 @@ public struct DialogContent<Icon: View, CustomContent: View>: Equatable, Sendabl
     public init(
         title: String,
         message: String?,
-        @DialogActionsBuilder actions: () -> [any DialogAction]
+        @DialogActionsBuilder actions: @Sendable () -> [any DialogAction]
     ) where Icon == EmptyView, CustomContent == EmptyView {
         self.title = title
         self.message = message
@@ -221,7 +221,7 @@ public struct DialogContent<Icon: View, CustomContent: View>: Equatable, Sendabl
         title: String,
         message: String? = nil,
         @ViewBuilder icon: @Sendable @escaping () -> Icon,
-        @DialogActionsBuilder actions: () -> [any DialogAction]
+        @DialogActionsBuilder actions: @Sendable () -> [any DialogAction]
     ) where CustomContent == EmptyView {
         self.title = title
         self.message = message
@@ -234,7 +234,7 @@ public struct DialogContent<Icon: View, CustomContent: View>: Equatable, Sendabl
         title: String,
         message: String? = nil,
         iconImage: @autoclosure @escaping @Sendable () -> Image,
-        @DialogActionsBuilder actions: () -> [any DialogAction]
+        @DialogActionsBuilder actions: @Sendable () -> [any DialogAction]
     ) where CustomContent == EmptyView, Icon == Image {
         self.title = title
         self.message = message

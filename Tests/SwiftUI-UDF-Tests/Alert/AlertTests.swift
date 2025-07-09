@@ -7,7 +7,7 @@ private extension Actions {
 }
 
 extension AlertBuilder.AlertStyle {
-    static func alertWithAction(_ action: @escaping () -> Void) -> Self {
+    static func alertWithAction(_ action: @Sendable @escaping () -> Void) -> Self {
         .init(title: "Custom alert title with action", text: "Custom alert text with action") {
             AlertButton(title: "Action button", action: action)
             
@@ -46,7 +46,7 @@ final class AlertTests: XCTestCase {
         
         XCTAssertEqual(status, .dismissed)
         
-        await AlertBuilder.registerAlert(by: FormWithAlert.AlertId.alertWithAction) {
+        AlertBuilder.registerAlert(by: FormWithAlert.AlertId.alertWithAction) {
             .alertWithAction {
                 print("Custom alert action")
             }

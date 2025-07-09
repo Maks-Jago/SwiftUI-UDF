@@ -42,7 +42,7 @@ public enum AlertBuilder {
             case message(text: () -> String)
             case messageTitle(title: () -> String, message: () -> String)
             
-            case customActions(title: () -> String, text: () -> String, actions: () -> [any AlertAction])
+            case customActions(title: () -> String, text: () -> String, actions: @Sendable () -> [any AlertAction])
         }
         
         // MARK: Initializers
@@ -102,7 +102,7 @@ public enum AlertBuilder {
         }
         
         /// Initializes a custom alert style with a title, text, and custom actions.
-        public init(title: String, text: String, @AlertActionsBuilder actions: @escaping () -> [any AlertAction]) {
+        public init(title: String, text: String, @DialogActionsBuilder actions: @Sendable @escaping () -> [any AlertAction]) {
             self.init(title: { title }, text: { text }, actions: actions)
         }
         
@@ -110,7 +110,7 @@ public enum AlertBuilder {
         public init(
             title: @escaping () -> String,
             text: @escaping () -> String,
-            @AlertActionsBuilder actions: @escaping () -> [any AlertAction]
+            @DialogActionsBuilder actions: @Sendable @escaping () -> [any AlertAction]
         ) {
             id = UUID()
             type = .customActions(title: title, text: text, actions: actions)
@@ -131,7 +131,7 @@ public enum AlertBuilder {
     ///   - id: A unique identifier for the alert builder.
     ///   - builder: A closure that returns an `AlertStyle`.
     @available(*, deprecated, message: "Use DialogRegistry.register(id:builder:) instead")
-    @MainActor public static func registerAlert(by id: some Hashable & Sendable, _ builder: @escaping @Sendable () -> AlertStyle) {
+    public static func registerAlert(by id: some Hashable & Sendable, _ builder: @escaping @Sendable () -> AlertStyle) {
         DialogRegistry.register(id: id) {
             // Convert the AlertStyle to DialogType when accessed
             let alertStyle = builder()
@@ -151,7 +151,7 @@ public enum AlertBuilder {
                 // Convert AlertActions to DialogActions
                 let alertActions = actions()
                 
-                let content = DialogContent<EmptyView, EmptyView>(
+                let content = DialogContent(
                     title: title(),
                     message: text(),
                     actions: {
@@ -160,8 +160,9 @@ public enum AlertBuilder {
                         for action in alertActions {
                             if let button = action as? AlertButton {
                                 dialogActions.append(DialogButton(title: button.title, action: button.action))
+                            } else if let textField = action as? AlertTextField {
+                                dialogActions.append(DialogTextField(title: textField.title, text: textField.text))
                             }
-                            // Skip text fields to avoid MainActor issues in this context
                         }
                     }
                 )
@@ -196,9 +197,9 @@ public extension DialogStatus {
             let content = DialogContent(title: title(), message: text()) {
                 // Convert actions within the builder context
                 for action in actions() {
-                    if let button = action as? AlertButton {
+                    if let button = action as? DialogButton {
                         DialogButton(title: button.title, action: button.action)
-                    } else if let textField = action as? AlertTextField {
+                    } else if let textField = action as? DialogTextField {
                         DialogTextField(title: textField.title, text: textField.text)
                     }
                 }

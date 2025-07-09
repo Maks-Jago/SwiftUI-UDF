@@ -31,6 +31,15 @@ import SwiftUI
 /// ```
 public protocol DialogAction: Hashable, View, Sendable {}
 
+@available(*, deprecated, message: "Use `DialogAction` instead.")
+public typealias AlertAction = DialogAction
+
+@available(*, deprecated, message: "Use `DialogButton` instead.")
+typealias AlertButton = DialogButton
+
+@available(*, deprecated, message: "Use `DialogTextField` instead.")
+typealias AlertTextField = DialogTextField
+
 // MARK: - Default Implementation
 extension DialogAction {
     /// Creates a mutated copy of the conforming `DialogAction` object by applying the specified block.
