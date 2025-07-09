@@ -35,10 +35,10 @@ public protocol DialogAction: Hashable, View, Sendable {}
 public typealias AlertAction = DialogAction
 
 @available(*, deprecated, message: "Use `DialogButton` instead.")
-typealias AlertButton = DialogButton
+public typealias AlertButton = DialogButton
 
 @available(*, deprecated, message: "Use `DialogTextField` instead.")
-typealias AlertTextField = DialogTextField
+public typealias AlertTextField = DialogTextField
 
 // MARK: - Default Implementation
 extension DialogAction {
