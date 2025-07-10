@@ -12,12 +12,12 @@
 import Combine
 import Foundation
 
-/// `BaseMiddleware` is an open class that serves as the base for creating middleware components
+/// `_BaseMiddleware` is an open class that serves as the base for creating middleware components
 /// in the UDF architecture. Middleware is responsible for handling side effects and can process actions
 /// and perform asynchronous operations.
 ///
 /// This class is generic over a `State` type that conforms to `AppReducer`.
-open class BaseMiddleware<State: AppReducer>: Middleware, @unchecked Sendable {
+open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable {
     /// The store that this middleware interacts with. It holds the state of the application.
     public var store: any Store<State>
 

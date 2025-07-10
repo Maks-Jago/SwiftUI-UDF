@@ -103,7 +103,7 @@ extension MiddlewareSubscriptionTests {
         }
     }
 
-    class ObservableMiddleware: BaseObservableMiddleware<AppState> {
+    class ObservableMiddleware: Middleware<AppState>, @unchecked Sendable {
         var environment: Void!
 
         func scope(for state: AppState) -> Scope {
@@ -125,7 +125,7 @@ extension MiddlewareSubscriptionTests {
         }
     }
 
-    class ReducibleMiddleware: BaseReducibleMiddleware<AppState> {
+    class ReducibleMiddleware: Middleware<AppState>, @unchecked Sendable {
         var environment: Void!
 
         func reduce(_ action: some Action, for state: AppState) {
@@ -143,7 +143,7 @@ extension MiddlewareSubscriptionTests {
         }
     }
 
-    class EnvironmentMiddleware: BaseReducibleMiddleware<AppState> {
+    class EnvironmentMiddleware: Middleware<AppState>, @unchecked Sendable {
         static func buildLiveEnvironment(for store: some Store<AppState>) -> Environment {
             store.dispatch(
                 Actions.UpdateFormField(keyPath: \TestForm.type, value: .liveEnvironment)

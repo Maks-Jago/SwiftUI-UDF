@@ -44,7 +44,7 @@ final class NewObservableMiddlewareDDosProtectionTests: XCTestCase {
         }
     }
 
-    class SendMessageMiddleware: BaseObservableMiddleware<AppState> {
+    class SendMessageMiddleware: Middleware<AppState>, @unchecked Sendable {
         struct Environment {}
 
         var environment: Environment!

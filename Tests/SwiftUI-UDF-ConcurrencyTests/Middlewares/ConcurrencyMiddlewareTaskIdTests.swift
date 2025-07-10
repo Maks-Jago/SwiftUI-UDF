@@ -68,7 +68,7 @@ private extension Actions {
 
 // MARK: - Middlewares
 private extension ConcurrencyMiddlewareTaskIdTests {
-    final class TestReducibleMiddleware: BaseReducibleMiddleware<AppState> {
+    final class TestReducibleMiddleware: Middleware<AppState>, @unchecked Sendable {
         struct Environment : Sendable{
             var loadItems: @Sendable () async -> [String]
         }

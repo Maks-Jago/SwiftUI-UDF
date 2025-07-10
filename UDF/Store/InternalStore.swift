@@ -47,19 +47,13 @@ actor InternalStore<State: AppReducer>: Store {
         }
     }
 
-    func subscribe(_ middleware: some Middleware<State>) async {
+    func subscribe(_ middleware: some _Middleware<State>) async {
         middlewares.append(AnyMiddleware(middleware))
 
-        switch middleware {
-        case let middleware as any ObservableMiddleware<State>:
-            await initialNotifyObservable(middleware: middleware, state: Box(self.state))
-
-        default:
-            break
-        }
+        await initialNotify(middleware: middleware, state: Box(self.state))
     }
 
-    func subscribe(_ middlewares: [any Middleware<State>]) async {
+    func subscribe(_ middlewares: [any _Middleware<State>]) async {
         for middleware in middlewares {
             await subscribe(middleware)
         }
@@ -147,24 +141,19 @@ private extension InternalStore {
     func notifyMiddlewares(_ actions: [InternalAction], oldState: Box<State>, newState: Box<State>) async {
         for anyMiddleware in middlewares {
             let middleware = anyMiddleware.middleware
+            
             switch middleware {
-            case let middleware as any ReducibleMiddleware<State>:
-                await notifyReducible(middleware: middleware, actions: actions, newState: newState)
-
-            case let middleware as any ObservableMiddleware<State>:
-                await notifyObservable(middleware: middleware, oldState: oldState, newState: newState)
+            case let middleware as any Middleware<State>:
+                await notify(middleware: middleware, actions: actions, oldState: oldState, newState: newState)
 
             default:
                 continue
             }
         }
     }
-
-    func notifyReducible<CR: ReducibleMiddleware>(middleware: CR, actions: [InternalAction], newState: Box<State>) async
-        where CR.State == State
-    {
+    
+    func notify<M: MiddlewareProtocol>(middleware: M, actions: [InternalAction], oldState: Box<State>, newState: Box<State>) async where M.State == State {
         let status = middleware.status(for: newState.value)
-
         await safetyCall(queue: middleware.queue) {
             if status == .suspend {
                 middleware.cancelAll()
@@ -174,44 +163,40 @@ private extension InternalStore {
                 }
             }
         }
-    }
-
-    func initialNotifyObservable<CO: ObservableMiddleware>(middleware: CO, state: Box<State>) async where CO.State == State {
-        let status = middleware.status(for: state.value)
-        guard status == .active else {
-            return
-        }
-
-        let stateValue = state.value
-        await safetyCall(queue: middleware.queue) {
-            middleware.observe(state: stateValue)
-        }
-    }
-
-    func notifyObservable<CO: ObservableMiddleware>(middleware: CO, oldState: Box<State>, newState: Box<State>) async
-        where CO.State == State
-    {
+        
         let oldScope = middleware.scope(for: oldState.value)
         let newScope = middleware.scope(for: newState.value)
-
         let oldStatus = middleware.status(for: oldState.value)
         let newStatus = middleware.status(for: newState.value)
-
+        
         var callObserve = false
-
+        
         if oldStatus == .suspend, newStatus != oldStatus {
             callObserve = true
         } else if oldStatus != .suspend, newStatus == .suspend {
             middleware.cancelAll()
-
         } else if newStatus == .active {
             callObserve = !oldScope.isEqual(newScope)
         }
-
+        
         if callObserve {
             let newStateValue = newState.value
             await safetyCall(queue: middleware.queue) {
                 middleware.observe(state: newStateValue)
+            }
+        }
+    }
+
+    func initialNotify(middleware: some _Middleware<State>, state: Box<State>) async {
+        let status = middleware.status(for: state.value)
+        guard status == .active else {
+            return
+        }
+        
+        let stateValue = state.value
+        await safetyCall(queue: middleware.queue) {
+            if let unifiedMiddleware = middleware as? any Middleware<State> {
+                unifiedMiddleware.observe(state: stateValue)
             }
         }
     }

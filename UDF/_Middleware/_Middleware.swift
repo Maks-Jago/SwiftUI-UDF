@@ -18,7 +18,7 @@ import Foundation
 /// It listens for specific actions, performs tasks, and dispatches new actions based on the outcome.
 /// Middleware is designed to work in its own queue, keeping the UI responsive by offloading long-running tasks.
 ///
-public protocol Middleware<State>: Sendable {
+public protocol _Middleware<State>: Sendable {
     associatedtype State: AppReducer
 
     /// The store that the middleware interacts with.
@@ -56,9 +56,9 @@ public protocol Middleware<State>: Sendable {
     func cancelAll()
 }
 
-// MARK: - Default Initializer for Middleware
+// MARK: - Default Initializer for _Middleware
 
-public extension Middleware {
+public extension _Middleware {
     /// Provides a default initializer for `Middleware` implementations.
     ///
     /// This initializer creates a dispatch queue using the type name of the middleware as its label.
@@ -69,9 +69,9 @@ public extension Middleware {
     }
 }
 
-// MARK: - Environment Middleware Extensions
+// MARK: - Environment _Middleware Extensions
 
-public extension Middleware where Self: EnvironmentMiddleware {
+public extension _Middleware where Self: EnvironmentMiddleware {
     /// Initializes the middleware with a store, using a live environment.
     ///
     /// This initializer creates a middleware with a live environment built from the provided store.
@@ -116,5 +116,5 @@ public extension Middleware where Self: EnvironmentMiddleware {
 
 // MARK: - Typealias for Middleware with Environment
 
-/// A typealias that represents a middleware with an environment, combining `Middleware` and `EnvironmentMiddleware`.
-typealias MiddlewareWithEnvironment<State> = EnvironmentMiddleware<State> & Middleware<State>
+/// A typealias that represents a middleware with an environment, combining `_Middleware` and `EnvironmentMiddleware`.
+typealias MiddlewareWithEnvironment<State> = EnvironmentMiddleware<State> & _Middleware<State>

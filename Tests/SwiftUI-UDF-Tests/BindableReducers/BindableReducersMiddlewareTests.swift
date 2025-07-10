@@ -186,7 +186,7 @@ private extension BindableReducersMiddlewareTests {
 
 // MARK: Middleware
 private extension BindableReducersMiddlewareTests {
-    final class ItemsMiddleware: BaseObservableMiddleware<AppState>, @unchecked Sendable {
+    final class ItemsMiddleware: Middleware<AppState>, @unchecked Sendable {
         enum Cancellation: Hashable {
             case itemDetails(Item.ID)
         }

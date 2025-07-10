@@ -12,9 +12,9 @@
 import Foundation
 
 final class AnyMiddleware: Hashable, Sendable {
-    let middleware: any Middleware
+    let middleware: any _Middleware
 
-    init(_ middleware: any Middleware) {
+    init(_ middleware: any _Middleware) {
         self.middleware = middleware
     }
 
