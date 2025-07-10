@@ -10,7 +10,7 @@ private extension Actions {
 }
 
 extension DialogType {
-    static func dialogWithAction(_ action: @escaping () -> Void) -> DialogCustomType<EmptyView, EmptyView> {
+    static func dialogWithAction(_ action: @Sendable @escaping () -> Void) -> DialogCustomType<EmptyView, EmptyView> {
         DialogCustomType.custom(
             content: DialogContent(
                 title: "Custom dialog title with action",
@@ -24,7 +24,7 @@ extension DialogType {
         )
     }
     
-    static func toastWithAction(_ action: @escaping () -> Void) -> DialogCustomType<EmptyView, EmptyView> {
+    static func toastWithAction(_ action: @Sendable @escaping () -> Void) -> DialogCustomType<EmptyView, EmptyView> {
         DialogCustomType.custom(
             content: DialogContent(
                 title: "Toast dialog",
@@ -49,7 +49,7 @@ extension DialogType {
         )
     }
     
-    static func customViewToast() -> DialogTypeProtocol {
+    static func customViewToast() -> any DialogTypeProtocol {
         DialogCustomType.custom(
             content: DialogContent {
                 VStack {

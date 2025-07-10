@@ -45,7 +45,7 @@ public enum DialogRegistry {
     
     /// Internal registry storage for dialog builders.
     /// Protected by registrationQueue for thread safety.
-    nonisolated(unsafe) private static var registry: [AnyHashable: () -> DialogTypeProtocol] = [:]
+    nonisolated(unsafe) private static var registry: [AnyHashable: () -> any DialogTypeProtocol] = [:]
 
     /// Concurrent queue for thread-safe registry access.
     /// Uses barrier writes to ensure data consistency.
@@ -77,7 +77,7 @@ public enum DialogRegistry {
     /// ```
     public static func register<ID: Hashable & Sendable>(
         id: ID,
-        builder: @escaping @Sendable () -> DialogTypeProtocol
+        builder: @escaping @Sendable () -> any DialogTypeProtocol
     ) {
         queue.async(flags: .barrier) {
             registry[AnyHashable(id)] = builder
@@ -95,7 +95,7 @@ public enum DialogRegistry {
     ///
     /// ## Thread Safety:
     /// This function is thread-safe and can be called from any queue.
-    internal static func get<ID: Hashable>(id: ID) -> DialogTypeProtocol? {
+    internal static func get<ID: Hashable>(id: ID) -> (any DialogTypeProtocol)? {
         queue.sync {
             registry[AnyHashable(id)]?()
         }
@@ -115,7 +115,7 @@ public enum DialogRegistry {
     /// }
     /// ```
     public static func isRegistered<ID: Hashable>(id: ID) -> Bool {
-        return queue.sync {
+        queue.sync {
             registry[AnyHashable(id)] != nil
         }
     }
@@ -165,7 +165,7 @@ public enum DialogRegistry {
     ///
     /// - Returns: The count of registered dialogs.
     public static func count() -> Int {
-        return queue.sync {
+        queue.sync {
             registry.count
         }
     }
@@ -177,7 +177,7 @@ public enum DialogRegistry {
     ///
     /// - Returns: An array of all registered dialog identifiers.
     public static func identifiers() -> [AnyHashable] {
-        return queue.sync {
+        queue.sync {
             Array(registry.keys)
         }
     }

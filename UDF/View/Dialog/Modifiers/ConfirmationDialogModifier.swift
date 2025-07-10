@@ -26,15 +26,12 @@ struct ConfirmationDialogModifier: ViewModifier {
                 ),
                 titleVisibility: titleVisibility,
                 actions: {
-                    if let actions = actions {
-                        ForEach(Array(actions.enumerated()), id: \.offset) { _, action in
-                            switch action {
-                            case let button as DialogButton:
-                                button.body
-                                
-                            default:
-                                EmptyView()
-                            }
+                    ForEach(Array(actions.enumerated()), id: \.offset) { _, action in
+                        switch action {
+                        case let action as DialogButton: action.id(action.hashValue)
+
+                        default:
+                            EmptyView()
                         }
                     }
                 },
@@ -64,12 +61,12 @@ private extension ConfirmationDialogModifier {
         return false
     }
     
-    var actions: [any DialogAction]? {
+    var actions: [any DialogAction] {
         if case .presented(let dialogType) = dialogStatus.status,
            case .confirmationDialog = dialogType.style {
             return dialogType.actions
         }
-        return nil
+        return []
     }
     
     var titleVisibility: Visibility {

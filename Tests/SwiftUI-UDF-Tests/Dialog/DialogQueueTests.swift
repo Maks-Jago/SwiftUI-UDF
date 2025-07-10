@@ -9,7 +9,7 @@ final class DialogQueueTests: XCTestCase {
         return DialogType.info(message: message, style: .toast(config))
     }
     
-    private func createCustomToastDialog(_ title: String, duration: TimeInterval = 2.0) -> DialogTypeProtocol {
+    private func createCustomToastDialog(_ title: String, duration: TimeInterval = 2.0) -> any DialogTypeProtocol {
         let config = ToastConfiguration(defaultDuration: duration)
         let content = DialogContent(title)
         return DialogCustomType.custom(content: content, style: .toast(config))

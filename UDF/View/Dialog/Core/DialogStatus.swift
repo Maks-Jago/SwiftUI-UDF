@@ -47,7 +47,7 @@ public struct DialogStatus: Equatable, Identifiable, Sendable {
     
     /// Enum representing the status of a dialog, either presented or dismissed.
     public enum Status: Equatable, Sendable {
-        case presented(DialogTypeProtocol)
+        case presented(any DialogTypeProtocol)
         case dismissed
         
         public static func == (lhs: Self, rhs: Self) -> Bool {
@@ -181,7 +181,7 @@ public struct DialogStatus: Equatable, Identifiable, Sendable {
     public init(
         confirmationDialog message: String,
         configuration: ConfirmationDialogConfiguration = .default,
-        @DialogContentBuilder actions: () -> [any DialogAction]
+        @DialogContentBuilder actions: @Sendable () -> [any DialogAction]
     ) {
         let content = DialogContent(title: "", message: message, actions: actions)
         self = .init(dialog: DialogCustomType.custom(content: content, style: .confirmationDialog(configuration)))
@@ -195,7 +195,7 @@ public struct DialogStatus: Equatable, Identifiable, Sendable {
     ///   - actions: Action buttons for the dialog.
     public init(
         confirmationDialog message: String,
-        @DialogActionsBuilder actions: () -> [any DialogAction]
+        @DialogActionsBuilder actions: @Sendable () -> [any DialogAction]
     ) {
         self.init(confirmationDialog: message, configuration: .default, actions: actions)
     }

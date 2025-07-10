@@ -36,7 +36,7 @@ struct ToastContainer: View {
     let onDismiss: (UUID) -> Void
     
     // Storage for initial toasts that will be processed once the environment object is available
-    @State private var _initialToasts: [DialogTypeProtocol]?
+    @State private var _initialToasts: [any DialogTypeProtocol]?
 
     // MARK: - Initialization
     
@@ -47,7 +47,7 @@ struct ToastContainer: View {
     ///   - configuration: The configuration controlling toast appearance and behavior.
     ///   - onDismiss: Callback executed when a toast is dismissed.
     init(
-        initialToasts: [DialogTypeProtocol] = [],
+        initialToasts: [any DialogTypeProtocol] = [],
         onDismiss: @escaping (UUID) -> Void
     ) {
         self.onDismiss = onDismiss
