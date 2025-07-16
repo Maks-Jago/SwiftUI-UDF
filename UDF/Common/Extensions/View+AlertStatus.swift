@@ -17,7 +17,7 @@ public extension View {
     ///
     /// **Deprecated**: This method now internally delegates to the new Dialog system.
     /// Please migrate to using `DialogStatus` with `.dialog(status:)` for new code.
-    /// This method will be removed in version 1.5.1.
+    /// This method will be removed in future updates.
     ///
     /// This method modifies the view to present an alert based on the given `Binding<AlertBuilder.AlertStatus>`.
     /// The alert automatically updates its presentation state and content based on changes to the binding.

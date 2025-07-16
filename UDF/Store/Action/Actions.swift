@@ -71,7 +71,7 @@ public enum Actions {
     
     /// `UpdateAlertStatus` is an action used to update the status of an alert within the UDF architecture.
     /// It contains the alert's status and an identifier, enabling the management of alerts based on their unique IDs.
-    @available(*, deprecated, message: "Will be removed in version 1.5.1. Use UpdateDialogStatus instead.")
+    @available(*, deprecated, message: "Will be removed in future updates. Use UpdateDialogStatus instead.")
     public struct UpdateAlertStatus: Action {
         /// The status of the alert to be updated.
         public var status: AlertBuilder.AlertStatus
