@@ -235,7 +235,6 @@ final class DialogTests: XCTestCase {
             
             // Check custom icon
             XCTAssertTrue(content.hasIcon)
-//            XCTAssertEqual(content.icon, .systemImage("party.popper.fill"))
             
         } else {
             XCTFail("Expected custom dialog with content")
@@ -256,8 +255,6 @@ final class DialogTests: XCTestCase {
         
         // Verify it's a toast with custom view
         if case .presented(let dialogType) = status {
-//           case .custom(let content, let style) = dialogType  {
-
             // Check style is toast
             if case .toast(let config) = dialogType.style {
                 XCTAssertEqual(config.position, .center)
@@ -267,7 +264,7 @@ final class DialogTests: XCTestCase {
             
             // Check custom view
             XCTAssertFalse(dialogType is DialogType)
-//            XCTAssertNotNil(content.customView)
+            XCTAssertNotNil(dialogType.getCustomContentView())
             
         } else {
             XCTFail("Expected custom dialog with custom view")
@@ -336,12 +333,9 @@ final class DialogTests: XCTestCase {
                 XCTFail("Expected toast style")
             }
             
-//            if case .custom(let content, _) = dialogType {
+            // Check actions
             XCTAssertFalse(dialogType.actions.isEmpty)
             XCTAssertEqual(dialogType.actions.count, 1)
-//            } else {
-//                XCTFail("Expected custom content")
-//            }
         } else {
             XCTFail("Expected presented dialog")
         }
