@@ -40,11 +40,7 @@ struct AlertDialogModifier: ViewModifier {
                     if let alertState {
                         ForEach(Array(alertState.actions.enumerated()), id: \.offset) { _, action in
                             if let button = action as? DialogButton {
-                                Button(button.title, role: button.role) {
-                                    button.action()
-                                    handleAlertDismissal()
-                                }
-                                .disabled(button.disabled)
+                                button.body
                             } else if let textField = action as? DialogTextField {
                                 textField
                             }
