@@ -1,0 +1,86 @@
+//===--- ConfirmationDialogModifier.swift ---------------------------------===//
+//
+// This source file is part of the UDF open source project
+//
+// Copyright (c) 2025 You are launched
+// Licensed under Apache License v2.0
+//
+// See https://opensource.org/licenses/Apache-2.0 for license information
+//
+//===----------------------------------------------------------------------===//
+
+import SwiftUI
+
+// MARK: - Confirmation Dialog-Specific Modifier
+/// Handles confirmation dialog style dialogs.
+struct ConfirmationDialogModifier: ViewModifier {
+    @Binding var dialogStatus: DialogStatus
+    
+    func body(content: Content) -> some View {
+        content
+            .confirmationDialog(
+                dialogTitle,
+                isPresented: Binding(
+                    get: { isConfirmationDialogPresented },
+                    set: { if !$0 { dialogStatus = .dismissed } }
+                ),
+                titleVisibility: titleVisibility,
+                actions: {
+                    ForEach(Array(actions.enumerated()), id: \.offset) { _, action in
+                        switch action {
+                        case let action as DialogButton: action.id(action.hashValue)
+
+                        default:
+                            EmptyView()
+                        }
+                    }
+                },
+                message: {
+                    if let dialogMessage {
+                        Text(dialogMessage)
+                    }
+                }
+            )
+    }
+}
+
+// MARK: - Computed Properties
+private extension ConfirmationDialogModifier {
+    var dialogTitle: String {
+        if case .presented(let dialogType) = dialogStatus.status {
+            return dialogType.title
+        }
+        return ""
+    }
+    
+    var isConfirmationDialogPresented: Bool {
+        if case .presented(let dialogType) = dialogStatus.status,
+           case .confirmationDialog = dialogType.style {
+            return true
+        }
+        return false
+    }
+    
+    var actions: [any DialogAction] {
+        if case .presented(let dialogType) = dialogStatus.status,
+           case .confirmationDialog = dialogType.style {
+            return dialogType.actions
+        }
+        return []
+    }
+    
+    var titleVisibility: Visibility {
+        if case .presented(let dialogType) = dialogStatus.status,
+           case .confirmationDialog(let config) = dialogType.style {
+            return config.titleVisibility
+        }
+        return .automatic
+    }
+    
+    var dialogMessage: String? {
+        if case .presented(let dialogType) = dialogStatus.status {
+            return dialogType.message
+        }
+        return nil
+    }
+}
