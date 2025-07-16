@@ -108,7 +108,7 @@ public struct DialogActionCapability: OptionSet {
 
 /// Protocol for classifying dialog action types and capabilities.
 /// This is used internally for presentation logic.
-internal protocol DialogActionClassification {
+protocol DialogActionClassification {
     /// The type of this action.
     var actionType: DialogActionType { get }
     

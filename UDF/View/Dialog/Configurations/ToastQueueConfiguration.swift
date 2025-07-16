@@ -364,7 +364,7 @@ public class ToastQueueManager: ObservableObject {
         // Update stack positions after removal
         if configuration.displayMode == .stacked {
             updateStackPositions()
-            Task {
+            Task { @MainActor in
                 try? await Task.sleep(nanoseconds: UInt64(configuration.sequentialSpacing * 1_000_000_000))
                 processQueue()
             }
@@ -372,7 +372,7 @@ public class ToastQueueManager: ObservableObject {
         
         // Process queue for next toast
         if configuration.displayMode == .sequential {
-            Task {
+            Task { @MainActor in
                 try? await Task.sleep(nanoseconds: UInt64(configuration.sequentialSpacing * 1_000_000_000))
                 processQueue()
             }
@@ -467,7 +467,7 @@ private extension ToastQueueManager {
 
         guard duration > 0 else { return }
         
-        let task = Task {
+        let task = Task { @MainActor in
             try? await Task.sleep(nanoseconds: UInt64(duration * 1_000_000_000))
             if !Task.isCancelled {
                 dismiss(displayInfo.id)
