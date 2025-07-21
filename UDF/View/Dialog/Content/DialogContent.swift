@@ -26,10 +26,10 @@ import SwiftUI
 /// ```swift
 /// // Simple content with just a title
 /// let content = DialogContent("Delete Item")
-/// 
+///
 /// // Content with title and message
 /// let content = DialogContent("Delete Item", message: "This cannot be undone")
-/// 
+///
 /// // Content with title, message, and actions
 /// let content = DialogContent("Delete Item", message: "This cannot be undone") {
 ///     DialogButton.destructive("Delete") {
@@ -37,7 +37,7 @@ import SwiftUI
 ///     }
 ///     DialogButton.cancel("Cancel")
 /// }
-/// 
+///
 /// // Custom view content for rich toast dialogs
 /// let content = DialogContent(customView: AnyView(
 ///     VStack {
@@ -73,13 +73,13 @@ public struct DialogContent<Icon: View, CustomContent: View>: Equatable, Sendabl
     /// ```swift
     /// // Custom SF Symbol
     /// DialogContent("Success", icon: .systemImage("party.popper.fill"))
-    /// 
+    ///
     /// // Custom image
     /// DialogContent("Welcome", icon: .image("company-logo"))
-    /// 
+    ///
     /// // Custom view
     /// DialogContent("Loading", icon: .view(AnyView(ProgressView())))
-    /// 
+    ///
     /// // No icon (override semantic default)
     /// DialogContent("Clean message", icon: .none)
     /// ```
@@ -149,7 +149,7 @@ public struct DialogContent<Icon: View, CustomContent: View>: Equatable, Sendabl
         self.customContentView = nil
         self.iconView = nil
     }
-
+    
     public init(_ message: String, @DialogActionsBuilder actions: () -> [any DialogAction]) where Icon == EmptyView, CustomContent == EmptyView {
         self.title = ""
         self.message = message
@@ -157,7 +157,7 @@ public struct DialogContent<Icon: View, CustomContent: View>: Equatable, Sendabl
         self.customContentView = nil
         self.iconView = nil
     }
-
+    
     /// Creates dialog content with a title, message, and custom icon.
     ///
     /// - Parameters:
@@ -183,7 +183,7 @@ public struct DialogContent<Icon: View, CustomContent: View>: Equatable, Sendabl
     ///   - actions: A closure that builds the dialog actions using `DialogActionsBuilder`.
     public init(
         title: String,
-@DialogActionsBuilder actions: () -> [any DialogAction]
+        @DialogActionsBuilder actions: () -> [any DialogAction]
     ) where Icon == EmptyView, CustomContent == EmptyView {
         self.title = title
         self.message = nil
@@ -201,7 +201,7 @@ public struct DialogContent<Icon: View, CustomContent: View>: Equatable, Sendabl
     public init(
         title: String,
         message: String?,
-@DialogActionsBuilder actions: () -> [any DialogAction]
+        @DialogActionsBuilder actions: () -> [any DialogAction]
     ) where Icon == EmptyView, CustomContent == EmptyView {
         self.title = title
         self.message = message
@@ -221,7 +221,7 @@ public struct DialogContent<Icon: View, CustomContent: View>: Equatable, Sendabl
         title: String,
         message: String? = nil,
         @ViewBuilder icon: @Sendable @escaping () -> Icon,
-@DialogActionsBuilder actions: () -> [any DialogAction]
+        @DialogActionsBuilder actions: () -> [any DialogAction]
     ) where CustomContent == EmptyView {
         self.title = title
         self.message = message
@@ -229,12 +229,12 @@ public struct DialogContent<Icon: View, CustomContent: View>: Equatable, Sendabl
         self.customContentView = nil
         self.iconView = icon
     }
-
+    
     public init(
         title: String,
         message: String? = nil,
         iconImage: @autoclosure @escaping @Sendable () -> Image,
-@DialogActionsBuilder actions: () -> [any DialogAction]
+        @DialogActionsBuilder actions: () -> [any DialogAction]
     ) where CustomContent == EmptyView, Icon == Image {
         self.title = title
         self.message = message
@@ -242,7 +242,7 @@ public struct DialogContent<Icon: View, CustomContent: View>: Equatable, Sendabl
         self.customContentView = nil
         self.iconView = iconImage
     }
-
+    
     /// Creates dialog content with custom view using generic type.
     ///
     /// - Parameters:
