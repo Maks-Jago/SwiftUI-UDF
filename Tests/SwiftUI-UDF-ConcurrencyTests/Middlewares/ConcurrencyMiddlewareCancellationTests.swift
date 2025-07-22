@@ -1,9 +1,9 @@
 
 import Combine
 @testable import UDF
-import XCTest
+import Testing
 
-final class ConcurrencyMiddlewareCancellationTests: XCTestCase {
+@Suite struct ConcurrencyMiddlewareCancellationTests {
     struct AppState: AppReducer {
         var middlewareFlow = MiddlewareFlow()
         var runForm = RunForm()
@@ -48,19 +48,19 @@ final class ConcurrencyMiddlewareCancellationTests: XCTestCase {
         }
     }
 
-    func testObservableMiddlewareCancellation() async {
+    @Test func observableMiddlewareCancellation() async {
         let store = await XCTestStore(initial: AppState())
         await store.subscribe(ObservableMiddlewareToCancel.self)
         await store.dispatch(Actions.Loading())
 
         var middlewareFlow = await store.state.middlewareFlow
 
-        XCTAssertEqual(middlewareFlow, .loading)
+        #expect(middlewareFlow == .loading)
         await store.dispatch(Actions.CancelLoading())
         await store.wait()
 
         middlewareFlow = await store.state.middlewareFlow
-        XCTAssertEqual(middlewareFlow, .didCancel)
+        #expect(middlewareFlow == .didCancel)
     }
 }
 
@@ -113,7 +113,7 @@ private extension ConcurrencyMiddlewareCancellationTests {
 
         struct SomeEffect: ConcurrencyEffect {
             func task(flowId: AnyHashable) async throws -> any UDF.Action {
-                try await Task.sleep(seconds: 1)
+                try await Task.sleep(nanoseconds: 1_000_000_000)
 
                 try Task.checkCancellation()
 

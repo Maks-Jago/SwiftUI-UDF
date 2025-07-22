@@ -1,6 +1,6 @@
 import SwiftUI
 @testable import UDF
-import XCTest
+import Testing
 
 private extension Actions {
     struct PresentDialogWithAction: Action {}
@@ -66,7 +66,7 @@ extension DialogType {
     }
 }
 
-final class DialogTests: XCTestCase {
+@Suite struct DialogTests {
     struct AppState: AppReducer {
         var form = FormWithDialog()
     }
@@ -101,15 +101,14 @@ final class DialogTests: XCTestCase {
         }
     }
     
-    override func setUp() {
-        super.setUp()
+    init() {
         DialogRegistry.clearAll()
     }
     
-    func test_WhendialogRegistered_dialogCanBePresentedById() async {
+    @Test func WhendialogRegistered_dialogCanBePresentedById() async {
         let store = await XCTestStore(initial: AppState())
         var status = await store.state.form.dialog.status
-        XCTAssertEqual(status, .dismissed)
+        #expect(status == .dismissed)
         
         DialogRegistry.register(id: FormWithDialog.DialogId.dialogWithAction) {
             DialogType.dialogWithAction {
@@ -120,72 +119,72 @@ final class DialogTests: XCTestCase {
         await store.dispatch(Actions.PresentDialogWithAction())
         status = await store.state.form.dialog.status
         
-        XCTAssertNotEqual(status, .dismissed)
+        #expect(status != .dismissed)
         
         if case .presented(let dialogType) = status {
-            XCTAssertEqual(dialogType.style, .alert)
+            #expect(dialogType.style == .alert)
         } else {
-            XCTFail("Expected presented dialog")
+            Issue.record("Expected presented dialog")
         }
     }
     
-    func test_BasicdialogInitializers() {
+    @Test func BasicdialogInitializers() {
         // Test success dialog
         let successdialog = DialogStatus(success: "Operation completed")
-        XCTAssertNotEqual(successdialog.status, .dismissed)
+        #expect(successdialog.status != .dismissed)
         
         if case .presented(let dialogType) = successdialog.status {
-            XCTAssertEqual(dialogType.category, .success)
-            XCTAssertEqual(dialogType.style, .alert) // Default style
+            #expect(dialogType.category == .success)
+            #expect(dialogType.style == .alert) // Default style // Default style
         } else {
-            XCTFail("Expected presented dialog")
+            Issue.record("Expected presented dialog")
         }
         
         // Test error dialog
         let errordialog = DialogStatus(error: "Something went wrong")
-        XCTAssertNotEqual(errordialog.status, .dismissed)
+        #expect(errordialog.status != .dismissed)
         
         if case .presented(let dialogType) = errordialog.status {
-            XCTAssertEqual(dialogType.category, .error)
+            #expect(dialogType.category == .error)
         } else {
-            XCTFail("Expected presented dialog")
+            Issue.record("Expected presented dialog")
         }
         
         // Test warning dialog
         let warningdialog = DialogStatus(warning: "Storage almost full")
-        XCTAssertNotEqual(warningdialog.status, .dismissed)
+        #expect(warningdialog.status != .dismissed)
         
         // Test info dialog
         let infodialog = DialogStatus(info: "3 new messages")
-        XCTAssertNotEqual(infodialog.status, .dismissed)
+        #expect(infodialog.status != .dismissed)
     }
     
-    func test_dialogWithToastStyle() {
+    @Test func dialogWithToastStyle() {
         // Test dialog with toast style
         let toastdialog = DialogStatus(
             success: "Toast success message",
             style: .toast()
         )
         
-        XCTAssertNotEqual(toastdialog.status, .dismissed)
+        #expect(toastdialog.status != .dismissed)
         
         if case .presented(let dialogType) = toastdialog.status {
             if case .toast = dialogType.style {
-                XCTAssertTrue(true, "Correct toast style")
+                #expect(true, "Correct toast style")
             } else {
-                XCTFail("Expected toast style dialog")
+                Issue.record("Expected toast style dialog")
             }
         } else {
-            XCTFail("Expected presented dialog")
+            Issue.record("Expected presented dialog")
         }
     }
     
     // MARK: - Toast-Specific Tests
     
-    func test_WhenToastRegistered_ToastCanBePresentedById() async {
+    @Test func WhenToastRegistered_ToastCanBePresentedById() async {
         let store = await XCTestStore(initial: AppState())
         var status = await store.state.form.dialog.status
-        XCTAssertEqual(status, .dismissed)
+        #expect(status == .dismissed)
         
         DialogRegistry.register(id: FormWithDialog.DialogId.toastDialog) {
             DialogType.toastWithAction {
@@ -196,21 +195,21 @@ final class DialogTests: XCTestCase {
         await store.dispatch(Actions.PresentToastDialog())
         status = await store.state.form.dialog.status
         
-        XCTAssertNotEqual(status, .dismissed)
+        #expect(status != .dismissed)
         
         // Verify it's a toast style
         if case .presented(let dialogType) = status {
             if case .toast = dialogType.style {
-                XCTAssertTrue(true, "Correct toast style")
+                #expect(true, "Correct toast style")
             } else {
-                XCTFail("Expected toast style dialog")
+                Issue.record("Expected toast style dialog")
             }
         } else {
-            XCTFail("Expected presented dialog")
+            Issue.record("Expected presented dialog")
         }
     }
     
-    func test_CustomToastWithIcon() async {
+    @Test func CustomToastWithIcon() async {
         let store = await XCTestStore(initial: AppState())
         
         DialogRegistry.register(id: FormWithDialog.DialogId.customToastWithIcon) {
@@ -220,7 +219,7 @@ final class DialogTests: XCTestCase {
         await store.dispatch(Actions.PresentCustomToastWithIcon())
         let status = await store.state.form.dialog.status
         
-        XCTAssertNotEqual(status, .dismissed)
+        #expect(status != .dismissed)
         
         // Verify it's a toast with custom icon
         if case .presented(let dialogType) = status,
@@ -228,20 +227,20 @@ final class DialogTests: XCTestCase {
 
             // Check style is toast
             if case .toast(let config) = style {
-                XCTAssertEqual(config.theme, .vibrant)
+                #expect(config.theme == .vibrant)
             } else {
-                XCTFail("Expected toast style")
+                Issue.record("Expected toast style")
             }
             
             // Check custom icon
-            XCTAssertTrue(content.hasIcon)
+            #expect(content.hasIcon)
             
         } else {
-            XCTFail("Expected custom dialog with content")
+            Issue.record("Expected custom dialog with content")
         }
     }
     
-    func test_CustomViewToast() async {
+    @Test func CustomViewToast() async {
         let store = await XCTestStore(initial: AppState())
         
         DialogRegistry.register(id: FormWithDialog.DialogId.customViewToast) {
@@ -251,28 +250,28 @@ final class DialogTests: XCTestCase {
         await store.dispatch(Actions.PresentCustomViewToast())
         let status = await store.state.form.dialog.status
         
-        XCTAssertNotEqual(status, .dismissed)
+        #expect(status != .dismissed)
         
         // Verify it's a toast with custom view
         if case .presented(let dialogType) = status {
             // Check style is toast
             if case .toast(let config) = dialogType.style {
-                XCTAssertEqual(config.position, .center)
+                #expect(config.position == .center)
             } else {
-                XCTFail("Expected toast style")
+                Issue.record("Expected toast style")
             }
             
             // Check custom view
-            XCTAssertFalse(dialogType is DialogType)
-            XCTAssertNotNil(dialogType.getCustomContentView())
+            #expect(!(dialogType is DialogType))
+            #expect(dialogType.getCustomContentView() != nil)
             
         } else {
-            XCTFail("Expected custom dialog with custom view")
+            Issue.record("Expected custom dialog with custom view")
         }
     }
     
-    func test_ToastConfiguration() {
-        let customConfig = ToastConfiguration(
+    @Test func ToastConfiguration() {
+        let customConfig = UDF.ToastConfiguration(
             theme: .vibrant,
             position: .bottom,
             defaultDuration: 3.0
@@ -285,17 +284,17 @@ final class DialogTests: XCTestCase {
         
         if case .presented(let dialogType) = dialog.status,
            let toastConfig = dialogType.toastConfiguration {
-            XCTAssertEqual(toastConfig.theme, .vibrant)
-            XCTAssertEqual(toastConfig.position, .bottom)
-            XCTAssertEqual(toastConfig.defaultDuration, 3.0)
+            #expect(toastConfig.theme == .vibrant)
+            #expect(toastConfig.position == .bottom)
+            #expect(toastConfig.defaultDuration == 3.0)
         } else {
-            XCTFail("Expected toast with configuration")
+            Issue.record("Expected toast with configuration")
         }
     }
     
     // MARK: - Complex Content Tests
     
-    func test_CustomDialogWithContent() {
+    @Test func CustomDialogWithContent() {
         let dialog = DialogStatus(style: .alert) {
             DialogContent(title: "Custom Title", message: "Custom message", actions: {
                 DialogButton.destructive("Delete") {
@@ -305,19 +304,19 @@ final class DialogTests: XCTestCase {
             })
         }
         
-        XCTAssertNotEqual(dialog.status, .dismissed)
+        #expect(dialog.status != .dismissed)
 
         if case .presented(let dialogType) = dialog.status {
-            XCTAssertEqual(dialogType.title, "Custom Title")
-            XCTAssertEqual(dialogType.message, "Custom message")
-            XCTAssertFalse(dialogType.actions.isEmpty)
-            XCTAssertEqual(dialogType.actions.count, 2)
+            #expect(dialogType.title == "Custom Title")
+            #expect(dialogType.message == "Custom message")
+            #expect(!dialogType.actions.isEmpty)
+            #expect(dialogType.actions.count == 2)
         } else {
-            XCTFail("Expected custom dialog")
+            Issue.record("Expected custom dialog")
         }
     }
     
-    func test_ToastWithContentAndActions() {
+    @Test func ToastWithContentAndActions() {
         let dialog = DialogStatus(style: .toast()) {
             DialogContent(title: "Toast Title", message: "Toast message", actions: {
                 DialogButton.default("Action") {
@@ -328,44 +327,44 @@ final class DialogTests: XCTestCase {
         
         if case .presented(let dialogType) = dialog.status {
             if case .toast = dialogType.style {
-                XCTAssertTrue(true, "Correct toast style")
+                #expect(true, "Correct toast style")
             } else {
-                XCTFail("Expected toast style")
+                Issue.record("Expected toast style")
             }
             
             // Check actions
-            XCTAssertFalse(dialogType.actions.isEmpty)
-            XCTAssertEqual(dialogType.actions.count, 1)
+            #expect(!dialogType.actions.isEmpty)
+            #expect(dialogType.actions.count == 1)
         } else {
-            XCTFail("Expected presented dialog")
+            Issue.record("Expected presented dialog")
         }
     }
     
     // MARK: - Dismissed State Tests
     
-    func test_DismissedState() {
+    @Test func DismissedState() {
         let dismissedDialog = DialogStatus.dismissed
-        XCTAssertEqual(dismissedDialog.status, .dismissed)
+        #expect(dismissedDialog.status == .dismissed)
         
         let emptyDialog = DialogStatus()
-        XCTAssertEqual(emptyDialog.status, .dismissed)
+        #expect(emptyDialog.status == .dismissed)
         
         // Test with nil/empty strings
         let nilErrorDialog = DialogStatus(error: nil)
-        XCTAssertEqual(nilErrorDialog.status, .dismissed)
+        #expect(nilErrorDialog.status == .dismissed)
         
         let emptySuccessDialog = DialogStatus(success: "")
-        XCTAssertEqual(emptySuccessDialog.status, .dismissed)
+        #expect(emptySuccessDialog.status == .dismissed)
     }
     
     // MARK: - Registry Tests
     
-    func test_RegistryBehavior() {
+    @Test func RegistryBehavior() {
         let testId = "test-dialog"
         
         // Test unregistered ID returns dismissed
         let unregisteredDialog = DialogStatus(id: testId)
-        XCTAssertEqual(unregisteredDialog.status, .dismissed)
+        #expect(unregisteredDialog.status == .dismissed)
         
         // Register and test
         DialogRegistry.register(id: testId) {
@@ -373,12 +372,12 @@ final class DialogTests: XCTestCase {
         }
         
         let registeredDialog = DialogStatus(id: testId)
-        XCTAssertNotEqual(registeredDialog.status, .dismissed)
+        #expect(registeredDialog.status != .dismissed)
         
         if case .presented(let dialogType) = registeredDialog.status {
-            XCTAssertEqual(dialogType.category, .success)
+            #expect(dialogType.category == .success)
         } else {
-            XCTFail("Expected presented dialog from registry")
+            Issue.record("Expected presented dialog from registry")
         }
     }
 }

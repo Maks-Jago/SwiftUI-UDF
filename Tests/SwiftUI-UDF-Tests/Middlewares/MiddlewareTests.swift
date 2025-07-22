@@ -11,7 +11,8 @@
 
 import Combine
 @testable import UDF
-import XCTest
+import Testing
+import Foundation
 
 private extension Actions {
     struct SendMessage: Action {
@@ -35,7 +36,7 @@ private extension Actions {
     }
 }
 
-final class MiddlewareTests: XCTestCase {
+@Suite struct MiddlewareTests {
     struct AppState: AppReducer {
         var testForm = TestForm()
         var testFlow = TestFlow()
@@ -376,7 +377,7 @@ final class MiddlewareTests: XCTestCase {
     // MARK: - Tests
     
     /// Tests that Middleware works correctly when only implementing reduce functionality
-    func testReduceOnlyMiddleware() async {
+    @Test func reduceOnlyMiddleware() async {
         // Given: A middleware that only implements reduce() method
         let store = await XCTestStore(initial: AppState())
         await store.subscribe(ReduceOnlyMiddleware.self)
@@ -388,11 +389,11 @@ final class MiddlewareTests: XCTestCase {
         
         // Then: The action should be processed and state updated accordingly
         let title = await store.state.testForm.title
-        XCTAssertEqual(title, "Test: \(message)")
+        #expect(title == "Test: \(message)")
     }
     
     /// Tests that Middleware works correctly when only implementing observe functionality
-    func testObserveOnlyMiddleware() async {
+    @Test func observeOnlyMiddleware() async {
         // Given: A middleware that only implements observe() method with a specific scope
         let store = await XCTestStore(initial: AppState())
         await store.subscribe(ObserveOnlyMiddleware.self)
@@ -404,11 +405,11 @@ final class MiddlewareTests: XCTestCase {
         
         // Then: The middleware should observe the state change and execute effects
         let description = await store.state.testForm.description
-        XCTAssertEqual(description, "Test reaction: \(message)")
+        #expect(description == "Test reaction: \(message)")
     }
     
     /// Tests that Middleware works correctly when implementing both reduce and observe functionality
-    func testFullUnifiedMiddleware() async {
+    @Test func fullUnifiedMiddleware() async {
         // Given: A middleware that implements both reduce() and observe() methods
         let store = await XCTestStore(initial: AppState())
         await store.subscribe(FullUnifiedMiddleware.self)
@@ -420,7 +421,7 @@ final class MiddlewareTests: XCTestCase {
         
         // Then: The reduce method should process the action
         let title = await store.state.testForm.title
-        XCTAssertEqual(title, "Test task: \(taskId)")
+        #expect(title == "Test task: \(taskId)")
         
         // When: An action triggers a state change that should be observed
         await store.dispatch(Actions.StartTask(taskId: "flow_task", id: TaskFlow.id))
@@ -428,11 +429,11 @@ final class MiddlewareTests: XCTestCase {
         
         // Then: The observe method should react to the state change and auto-complete the task
         let description = await store.state.testForm.description
-        XCTAssertEqual(description, "Task completed: flow_task")
+        #expect(description == "Task completed: flow_task")
     }
     
     /// Tests that Middleware works correctly with multiple scopes
-    func testMultipleScopes() async {
+    @Test func multipleScopes() async {
         // Given: A middleware that observes multiple state flows
         class MultiScopeMiddleware: Middleware<AppState>, @unchecked Sendable {
             struct Environment: Sendable {}
@@ -470,11 +471,11 @@ final class MiddlewareTests: XCTestCase {
         
         // Then: The middleware should observe the change and execute effects
         let title = await store.state.testForm.title
-        XCTAssertEqual(title, "Multi: \(message)")
+        #expect(title == "Multi: \(message)")
     }
     
     /// Tests that Middleware correctly handles dynamic status changes
-    func testMiddlewareStatusChanges() async {
+    @Test func middlewareStatusChanges() async {
         // Given: A middleware that changes status based on state conditions
         class StateBasedStatusMiddleware: Middleware<AppState>, @unchecked Sendable {
             struct Environment: Sendable {}
@@ -528,8 +529,8 @@ final class MiddlewareTests: XCTestCase {
         // Then: Both reduce and observe should work
         var title = await store.state.testForm.title
         var description = await store.state.testForm.description
-        XCTAssertEqual(title, "Status: \(message1)")
-        XCTAssertEqual(description, "Reduced: \(message1)")
+        #expect(title == "Status: \(message1)")
+        #expect(description == "Reduced: \(message1)")
         
         // When: State changes to suspend the middleware (counter > 5)
         await store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.counter, value: 10))
@@ -543,8 +544,8 @@ final class MiddlewareTests: XCTestCase {
         // Then: Neither reduce nor observe should work
         title = await store.state.testForm.title
         description = await store.state.testForm.description
-        XCTAssertNotEqual(title, "Status: \(message2)")
-        XCTAssertNotEqual(description, "Reduced: \(message2)")
+        #expect(title != "Status: \(message2)")
+        #expect(description != "Reduced: \(message2)")
         
         // When: State changes to reactivate the middleware (counter <= 5)
         await store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.counter, value: 1))
@@ -558,12 +559,12 @@ final class MiddlewareTests: XCTestCase {
         // Then: Both reduce and observe should work again
         title = await store.state.testForm.title
         description = await store.state.testForm.description
-        XCTAssertEqual(title, "Status: \(message3)")
-        XCTAssertEqual(description, "Reduced: \(message3)")
+        #expect(title == "Status: \(message3)")
+        #expect(description == "Reduced: \(message3)")
     }
     
     /// Tests that Middleware correctly observes changes across multiple scoped flows
-    func testMultipleScopesObservation() async {
+    @Test func multipleScopesObservation() async {
         // Given: A middleware that observes multiple flows (testFlow and taskFlow)
         let store = await XCTestStore(initial: AppState())
         await store.subscribe(FullUnifiedMiddleware.self)
@@ -578,11 +579,11 @@ final class MiddlewareTests: XCTestCase {
         
         // Then: The middleware should have observed both changes and executed effects
         let description = await store.state.testForm.description
-        XCTAssertEqual(description, "Task completed: task1")
+        #expect(description == "Task completed: task1")
     }
     
     /// Tests that Middleware correctly handles effect cancellation when status changes
-    func testMiddlewareCancellation() async {
+    @Test func middlewareCancellation() async {
         // Given: A middleware that can be suspended and cancels effects accordingly
         class CancellableMiddleware: Middleware<AppState>, @unchecked Sendable {
             struct Environment: Sendable {}
@@ -622,11 +623,11 @@ final class MiddlewareTests: XCTestCase {
         
         // Then: The delayed effect should have been cancelled before completion
         let title = await store.state.testForm.title
-        XCTAssertTrue(title.isEmpty)
+        #expect(title.isEmpty)
     }
     
     /// Tests that Middleware default implementations work correctly without custom logic
-    func testDefaultImplementations() async {
+    @Test func defaultImplementations() async {
         // Given: A minimal middleware that uses only default implementations
         class MinimalMiddleware: Middleware<AppState>, @unchecked Sendable {
             struct Environment: Sendable {}
@@ -655,8 +656,8 @@ final class MiddlewareTests: XCTestCase {
         
         // Then: State should remain unchanged since no custom logic is implemented
         let state = await store.state
-        XCTAssertTrue(state.testForm.title.isEmpty)
-        XCTAssertTrue(state.testForm.description.isEmpty)
-        XCTAssertEqual(state.testForm.counter, 0)
+        #expect(state.testForm.title.isEmpty)
+        #expect(state.testForm.description.isEmpty)
+        #expect(state.testForm.counter == 0)
     }
 }

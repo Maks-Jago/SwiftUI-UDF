@@ -7,10 +7,10 @@
 
 import SwiftUI
 @testable import UDF
-import UDFXCTest
-import XCTest
+import UDFSwiftTesting
+import Testing
 
-final class BindableReducersMiddlewareTests: XCTestCase {
+@Suite struct BindableReducersMiddlewareTests {
     struct Item: Hashable, Identifiable {
         struct ID: Hashable {
             var value: Int
@@ -78,7 +78,7 @@ final class BindableReducersMiddlewareTests: XCTestCase {
         var itemReducible = ItemReducible()
     }
 
-    func test_WhenLoadingDataForBindableReducers_OnleConcreteInstanceOfBindableFormShouldBeUpdated() async throws {
+    @Test func WhenLoadingDataForBindableReducers_OnleConcreteInstanceOfBindableFormShouldBeUpdated() async throws {
         let store = await XCTestStore(initial: AppState())
         await store.subscribe(ItemsMiddleware.self)
 
@@ -88,10 +88,10 @@ final class BindableReducersMiddlewareTests: XCTestCase {
         await store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 4)))
 
         let bindedReducersFormCount = try await XCTUnwrapAsync(await store.state.itemsForm).reducers.count
-        XCTAssertEqual(bindedReducersFormCount, 4)
+        #expect(bindedReducersFormCount == 4)
 
         let bindedReducersFlowCount = try await XCTUnwrapAsync(await store.state.itemsFlow).reducers.count
-        XCTAssertEqual(bindedReducersFlowCount, 4)
+        #expect(bindedReducersFlowCount == 4)
 
         await store.dispatch(
             ActionGroup {
@@ -109,29 +109,29 @@ final class BindableReducersMiddlewareTests: XCTestCase {
         await store.wait()
 
         let itemsForm1: ItemsForm = try await XCTUnwrapAsync(await store.state.itemsForm[Item.ID(value: 1)])
-        XCTAssertNotNil(itemsForm1.item)
+        #expect(itemsForm1.item != nil)
 
         let itemsForm2: ItemsForm = try await XCTUnwrapAsync(await store.state.itemsForm[Item.ID(value: 2)])
-        XCTAssertNil(itemsForm2.item)
+        #expect(itemsForm2.item == nil)
 
         let itemsForm3: ItemsForm = try await XCTUnwrapAsync(await store.state.itemsForm[Item.ID(value: 3)])
-        XCTAssertNotNil(itemsForm3.item)
+        #expect(itemsForm3.item != nil)
 
         let itemsForm4: ItemsForm = try await XCTUnwrapAsync(await store.state.itemsForm[Item.ID(value: 4)])
-        XCTAssertNotNil(itemsForm4.item)
+        #expect(itemsForm4.item != nil)
     }
 
-    func test_WhenDispatchingBindedAction_DuplicationShouldBePrevented() async throws {
+    @Test func WhenDispatchingBindedAction_DuplicationShouldBePrevented() async throws {
         let store = await XCTestStore(initial: AppState())
         await store.subscribe(ItemsMiddleware.self)
 
         await store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 1)))
 
         let bindedReducersFormCount = try await XCTUnwrapAsync(await store.state.itemsForm).reducers.count
-        XCTAssertEqual(bindedReducersFormCount, 1)
+        #expect(bindedReducersFormCount == 1)
 
         let bindedReducersFlowCount = try await XCTUnwrapAsync(await store.state.itemsFlow).reducers.count
-        XCTAssertEqual(bindedReducersFlowCount, 1)
+        #expect(bindedReducersFlowCount == 1)
 
         await store.dispatch(
             ActionGroup {
@@ -144,8 +144,8 @@ final class BindableReducersMiddlewareTests: XCTestCase {
         let itemsForm1: ItemsForm = try await XCTUnwrapAsync(await store.state.itemsForm[Item.ID(value: 1)])
         let itemsReducer = try await XCTUnwrapAsync(await store.state.itemReducible)
 
-        XCTAssertNotNil(itemsForm1.item)
-        XCTAssertEqual(itemsReducer.didLoadItemReduced, 1)
+        #expect(itemsForm1.item != nil)
+        #expect(itemsReducer.didLoadItemReduced == 1)
     }
 }
 

@@ -7,14 +7,15 @@
 
 import OrderedCollections
 @testable import UDF
-import UDFXCTest
-import XCTest
+import UDFSwiftTesting
+import Testing
 
 private extension Actions {
     struct ResetCache: Action {}
 }
 
-class CachedTests: XCTestCase {
+@Suite 
+struct CachedTests {
     struct Item: Equatable, Codable, Identifiable {
         struct ID: Hashable, Codable, Equatable {
             var value: Int
@@ -57,65 +58,65 @@ class CachedTests: XCTestCase {
         }
     }
 
-    func testItemsCaching() async {
+    @Test func itemsCaching() async {
         var store = await XCTestStore(initial: AppState())
 
         let items = (0 ... 3).map { Item(id: .init(value: $0)) }
         await store.dispatch(Actions.DidLoadItems(items: items, id: "items"))
 
         var isEmpty = await store.state.nestedForm.items.isEmpty
-        XCTAssertFalse(isEmpty)
+        #expect(!isEmpty)
 
         var count = await store.state.nestedForm.items.count
-        XCTAssertEqual(count, 4)
+        #expect(count == 4)
 
         await fulfill(description: "waiting for cache syncing", sleep: 1.5)
 
         store = await .init(initial: AppState())
         isEmpty = await store.state.nestedForm.items.isEmpty
 
-        XCTAssertFalse(isEmpty)
+        #expect(!isEmpty)
         count = await store.state.nestedForm.items.count
 
-        XCTAssertEqual(count, 4)
+        #expect(count == 4)
     }
 
-    func testResetCache() async {
+    @Test func resetCache() async {
         let store = await XCTestStore(initial: AppState())
         let items = (0 ... 3).map { Item(id: .init(value: $0)) }
         await store.dispatch(Actions.DidLoadItems(items: items, id: "items"))
 
         var isEmpty = await store.state.nestedForm.items.isEmpty
-        XCTAssertFalse(isEmpty)
+        #expect(!isEmpty)
 
         let count = await store.state.nestedForm.items.count
-        XCTAssertEqual(count, 4)
+        #expect(count == 4)
 
         await fulfill(description: "waiting for cache syncing", sleep: 1.5)
         await store.dispatch(Actions.ResetCache())
 
         isEmpty = await store.state.nestedForm.items.isEmpty
-        XCTAssertTrue(isEmpty)
+        #expect(isEmpty)
     }
 
-    func testSingleObjectCaching() async {
+    @Test func singleObjectCaching() async {
         let store = await XCTestStore(initial: AppState())
 
         var selectedItem = await store.state.nestedForm.selectedItem
-        XCTAssertNil(selectedItem)
+        #expect(selectedItem == nil)
 
         await store.dispatch(Actions.UpdateFormField(keyPath: \NestedForm.selectedItem, value: .init(value: 1)))
 
         selectedItem = await store.state.nestedForm.selectedItem
-        XCTAssertNotNil(selectedItem)
+        #expect(selectedItem != nil)
 
         await store.dispatch(Actions.ResetCache())
 
         selectedItem = await store.state.nestedForm.selectedItem
-        XCTAssertNil(selectedItem)
+        #expect(selectedItem == nil)
     }
 
-    func testRemoveItemFromCacheById() async throws {
+    @Test func removeItemFromCacheById() async throws {
         let store = await XCTestStore(initial: AppState())
         await store.dispatch(Actions.ResetCache())
 
@@ -123,11 +124,11 @@ class CachedTests: XCTestCase {
         await store.dispatch(Actions.DidLoadItems(items: items, id: "items"))
 
         var isEmpty = await store.state.nestedForm.byId.isEmpty
-        XCTAssertFalse(isEmpty)
+        #expect(!isEmpty)
 
-        try await store.dispatch(Actions.DeleteItem(item: XCTUnwrap(items.first)))
+        try await store.dispatch(Actions.DeleteItem(item: #require(items.first)))
         isEmpty = await store.state.nestedForm.byId.isEmpty
 
-        XCTAssertTrue(isEmpty)
+        #expect(isEmpty)
     }
 }

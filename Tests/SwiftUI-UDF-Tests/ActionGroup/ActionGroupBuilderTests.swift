@@ -6,18 +6,18 @@
 //
 
 @testable import UDF
-import XCTest
+import Testing
 
-final class ActionGroupBuilderTests: XCTestCase {
-    func test_WhenVoid_ActionGroupShouldBeEmpty() {
+@Suite struct ActionGroupBuilderTests {
+    @Test func WhenVoid_ActionGroupShouldBeEmpty() {
         let group = ActionGroup {
             ()
         }
 
-        XCTAssertTrue(group.actions.isEmpty, "An ActionGroup shouldn't have action when there is some Void in the builder")
+        #expect(group.actions.isEmpty, "An ActionGroup shouldn't have action when there is some Void in the builder")
     }
 
-    func test_WhenConditionFalse_ActionGroupShouldBeEmpty() {
+    @Test func WhenConditionFalse_ActionGroupShouldBeEmpty() {
         let condition = false
 
         let group = ActionGroup {
@@ -26,10 +26,10 @@ final class ActionGroupBuilderTests: XCTestCase {
             }
         }
 
-        XCTAssertTrue(group.actions.isEmpty)
+        #expect(group.actions.isEmpty)
     }
 
-    func test_WhenConditionTrue_ActionGroupShouldNotBeEmpty() {
+    @Test func WhenConditionTrue_ActionGroupShouldNotBeEmpty() {
         let condition = true
 
         let group = ActionGroup {
@@ -38,10 +38,10 @@ final class ActionGroupBuilderTests: XCTestCase {
             }
         }
 
-        XCTAssertFalse(group.actions.isEmpty)
+        #expect(!group.actions.isEmpty)
     }
 
-    func test_WhenConditionFalseWithPrefixAction_ActionGroupShouldHaveOneAction() {
+    @Test func WhenConditionFalseWithPrefixAction_ActionGroupShouldHaveOneAction() {
         let condition = false
 
         let group = ActionGroup {
@@ -52,10 +52,10 @@ final class ActionGroupBuilderTests: XCTestCase {
             }
         }
 
-        XCTAssertEqual(group.actions.count, 1)
+        #expect(group.actions.count == 1)
     }
 
-    func test_WhenElseConditionFalseWithPrefixAction_ActionGroupShouldHaveTwoActions() {
+    @Test func WhenElseConditionFalseWithPrefixAction_ActionGroupShouldHaveTwoActions() {
         let condition = false
 
         let group = ActionGroup {
@@ -68,10 +68,10 @@ final class ActionGroupBuilderTests: XCTestCase {
             }
         }
 
-        XCTAssertEqual(group.actions.count, 2)
+        #expect(group.actions.count == 2)
     }
 
-    func test_WhenIfElseConditionFalseWithPrefixAction_ActionGroupShouldHaveTwoActions() {
+    @Test func WhenIfElseConditionFalseWithPrefixAction_ActionGroupShouldHaveTwoActions() {
         let condition = false
 
         let group = ActionGroup {
@@ -86,10 +86,10 @@ final class ActionGroupBuilderTests: XCTestCase {
             }
         }
 
-        XCTAssertEqual(group.actions.count, 2)
+        #expect(group.actions.count == 2)
     }
 
-    func test_Switch() {
+    @Test func Switch() {
         let value = 4
 
         let group = ActionGroup {
@@ -108,10 +108,10 @@ final class ActionGroupBuilderTests: XCTestCase {
             }
         }
 
-        XCTAssertEqual(group.actions.count, 1)
+        #expect(group.actions.count == 1)
     }
 
-    func test_Loop() {
+    @Test func Loop() {
         let group = ActionGroup {
             for i in 0 ... 3 {
                 Actions.Message(message: "m\(i)", id: "m\(i)")
@@ -120,10 +120,10 @@ final class ActionGroupBuilderTests: XCTestCase {
             Actions.Message(message: "m5", id: "m5")
         }
 
-        XCTAssertEqual(group.actions.count, 5)
+        #expect(group.actions.count == 5)
     }
 
-    func test_OptionalAction() {
+    @Test func OptionalAction() {
         let optionalActionWithValue: (any Action)? = Actions.Message(message: "m1", id: "m1")
         let optionalActionNil: (any Action)? = nil
 
@@ -132,6 +132,6 @@ final class ActionGroupBuilderTests: XCTestCase {
             optionalActionNil
         }
 
-        XCTAssertEqual(group.actions.count, 1)
+        #expect(group.actions.count == 1)
     }
 }

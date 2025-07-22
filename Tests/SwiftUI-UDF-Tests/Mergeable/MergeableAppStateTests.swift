@@ -1,8 +1,9 @@
 
 @testable import UDF
-import XCTest
+import Testing
 
-class MergeableAppStateTests: XCTestCase {
+@Suite
+struct MergeableAppStateTests {
     struct Item: Mergeable, Identifiable, Equatable {
         struct Id: Hashable {
             var value: Int
@@ -45,27 +46,27 @@ class MergeableAppStateTests: XCTestCase {
         var allItems = AllItems()
     }
 
-    func testItemMerging() async throws {
+    @Test func itemMerging() async throws {
         let store = await XCTestStore(initial: AppState())
         var item = Item(id: .init(value: 1), title: "original")
         await store.dispatch(Actions.DidLoadItem(item: item))
 
         let isEmpty = await store.state.allItems.byId.isEmpty
 
-        XCTAssertEqual(isEmpty, false)
+        #expect(isEmpty == false)
         item.title = "mutated"
         await store.dispatch(Actions.DidUpdateItem(item: item))
 
         var allItems = await store.state.allItems
-        let storageItem = try XCTUnwrap(allItems.byId[item.id])
+        let storageItem = try #require(allItems.byId[item.id])
 
-        XCTAssertEqual(item.title, storageItem.title)
+        #expect(item.title == storageItem.title)
 
         item.title = ""
         await store.dispatch(Actions.DidUpdateItem(item: item))
         allItems = await store.state.allItems
 
-        let mergedItem = try XCTUnwrap(allItems.byId[item.id])
-        XCTAssertEqual(mergedItem.title.isEmpty, false)
+        let mergedItem = try #require(allItems.byId[item.id])
+        #expect(mergedItem.title.isEmpty == false)
     }
 }

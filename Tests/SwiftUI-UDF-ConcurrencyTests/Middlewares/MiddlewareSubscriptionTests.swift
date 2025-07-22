@@ -1,6 +1,7 @@
 import Combine
 @testable import UDF
-import XCTest
+import Testing
+import Foundation
 
 private extension Actions {
     struct TestMiddleware: Action {
@@ -8,8 +9,8 @@ private extension Actions {
     }
 }
 
-final class MiddlewareSubscriptionTests: XCTestCase {
-    func testMiddlewareSubscriptions() async {
+@Suite struct MiddlewareSubscriptionTests {
+    @Test func middlewareSubscriptions() async {
         let store = await XCTestStore(initial: AppState())
 
         await store.subscribe(build: { store in
@@ -18,20 +19,20 @@ final class MiddlewareSubscriptionTests: XCTestCase {
         })
 
         var type = await store.state.testForm.type
-        XCTAssertNil(type)
+        #expect(type == nil)
 
         await store.dispatch(Actions.TestMiddleware(type: .observable))
         await store.wait()
         type = await store.state.testForm.type
-        XCTAssertEqual(type, .observable)
+        #expect(type == .observable)
 
         await store.dispatch(Actions.TestMiddleware(type: .reducible))
         await store.wait()
         type = await store.state.testForm.type
-        XCTAssertEqual(type, .reducible)
+        #expect(type == .reducible)
     }
 
-    func testEnvironmentMiddlewareSubscription() async {
+    @Test func environmentMiddlewareSubscription() async {
         let store = await XCTestStore(initial: AppState())
 
         await store.subscribe { _ in
@@ -40,7 +41,7 @@ final class MiddlewareSubscriptionTests: XCTestCase {
 
         let middlewareId = await store.state.testForm.type
         await store.wait()
-        XCTAssertEqual(middlewareId, .testEnvironment)
+        #expect(middlewareId == .testEnvironment)
     }
 
     func liveEnvironmentMiddlewareSubscription() async {
@@ -54,7 +55,7 @@ final class MiddlewareSubscriptionTests: XCTestCase {
 
         let middlewareId = await store.state.testForm.type
         await store.wait()
-        XCTAssertEqual(middlewareId, .liveEnvironment)
+        #expect(middlewareId == .liveEnvironment)
     }
 }
 

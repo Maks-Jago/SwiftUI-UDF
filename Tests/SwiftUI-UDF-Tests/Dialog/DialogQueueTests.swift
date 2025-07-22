@@ -1,8 +1,8 @@
 import SwiftUI
 @testable import UDF
-import XCTest
+import Testing
 
-final class DialogQueueTests: XCTestCase {
+@Suite struct DialogQueueTests {
     // MARK: - Test Helpers
     private func createToastDialog(_ message: String, duration: TimeInterval = 2.0) -> DialogType {
         let config = ToastConfiguration(defaultDuration: duration)
@@ -14,43 +14,44 @@ final class DialogQueueTests: XCTestCase {
         let content = DialogContent(title)
         return DialogCustomType.custom(content: content, style: .toast(config))
     }
-    
-    // MARK: - Queue Manager Basic Tests
 
+    // MARK: - Queue Manager Basic Tests
+    @Test
     @MainActor
-    func test_QueueManager_InitialState() {
+    func QueueManager_InitialState() {
         let queueManager = ToastQueueManager()
-        
-        XCTAssertTrue(queueManager.visibleToasts.isEmpty)
-        XCTAssertTrue(queueManager.queuedToasts.isEmpty)
-        
+
+        #expect(queueManager.visibleToasts.isEmpty)
+        #expect(queueManager.queuedToasts.isEmpty)
+
         let info = queueManager.queueInfo()
-        XCTAssertEqual(info.visibleCount, 0)
-        XCTAssertEqual(info.queuedCount, 0)
-        XCTAssertFalse(info.isAtCapacity)
-        XCTAssertFalse(info.isStackFull)
+        #expect(info.visibleCount == 0)
+        #expect(info.queuedCount == 0)
+        #expect(!info.isAtCapacity)
+        #expect(!info.isStackFull)
     }
-    
+
+    @Test
     @MainActor
-    func test_QueueManager_EnqueueSingleToast() {
+    func QueueManager_EnqueueSingleToast() {
         let queueManager = ToastQueueManager()
         let toast = createToastDialog("Test Toast")
         
         queueManager.enqueue(toast)
         
         // In sequential mode, toast should immediately become visible
-        XCTAssertEqual(queueManager.visibleToasts.count, 1)
-        XCTAssertEqual(queueManager.queuedToasts.count, 0)
+        #expect(queueManager.visibleToasts.count == 1)
+        #expect(queueManager.queuedToasts.count == 0)
         
         let info = queueManager.queueInfo()
-        XCTAssertEqual(info.visibleCount, 1)
-        XCTAssertEqual(info.queuedCount, 0)
+        #expect(info.visibleCount == 1)
+        #expect(info.queuedCount == 0)
     }
-    
+
     // MARK: - Sequential Mode Tests
-    
+    @Test
     @MainActor
-    func test_SequentialMode_QueuesToastsInOrder() {
+    func SequentialMode_QueuesToastsInOrder() {
         let config = ToastQueueConfiguration(displayMode: .sequential)
         let queueManager = ToastQueueManager(configuration: config)
         
@@ -60,17 +61,18 @@ final class DialogQueueTests: XCTestCase {
         queueManager.enqueue(createToastDialog("Toast 3"))
         
         // In sequential mode, only first should be visible
-        XCTAssertEqual(queueManager.visibleToasts.count, 1)
-        XCTAssertEqual(queueManager.queuedToasts.count, 2)
+        #expect(queueManager.visibleToasts.count == 1)
+        #expect(queueManager.queuedToasts.count == 2)
         
         // Verify first toast is visible
         if let firstToast = queueManager.visibleToasts.first {
-            XCTAssertEqual(firstToast.toast.message, "Toast 1")
+            #expect(firstToast.toast.message == "Toast 1")
         }
     }
     
+    @Test
     @MainActor
-    func test_SequentialMode_DismissAdvancesQueue() async {
+    func SequentialMode_DismissAdvancesQueue() async {
         let config = ToastQueueConfiguration(
             displayMode: .sequential,
             sequentialSpacing: 0.01 // Short spacing for testing
@@ -91,18 +93,18 @@ final class DialogQueueTests: XCTestCase {
         try? await Task.sleep(nanoseconds: 20_000_000) // 20ms
         
         // Second toast should now be visible
-        XCTAssertEqual(queueManager.visibleToasts.count, 1)
-        XCTAssertEqual(queueManager.queuedToasts.count, 1)
+        #expect(queueManager.visibleToasts.count == 1)
+        #expect(queueManager.queuedToasts.count == 1)
         
         if let visibleToast = queueManager.visibleToasts.first {
-            XCTAssertEqual(visibleToast.toast.message, "Toast 2")
+            #expect(visibleToast.toast.message == "Toast 2")
         }
     }
     
     // MARK: - Stacked Mode Tests
-    
+    @Test
     @MainActor
-    func test_StackedMode_ShowsMultipleToasts() {
+    func StackedMode_ShowsMultipleToasts() {
         let config = ToastQueueConfiguration(
             displayMode: .stacked,
             maxStackedToasts: 3
@@ -115,17 +117,18 @@ final class DialogQueueTests: XCTestCase {
         queueManager.enqueue(createToastDialog("Toast 3"))
         
         // All should be visible in stacked mode
-        XCTAssertEqual(queueManager.visibleToasts.count, 3)
-        XCTAssertEqual(queueManager.queuedToasts.count, 0)
+        #expect(queueManager.visibleToasts.count == 3)
+        #expect(queueManager.queuedToasts.count == 0)
         
         // Check stack positions
         for (index, displayInfo) in queueManager.visibleToasts.enumerated() {
-            XCTAssertEqual(displayInfo.stackPosition, index)
+            #expect(displayInfo.stackPosition == index)
         }
     }
     
+    @Test
     @MainActor
-    func test_StackedMode_RespectsMaxStackLimit() {
+    func StackedMode_RespectsMaxStackLimit() {
         let config = ToastQueueConfiguration(
             displayMode: .stacked,
             maxStackedToasts: 2
@@ -139,15 +142,16 @@ final class DialogQueueTests: XCTestCase {
         queueManager.enqueue(createToastDialog("Toast 4"))
         
         // Only maxStackedToasts should be visible
-        XCTAssertEqual(queueManager.visibleToasts.count, 2)
-        XCTAssertEqual(queueManager.queuedToasts.count, 2)
+        #expect(queueManager.visibleToasts.count == 2)
+        #expect(queueManager.queuedToasts.count == 2)
         
         let info = queueManager.queueInfo()
-        XCTAssertTrue(info.isStackFull)
+        #expect(info.isStackFull)
     }
     
+    @Test
     @MainActor
-    func test_StackedMode_StackPositionsUpdate() {
+    func StackedMode_StackPositionsUpdate() {
         let config = ToastQueueConfiguration(
             displayMode: .stacked,
             maxStackedToasts: 4
@@ -165,16 +169,16 @@ final class DialogQueueTests: XCTestCase {
             queueManager.dismiss(middleToastId)
             
             // Remaining toasts should have updated positions
-            XCTAssertEqual(queueManager.visibleToasts.count, 2)
-            XCTAssertEqual(queueManager.visibleToasts[0].stackPosition, 0)
-            XCTAssertEqual(queueManager.visibleToasts[1].stackPosition, 1)
+            #expect(queueManager.visibleToasts.count == 2)
+            #expect(queueManager.visibleToasts[0].stackPosition == 0)
+            #expect(queueManager.visibleToasts[1].stackPosition == 1)
         }
     }
     
     // MARK: - Queue Capacity Tests
-    
+    @Test
     @MainActor
-    func test_QueueCapacity_RemovesOldestWhenFull() {
+    func QueueCapacity_RemovesOldestWhenFull() {
         let config = ToastQueueConfiguration(
             displayMode: .sequential,
             maxQueueSize: 3
@@ -189,21 +193,22 @@ final class DialogQueueTests: XCTestCase {
         
         // Total should not exceed maxQueueSize
         let totalToasts = queueManager.visibleToasts.count + queueManager.queuedToasts.count
-        XCTAssertLessThanOrEqual(totalToasts, config.maxQueueSize)
+        #expect(totalToasts <= config.maxQueueSize)
         
         // In sequential mode, we should have 1 visible and 2 queued
-        XCTAssertEqual(queueManager.visibleToasts.count, 1)
-        XCTAssertEqual(queueManager.queuedToasts.count, 2)
+        #expect(queueManager.visibleToasts.count == 1)
+        #expect(queueManager.queuedToasts.count == 2)
         
         // Oldest queued toast should have been removed
         if queueManager.queuedToasts.count >= 2 {
-            XCTAssertEqual(queueManager.queuedToasts[0].message, "Toast 3")
-            XCTAssertEqual(queueManager.queuedToasts[1].message, "Toast 4")
+            #expect(queueManager.queuedToasts[0].message == "Toast 3")
+            #expect(queueManager.queuedToasts[1].message == "Toast 4")
         }
     }
     
+    @Test
     @MainActor
-    func test_QueueCapacity_DismissesVisibleWhenNecessary() {
+    func QueueCapacity_DismissesVisibleWhenNecessary() {
         let config = ToastQueueConfiguration(
             displayMode: .stacked,
             maxStackedToasts: 2,
@@ -216,20 +221,20 @@ final class DialogQueueTests: XCTestCase {
         queueManager.enqueue(createToastDialog("Toast 2"))
         
         // Both should be visible
-        XCTAssertEqual(queueManager.visibleToasts.count, 2)
+        #expect(queueManager.visibleToasts.count == 2)
         
         // Add another - should dismiss oldest visible
         queueManager.enqueue(createToastDialog("Toast 3"))
         
         // Should still have 2 visible (Toast 2 and Toast 3)
-        XCTAssertEqual(queueManager.visibleToasts.count, 2)
-        XCTAssertEqual(queueManager.queuedToasts.count, 0)
+        #expect(queueManager.visibleToasts.count == 2)
+        #expect(queueManager.queuedToasts.count == 0)
     }
     
     // MARK: - Clear All Tests
-    
+    @Test
     @MainActor
-    func test_ClearAll_RemovesAllToasts() {
+    func ClearAll_RemovesAllToasts() {
         let config = ToastQueueConfiguration(displayMode: .stacked)
         let queueManager = ToastQueueManager(configuration: config)
         
@@ -238,19 +243,19 @@ final class DialogQueueTests: XCTestCase {
         queueManager.enqueue(createToastDialog("Toast 2"))
         queueManager.enqueue(createToastDialog("Toast 3"))
         
-        XCTAssertGreaterThan(queueManager.visibleToasts.count, 0)
+        #expect(queueManager.visibleToasts.count > 0)
         
         // Clear all
         queueManager.clearAll()
         
-        XCTAssertEqual(queueManager.visibleToasts.count, 0)
-        XCTAssertEqual(queueManager.queuedToasts.count, 0)
+        #expect(queueManager.visibleToasts.count == 0)
+        #expect(queueManager.queuedToasts.count == 0)
     }
     
     // MARK: - Configuration Change Tests
-    
+    @Test
     @MainActor
-    func test_ConfigurationChange_FromSequentialToStacked() {
+    func ConfigurationChange_FromSequentialToStacked() {
         var config = ToastQueueConfiguration(displayMode: .sequential)
         let queueManager = ToastQueueManager(configuration: config)
         
@@ -259,8 +264,8 @@ final class DialogQueueTests: XCTestCase {
         queueManager.enqueue(createToastDialog("Toast 2"))
         queueManager.enqueue(createToastDialog("Toast 3"))
         
-        XCTAssertEqual(queueManager.visibleToasts.count, 1)
-        XCTAssertEqual(queueManager.queuedToasts.count, 2)
+        #expect(queueManager.visibleToasts.count == 1)
+        #expect(queueManager.queuedToasts.count == 2)
         
         // Change to stacked mode
         config = ToastQueueConfiguration(
@@ -270,12 +275,13 @@ final class DialogQueueTests: XCTestCase {
         queueManager.configuration = config
         
         // All queued toasts should become visible
-        XCTAssertEqual(queueManager.visibleToasts.count, 3)
-        XCTAssertEqual(queueManager.queuedToasts.count, 0)
+        #expect(queueManager.visibleToasts.count == 3)
+        #expect(queueManager.queuedToasts.count == 0)
     }
     
+    @Test
     @MainActor
-    func test_ConfigurationChange_ReducedStackLimit() {
+    func ConfigurationChange_ReducedStackLimit() {
         var config = ToastQueueConfiguration(
             displayMode: .stacked,
             maxStackedToasts: 4
@@ -288,37 +294,38 @@ final class DialogQueueTests: XCTestCase {
         queueManager.enqueue(createToastDialog("Toast 3"))
         queueManager.enqueue(createToastDialog("Toast 4"))
         
-        XCTAssertEqual(queueManager.visibleToasts.count, 4)
+        #expect(queueManager.visibleToasts.count == 4)
         
         // Reduce stack limit
         config.maxStackedToasts = 2
         queueManager.configuration = config
         
         // Should dismiss excess toasts
-        XCTAssertEqual(queueManager.visibleToasts.count, 2)
+        #expect(queueManager.visibleToasts.count == 2)
     }
     
     // MARK: - Auto-Dismiss Tests
-    
+    @Test
     @MainActor
-    func test_AutoDismiss_RemovesToastAfterDuration() async {
+    func AutoDismiss_RemovesToastAfterDuration() async {
         let config = ToastQueueConfiguration(displayMode: .sequential)
         let queueManager = ToastQueueManager(configuration: config)
         
         let shortToast = createToastDialog("Short Toast", duration: 0.05)
         queueManager.enqueue(shortToast)
         
-        XCTAssertEqual(queueManager.visibleToasts.count, 1)
+        #expect(queueManager.visibleToasts.count == 1)
         
         // Wait for auto-dismiss
         try? await Task.sleep(nanoseconds: 100_000_000) // 100ms
         
         // Toast should be dismissed
-        XCTAssertEqual(queueManager.visibleToasts.count, 0)
+        #expect(queueManager.visibleToasts.count == 0)
     }
     
+    @Test
     @MainActor
-    func test_AutoDismiss_DisabledWithZeroDuration() async {
+    func AutoDismiss_DisabledWithZeroDuration() async {
         let config = ToastQueueConfiguration(displayMode: .sequential)
         let queueManager = ToastQueueManager(configuration: config)
         
@@ -326,19 +333,19 @@ final class DialogQueueTests: XCTestCase {
         let permanentToast = createToastDialog("Permanent Toast", duration: 0)
         queueManager.enqueue(permanentToast)
         
-        XCTAssertEqual(queueManager.visibleToasts.count, 1)
+        #expect(queueManager.visibleToasts.count == 1)
         
         // Wait a bit
         try? await Task.sleep(nanoseconds: 100_000_000) // 100ms
         
         // Toast should still be visible
-        XCTAssertEqual(queueManager.visibleToasts.count, 1)
+        #expect(queueManager.visibleToasts.count == 1)
     }
     
     // MARK: - Queue Info Tests
-    
+    @Test
     @MainActor
-    func test_QueueInfo_ProvidesAccurateStatistics() {
+    func QueueInfo_ProvidesAccurateStatistics() {
         let config = ToastQueueConfiguration(
             displayMode: .stacked,
             maxStackedToasts: 3,
@@ -355,30 +362,32 @@ final class DialogQueueTests: XCTestCase {
         
         let info = queueManager.queueInfo()
         
-        XCTAssertEqual(info.visibleCount, 3)
-        XCTAssertEqual(info.queuedCount, 2)
-        XCTAssertEqual(info.totalCapacity, 5)
-        XCTAssertEqual(info.stackCapacity, 3)
-        XCTAssertTrue(info.isStackFull)
-        XCTAssertTrue(info.isAtCapacity)
-        XCTAssertEqual(info.currentMode, .sequential) // Should fallback when stack is full
+        #expect(info.visibleCount == 3)
+        #expect(info.queuedCount == 2)
+        #expect(info.totalCapacity == 5)
+        #expect(info.stackCapacity == 3)
+        #expect(info.isStackFull)
+        #expect(info.isAtCapacity)
+        #expect(info.currentMode == .sequential) // Should fallback when stack is full
     }
     
     // MARK: - Edge Cases
-    
+
+    @Test
     @MainActor
-    func test_EdgeCase_EmptyQueueDismiss() {
+    func EdgeCase_EmptyQueueDismiss() {
         let queueManager = ToastQueueManager()
         
         // Dismiss non-existent toast should not crash
         queueManager.dismiss(UUID())
         
-        XCTAssertEqual(queueManager.visibleToasts.count, 0)
-        XCTAssertEqual(queueManager.queuedToasts.count, 0)
+        #expect(queueManager.visibleToasts.count == 0)
+        #expect(queueManager.queuedToasts.count == 0)
     }
     
+    @Test 
     @MainActor
-    func test_EdgeCase_NegativeConfiguration() {
+    func EdgeCase_NegativeConfiguration() {
         // Configuration with edge values
         let config = ToastQueueConfiguration(
             displayMode: .stacked,
@@ -391,7 +400,7 @@ final class DialogQueueTests: XCTestCase {
         queueManager.enqueue(createToastDialog("Toast 1"))
         
         // With 0 max stack, should fallback to sequential
-        XCTAssertLessThanOrEqual(queueManager.visibleToasts.count, 1)
+        #expect(queueManager.visibleToasts.count <= 1)
     }
     
     

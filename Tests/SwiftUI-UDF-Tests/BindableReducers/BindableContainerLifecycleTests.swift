@@ -7,10 +7,10 @@
 
 import SwiftUI
 @testable import UDF
-import UDFXCTest
-import XCTest
+import UDFSwiftTesting
+import Testing
 
-final class BindableContainerLifecycleTests: XCTestCase {
+@Suite struct BindableContainerLifecycleTests {
     struct Item: Identifiable {
         struct ID: Hashable {
             var value: Int
@@ -26,7 +26,7 @@ final class BindableContainerLifecycleTests: XCTestCase {
         fileprivate var itemsForm
     }
 
-    func test_BindableContainerLifecycle() async throws {
+    @Test func BindableContainerLifecycle() async throws {
         let store = EnvironmentStore(initial: AppState(), loggers: [])
 
         let itemId = Item.ID(value: 1)
@@ -38,7 +38,7 @@ final class BindableContainerLifecycleTests: XCTestCase {
         await fulfill(description: "waiting for rendering", sleep: 1)
 
         var form: ItemsForm? = store.state.itemsForm[itemId]
-        _ = try XCTUnwrap(form)
+        _ = try #require(form)
 
         window = nil
         await fulfill(description: "waiting for rendering", sleep: 1)
@@ -46,7 +46,7 @@ final class BindableContainerLifecycleTests: XCTestCase {
         await fulfill(description: "waiting for rendering", sleep: 1)
 
         form = store.state.itemsForm[itemId]
-        XCTAssertNil(form)
+        #expect(form == nil)
     }
 }
 

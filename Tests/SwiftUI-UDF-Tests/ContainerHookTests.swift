@@ -1,9 +1,10 @@
 
 import SwiftUI
 @testable import UDF
-import XCTest
+import Testing
+import UDFSwiftTesting
 
-final class ContainerHookTests: XCTestCase {
+@Suite struct ContainerHookTests {
     private struct TestStoreLogger: ActionLogger {
         var actionFilters: [ActionFilter] = [VerboseActionFilter()]
         var actionDescriptor: ActionDescriptor = StringDescribingActionDescriptor()
@@ -25,29 +26,29 @@ final class ContainerHookTests: XCTestCase {
         var callbacksCount: Int = 0
     }
 
-    func test_OneTimeHook() async throws {
+    @Test func OneTimeHook() async throws {
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
         let rootContainer = RootContainer()
 
         let window = await PlatformWindow.render(container: rootContainer)
 
-        XCTAssertEqual(store.state.hookForm.triggerValue, "")
+        #expect(store.state.hookForm.triggerValue == "")
         await window.redraw()
 
         await fulfill(description: "waiting for rendering", sleep: 0.1)
         store.$state.hookForm.triggerValue.wrappedValue = "1"
 
         await fulfill(description: "waiting for dispatch", sleep: 0.2)
-        XCTAssertEqual(store.state.hookForm.triggerValue, "2")
+        #expect(store.state.hookForm.triggerValue == "2")
     }
 
-    func test_OneTimeHook_NotCalledAgainOnRedraw() async throws {
+    @Test func OneTimeHook_NotCalledAgainOnRedraw() async throws {
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
         let rootContainer = RootContainer()
 
         let window = await PlatformWindow.render(container: rootContainer)
 
-        XCTAssertEqual(store.state.hookForm.triggerValue, "")
+        #expect(store.state.hookForm.triggerValue == "")
         await window.redraw()
 
         await fulfill(description: "waiting for rendering", sleep: 0.1)
@@ -56,29 +57,29 @@ final class ContainerHookTests: XCTestCase {
         store.$state.hookForm.triggerValue.wrappedValue = "1"
 
         await fulfill(description: "waiting for hook execution", sleep: 0.2)
-        XCTAssertEqual(store.state.hookForm.triggerValue, "2")
+        #expect(store.state.hookForm.triggerValue == "2")
 
         // Change the state to cause a redraw
         store.$state.hookForm.triggerValue.wrappedValue = "3"
         await fulfill(description: "waiting for redraw", sleep: 0.1)
 
-        XCTAssertEqual(store.state.hookForm.triggerValue, "3")
+        #expect(store.state.hookForm.triggerValue == "3")
 
         // Set triggerValue back to "1" to test if the one-time hook fires again
         store.$state.hookForm.triggerValue.wrappedValue = "1"
         await fulfill(description: "waiting for hook execution", sleep: 0.2)
 
         // The triggerValue should remain "1" because the one-time hook should not fire again
-        XCTAssertEqual(store.state.hookForm.triggerValue, "1")
+        #expect(store.state.hookForm.triggerValue == "1")
     }
 
-    func test_DefaultHook_CalledCorrectNumberOfTimes() async throws {
+    @Test func DefaultHook_CalledCorrectNumberOfTimes() async throws {
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
         let rootContainer = RootContainer()
 
         let window = await PlatformWindow.render(container: rootContainer)
 
-        XCTAssertEqual(store.state.hookForm.triggerValue, "")
+        #expect(store.state.hookForm.triggerValue == "")
         await window.redraw()
 
         await fulfill(description: "waiting for rendering", sleep: 0.1)
@@ -101,17 +102,17 @@ final class ContainerHookTests: XCTestCase {
         }
 
         // Assert that the hook was called the expected number of times
-        XCTAssertEqual(store.state.hookForm.callbacksCount, triggerCount)
+        #expect(store.state.hookForm.callbacksCount == triggerCount)
     }
 
-    func test_HooksPersistAcrossContainers() async throws {
+    @Test func HooksPersistAcrossContainers() async throws {
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
 
         // Create and use the first container
         let rootContainer = RootContainer()
         var window = await PlatformWindow.render(container: rootContainer)
 
-        XCTAssertEqual(store.state.hookForm.triggerValue, "")
+        #expect(store.state.hookForm.triggerValue == "")
         await window.redraw()
 
         await fulfill(description: "waiting for rendering", sleep: 0.1)
@@ -120,24 +121,24 @@ final class ContainerHookTests: XCTestCase {
         store.$state.hookForm.triggerValue.wrappedValue = "1"
 
         await fulfill(description: "waiting for hook execution", sleep: 0.2)
-        XCTAssertEqual(store.state.hookForm.triggerValue, "2")
+        #expect(store.state.hookForm.triggerValue == "2")
 
         // Reset triggerValue for further testing
         store.$state.hookForm.triggerValue.wrappedValue = ""
         await fulfill(description: "waiting for rendering", sleep: 0.1)
-        XCTAssertEqual(store.state.hookForm.triggerValue, "")
+        #expect(store.state.hookForm.triggerValue == "")
 
         // Attempt to trigger the one-time hook again
         store.$state.hookForm.triggerValue.wrappedValue = "1"
         await fulfill(description: "waiting for hook execution", sleep: 0.2)
 
         // The one-time hook should not fire again, so triggerValue should remain "1"
-        XCTAssertEqual(store.state.hookForm.triggerValue, "1", "One-time hook should not fire again")
+        #expect(store.state.hookForm.triggerValue == "1", "One-time hook should not fire again")
 
         let newRootContainer = RootContainer()
         window = await PlatformWindow.render(container: newRootContainer)
 
-        XCTAssertEqual(store.state.hookForm.triggerValue, "1") // triggerValue from previous step
+        #expect(store.state.hookForm.triggerValue == "1") // triggerValue from previous step
         await window.redraw()
 
         await fulfill(description: "waiting for rendering", sleep: 0.1)
@@ -145,10 +146,10 @@ final class ContainerHookTests: XCTestCase {
         // Since hooks are persistent, the one-time hook will not fire again
         // So triggerValue should remain "1"
         await fulfill(description: "waiting for hook execution", sleep: 0.2)
-        XCTAssertEqual(store.state.hookForm.triggerValue, "2", "One-time hook should not fire again in new container")
+        #expect(store.state.hookForm.triggerValue == "2", "One-time hook should not fire again in new container")
     }
 
-    func test_HookFiresWhenConditionAlreadyTrueOnContainerAppear() async throws {
+    @Test func HookFiresWhenConditionAlreadyTrueOnContainerAppear() async throws {
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
 
         // Set the trigger value BEFORE creating the container
@@ -157,7 +158,7 @@ final class ContainerHookTests: XCTestCase {
 
         await fulfill(description: "waiting for settings initial value", sleep: 0.1)
 
-        XCTAssertEqual(store.state.hookForm.triggerValue, "1")
+        #expect(store.state.hookForm.triggerValue == "1")
 
         // Now create the container - the hook condition is already satisfied
         let rootContainer = RootContainer()
@@ -168,14 +169,13 @@ final class ContainerHookTests: XCTestCase {
 
         // The hook should have fired even though the condition was already true
         // when the container appeared, changing "1" to "2"
-        XCTAssertEqual(
-            store.state.hookForm.triggerValue,
-            "2",
+        #expect(
+            store.state.hookForm.triggerValue == "2", 
             "Hook should fire at least once even if condition was already true when container appeared"
         )
     }
 
-    func test_removeHook() async throws {
+    @Test func removeHook() async throws {
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
         let rootContainer = RemovableHookContainer()
 
@@ -188,7 +188,7 @@ final class ContainerHookTests: XCTestCase {
         store.$state.hookForm.triggerValue.wrappedValue = "remove"
         await fulfill(description: "waiting for hook execution", sleep: 0.2)
 
-        XCTAssertEqual(store.state.hookForm.callbacksCount, 1)
+        #expect(store.state.hookForm.callbacksCount == 1)
 
         // Try to trigger again - hook should be removed and not fire
         store.$state.hookForm.triggerValue.wrappedValue = ""
@@ -197,10 +197,10 @@ final class ContainerHookTests: XCTestCase {
         store.$state.hookForm.triggerValue.wrappedValue = "remove"
         await fulfill(description: "waiting for hook execution", sleep: 0.2)
 
-        XCTAssertEqual(store.state.hookForm.callbacksCount, 1, "Hook should not fire after being removed")
+        #expect(store.state.hookForm.callbacksCount == 1, "Hook should not fire after being removed")
     }
 
-    func test_HookWithAlwaysFalseCondition() async throws {
+    @Test func HookWithAlwaysFalseCondition() async throws {
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
         let rootContainer = AlwaysFalseHookContainer()
 
@@ -217,10 +217,10 @@ final class ContainerHookTests: XCTestCase {
         await fulfill(description: "waiting for state change", sleep: 0.2)
 
         // Hook should never fire, so callbacksCount should remain 0
-        XCTAssertEqual(store.state.hookForm.callbacksCount, 0)
+        #expect(store.state.hookForm.callbacksCount == 0)
     }
 
-    func test_MultipleHooksWithDifferentConditions() async throws {
+    @Test func MultipleHooksWithDifferentConditions() async throws {
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
         let rootContainer = MultipleHooksContainer()
 
@@ -236,7 +236,7 @@ final class ContainerHookTests: XCTestCase {
         store.$state.hookForm.triggerValue.wrappedValue = "first"
         await fulfill(description: "waiting for first hook", sleep: 0.2)
 
-        XCTAssertEqual(store.state.hookForm.callbacksCount, 1)
+        #expect(store.state.hookForm.callbacksCount == 1)
 
         // Reset and trigger second hook condition
         store.$state.hookForm.triggerValue.wrappedValue = ""
@@ -246,10 +246,10 @@ final class ContainerHookTests: XCTestCase {
         store.$state.hookForm.triggerValue.wrappedValue = "second"
         await fulfill(description: "waiting for second hook", sleep: 0.2)
 
-        XCTAssertEqual(store.state.hookForm.callbacksCount, 10) // Second hook adds 10
+        #expect(store.state.hookForm.callbacksCount == 10) // Second hook adds 10
     }
 
-    func test_HookWithComplexCondition() async throws {
+    @Test func HookWithComplexCondition() async throws {
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
         let rootContainer = ComplexConditionHookContainer()
 
@@ -267,10 +267,10 @@ final class ContainerHookTests: XCTestCase {
         await fulfill(description: "waiting for hook execution", sleep: 0.2)
 
         // Hook should have fired and incremented callbacksCount
-        XCTAssertEqual(store.state.hookForm.callbacksCount, 6)
+        #expect(store.state.hookForm.callbacksCount == 6)
     }
 
-    func test_HookFiresOnlyOnConditionTransition() async throws {
+    @Test func HookFiresOnlyOnConditionTransition() async throws {
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
         let rootContainer = TransitionTestContainer()
 
@@ -287,13 +287,13 @@ final class ContainerHookTests: XCTestCase {
         store.$state.hookForm.triggerValue.wrappedValue = "true"
         await fulfill(description: "waiting for hook execution", sleep: 0.2)
 
-        XCTAssertEqual(store.state.hookForm.callbacksCount, 1)
+        #expect(store.state.hookForm.callbacksCount == 1)
 
         // Keep condition true - hook should not fire again
         store.$state.hookForm.triggerValue.wrappedValue = "true"
         await fulfill(description: "waiting for state change", sleep: 0.2)
 
-        XCTAssertEqual(store.state.hookForm.callbacksCount, 1, "Hook should not fire when condition remains true")
+        #expect(store.state.hookForm.callbacksCount == 1, "Hook should not fire when condition remains true")
 
         // Change to false, then true again - hook should fire
         store.$state.hookForm.triggerValue.wrappedValue = "false"
@@ -302,10 +302,10 @@ final class ContainerHookTests: XCTestCase {
         store.$state.hookForm.triggerValue.wrappedValue = "true"
         await fulfill(description: "waiting for hook execution", sleep: 0.2)
 
-        XCTAssertEqual(store.state.hookForm.callbacksCount, 2, "Hook should fire on false->true transition")
+        #expect(store.state.hookForm.callbacksCount == 2, "Hook should fire on false->true transition")
     }
 
-    func test_HookWithNilConditionCheck() async throws {
+    @Test func HookWithNilConditionCheck() async throws {
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
         let rootContainer = NilSafeHookContainer()
 
@@ -321,10 +321,10 @@ final class ContainerHookTests: XCTestCase {
         store.$state.hookForm.triggerValue.wrappedValue = "valid"
         await fulfill(description: "waiting for hook execution", sleep: 0.2)
 
-        XCTAssertEqual(store.state.hookForm.callbacksCount, 1)
+        #expect(store.state.hookForm.callbacksCount == 1)
     }
 
-    func test_HookWithStateRollback() async throws {
+    @Test func HookWithStateRollback() async throws {
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
         let rootContainer = RollbackHookContainer()
 
@@ -343,11 +343,11 @@ final class ContainerHookTests: XCTestCase {
         await fulfill(description: "waiting for rollback hook", sleep: 0.2)
 
         // Hook should have reset the counter
-        XCTAssertEqual(store.state.hookForm.callbacksCount, 0)
-        XCTAssertEqual(store.state.hookForm.triggerValue, "reset")
+        #expect(store.state.hookForm.callbacksCount == 0)
+        #expect(store.state.hookForm.triggerValue == "reset")
     }
 
-    func test_ConditionalHookActivation() async throws {
+    @Test func ConditionalHookActivation() async throws {
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
         let rootContainer = ConditionalHookContainer()
 
@@ -364,7 +364,7 @@ final class ContainerHookTests: XCTestCase {
         store.$state.hookForm.triggerValue.wrappedValue = "trigger"
         await fulfill(description: "waiting for hook execution", sleep: 0.2)
 
-        XCTAssertEqual(store.state.hookForm.callbacksCount, 3) // 2 + 1
+        #expect(store.state.hookForm.callbacksCount == 3) // 2 + 1
 
         // Reset triggerValue and try with odd number
         store.$state.hookForm.triggerValue.wrappedValue = ""
@@ -373,7 +373,7 @@ final class ContainerHookTests: XCTestCase {
         store.$state.hookForm.triggerValue.wrappedValue = "trigger"
         await fulfill(description: "waiting for hook execution", sleep: 0.2)
 
-        XCTAssertEqual(store.state.hookForm.callbacksCount, 3, "Hook should not fire when callbacksCount is odd")
+        #expect(store.state.hookForm.callbacksCount == 3, "Hook should not fire when callbacksCount is odd")
     }
 }
 

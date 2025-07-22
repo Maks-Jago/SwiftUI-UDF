@@ -1,9 +1,9 @@
 
 import SwiftUI
 @testable import UDF
-import XCTest
+import Testing
 
-final class RouterTests: XCTestCase {
+@Suite struct RouterTests {
     struct ItemDetailsRouting: Routing {
         enum Route {
             case details
@@ -32,13 +32,14 @@ final class RouterTests: XCTestCase {
         }
     }
 
+    @Test
     @MainActor
-    func test_RouterMocking() throws {
+    func RouterMocking() throws {
         let itemsComponent = ItemsComponent(props: .init())
         let detailsView = itemsComponent.props.router.view(for: .details)
 
         let detailsTextDesc = "\(detailsView)"
-        XCTAssertTrue(detailsTextDesc.contains("\"details\""))
+        #expect(detailsTextDesc.contains("\"details\""))
 
         let mockedRouter = Router(routing: ItemDetailsRouting()) { routing, route in
             switch route {
@@ -52,6 +53,6 @@ final class RouterTests: XCTestCase {
 
         let mockedDetailsTextDesc = "\(mockedDetailsView)"
 
-        XCTAssertFalse(mockedDetailsTextDesc.contains("\"details\""))
+        #expect(!mockedDetailsTextDesc.contains("\"details\""))
     }
 }

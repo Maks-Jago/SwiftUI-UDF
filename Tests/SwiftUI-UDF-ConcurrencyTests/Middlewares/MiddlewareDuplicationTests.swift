@@ -1,7 +1,7 @@
 @testable import UDF
-import XCTest
+import Testing
 
-final class MiddlewareDuplicationTests: XCTestCase {
+@Suite struct MiddlewareDuplicationTests {
     struct AppState: AppReducer {
         var testForm = TestForm()
     }
@@ -31,7 +31,7 @@ final class MiddlewareDuplicationTests: XCTestCase {
         }
     }
 
-    func testMiddlewareDuplication() async {
+    @Test func middlewareDuplication() async {
         let store = await XCTestStore(initial: AppState())
 
         await store.subscribe(build: { _ in
@@ -44,6 +44,6 @@ final class MiddlewareDuplicationTests: XCTestCase {
 
         // Verify that the middleware is only added once
         let middlewaresCount = await store.state.testForm.reduceCallCount
-        XCTAssertEqual(middlewaresCount, 1, "Middleware should only be added once")
+        #expect(middlewaresCount == 1, "Middleware should only be added once")
     }
 }

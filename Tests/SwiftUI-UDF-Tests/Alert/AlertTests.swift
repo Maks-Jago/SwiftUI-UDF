@@ -1,6 +1,6 @@
 import SwiftUI
 @testable import UDF
-import XCTest
+import Testing
 
 private extension Actions {
     struct PresentAlertWithAction: Action {}
@@ -17,7 +17,7 @@ extension AlertBuilder.AlertStyle {
     }
 }
 
-final class AlertTests: XCTestCase {
+@Suite struct AlertTests {
     struct AppState: AppReducer {
         var form = FormWithAlert()
     }
@@ -40,11 +40,11 @@ final class AlertTests: XCTestCase {
         }
     }
     
-    func test_WhenAlerBuilderRegistered_AlertCanBePresentedById() async {
+    @Test func WhenAlerBuilderRegistered_AlertCanBePresentedById() async {
         let store = await XCTestStore(initial: AppState())
         var status = await store.state.form.alert.status
         
-        XCTAssertEqual(status, .dismissed)
+        #expect(status == .dismissed)
         
         AlertBuilder.registerAlert(by: FormWithAlert.AlertId.alertWithAction) {
             .alertWithAction {
@@ -55,6 +55,6 @@ final class AlertTests: XCTestCase {
         await store.dispatch(Actions.PresentAlertWithAction())
         status = await store.state.form.alert.status
         
-        XCTAssertNotEqual(status, .dismissed)
+        #expect(status != .dismissed)
     }
 }
