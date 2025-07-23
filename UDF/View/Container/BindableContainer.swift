@@ -62,28 +62,11 @@ public extension BindableContainer {
             containerId: { self.id },
             map: map,
             scope: scope(for:),
-            containerLifecycle: .init(
-                wrappedValue: ContainerLifecycle(
-                    didLoadCommand: { store in
-                        store.dispatch(
-                            Actions._OnContainerDidLoad(containerType: Self.self, id: self.id).silent(),
-                            priority: .userInteractive
-                        )
-                        self.onContainerDidLoad(store: store)
-                    },
-                    didUnloadCommand: { store in
-                        self.onContainerDidUnload(store: store)
-                        store.dispatch(
-                            Actions._OnContainerDidUnLoad(containerType: Self.self, id: self.id)
-                                .with(delay: 0.15)
-                                .silent()
-                        )
-                    },
-                    useHooks: self.useHooks
-                )
-            ),
             onContainerAppear: onContainerAppear,
-            onContainerDisappear: onContainerDisappear
+            onContainerDisappear: onContainerDisappear,
+            onContainerDidLoad: onContainerDidLoad,
+            onContainerDidUnload: onContainerDidUnload,
+            useHooks: useHooks
         )
     }
 }
