@@ -27,7 +27,7 @@ public func useStore<State: AppReducer>(_ stateType: State.Type, _ useBlock: @es
 ///
 /// - Parameters:
 ///   - block: An async block to execute.
-func executeSynchronously(_ block: @escaping () async -> Void) {
+func executeSynchronously(_ block: @escaping @Sendable () async -> Void) {
     let semaphore = DispatchSemaphore(value: 0)
     Task.detached(priority: .userInitiated) {
         await block()

@@ -18,7 +18,7 @@ final class NewReducibleMiddlewareTests: XCTestCase {
         var title: String = ""
     }
 
-    class SendMessageMiddleware: BaseReducibleMiddleware<AppState> {
+    class SendMessageMiddleware: Middleware<AppState>, @unchecked Sendable {
         static func buildLiveEnvironment(for store: some Store<AppState>) -> Environment {
             Environment(loadItems: { [] })
         }
@@ -29,8 +29,8 @@ final class NewReducibleMiddlewareTests: XCTestCase {
 
         var environment: Environment!
 
-        struct Environment {
-            var loadItems: () -> [String]
+        struct Environment: Sendable{
+            var loadItems: @Sendable () -> [String]
         }
 
         func reduce(_ action: some Action, for state: AppState) {

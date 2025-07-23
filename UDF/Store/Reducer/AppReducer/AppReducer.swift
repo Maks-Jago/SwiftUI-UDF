@@ -30,7 +30,7 @@ import Foundation
 ///
 /// By conforming to `AppReducer`, the `MyAppState` structure can now participate in state management, allowing
 /// it to handle actions and perform initial setups.
-public protocol AppReducer: Equatable, Scope {}
+public protocol AppReducer: Equatable, Scope, Sendable {}
 
 // MARK: - AppReducer Extension
 extension AppReducer {

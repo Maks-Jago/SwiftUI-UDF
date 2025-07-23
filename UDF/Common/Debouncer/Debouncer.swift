@@ -17,7 +17,7 @@ import Foundation
 ///
 /// - Parameters:
 ///   - T: The type of value to debounce.
-final class Debouncer<T> {
+final class Debouncer<T>: @unchecked Sendable {
     /// The latest received value.
     private(set) var value: T?
 

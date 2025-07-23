@@ -27,7 +27,7 @@ final class ContainerHookTests: XCTestCase {
 
     func test_OneTimeHook() async throws {
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
-        let rootContainer = await RootContainer()
+        let rootContainer = RootContainer()
 
         let window = await PlatformWindow.render(container: rootContainer)
 
@@ -43,7 +43,7 @@ final class ContainerHookTests: XCTestCase {
 
     func test_OneTimeHook_NotCalledAgainOnRedraw() async throws {
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
-        let rootContainer = await RootContainer()
+        let rootContainer = RootContainer()
 
         let window = await PlatformWindow.render(container: rootContainer)
 
@@ -74,7 +74,7 @@ final class ContainerHookTests: XCTestCase {
 
     func test_DefaultHook_CalledCorrectNumberOfTimes() async throws {
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
-        let rootContainer = await RootContainer()
+        let rootContainer = RootContainer()
 
         let window = await PlatformWindow.render(container: rootContainer)
 
@@ -108,7 +108,7 @@ final class ContainerHookTests: XCTestCase {
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
 
         // Create and use the first container
-        let rootContainer = await RootContainer()
+        let rootContainer = RootContainer()
         var window = await PlatformWindow.render(container: rootContainer)
 
         XCTAssertEqual(store.state.hookForm.triggerValue, "")
@@ -134,7 +134,7 @@ final class ContainerHookTests: XCTestCase {
         // The one-time hook should not fire again, so triggerValue should remain "1"
         XCTAssertEqual(store.state.hookForm.triggerValue, "1", "One-time hook should not fire again")
 
-        let newRootContainer = await RootContainer()
+        let newRootContainer = RootContainer()
         window = await PlatformWindow.render(container: newRootContainer)
 
         XCTAssertEqual(store.state.hookForm.triggerValue, "1") // triggerValue from previous step
@@ -160,7 +160,7 @@ final class ContainerHookTests: XCTestCase {
         XCTAssertEqual(store.state.hookForm.triggerValue, "1")
 
         // Now create the container - the hook condition is already satisfied
-        let rootContainer = await RootContainer()
+        let rootContainer = RootContainer()
         let window = await PlatformWindow.render(container: rootContainer)
 
         await window.redraw()
@@ -177,7 +177,7 @@ final class ContainerHookTests: XCTestCase {
 
     func test_removeHook() async throws {
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
-        let rootContainer = await RemovableHookContainer()
+        let rootContainer = RemovableHookContainer()
 
         let window = await PlatformWindow.render(container: rootContainer)
         await window.redraw()
@@ -202,7 +202,7 @@ final class ContainerHookTests: XCTestCase {
 
     func test_HookWithAlwaysFalseCondition() async throws {
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
-        let rootContainer = await AlwaysFalseHookContainer()
+        let rootContainer = AlwaysFalseHookContainer()
 
         let window = await PlatformWindow.render(container: rootContainer)
         await window.redraw()
@@ -222,7 +222,7 @@ final class ContainerHookTests: XCTestCase {
 
     func test_MultipleHooksWithDifferentConditions() async throws {
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
-        let rootContainer = await MultipleHooksContainer()
+        let rootContainer = MultipleHooksContainer()
 
         let window = await PlatformWindow.render(container: rootContainer)
         await window.redraw()
@@ -251,7 +251,7 @@ final class ContainerHookTests: XCTestCase {
 
     func test_HookWithComplexCondition() async throws {
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
-        let rootContainer = await ComplexConditionHookContainer()
+        let rootContainer = ComplexConditionHookContainer()
 
         let window = await PlatformWindow.render(container: rootContainer)
         await window.redraw()
@@ -272,7 +272,7 @@ final class ContainerHookTests: XCTestCase {
 
     func test_HookFiresOnlyOnConditionTransition() async throws {
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
-        let rootContainer = await TransitionTestContainer()
+        let rootContainer = TransitionTestContainer()
 
         let window = await PlatformWindow.render(container: rootContainer)
         await window.redraw()
@@ -307,7 +307,7 @@ final class ContainerHookTests: XCTestCase {
 
     func test_HookWithNilConditionCheck() async throws {
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
-        let rootContainer = await NilSafeHookContainer()
+        let rootContainer = NilSafeHookContainer()
 
         let window = await PlatformWindow.render(container: rootContainer)
         await window.redraw()
@@ -326,7 +326,7 @@ final class ContainerHookTests: XCTestCase {
 
     func test_HookWithStateRollback() async throws {
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
-        let rootContainer = await RollbackHookContainer()
+        let rootContainer = RollbackHookContainer()
 
         let window = await PlatformWindow.render(container: rootContainer)
         await window.redraw()
@@ -349,7 +349,7 @@ final class ContainerHookTests: XCTestCase {
 
     func test_ConditionalHookActivation() async throws {
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
-        let rootContainer = await ConditionalHookContainer()
+        let rootContainer = ConditionalHookContainer()
 
         let window = await PlatformWindow.render(container: rootContainer)
         await window.redraw()

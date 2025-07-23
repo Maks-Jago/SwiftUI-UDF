@@ -55,5 +55,6 @@ public protocol Component: View {
     /// Initializes the component with the given properties.
     ///
     /// - Parameter props: The properties to use for configuring the component.
+    @MainActor
     init(props: Props)
 }

@@ -17,7 +17,7 @@ import Foundation
 /// of a `BindableContainer`. It allows actions to be dispatched and reduced in a dynamic, container-bound manner, facilitating
 /// the organization of complex state management in a SwiftUI application.
 @propertyWrapper
-public struct BindableReducer<BindedContainer: BindableContainer, Reducer: Reducible>: Reducible {
+public struct BindableReducer<BindedContainer: BindableContainer, Reducer: Reducible>: Reducible where BindedContainer.ID: Sendable {
     /// A typealias representing a dictionary of reducers associated with container IDs.
     public typealias Reducers = RCDictionary<BindedContainer.ID, Reducer>
 
@@ -110,7 +110,7 @@ public extension BindableReducer {
     /// adding, removing, or reducing the appropriate reducers based on the action's type.
     ///
     /// - Parameter action: The action to be reduced.
-    mutating func reduce(_ action: some Action) {
+    mutating func reduce(_ action: some Action) where BindedContainer.ID: Sendable {
         switch action {
         case let action as Actions._OnContainerDidLoad<BindedContainer>:
             reducers.retainOrCreateValue(for: action.id)

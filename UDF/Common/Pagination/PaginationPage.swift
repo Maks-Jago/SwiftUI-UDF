@@ -10,7 +10,7 @@ import Foundation
 /// `PaginationPage` is an enumeration that represents the current page in a pagination process. It has two cases:
 /// - `number(Int)`: Represents a regular page number.
 /// - `lastPage(Int)`: Represents the last page in the pagination process.
-public enum PaginationPage {
+public enum PaginationPage: Sendable {
     case number(Int)
     case lastPage(Int)
 

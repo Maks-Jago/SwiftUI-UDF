@@ -43,7 +43,7 @@ public final class XCTestStore<State: AppReducer> {
         self.store = store
         self._state = .init(wrappedValue: mutableState, store: store)
 
-        self.cancelation = store.subject
+        self.cancelation = store.subject.publisher
             .map(\.0)
             .assign(to: \.state, on: self)
     }
@@ -52,8 +52,7 @@ public final class XCTestStore<State: AppReducer> {
         await store.subscribe(build(store))
     }
 
-    @available(macOS 13, *)
-    public func subscribe(buildMiddlewares: (_ store: any Store<State>) -> [any Middleware<State>]) async {
+    public func subscribe(buildMiddlewares: (_ store: any Store<State>) -> [any _Middleware<State>]) async {
         await store.subscribe(buildMiddlewares(store))
     }
 
@@ -83,7 +82,6 @@ public extension XCTestStore {
 }
 
 public extension XCTestStore {
-    @available(macOS 13, *)
     func subscribe(@MiddlewareBuilder<State> build: (_ store: any Store<State>) -> [MiddlewareWrapper<State>]) async {
         await self.subscribe(buildMiddlewares: { store in
             build(store).map { wrapper in
@@ -92,7 +90,7 @@ public extension XCTestStore {
         })
     }
 
-    private func middleware<M: Middleware<State>>(store: any Store<State>, type: M.Type) -> any Middleware<State> where M.State == State {
+    private func middleware<M: _Middleware<State>>(store: any Store<State>, type: M.Type) -> any _Middleware<State> where M.State == State {
         switch type {
         case let envMiddlewareType as any MiddlewareWithEnvironment<State>.Type:
             envMiddleware(store: store, type: envMiddlewareType)
@@ -101,7 +99,7 @@ public extension XCTestStore {
         }
     }
 
-    private func envMiddleware<M: MiddlewareWithEnvironment<State>>(store: any Store<State>, type: M.Type) -> any Middleware<State>
+    private func envMiddleware<M: MiddlewareWithEnvironment<State>>(store: any Store<State>, type: M.Type) -> any _Middleware<State>
         where M.State == State
     {
         type.init(store: store, environment: type.buildTestEnvironment(for: store))

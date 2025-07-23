@@ -36,7 +36,8 @@ import SwiftUI
 ///
 /// ## Methods:
 /// - `deinit`: Removes the state subscription from the store when the `ContainerState` instance is deallocated.
-final class ContainerState<State: AppReducer>: ObservableObject {
+
+final class ContainerState<State: AppReducer>: ObservableObject, @unchecked Sendable {
     /// A weak reference to the environment store containing the global state.
     weak var store: EnvironmentStore<State>?
 
@@ -51,7 +52,7 @@ final class ContainerState<State: AppReducer>: ObservableObject {
     /// - Parameters:
     ///   - store: The `EnvironmentStore` holding the global state.
     ///   - scope: A closure that extracts a `Scope` from the global state.
-    init(store: EnvironmentStore<State>, scope: @escaping (_ state: State) -> Scope) {
+    init(store: EnvironmentStore<State>, scope: @escaping @Sendable (_ state: State) -> Scope) {
         self.store = store
         self.currentScope = nil
 

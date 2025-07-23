@@ -16,6 +16,7 @@ import class AppTrackingTransparency.ATTrackingManager
 import enum CoreLocation.CLAccuracyAuthorization
 import enum CoreLocation.CLAuthorizationStatus
 import class CoreLocation.CLLocation
+import SwiftUI
 
 #if canImport(UIKit)
     import UIKit.UIApplication
@@ -35,7 +36,7 @@ public enum Actions {
     /// modify the corresponding property in the form.
     ///
     /// This action ensures that form updates are handled in a controlled and type-safe manner.
-    public struct UpdateFormField<F: Form>: Action {
+    public struct UpdateFormField<F: Form>: Action, @unchecked Sendable {
         /// Compares two `UpdateFormField` actions to check if they are equal.
         /// - Parameters:
         ///   - lhs: The left-hand side `UpdateFormField` to compare.
@@ -67,16 +68,17 @@ public enum Actions {
             }
         }
     }
-
+    
     /// `UpdateAlertStatus` is an action used to update the status of an alert within the UDF architecture.
     /// It contains the alert's status and an identifier, enabling the management of alerts based on their unique IDs.
+    @available(*, deprecated, message: "Will be removed in future updates. Use UpdateDialogStatus instead.")
     public struct UpdateAlertStatus: Action {
         /// The status of the alert to be updated.
         public var status: AlertBuilder.AlertStatus
-
+        
         /// A unique identifier for the alert.
         public var id: AnyHashable
-
+        
         /// Initializes a new `UpdateAlertStatus` action.
         ///
         /// - Parameters:
@@ -86,7 +88,7 @@ public enum Actions {
             self.status = status
             self.id = id
         }
-
+        
         /// Initializes a new `UpdateAlertStatus` action with a specific alert style.
         ///
         /// - Parameters:
@@ -95,6 +97,140 @@ public enum Actions {
         public init(style: AlertBuilder.AlertStyle, id: some Hashable) {
             self.status = .init(style: style)
             self.id = id
+        }
+    }
+
+    /// `UpdateDialogStatus` is an action used to update the state of a dialog within the UDF architecture.
+    /// It contains the dialog's state and an identifier, enabling the management of dialogs based on their unique IDs.
+    ///
+    /// This is a direct migration from `UpdateAlertStatus` with the same functionality but updated to work
+    /// with the new Dialog System.
+    ///
+    /// ## Usage:
+    /// ```swift
+    /// // Update with a specific dialog state
+    /// let action = UpdateDialogStatus(
+    ///     state: .init(error: "Something went wrong"),
+    ///     id: "errorDialog"
+    /// )
+    /// 
+    /// // Update with a dialog type
+    /// let action = UpdateDialogStatus(
+    ///     dialog: .success("Operation completed"),
+    ///     id: "successdialog"
+    /// )
+    /// 
+    /// // Update with custom content
+    /// let action = UpdateDialogStatus(
+    ///     content: DialogContent("Delete Item", message: "This cannot be undone") {
+    ///         DialogButton.destructive("Delete") { performDelete() }
+    ///         DialogButton.cancel("Cancel")
+    ///     },
+    ///     id: "deleteConfirmation"
+    /// )
+    /// ```
+    public struct UpdateDialogStatus: Action {
+        /// The state of the dialog to be updated.
+        public var status: DialogStatus
+        
+        /// A unique identifier for the dialog.
+        public var id: AnyHashable
+        
+        // MARK: - Initializers
+        
+        /// Initializes a new `UpdateDialogStatus` action with a specific dialog state.
+        ///
+        /// - Parameters:
+        ///   - state: The new state of the dialog.
+        ///   - id: The unique identifier for the dialog.
+        public init(status: DialogStatus, id: some Hashable) {
+            self.status = status
+            self.id = AnyHashable(id)
+        }
+        
+        /// Initializes a new `UpdateDialogStatus` action with a specific dialog type.
+        ///
+        /// - Parameters:
+        ///   - dialog: The dialog type to be used for creating the dialog state.
+        ///   - id: The unique identifier for the dialog.
+        public init(dialog: DialogType, id: some Hashable) {
+            self.status = .init(dialog: dialog)
+            self.id = AnyHashable(id)
+        }
+        
+        /// Initializes a new `UpdateDialogStatus` action with custom dialog content.
+        ///
+        /// - Parameters:
+        ///   - content: The custom content for the dialog.
+        ///   - id: The unique identifier for the dialog.
+        ///   - style: The dialog style (defaults to .alert).
+        public init<Icon: View, Content: View>(content: DialogContent<Icon, Content>, id: some Hashable, style: DialogStyle = .alert) {
+            self.status = .init(dialog: DialogCustomType.custom(content: content, style: style))
+            self.id = AnyHashable(id)
+        }
+        
+        // MARK: - Convenience Initializers
+        
+        /// Initializes a new `UpdateDialogStatus` action with a success message.
+        ///
+        /// - Parameters:
+        ///   - success: The success message to display.
+        ///   - id: The unique identifier for the dialog.
+        ///   - style: The dialog style (defaults to .alert).
+        public init(success: String, id: some Hashable, style: DialogStyle = .alert) {
+            self.status = .init(dialog: DialogType.success(message: success, style: style))
+            self.id = AnyHashable(id)
+        }
+        
+        /// Initializes a new `UpdateDialogStatus` action with an error message.
+        ///
+        /// - Parameters:
+        ///   - error: The error message to display.
+        ///   - id: The unique identifier for the dialog.
+        ///   - style: The dialog style (defaults to .alert).
+        public init(error: String, id: some Hashable, style: DialogStyle = .alert) {
+            self.status = .init(dialog: DialogType.error(message: error, style: style))
+            self.id = AnyHashable(id)
+        }
+        
+        /// Initializes a new `UpdateDialogStatus` action with a warning message.
+        ///
+        /// - Parameters:
+        ///   - warning: The warning message to display.
+        ///   - id: The unique identifier for the dialog.
+        ///   - style: The dialog style (defaults to .alert).
+        public init(warning: String, id: some Hashable, style: DialogStyle = .alert) {
+            self.status = .init(dialog: DialogType.warning(message: warning, style: style))
+            self.id = AnyHashable(id)
+        }
+        
+        /// Initializes a new `UpdateDialogStatus` action with an info message.
+        ///
+        /// - Parameters:
+        ///   - info: The info message to display.
+        ///   - id: The unique identifier for the dialog.
+        ///   - style: The dialog style (defaults to .alert).
+        public init(info: String, id: some Hashable, style: DialogStyle = .alert) {
+            self.status = .init(dialog: DialogType.info(message: info, style: style))
+            self.id = AnyHashable(id)
+        }
+        
+        /// Initializes a new `UpdateDialogStatus` action to dismiss a dialog.
+        ///
+        /// - Parameter id: The unique identifier for the dialog to dismiss.
+        public init(dismissing id: some Hashable) {
+            self.status = .dismissed
+            self.id = AnyHashable(id)
+        }
+        
+        /// Initializes a new `UpdateDialogStatus` action using a registered dialog.
+        ///
+        /// - Parameters:
+        ///   - registrationId: The identifier of the registered dialog.
+        ///   - id: The unique identifier for this dialog instance.
+        public init(registrationId: some Hashable, id: some Hashable) {
+            self.status = .init(id: registrationId)
+            self.id = AnyHashable(id)
         }
     }
 
@@ -110,7 +246,7 @@ public enum Actions {
     /// `Error` is an action that represents an error occurrence within the UDF architecture.
     /// It conforms to both `Action` and `LocalizedError`, providing error information alongside an identifier, a code, and additional
     /// metadata.
-    public struct Error: Action, LocalizedError {
+    public struct Error: Action, LocalizedError, @unchecked Sendable {
         /// Compares two `Error` instances for equality.
         ///
         /// - Parameters:
@@ -196,7 +332,7 @@ public enum Actions {
     }
 
     /// `SetPaginationItems` is an action that sets paginated items within a specific context.
-    public struct SetPaginationItems<I: Equatable>: Action {
+    public struct SetPaginationItems<I: Equatable & Sendable>: Action {
         /// A unique identifier for the pagination context.
         public var id: AnyHashable
 
@@ -240,7 +376,7 @@ public enum Actions {
     }
 
     /// `ApplicationDidLaunchWithOptions` is an action that indicates the application has launched with specific options.
-    public struct ApplicationDidLaunchWithOptions: Action {
+    public struct ApplicationDidLaunchWithOptions: Action, @unchecked Sendable {
         /// Checks the equality of two `ApplicationDidLaunchWithOptions` actions based on the `application` property.
         public static func == (lhs: ApplicationDidLaunchWithOptions, rhs: ApplicationDidLaunchWithOptions) -> Bool {
             lhs.application == rhs.application
@@ -338,7 +474,7 @@ public extension Actions {
 // MARK: - Items
 public extension Actions {
     /// `DidLoadItem` is an action that represents a single item being loaded.
-    struct DidLoadItem<M: Equatable>: Action {
+    struct DidLoadItem<M: Equatable & Sendable>: Action {
         /// The item that was loaded.
         public var item: M
 
@@ -364,7 +500,7 @@ public extension Actions {
     }
 
     /// `DidLoadItems` is an action that represents multiple items being loaded.
-    struct DidLoadItems<M: Equatable>: Action, CustomStringConvertible {
+    struct DidLoadItems<M: Equatable & Sendable>: Action, CustomStringConvertible {
         /// The list of items that were loaded.
         public var items: [M]
 
@@ -397,7 +533,7 @@ public extension Actions {
     }
 
     /// `DidUpdateItem` is an action that represents an item being updated.
-    struct DidUpdateItem<M: Equatable>: Action {
+    struct DidUpdateItem<M: Equatable & Sendable>: Action {
         /// The item that was updated.
         public var item: M
 
@@ -423,7 +559,7 @@ public extension Actions {
     }
 
     /// `DeleteItem` is an action that represents an item being deleted.
-    struct DeleteItem<M: Equatable>: Action {
+    struct DeleteItem<M: Equatable & Sendable>: Action {
         /// The item that was deleted.
         public var item: M
 
@@ -452,7 +588,7 @@ public extension Actions {
 // MARK: - Nested Items
 public extension Actions {
     /// `DidLoadNestedItem` is an action that represents a nested item being loaded.
-    struct DidLoadNestedItem<ParentId: Hashable, Nested: Equatable>: Action {
+    struct DidLoadNestedItem<ParentId: Hashable & Sendable, Nested: Equatable & Sendable>: Action {
         /// The nested item that was loaded.
         public var item: Nested
 
@@ -486,7 +622,7 @@ public extension Actions {
     }
 
     /// `DidLoadNestedItems` is an action that represents multiple nested items being loaded.
-    struct DidLoadNestedItems<ParentId: Hashable, Nested: Equatable>: Action, CustomStringConvertible {
+    struct DidLoadNestedItems<ParentId: Hashable & Sendable, Nested: Equatable & Sendable>: Action, CustomStringConvertible {
         /// The nested items that were loaded.
         public var items: [Nested]
 
@@ -536,7 +672,7 @@ public extension Actions {
     }
 
     /// `DidLoadNestedByParents` is an action representing the loading of nested items grouped by their parent identifiers.
-    struct DidLoadNestedByParents<ParentId: Hashable, Nested: Equatable>: Action, CustomStringConvertible {
+    struct DidLoadNestedByParents<ParentId: Hashable & Sendable, Nested: Equatable & Sendable>: Action, CustomStringConvertible {
         /// A dictionary mapping parent identifiers to their corresponding nested items.
         public var dictionary: [ParentId: [Nested]]
 
@@ -579,7 +715,7 @@ public extension Actions {
     }
 
     /// `DidUpdateNestedItem` is an action representing the update of a nested item for a specific parent identifier.
-    struct DidUpdateNestedItem<ParentId: Hashable, Nested: Equatable>: Action {
+    struct DidUpdateNestedItem<ParentId: Hashable & Sendable, Nested: Equatable & Sendable>: Action {
         /// The nested item that was updated.
         public var item: Nested
 
@@ -613,7 +749,7 @@ public extension Actions {
     }
 
     /// `DeleteNestedItem` is an action representing the deletion of a nested item for a specific parent identifier.
-    struct DeleteNestedItem<ParentId: Hashable, Nested: Equatable>: Action {
+    struct DeleteNestedItem<ParentId: Hashable & Sendable, Nested: Equatable & Sendable>: Action {
         /// The nested item that is to be deleted.
         public var item: Nested
 
@@ -656,19 +792,19 @@ public extension Actions {
         }
 
         /// An array representing the path to navigate to.
-        public let to: [any Hashable]
+        public let to: [any Hashable & Sendable]
 
         /// Initializes a `Navigate` action to a single destination.
         ///
         /// - Parameter to: A `Hashable` representing the destination.
-        public init(to: any Hashable) {
+        public init(to: any Hashable & Sendable) {
             self.to = [to]
         }
 
         /// Initializes a `Navigate` action to a series of destinations.
         ///
         /// - Parameter path: An array of `Hashable` objects representing the navigation path.
-        public init(path: [any Hashable]) {
+        public init(path: [any Hashable & Sendable]) {
             self.to = path
         }
     }
@@ -680,19 +816,19 @@ public extension Actions {
         }
 
         /// An array representing the path to navigate to after resetting the stack.
-        public let to: [any Hashable]
+        public let to: [any Hashable & Sendable]
 
         /// Initializes a `NavigateResetStack` action to a single destination.
         ///
         /// - Parameter to: A `Hashable` representing the destination.
-        public init(to: any Hashable) {
+        public init(to: any Hashable & Sendable) {
             self.to = [to]
         }
 
         /// Initializes a `NavigateResetStack` action to a series of destinations.
         ///
         /// - Parameter path: An array of `Hashable` objects representing the navigation path.
-        public init(path: [any Hashable]) {
+        public init(path: [any Hashable & Sendable]) {
             self.to = path
         }
     }
@@ -726,19 +862,19 @@ public extension Actions {
         }
 
         /// An array representing the path to navigate to.
-        public let to: [any Hashable]
+        public let to: [any Hashable & Sendable]
 
         /// Initializes a `NavigateTyped` action to a single destination.
         ///
         /// - Parameter to: A `Hashable` representing the destination.
-        public init(to: any Hashable) {
+        public init(to: any Hashable & Sendable) {
             self.to = [to]
         }
 
         /// Initializes a `NavigateTyped` action to a series of destinations.
         ///
         /// - Parameter path: An array of `Hashable` objects representing the navigation path.
-        public init(path: [any Hashable]) {
+        public init(path: [any Hashable & Sendable]) {
             self.to = path
         }
     }
@@ -750,19 +886,19 @@ public extension Actions {
         }
 
         /// An array representing the path to navigate to after resetting the stack.
-        public let to: [any Hashable]
+        public let to: [any Hashable & Sendable]
 
         /// Initializes a `NavigateResetStackTyped` action to a single destination.
         ///
         /// - Parameter to: A `Hashable` representing the destination.
-        public init(to: any Hashable) {
+        public init(to: any Hashable & Sendable) {
             self.to = [to]
         }
 
         /// Initializes a `NavigateResetStackTyped` action to a series of destinations.
         ///
         /// - Parameter path: An array of `Hashable` objects representing the navigation path.
-        public init(path: [any Hashable]) {
+        public init(path: [any Hashable & Sendable]) {
             self.to = path
         }
     }
@@ -795,7 +931,7 @@ extension Actions {
     ///
     /// - Parameters:
     ///   - BindedContainer: The container type conforming to `BindableContainer`.
-    struct _OnContainerDidLoad<BindedContainer: BindableContainer>: Action {
+    struct _OnContainerDidLoad<BindedContainer: BindableContainer>: Action where BindedContainer.ID: Sendable {
         static func == (lhs: Actions._OnContainerDidLoad<BindedContainer>, rhs: Actions._OnContainerDidLoad<BindedContainer>) -> Bool {
             lhs.id == rhs.id && lhs.containerType == rhs.containerType
         }
@@ -813,7 +949,7 @@ extension Actions {
     ///
     /// - Parameters:
     ///   - BindedContainer: The container type conforming to `BindableContainer`.
-    struct _OnContainerDidUnLoad<BindedContainer: BindableContainer>: Action {
+    struct _OnContainerDidUnLoad<BindedContainer: BindableContainer>: Action where BindedContainer.ID: Sendable {
         static func == (lhs: Actions._OnContainerDidUnLoad<BindedContainer>, rhs: Actions._OnContainerDidUnLoad<BindedContainer>) -> Bool {
             lhs.id == rhs.id && lhs.containerType == rhs.containerType
         }
@@ -831,7 +967,7 @@ extension Actions {
     ///
     /// - Parameters:
     ///   - BindedContainer: The container type conforming to `BindableContainer`.
-    struct _BindableAction<BindedContainer: BindableContainer>: _AnyBindableAction {
+    struct _BindableAction<BindedContainer: BindableContainer>: _AnyBindableAction where BindedContainer.ID: Sendable {
         /// The wrapped action that is being bound to the container.
         let value: any Action
 

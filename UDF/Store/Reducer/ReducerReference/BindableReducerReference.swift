@@ -19,9 +19,9 @@ import Foundation
 ///
 /// - Note: This class is useful for managing state associated with containers that can have multiple instances, each with its own reducer.
 public final class BindableReducerReference<AppState: AppReducer, BindedContainer: BindableContainer, Reducer: Reducible>: ReducerReference<
-    AppState,
+AppState,
     BindableReducer<BindedContainer, Reducer>
-> {
+> where BindedContainer.ID: Sendable {
     /// Initializes a new `BindableReducerReference` with the specified `BindableReducer` and action dispatcher.
     ///
     /// - Parameters:
@@ -35,7 +35,7 @@ public final class BindableReducerReference<AppState: AppReducer, BindedContaine
     ///
     /// - Parameter id: The ID of the container whose reducer is to be accessed.
     /// - Returns: A `ReducerReference` for the reducer associated with the specified container ID.
-    public subscript(_ id: BindedContainer.ID) -> ReducerReference<AppState, Reducer> {
+    public subscript(_ id: BindedContainer.ID) -> ReducerReference<AppState, Reducer> where BindedContainer.ID: Sendable {
         ReducerReference(reducer: reducer[id] ?? .init()) { [dispatcher] action in
             dispatcher(action.binded(to: BindedContainer.self, by: id))
         }

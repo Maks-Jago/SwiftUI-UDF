@@ -12,15 +12,15 @@
 import Foundation
 
 /// A `Hook` is a structure used to define conditional actions (blocks) to be executed within the store, based on changes to the state.
-public struct Hook<State: AppReducer> {
+public struct Hook<State: AppReducer>: Sendable {
     /// The unique identifier for the hook.
     let id: AnyHashable
     /// The type of the hook, defining its behavior (e.g., `default` or `oneTime`).
     let type: HookType
     /// The condition to be met in the state for the hook's block to execute.
-    let condition: (_ state: State) -> Bool
+    let condition: @Sendable (_ state: State) -> Bool
     /// The block to be executed when the condition is met.
-    let block: (_ store: EnvironmentStore<State>) -> Void
+    let block: @Sendable (_ store: EnvironmentStore<State>) -> Void
 
     /// Initializes a new `Hook`.
     /// - Parameters:
@@ -31,8 +31,8 @@ public struct Hook<State: AppReducer> {
     public init(
         id: AnyHashable,
         type: HookType = .default,
-        condition: @escaping (_ state: State) -> Bool,
-        block: @escaping (_ store: EnvironmentStore<State>) -> Void
+        condition: @escaping @Sendable (_ state: State) -> Bool,
+        block: @escaping @Sendable (_ store: EnvironmentStore<State>) -> Void
     ) {
         self.id = id
         self.type = type
@@ -50,8 +50,8 @@ public struct Hook<State: AppReducer> {
     public static func hook(
         id: AnyHashable,
         type: HookType = .default,
-        condition: @escaping (_ state: State) -> Bool,
-        block: @escaping (_ store: EnvironmentStore<State>) -> Void
+        condition: @escaping @Sendable (_ state: State) -> Bool,
+        block: @escaping @Sendable (_ store: EnvironmentStore<State>) -> Void
     ) -> Hook {
         Hook(
             id: id,
@@ -69,8 +69,8 @@ public struct Hook<State: AppReducer> {
     /// - Returns: A `Hook` instance with type `.oneTime`.
     public static func oneTimeHook(
         id: AnyHashable,
-        condition: @escaping (_ state: State) -> Bool,
-        block: @escaping (_ store: EnvironmentStore<State>) -> Void
+        condition: @escaping @Sendable (_ state: State) -> Bool,
+        block: @escaping @Sendable (_ store: EnvironmentStore<State>) -> Void
     ) -> Hook {
         hook(id: id, type: .oneTime, condition: condition, block: block)
     }

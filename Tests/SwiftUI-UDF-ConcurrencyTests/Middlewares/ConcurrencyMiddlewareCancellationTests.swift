@@ -71,9 +71,9 @@ private extension Actions {
 
 // MARK: - Middlewares
 private extension ConcurrencyMiddlewareCancellationTests {
-    final class ObservableMiddlewareToCancel: BaseObservableMiddleware<AppState> {
-        struct Environment {
-            var loadItems: () async -> [String]
+    final class ObservableMiddlewareToCancel: Middleware<AppState>, @unchecked Sendable {
+        struct Environment : Sendable{
+            var loadItems: @Sendable () async -> [String]
         }
 
         var environment: Environment!

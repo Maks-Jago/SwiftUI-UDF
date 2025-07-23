@@ -21,7 +21,7 @@ final class StoreInitializationTests: XCTestCase {
         }
     }
 
-    final class Middleware1: Middleware {
+    final class Middleware1: _Middleware, @unchecked Sendable {
         var store: any Store<StoreInitializationTests.AppState>
 
         var queue: DispatchQueue
@@ -47,7 +47,7 @@ final class StoreInitializationTests: XCTestCase {
         func reduce(_ action: some Action, for state: AppState) {}
     }
 
-    final class Middleware2: Middleware {
+    final class Middleware2: _Middleware, @unchecked Sendable {
         var store: any Store<StoreInitializationTests.AppState>
 
         var queue: DispatchQueue

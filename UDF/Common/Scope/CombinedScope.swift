@@ -14,12 +14,12 @@ import Foundation
 /// A class that combines two `EquatableScope` instances into a single scope.
 /// This is used to aggregate multiple scopes for complex state management
 /// where the combination of different scopes is necessary.
-final class CombinedScope<S1: EquatableScope, S2: EquatableScope>: EquatableScope {
+final class CombinedScope<S1: EquatableScope, S2: EquatableScope>: EquatableScope, Sendable {
     /// The left-hand scope instance.
-    var lhsScope: S1
+    let lhsScope: S1
 
     /// The right-hand scope instance.
-    var rhsScope: S2
+    let rhsScope: S2
 
     /// Initializes a new `CombinedScope` with two scopes.
     /// - Parameters:

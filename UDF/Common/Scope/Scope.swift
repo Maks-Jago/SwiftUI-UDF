@@ -15,7 +15,7 @@ import Foundation
 ///
 /// Defines a specific slice of the `ContainerState`, which will be tracked for changes.
 /// Types conforming to `Scope` can leverage the `isEqual` method for equality checks.
-public protocol Scope: IsEquatable {}
+public protocol Scope: IsEquatable, Sendable {}
 
 /// A typealias representing a `Scope` that is also `Equatable`.
 ///

@@ -13,7 +13,7 @@ import Foundation
 
 /// `CacheSource` is a protocol that defines the interface for caching data.
 /// Implementing types must provide mechanisms to save, load, and remove cached data.
-public protocol CacheSource {
+public protocol CacheSource: Sendable {
     /// Initializes a cache source with a unique key.
     ///
     /// - Parameter key: A unique key used to identify the cached data.

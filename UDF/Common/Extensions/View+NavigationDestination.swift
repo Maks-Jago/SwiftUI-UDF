@@ -14,43 +14,6 @@ import SwiftUI
 
 #if os(iOS)
     public extension View {
-        /// Presents a destination view based on the selected route using the specified router.
-        ///
-        /// This method modifies the view to present a destination view when a route is selected, using a binding to an optional route.
-        /// It listens for changes to `selectedRoute` and displays the appropriate view using the `Router`.
-        ///
-        /// - Parameters:
-        ///   - router: A `Router` instance that provides the destination view for the specified route.
-        ///   - selectedRoute: A binding to an optional route, indicating the selected route to navigate to.
-        /// - Returns: A modified view that presents the destination view when a route is selected.
-        /// Example usage:
-        /// Example usage:
-        /// ```swift
-        /// struct ContentView: Component {
-        ///     struct Props {
-        ///         let router: Router<MyRouting>
-        ///     }
-        ///
-        ///     @State private var selectedRoute: MyRouting.Route? = nil
-        ///     var props: Props
-        ///
-        ///     var body: some View {
-        ///         NavigationStack {
-        ///             Text("Main View")
-        ///                 .navigationDestination(router: props.router, selectedRoute: $selectedRoute)
-        ///         }
-        ///     }
-        /// }
-        /// ```
-        @available(*, deprecated, message: "Use `GlobalRouter` with `navigationDestionation(for: Routing.self)` instead")
-        func navigationDestination<R: Routing>(router: Router<R>, selectedRoute: Binding<R.Route?>) -> some View {
-            self.navigationDestination(isPresented: selectedRoute.isPresented()) {
-                if let route = selectedRoute.wrappedValue {
-                    router.view(for: route)
-                }
-            }
-        }
-
         /// Presents a destination view using the specified router and adds global navigation support.
         ///
         /// This method modifies the view to support navigation destinations using the given `Router` and `GlobalRoutingModifier`.
@@ -83,11 +46,6 @@ import SwiftUI
         /// ```
         func navigationDestination<R: Routing>(for routing: R.Type) -> some View where R.Route: Hashable {
             modifier(GlobalRoutingModifier(routing: routing))
-        }
-
-        @available(*, deprecated, message: "Use `navigationDestination(for: MyRouting.self)` instead.")
-        func navigationDestination<R: Routing>(router: Router<R>) -> some View where R.Route: Hashable {
-            modifier(GlobalRoutingModifier(routing: R.self))
         }
     }
 #endif

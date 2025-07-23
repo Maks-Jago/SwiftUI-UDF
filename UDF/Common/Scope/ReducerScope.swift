@@ -14,9 +14,9 @@ import Foundation
 /// A class representing a scope that contains a `Reducible` reducer.
 /// This is used to encapsulate a reducer within a specific scope, providing
 /// methods for equality checks and management of the reducer instance.
-final class ReducerScope<R: Reducible>: EquatableScope {
+final class ReducerScope<R: Reducible>: EquatableScope, Sendable {
     /// The reducer instance that this scope manages.
-    var reducer: R?
+    let reducer: R?
 
     /// Initializes a new `ReducerScope` with the provided reducer.
     /// - Parameter reducer: An optional `Reducible` instance to be managed by this scope.

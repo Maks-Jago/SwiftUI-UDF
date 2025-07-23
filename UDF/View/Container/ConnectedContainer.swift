@@ -48,13 +48,13 @@ struct ConnectedContainer<C: Component, State: AppReducer>: View {
     let map: (_ store: EnvironmentStore<State>) -> C.Props
 
     /// A closure that defines the scope within the global state.
-    let scope: (_ state: State) -> Scope
+    let scope: @MainActor (_ state: State) -> Scope
 
     /// A closure executed when the container appears in the view hierarchy.
-    var onContainerAppear: (EnvironmentStore<State>) -> Void
+    var onContainerAppear: @MainActor (EnvironmentStore<State>) -> Void
 
     /// A closure executed when the container disappears from the view hierarchy.
-    var onContainerDisappear: (EnvironmentStore<State>) -> Void
+    var onContainerDisappear: @MainActor (EnvironmentStore<State>) -> Void
 
     /// The container's lifecycle manager that handles loading, unloading, and hooks.
     @StateObject var containerLifecycle: ContainerLifecycle<State>
@@ -78,9 +78,9 @@ struct ConnectedContainer<C: Component, State: AppReducer>: View {
     ///   - useHooks: A closure that provides an array of hooks to use within the container.
     init(
         map: @escaping (EnvironmentStore<State>) -> C.Props,
-        scope: @escaping (State) -> Scope,
-        onContainerAppear: @escaping (EnvironmentStore<State>) -> Void,
-        onContainerDisappear: @escaping (EnvironmentStore<State>) -> Void,
+        scope: @escaping @Sendable (State) -> Scope,
+        onContainerAppear: @escaping @MainActor (EnvironmentStore<State>) -> Void,
+        onContainerDisappear: @escaping @MainActor (EnvironmentStore<State>) -> Void,
         onContainerDidLoad: @escaping (EnvironmentStore<State>) -> Void,
         onContainerDidUnload: @escaping (EnvironmentStore<State>) -> Void,
         useHooks: @escaping () -> [Hook<State>]
@@ -115,13 +115,13 @@ struct ConnectedContainer<C: Component, State: AppReducer>: View {
         containerType: BindedContainer.Type,
         containerId: @escaping () -> BindedContainer.ID,
         map: @escaping (EnvironmentStore<State>) -> C.Props,
-        scope: @escaping (State) -> Scope,
-        onContainerAppear: @escaping (EnvironmentStore<State>) -> Void,
-        onContainerDisappear: @escaping (EnvironmentStore<State>) -> Void,
+        scope: @escaping @Sendable (State) -> Scope,
+        onContainerAppear: @escaping @MainActor (EnvironmentStore<State>) -> Void,
+        onContainerDisappear: @escaping @MainActor (EnvironmentStore<State>) -> Void,
         onContainerDidLoad: @escaping (EnvironmentStore<State>) -> Void,
         onContainerDidUnload: @escaping (EnvironmentStore<State>) -> Void,
         useHooks: @escaping () -> [Hook<State>]
-    ) {
+    ) where BindedContainer.ID: Sendable {
         self.map = map
         self.scope = scope
         self.onContainerAppear = onContainerAppear
