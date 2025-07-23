@@ -97,7 +97,6 @@ struct ConnectedContainer<C: Component, State: AppReducer>: View {
             )
         )
         self._containerState = .init(wrappedValue: .init(store: EnvironmentStore<State>.global, scope: scope))
-        containerLifecycle.set(didLoad: true, store: store)
     }
 
     /// Initializes a `ConnectedContainer` for a bindable container type, managing state and lifecycle events.
@@ -148,11 +147,12 @@ struct ConnectedContainer<C: Component, State: AppReducer>: View {
             )
         )
         self._containerState = .init(wrappedValue: .init(store: EnvironmentStore<State>.global, scope: scope))
-        containerLifecycle.set(didLoad: true, store: store)
     }
 
     /// The main view body that renders the component and attaches lifecycle events.
     var body: some View {
+        containerLifecycle.set(didLoad: true, store: store)
+        
         return C(props: map(store))
             .onAppear { onContainerAppear(store) }
             .onDisappear { onContainerDisappear(store) }
