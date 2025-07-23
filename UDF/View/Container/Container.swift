@@ -78,7 +78,7 @@ import SwiftUI
 public protocol Container<ContainerState>: View {
     associatedtype ContainerState: AppReducer
     associatedtype ContainerComponent: Component
-
+    
     /// Maps the `EnvironmentStore` to the properties required by the `ContainerComponent`.
     ///
     /// - Parameter store: The global store containing the state.

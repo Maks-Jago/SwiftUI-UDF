@@ -68,6 +68,5 @@ public extension BindableContainer {
             onContainerDidUnload: onContainerDidUnload,
             useHooks: useHooks
         )
-        .id("\(Self.self)_\(self.id)")
     }
 }
