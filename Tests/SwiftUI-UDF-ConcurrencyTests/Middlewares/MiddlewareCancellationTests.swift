@@ -57,7 +57,7 @@ import Foundation
     }
 
     @Test func observableMiddlewareCancellation() async {
-        let store = await XCTestStore(initial: AppState())
+        let store = await TestStore(initial: AppState())
         await store.subscribe(ObservableMiddlewareToCancel.self)
         await store.dispatch(Actions.Loading())
 
@@ -72,7 +72,7 @@ import Foundation
     }
 
     @Test func observableRunMiddlewareToCancel() async {
-        let store = await XCTestStore(initial: AppState())
+        let store = await TestStore(initial: AppState())
         await store.subscribe(ObservableRunMiddlewareToCancel.self)
         await store.dispatch(Actions.Loading())
 
@@ -88,7 +88,7 @@ import Foundation
     }
 
     @Test func reducibleMiddlewareToCancel() async {
-        let store = await XCTestStore(initial: AppState())
+        let store = await TestStore(initial: AppState())
         await store.subscribe(ReducibleMiddlewareToCancel.self)
         await store.dispatch(Actions.Loading())
 

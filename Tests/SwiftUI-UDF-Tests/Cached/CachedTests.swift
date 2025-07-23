@@ -59,7 +59,7 @@ struct CachedTests {
     }
 
     @Test func itemsCaching() async {
-        var store = await XCTestStore(initial: AppState())
+        var store = await TestStore(initial: AppState())
 
         let items = (0 ... 3).map { Item(id: .init(value: $0)) }
         await store.dispatch(Actions.DidLoadItems(items: items, id: "items"))
@@ -82,7 +82,7 @@ struct CachedTests {
     }
 
     @Test func resetCache() async {
-        let store = await XCTestStore(initial: AppState())
+        let store = await TestStore(initial: AppState())
         let items = (0 ... 3).map { Item(id: .init(value: $0)) }
         await store.dispatch(Actions.DidLoadItems(items: items, id: "items"))
 
@@ -100,7 +100,7 @@ struct CachedTests {
     }
 
     @Test func singleObjectCaching() async {
-        let store = await XCTestStore(initial: AppState())
+        let store = await TestStore(initial: AppState())
 
         var selectedItem = await store.state.nestedForm.selectedItem
         #expect(selectedItem == nil)
@@ -117,7 +117,7 @@ struct CachedTests {
     }
 
     @Test func removeItemFromCacheById() async throws {
-        let store = await XCTestStore(initial: AppState())
+        let store = await TestStore(initial: AppState())
         await store.dispatch(Actions.ResetCache())
 
         let items = [Item(id: .init(value: 0))]

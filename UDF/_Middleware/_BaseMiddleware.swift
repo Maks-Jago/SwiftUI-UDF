@@ -134,7 +134,7 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
         let filePosition = fileFunctionLine(effect, fileName: fileName, functionName: functionName, lineNumber: lineNumber)
 
         // Registering for XCTest to wait for asynchronous code in tests
-        XCTestGroup.shared.enter()
+        TestGroup.shared.enter()
 
         // Subscribe to the effect and store the cancellation token
         cancellations[anyId] = effect
@@ -149,13 +149,13 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
                     functionName: filePosition.functionName,
                     lineNumber: filePosition.lineNumber
                 )
-                // Signal XCTest that this task has been cancelled
-                XCTestGroup.shared.leave()
+                // Signal Testing that this task has been cancelled
+                TestGroup.shared.leave()
             })
             .sink(receiveCompletion: { [weak self] _ in
-                // Handle completion: Remove the task from cancellations and signal XCTest
+                // Handle completion: Remove the task from cancellations and signal Testing
                 self?.cancellations[anyId] = nil
-                XCTestGroup.shared.leave()
+                TestGroup.shared.leave()
             }, receiveValue: { [weak self] action in
                 // Handle receiving a value: Dispatch the action to the store
                 if self?.cancellations[anyId] != nil {
@@ -408,7 +408,7 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
                 functionName: filePosition.functionName,
                 lineNumber: filePosition.lineNumber
             )
-            XCTestGroup.shared.leave()
+            TestGroup.shared.leave()
         }
     }
 
@@ -455,7 +455,7 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
         let filePosition = fileFunctionLine(effect, fileName: fileName, functionName: functionName, lineNumber: lineNumber)
 
         // Start the task and store the cancellation token
-        XCTestGroup.shared.enter()
+        TestGroup.shared.enter()
         let task = Task { @Sendable [weak self] in
             do {
                 // Execute the effect's task, passing flowId

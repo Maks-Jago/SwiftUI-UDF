@@ -32,7 +32,7 @@ import Testing
     }
 
     @Test func middlewareDuplication() async {
-        let store = await XCTestStore(initial: AppState())
+        let store = await TestStore(initial: AppState())
 
         await store.subscribe(build: { _ in
             TestMiddleware.self

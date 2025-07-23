@@ -74,7 +74,7 @@ private extension Actions {
     }
 
     @Test func mapError() async {
-        let store = await XCTestStore(initial: AppState())
+        let store = await TestStore(initial: AppState())
         await store.subscribe(LoadingMiddleware.self)
 
         await store.dispatch(Actions.StartLoading())

@@ -42,7 +42,7 @@ import Testing
     }
 
     @Test func stateCopying() async {
-        let store = await XCTestStore(initial: AppState())
+        let store = await TestStore(initial: AppState())
         await store.dispatch(Actions.UpdateFormField(keyPath: \SomeForm.item, value: .init(text: "new item text")))
 
         let item = await store.state.someForm.item

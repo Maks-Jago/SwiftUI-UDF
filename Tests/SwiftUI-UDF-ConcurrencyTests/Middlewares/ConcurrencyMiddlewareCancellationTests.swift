@@ -49,7 +49,7 @@ import Testing
     }
 
     @Test func observableMiddlewareCancellation() async {
-        let store = await XCTestStore(initial: AppState())
+        let store = await TestStore(initial: AppState())
         await store.subscribe(ObservableMiddlewareToCancel.self)
         await store.dispatch(Actions.Loading())
 

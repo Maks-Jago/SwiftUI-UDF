@@ -60,21 +60,21 @@ import Testing
     }
 
     @Test func WhenMutateBindableForm_OnleConcreteInstanceOfBindableFormShouldBeUpdated() async throws {
-        let store = await XCTestStore(initial: AppState())
+        let store = await TestStore(initial: AppState())
 
-        var bindedReducersFormCount = try await XCTUnwrapAsync(await store.state.itemsForm).reducers.count
+        var bindedReducersFormCount = (await store.state.itemsForm).reducers.count
         #expect(bindedReducersFormCount == 0)
 
-        var bindedReducersFlowCount = try await XCTUnwrapAsync(await store.state.itemsFlow).reducers.count
+        var bindedReducersFlowCount = (await store.state.itemsFlow).reducers.count
         #expect(bindedReducersFlowCount == 0)
 
         await store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 1)))
         await store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 2)))
 
-        bindedReducersFormCount = try await XCTUnwrapAsync(await store.state.itemsForm).reducers.count
+        bindedReducersFormCount = (await store.state.itemsForm).reducers.count
         #expect(bindedReducersFormCount == 2)
 
-        bindedReducersFlowCount = try await XCTUnwrapAsync(await store.state.itemsFlow).reducers.count
+        bindedReducersFlowCount = (await store.state.itemsFlow).reducers.count
         #expect(bindedReducersFlowCount == 2)
 
         await store.dispatch(
@@ -82,7 +82,7 @@ import Testing
                 .binded(to: ItemsContainer.self, by: .init(value: 2))
         )
 
-        _ = try await XCTUnwrapAsync(await store.state.itemsForm[.init(value: 2)]?.item)
+        _ = try #require(await store.state.itemsForm[.init(value: 2)]?.item)
 
         await store.dispatch(
             Actions.DidLoadItems(
@@ -92,20 +92,20 @@ import Testing
             .binded(to: ItemsContainer.self, by: .init(value: 2))
         )
 
-        let itemsCount = try await XCTUnwrapAsync(await store.state.itemsForm[.init(value: 2)]).paginator.items.count
+        let itemsCount = try #require(await store.state.itemsForm[.init(value: 2)]?.paginator.items.count)
         #expect(itemsCount == 2)
     }
 
     @Test func WhenBindableActionDispatched_StorageShouldReceiveOriginalAction() async throws {
-        let store = await XCTestStore(initial: AppState())
+        let store = await TestStore(initial: AppState())
 
-        var bindedReducersFormCount = try await XCTUnwrapAsync(await store.state.itemsForm).reducers.count
+        var bindedReducersFormCount = (await store.state.itemsForm).reducers.count
         #expect(bindedReducersFormCount == 0)
 
         await store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 1)))
         await store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 2)))
 
-        bindedReducersFormCount = try await XCTUnwrapAsync(await store.state.itemsForm).reducers.count
+        bindedReducersFormCount = (await store.state.itemsForm).reducers.count
         #expect(bindedReducersFormCount == 2)
 
         let items = [Item(id: .init(value: 1)), Item(id: .init(value: 2))]
@@ -118,10 +118,10 @@ import Testing
         let allItems = await store.state.allItems.byId
         #expect(!allItems.isEmpty)
 
-        let itemsForm1 = try await XCTUnwrapAsync(await store.state.itemsForm[.init(value: 1)])
+        let itemsForm1 = try #require(await store.state.itemsForm[.init(value: 1)])
         #expect(!itemsForm1.paginator.items.isEmpty)
 
-        let itemsForm2 = try await XCTUnwrapAsync(await store.state.itemsForm[.init(value: 2)])
+        let itemsForm2 = try #require(await store.state.itemsForm[.init(value: 2)])
         #expect(itemsForm2.paginator.items.isEmpty)
     }
 }

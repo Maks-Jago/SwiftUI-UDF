@@ -79,7 +79,7 @@ import Testing
     }
 
     @Test func WhenLoadingDataForBindableReducers_OnleConcreteInstanceOfBindableFormShouldBeUpdated() async throws {
-        let store = await XCTestStore(initial: AppState())
+        let store = await TestStore(initial: AppState())
         await store.subscribe(ItemsMiddleware.self)
 
         await store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 1)))
@@ -87,10 +87,10 @@ import Testing
         await store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 3)))
         await store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 4)))
 
-        let bindedReducersFormCount = try await XCTUnwrapAsync(await store.state.itemsForm).reducers.count
+        let bindedReducersFormCount = await store.state.itemsForm.reducers.count
         #expect(bindedReducersFormCount == 4)
 
-        let bindedReducersFlowCount = try await XCTUnwrapAsync(await store.state.itemsFlow).reducers.count
+        let bindedReducersFlowCount = await store.state.itemsFlow.reducers.count
         #expect(bindedReducersFlowCount == 4)
 
         await store.dispatch(
@@ -108,29 +108,29 @@ import Testing
 
         await store.wait()
 
-        let itemsForm1: ItemsForm = try await XCTUnwrapAsync(await store.state.itemsForm[Item.ID(value: 1)])
+        let itemsForm1: ItemsForm = try #require(await store.state.itemsForm[Item.ID(value: 1)])
         #expect(itemsForm1.item != nil)
 
-        let itemsForm2: ItemsForm = try await XCTUnwrapAsync(await store.state.itemsForm[Item.ID(value: 2)])
+        let itemsForm2: ItemsForm = try #require(await store.state.itemsForm[Item.ID(value: 2)])
         #expect(itemsForm2.item == nil)
 
-        let itemsForm3: ItemsForm = try await XCTUnwrapAsync(await store.state.itemsForm[Item.ID(value: 3)])
+        let itemsForm3: ItemsForm = try #require(await store.state.itemsForm[Item.ID(value: 3)])
         #expect(itemsForm3.item != nil)
 
-        let itemsForm4: ItemsForm = try await XCTUnwrapAsync(await store.state.itemsForm[Item.ID(value: 4)])
+        let itemsForm4: ItemsForm = try #require(await store.state.itemsForm[Item.ID(value: 4)])
         #expect(itemsForm4.item != nil)
     }
 
     @Test func WhenDispatchingBindedAction_DuplicationShouldBePrevented() async throws {
-        let store = await XCTestStore(initial: AppState())
+        let store = await TestStore(initial: AppState())
         await store.subscribe(ItemsMiddleware.self)
 
         await store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 1)))
 
-        let bindedReducersFormCount = try await XCTUnwrapAsync(await store.state.itemsForm).reducers.count
+        let bindedReducersFormCount = await store.state.itemsForm.reducers.count
         #expect(bindedReducersFormCount == 1)
 
-        let bindedReducersFlowCount = try await XCTUnwrapAsync(await store.state.itemsFlow).reducers.count
+        let bindedReducersFlowCount = await store.state.itemsFlow.reducers.count
         #expect(bindedReducersFlowCount == 1)
 
         await store.dispatch(
@@ -141,8 +141,8 @@ import Testing
 
         await store.wait()
 
-        let itemsForm1: ItemsForm = try await XCTUnwrapAsync(await store.state.itemsForm[Item.ID(value: 1)])
-        let itemsReducer = try await XCTUnwrapAsync(await store.state.itemReducible)
+        let itemsForm1: ItemsForm = try #require(await store.state.itemsForm[Item.ID(value: 1)])
+        let itemsReducer = await store.state.itemReducible
 
         #expect(itemsForm1.item != nil)
         #expect(itemsReducer.didLoadItemReduced == 1)

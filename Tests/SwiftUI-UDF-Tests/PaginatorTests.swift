@@ -136,7 +136,7 @@ struct PaginatorTests {
     }
 
     @Test func paginatorLoading() async {
-        let store = await XCTestStore(initial: AppState())
+        let store = await TestStore(initial: AppState())
         await store.dispatch(Actions.LoadPage(id: ItemFlow.id))
 
         let isLoading = await store.state.itemsForm.paginator.isLoading

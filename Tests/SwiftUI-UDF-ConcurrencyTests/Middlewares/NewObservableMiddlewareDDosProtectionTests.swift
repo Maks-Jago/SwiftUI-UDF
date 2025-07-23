@@ -93,7 +93,7 @@ private extension Actions {
     }
 
     @Test func observableMiddlewareDDDos() async {
-        let store = await XCTestStore(initial: AppState())
+        let store = await TestStore(initial: AppState())
 
         await store.subscribe(SendMessageMiddleware.self)
         await store.wait()

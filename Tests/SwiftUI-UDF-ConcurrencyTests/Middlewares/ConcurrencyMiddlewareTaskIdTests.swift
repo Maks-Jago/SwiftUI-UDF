@@ -43,7 +43,7 @@ import Testing
     }
 
     @Test func reducibleMiddlewareTaskId() async {
-        let store = await XCTestStore(initial: AppState())
+        let store = await TestStore(initial: AppState())
         await store.subscribe(TestReducibleMiddleware.self)
 
         var runForm = await store.state.runForm

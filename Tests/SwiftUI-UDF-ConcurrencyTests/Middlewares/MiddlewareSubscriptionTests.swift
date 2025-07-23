@@ -11,7 +11,7 @@ private extension Actions {
 
 @Suite struct MiddlewareSubscriptionTests {
     @Test func middlewareSubscriptions() async {
-        let store = await XCTestStore(initial: AppState())
+        let store = await TestStore(initial: AppState())
 
         await store.subscribe(build: { store in
             ObservableMiddleware.self
@@ -33,7 +33,7 @@ private extension Actions {
     }
 
     @Test func environmentMiddlewareSubscription() async {
-        let store = await XCTestStore(initial: AppState())
+        let store = await TestStore(initial: AppState())
 
         await store.subscribe { _ in
             EnvironmentMiddleware.self
@@ -45,7 +45,7 @@ private extension Actions {
     }
 
     func liveEnvironmentMiddlewareSubscription() async {
-        let store = await XCTestStore(initial: AppState())
+        let store = await TestStore(initial: AppState())
 
         setLiveEnvironment()
 

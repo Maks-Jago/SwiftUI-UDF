@@ -106,7 +106,7 @@ extension DialogType {
     }
     
     @Test func WhendialogRegistered_dialogCanBePresentedById() async {
-        let store = await XCTestStore(initial: AppState())
+        let store = await TestStore(initial: AppState())
         var status = await store.state.form.dialog.status
         #expect(status == .dismissed)
         
@@ -182,7 +182,7 @@ extension DialogType {
     // MARK: - Toast-Specific Tests
     
     @Test func WhenToastRegistered_ToastCanBePresentedById() async {
-        let store = await XCTestStore(initial: AppState())
+        let store = await TestStore(initial: AppState())
         var status = await store.state.form.dialog.status
         #expect(status == .dismissed)
         
@@ -210,7 +210,7 @@ extension DialogType {
     }
     
     @Test func CustomToastWithIcon() async {
-        let store = await XCTestStore(initial: AppState())
+        let store = await TestStore(initial: AppState())
         
         DialogRegistry.register(id: FormWithDialog.DialogId.customToastWithIcon) {
             DialogType.customToastWithIcon()
@@ -241,7 +241,7 @@ extension DialogType {
     }
     
     @Test func CustomViewToast() async {
-        let store = await XCTestStore(initial: AppState())
+        let store = await TestStore(initial: AppState())
         
         DialogRegistry.register(id: FormWithDialog.DialogId.customViewToast) {
             DialogType.customViewToast()

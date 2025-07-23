@@ -60,7 +60,7 @@ private extension Actions {
     }
 
     @Test func reducibleMiddleware() async {
-        let store = await XCTestStore(initial: AppState())
+        let store = await TestStore(initial: AppState())
         await store.subscribe(SendMessageMiddleware.self)
 
         var formTitle = await store.state.testForm.title

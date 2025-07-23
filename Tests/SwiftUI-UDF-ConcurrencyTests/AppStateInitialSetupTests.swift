@@ -34,7 +34,7 @@ import Testing
     }
 
     @Test func initialSetups() async {
-        let store = await XCTestStore(initial: AppState())
+        let store = await TestStore(initial: AppState())
 
         let title = await store.state.form1.title
         #expect(title == "new title")

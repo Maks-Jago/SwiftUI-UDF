@@ -41,7 +41,7 @@ extension AlertBuilder.AlertStyle {
     }
     
     @Test func WhenAlerBuilderRegistered_AlertCanBePresentedById() async {
-        let store = await XCTestStore(initial: AppState())
+        let store = await TestStore(initial: AppState())
         var status = await store.state.form.alert.status
         
         #expect(status == .dismissed)

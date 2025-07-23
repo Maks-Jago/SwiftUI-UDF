@@ -39,7 +39,7 @@ import UDFSwiftTesting
 
         #expect(messageInternalUnwrappedAction.silent)
 
-        let testStore = await XCTestStore(initial: AppState())
+        let testStore = await TestStore(initial: AppState())
         await testStore.dispatch(Actions.Message(id: "1"))
         await testStore.dispatch(Actions.Message(id: "2").silent())
         await testStore.dispatch(Actions.Message(id: "3"))

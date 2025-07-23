@@ -1,5 +1,5 @@
 //
-//  XCTestStore.swift
+//  TestStore.swift
 //
 //
 //  Created by Max Kuznetsov on 05.10.2021.
@@ -7,13 +7,14 @@
 
 import Combine
 import SwiftUI
+import Testing
 
-@globalActor public actor XCTestStoreActor {
-    public private(set) static var shared = XCTestStoreActor()
+@globalActor public actor TestStoreActor {
+    public private(set) static var shared = TestStoreActor()
 }
 
-@XCTestStoreActor
-public final class XCTestStore<State: AppReducer> {
+@TestStoreActor
+public final class TestStore<State: AppReducer> {
     private struct TestStoreLogger: ActionLogger {
         var actionFilters: [ActionFilter] = [VerboseActionFilter()]
         var actionDescriptor: ActionDescriptor = StringDescribingActionDescriptor()
@@ -32,7 +33,7 @@ public final class XCTestStore<State: AppReducer> {
     private var cancelation: Cancellable?
 
     public init(initial state: State) {
-        guard ProcessInfo.processInfo.xcTest else {
+        guard ProcessInfo.processInfo.isRunningTests else {
             fatalError("XCTestStore is only for using in Test targets")
         }
 
@@ -61,11 +62,11 @@ public final class XCTestStore<State: AppReducer> {
     }
 
     public func wait() {
-        XCTestGroup.shared.wait()
+        TestGroup.shared.wait()
     }
 }
 
-public extension XCTestStore {
+public extension TestStore {
     func subscribe<M: Middleware<State>>(_ middlewareType: M.Type) async where M.State == State, M: EnvironmentMiddleware {
         await self.subscribe { store in
             middlewareType.init(store: store, environment: M.buildTestEnvironment(for: store))
@@ -81,7 +82,7 @@ public extension XCTestStore {
     }
 }
 
-public extension XCTestStore {
+public extension TestStore {
     func subscribe(@MiddlewareBuilder<State> build: (_ store: any Store<State>) -> [MiddlewareWrapper<State>]) async {
         await self.subscribe(buildMiddlewares: { store in
             build(store).map { wrapper in

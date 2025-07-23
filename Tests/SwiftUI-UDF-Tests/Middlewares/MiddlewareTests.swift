@@ -379,7 +379,7 @@ private extension Actions {
     /// Tests that Middleware works correctly when only implementing reduce functionality
     @Test func reduceOnlyMiddleware() async {
         // Given: A middleware that only implements reduce() method
-        let store = await XCTestStore(initial: AppState())
+        let store = await TestStore(initial: AppState())
         await store.subscribe(ReduceOnlyMiddleware.self)
         
         // When: An action is dispatched that should be handled by reduce()
@@ -395,7 +395,7 @@ private extension Actions {
     /// Tests that Middleware works correctly when only implementing observe functionality
     @Test func observeOnlyMiddleware() async {
         // Given: A middleware that only implements observe() method with a specific scope
-        let store = await XCTestStore(initial: AppState())
+        let store = await TestStore(initial: AppState())
         await store.subscribe(ObserveOnlyMiddleware.self)
         
         // When: An action is dispatched that changes the observed state flow
@@ -411,7 +411,7 @@ private extension Actions {
     /// Tests that Middleware works correctly when implementing both reduce and observe functionality
     @Test func fullUnifiedMiddleware() async {
         // Given: A middleware that implements both reduce() and observe() methods
-        let store = await XCTestStore(initial: AppState())
+        let store = await TestStore(initial: AppState())
         await store.subscribe(FullUnifiedMiddleware.self)
         
         // When: An action is dispatched that should be handled by reduce()
@@ -462,7 +462,7 @@ private extension Actions {
         }
         
         // When: The middleware is subscribed and an action changes one of the observed flows
-        let store = await XCTestStore(initial: AppState())
+        let store = await TestStore(initial: AppState())
         await store.subscribe(MultiScopeMiddleware.self)
         
         let message = "Multi Scope Message"
@@ -518,7 +518,7 @@ private extension Actions {
             }
         }
         
-        let store = await XCTestStore(initial: AppState())
+        let store = await TestStore(initial: AppState())
         await store.subscribe(StateBasedStatusMiddleware.self)
         
         // When: Middleware is active (counter = 0) and actions are dispatched
@@ -566,7 +566,7 @@ private extension Actions {
     /// Tests that Middleware correctly observes changes across multiple scoped flows
     @Test func multipleScopesObservation() async {
         // Given: A middleware that observes multiple flows (testFlow and taskFlow)
-        let store = await XCTestStore(initial: AppState())
+        let store = await TestStore(initial: AppState())
         await store.subscribe(FullUnifiedMiddleware.self)
         
         // When: The first observed flow (testFlow) changes
@@ -611,7 +611,7 @@ private extension Actions {
             }
         }
         
-        let store = await XCTestStore(initial: AppState())
+        let store = await TestStore(initial: AppState())
         await store.subscribe(CancellableMiddleware.self)
         
         // When: A task starts that would execute a delayed effect
@@ -647,7 +647,7 @@ private extension Actions {
             // - reduce(_:for:) does nothing
         }
         
-        let store = await XCTestStore(initial: AppState())
+        let store = await TestStore(initial: AppState())
         await store.subscribe(MinimalMiddleware.self)
         
         // When: Actions are dispatched that would normally be handled

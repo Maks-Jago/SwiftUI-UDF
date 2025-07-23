@@ -199,7 +199,7 @@ public extension EnvironmentStore {
     /// - Note: This method is designed to work asynchronously and is intended for environments where middleware needs to interact
     ///   with the state in an isolated, asynchronous manner.
     func subscribe<M: Middleware<State>>(_ middlewareType: M.Type) where M.State == State, M: EnvironmentMiddleware {
-        if ProcessInfo.processInfo.xcTest {
+        if ProcessInfo.processInfo.isRunningTests {
             self.subscribe { store in
                 middlewareType.init(store: store, environment: M.buildTestEnvironment(for: store))
             }
@@ -231,7 +231,7 @@ public extension EnvironmentStore {
     func subscribe<M: Middleware<State>>(_ middlewareType: M.Type, on queue: DispatchQueue) where M.State == State,
         M: EnvironmentMiddleware
     {
-        if ProcessInfo.processInfo.xcTest {
+        if ProcessInfo.processInfo.isRunningTests {
             self.subscribe { store in
                 middlewareType.init(store: store, environment: M.buildTestEnvironment(for: store), queue: queue)
             }
@@ -295,7 +295,7 @@ public extension EnvironmentStore {
     private func envMiddleware<M: MiddlewareWithEnvironment<State>>(store: any Store<State>, type: M.Type) -> any _Middleware<State>
         where M.State == State
     {
-        if ProcessInfo.processInfo.xcTest {
+        if ProcessInfo.processInfo.isRunningTests {
             type.init(store: store, environment: type.buildTestEnvironment(for: store))
         } else {
             type.init(store: store, environment: type.buildLiveEnvironment(for: store))

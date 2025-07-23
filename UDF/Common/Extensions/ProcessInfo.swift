@@ -23,7 +23,7 @@ public extension ProcessInfo {
     ///     // Perform test-specific logic
     /// }
     /// ```
-    var xcTest: Bool {
+    var isRunningTests: Bool {
         environment["XCTestConfigurationFilePath"] != nil
     }
 }

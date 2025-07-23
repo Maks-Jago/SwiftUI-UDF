@@ -2,8 +2,8 @@
 import Foundation
 import os
 
-public final class XCTestGroup {
-    nonisolated(unsafe) static var shared = XCTestGroup()
+public final class TestGroup {
+    nonisolated(unsafe) static var shared = TestGroup()
     private var group: OSAllocatedUnfairLock<DispatchGroup> = .init(initialState: DispatchGroup())
 
     public func enter(
@@ -11,7 +11,7 @@ public final class XCTestGroup {
         functionName: String = #function,
         lineNumber: Int = #line
     ) {
-        if ProcessInfo.processInfo.xcTest {
+        if ProcessInfo.processInfo.isRunningTests {
             group.withLock { group in
                 group.enter()
             }
@@ -23,7 +23,7 @@ public final class XCTestGroup {
         functionName: String = #function,
         lineNumber: Int = #line
     ) {
-        if ProcessInfo.processInfo.xcTest {
+        if ProcessInfo.processInfo.isRunningTests {
             group.withLock { group in
                 group.leave()
             }
@@ -35,7 +35,7 @@ public final class XCTestGroup {
         functionName: String = #function,
         lineNumber: Int = #line
     ) {
-        if ProcessInfo.processInfo.xcTest {
+        if ProcessInfo.processInfo.isRunningTests {
             _ = group.withLock { $0 }.wait(timeout: .now() + 4)
         }
     }
