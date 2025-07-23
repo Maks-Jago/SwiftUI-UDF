@@ -154,11 +154,15 @@ public extension Container {
         ConnectedContainer<ContainerComponent, ContainerState>(
             map: map,
             scope: scope(for:),
+            containerLifecycle: .init(
+                wrappedValue: ContainerLifecycle(
+                    didLoadCommand: onContainerDidLoad,
+                    didUnloadCommand: onContainerDidUnload,
+                    useHooks: useHooks
+                )
+            ),
             onContainerAppear: onContainerAppear,
-            onContainerDisappear: onContainerDisappear,
-            onContainerDidLoad: onContainerDidLoad,
-            onContainerDidUnload: onContainerDidUnload,
-            useHooks: useHooks
+            onContainerDisappear: onContainerDisappear
         )
     }
 }
