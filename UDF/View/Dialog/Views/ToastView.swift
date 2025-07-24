@@ -72,11 +72,6 @@ struct ToastView: View {
         self.content = toast.getCustomContentView
     }
 
-    /// Current drag offset for swipe-to-dismiss gesture tracking.
-    @State private var dragOffset: CGSize = .zero
-    
-    /// Indicates whether the user is currently dragging the toast.
-    @GestureState private var isDragging: Bool = false
     
     // MARK: - Computed Properties
     
@@ -119,7 +114,6 @@ struct ToastView: View {
                 standardToastContent
             }
         }
-        .offset(dragOffset)
         .gesture(dismissGestures)
         .onTapGesture {
             if configuration.tapToDismiss {
@@ -165,45 +159,44 @@ private extension ToastView {
             theme.colorStyle(for: toast.category).background()
                 .cornerRadius(theme.cornerRadius)
         )
+        .padding(.horizontal, configuration.horizontalPadding)
         .applyShadow(theme.shadow)
     }
 }
 
 // MARK: - Gesture Handling
 private extension ToastView {
-    /// Drag gesture for swipe-to-dismiss functionality.
+    /// Swipe gesture for swipe-to-dismiss functionality.
     ///
-    /// Implements intuitive swipe-to-dismiss behavior with threshold-based
-    /// dismissal and spring-back animation for incomplete swipes.
+    /// Implements intuitive swipe-to-dismiss behavior based on swipe velocity
+    /// rather than drag distance, providing immediate dismissal for fast swipes.
     ///
     /// ## Behavior:
-    /// 1. **Active Dragging**: Toast follows finger movement with real-time offset
-    /// 2. **Threshold Check**: Dismisses if swipe distance exceeds 100 points
-    /// 3. **Spring Back**: Returns to original position for insufficient swipes
-    /// 4. **Conditional**: Only active if `swipeToDismiss` is enabled and toast is dismissible
+    /// 1. **Velocity Detection**: Detects fast vertical swipes (up/down)
+    /// 2. **Immediate Dismissal**: Dismisses instantly when swipe velocity threshold is met
+    /// 3. **No Visual Dragging**: Toast stays in place during swipe detection
+    /// 4. **Vertical Only**: Only responds to up/down swipes for intuitive toast dismissal
     ///
     /// ## Gesture Parameters:
-    /// - **Threshold**: 100 points in any direction
-    /// - **Spring Animation**: Natural bounce-back for incomplete gestures
-    /// - **Multi-directional**: Supports horizontal and vertical swipes
+    /// - **Velocity Threshold**: 300 points/second in vertical direction
+    /// - **Minimum Distance**: 50 points to avoid accidental dismissals
+    /// - **Direction**: Vertical swipes only (up or down)
     var dismissGestures: some Gesture {
         DragGesture()
-            .updating($isDragging) { _, state, _ in
-                state = true
-            }
-            .onChanged { value in
-                if configuration.swipeToDismiss {
-                    dragOffset = value.translation
-                }
-            }
             .onEnded { value in
-                let threshold: CGFloat = 100
-                if abs(value.translation.width) > threshold || abs(value.translation.height) > threshold {
+                guard configuration.swipeToDismiss else { return }
+                
+                // Calculate swipe velocity (points per second)
+                let verticalVelocity = abs(value.velocity.height)
+                let horizontalVelocity = abs(value.velocity.width)
+                
+                // Check if it's a vertical swipe with sufficient velocity and distance
+                let isVerticalSwipe = verticalVelocity > horizontalVelocity
+                let hasMinimumDistance = abs(value.translation.height) > 50
+                let hasMinimumVelocity = verticalVelocity > 300
+                
+                if isVerticalSwipe && hasMinimumDistance && hasMinimumVelocity {
                     onDismiss()
-                } else {
-                    withAnimation(.spring()) {
-                        dragOffset = .zero
-                    }
                 }
             }
     }

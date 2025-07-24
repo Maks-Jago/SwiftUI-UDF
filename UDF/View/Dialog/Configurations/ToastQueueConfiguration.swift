@@ -167,7 +167,7 @@ public struct ToastQueueConfiguration: Hashable, Sendable {
         showQueuedToastsImmediately: Bool = true,
         stackSpacing: CGFloat = 8,
         maxStackOffset: CGFloat = 200,
-        queueAnimation: Animation = .spring(response: 0.3, dampingFraction: 0.7),
+        queueAnimation: Animation = .spring(response: 0.5, dampingFraction: 0.7),
         useStaggeredAnimations: Bool = true,
         staggerDelay: TimeInterval = 0.1
     ) {
