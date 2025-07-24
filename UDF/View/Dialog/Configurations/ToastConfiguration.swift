@@ -95,7 +95,7 @@ public struct ToastConfiguration: Hashable, Sendable {
     ///
     /// Prevents toasts from becoming too wide on larger screens while ensuring
     /// they remain readable and visually balanced.
-    /// - Default: 600 points
+    /// - Default: .infinity
     public var maxWidth: CGFloat
     
     /// The horizontal padding around toast content within the screen bounds.
@@ -149,11 +149,8 @@ public struct ToastConfiguration: Hashable, Sendable {
         tapToDismiss: Bool = true,
         swipeToDismiss: Bool = true,
         animation: Animation = .spring(response: 0.3, dampingFraction: 0.6, blendDuration: 0),
-        transition: AnyTransition = .asymmetric(
-            insertion: .move(edge: .top).combined(with: .opacity),
-            removal: .move(edge: .top).combined(with: .opacity)
-        ),
-        maxWidth: CGFloat = 600,
+        transition: AnyTransition? = nil,
+        maxWidth: CGFloat = .infinity,
         horizontalPadding: CGFloat = 16,
         textAlignment: HorizontalAlignment = .leading
     ) {
@@ -164,7 +161,28 @@ public struct ToastConfiguration: Hashable, Sendable {
         self.tapToDismiss = tapToDismiss
         self.swipeToDismiss = swipeToDismiss
         self.animation = animation
-        self.transition = transition
+        
+        // Set position-appropriate transition if none provided
+        if let customTransition = transition {
+            self.transition = customTransition
+        } else {
+            // Use position-based transition
+            switch position {
+            case .top:
+                self.transition = .asymmetric(
+                    insertion: .move(edge: .top).combined(with: .opacity),
+                    removal: .move(edge: .top).combined(with: .opacity)
+                )
+            case .bottom:
+                self.transition = .asymmetric(
+                    insertion: .move(edge: .bottom).combined(with: .opacity),
+                    removal: .move(edge: .bottom).combined(with: .opacity)
+                )
+            case .center, .custom:
+                self.transition = .opacity.combined(with: .scale(scale: 0.9))
+            }
+        }
+        
         self.maxWidth = maxWidth
         self.horizontalPadding = horizontalPadding
         self.textAlignment = textAlignment
@@ -211,25 +229,20 @@ public extension ToastConfiguration {
     /// 
     /// Uses bottom slide transition and positioning suitable for bottom toasts:
     /// - Bottom positioning
-    /// - Slide from bottom transition
+    /// - Slide from bottom transition (automatically set)
     /// - Other settings match default
     static let bottom = ToastConfiguration(
-        position: .bottom,
-        transition: .asymmetric(
-            insertion: .move(edge: .bottom).combined(with: .opacity),
-            removal: .move(edge: .bottom).combined(with: .opacity)
-        )
+        position: .bottom
     )
     
     /// Configuration optimized for center positioning.
     /// 
     /// Uses scale transition and center alignment suitable for center toasts:
     /// - Center positioning
-    /// - Scale transition with opacity
+    /// - Scale transition with opacity (automatically set)
     /// - Center text alignment
     static let center = ToastConfiguration(
         position: .center,
-        transition: .opacity.combined(with: .scale(scale: 0.9)),
         textAlignment: .center
     )
     
