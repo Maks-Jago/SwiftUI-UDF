@@ -91,7 +91,9 @@ struct ToastContainer: View {
         }
         .onAppear {
             // Set the dismiss callback to notify parent when toasts are dismissed
+            print("🔵 Setting dismiss callback in ToastContainer")
             queueManager.setDismissCallback { toastId in
+                print("🔵 ToastContainer dismiss callback triggered for: \(toastId)")
                 onDismiss(toastId)
             }
             
