@@ -44,7 +44,10 @@ struct ToastDialogModifier: ViewModifier {
             .overlay {
                 ToastContainer() { toastId in
                     if currentPresentedDialogId != nil {
+                        print("🟢 Updating DialogStatus to dismissed for original ID: \(currentPresentedDialogId!)")
                         dialogStatus = .dismissed
+                    } else {
+                        print("🔴 No currentPresentedDialogId when dismiss callback triggered")
                     }
                 }
                 .environmentObject(queueManager)
