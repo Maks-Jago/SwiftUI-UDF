@@ -491,9 +491,7 @@ private extension ToastQueueManager {
         let task = Task { @MainActor in
             try? await Task.sleep(nanoseconds: UInt64(duration * 1_000_000_000))
             if !Task.isCancelled {
-                print("🟡 Auto-dismiss triggered for toast: \(displayInfo.id)")
-                print("🟡 onToastDismiss callback exists: \(onToastDismiss != nil)")
-                
+                // Trigger the dismiss callback first (this updates DialogStatus)
                 onToastDismiss?(displayInfo.id)
                 
                 withAnimation(animation) {
