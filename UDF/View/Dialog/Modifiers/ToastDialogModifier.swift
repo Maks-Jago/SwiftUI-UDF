@@ -44,7 +44,7 @@ struct ToastDialogModifier: ViewModifier {
             .overlay {
                 ToastContainer() { toastId in
                     if currentPresentedDialogId != nil {
-                        dialogStatus = .dismissed
+                        dialogStatus = DialogStatus.dismissed
                     }
                 }
                 .environmentObject(queueManager)

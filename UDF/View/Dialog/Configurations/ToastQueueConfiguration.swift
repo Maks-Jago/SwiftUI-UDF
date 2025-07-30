@@ -305,6 +305,7 @@ public class ToastQueueManager: ObservableObject {
     
     private var dismissTasks: [UUID: Task<Void, Never>] = [:]
     private var isProcessingQueue = false
+    private var onToastDismiss: ((UUID) -> Void)?
     
     // MARK: - Initializer
     
@@ -316,6 +317,16 @@ public class ToastQueueManager: ObservableObject {
     }
     
     // MARK: - Public Interface
+    
+    /// Sets the callback to be called when a toast is dismissed.
+    ///
+    /// This callback is used to notify the dialog system when a toast should be dismissed,
+    /// ensuring proper state management in the parent component.
+    ///
+    /// - Parameter callback: The callback to execute when a toast is dismissed.
+    public func setDismissCallback(_ callback: @escaping (UUID) -> Void) {
+        onToastDismiss = callback
+    }
     
     /// Adds a new toast to the queue for display.
     ///
@@ -358,8 +369,18 @@ public class ToastQueueManager: ObservableObject {
         dismissTasks[toastId]?.cancel()
         dismissTasks.removeValue(forKey: toastId)
         
-        // Remove from visible toasts
-        visibleToasts.removeAll { $0.id == toastId }
+        // Get animation from the toast being dismissed
+        let animation = if let displayInfo = visibleToasts.first(where: { $0.id == toastId }),
+                          case .toast(let configs) = displayInfo.toast.style {
+            configs.animation
+        } else {
+            configuration.queueAnimation
+        }
+        
+        // Remove from visible toasts with animation
+        withAnimation(animation) {
+            visibleToasts.removeAll { $0.id == toastId }
+        }
         
         // Update stack positions after removal
         if configuration.displayMode == .stacked {
@@ -459,10 +480,10 @@ private extension ToastQueueManager {
     }
     
     func scheduleAutoDismiss(for displayInfo: ToastDisplayInfo) {
-        let duration = if case .toast(let configs) = displayInfo.toast.style {
-            configs.defaultDuration
+        let (duration, animation) = if case .toast(let configs) = displayInfo.toast.style {
+            (configs.defaultDuration, configs.animation)
         } else {
-            2.0
+            (2.0, Animation.spring(response: 0.3, dampingFraction: 0.6, blendDuration: 0))
         }
 
         guard duration > 0 else { return }
@@ -470,7 +491,12 @@ private extension ToastQueueManager {
         let task = Task { @MainActor in
             try? await Task.sleep(nanoseconds: UInt64(duration * 1_000_000_000))
             if !Task.isCancelled {
-                dismiss(displayInfo.id)
+                // Trigger the dismiss callback first (this updates DialogStatus)
+                onToastDismiss?(displayInfo.id)
+                
+                withAnimation(animation) {
+                    dismiss(displayInfo.id)
+                }
             }
         }
         
@@ -488,7 +514,14 @@ private extension ToastQueueManager {
             let excess = visibleToasts.count - configuration.maxStackedToasts
             for _ in 0..<excess {
                 if let oldest = visibleToasts.first {
-                    dismiss(oldest.id)
+                    let animation = if case .toast(let configs) = oldest.toast.style {
+                        configs.animation
+                    } else {
+                        configuration.queueAnimation
+                    }
+                    withAnimation(animation) {
+                        dismiss(oldest.id)
+                    }
                 }
             }
         }
@@ -544,7 +577,16 @@ public extension ToastQueueManager {
     /// If there are important messages, it dismisses the visible toasts.
     /// If no important messages are present, it clears all toasts.
     func handleSmartDismissal() {
-        visibleToasts.forEach { dismiss($0.id) }
+        visibleToasts.forEach { displayInfo in
+            let animation = if case .toast(let configs) = displayInfo.toast.style {
+                configs.animation
+            } else {
+                configuration.queueAnimation
+            }
+            withAnimation(animation) {
+                dismiss(displayInfo.id)
+            }
+        }
         
         if configuration.displayMode == .stacked {
             updateStackPositions()

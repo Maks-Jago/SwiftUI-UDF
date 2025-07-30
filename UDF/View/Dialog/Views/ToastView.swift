@@ -114,6 +114,7 @@ struct ToastView: View {
                 standardToastContent
             }
         }
+        .padding(.horizontal, configuration.horizontalPadding)
         .gesture(dismissGestures)
         .onTapGesture {
             if configuration.tapToDismiss {
@@ -159,7 +160,6 @@ private extension ToastView {
             theme.colorStyle(for: toast.category).background()
                 .cornerRadius(theme.cornerRadius)
         )
-        .padding(.horizontal, configuration.horizontalPadding)
         .applyShadow(theme.shadow)
     }
 }
