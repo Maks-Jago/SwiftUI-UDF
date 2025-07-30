@@ -90,6 +90,11 @@ struct ToastContainer: View {
             .animation(queueManager.configuration.queueAnimation, value: queueManager.visibleToasts)
         }
         .onAppear {
+            // Set the dismiss callback to notify parent when toasts are dismissed
+            queueManager.setDismissCallback { toastId in
+                onDismiss(toastId)
+            }
+            
             if let initialToasts = _initialToasts {
                 for toast in initialToasts {
                     queueManager.enqueue(toast)

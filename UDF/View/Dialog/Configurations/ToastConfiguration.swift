@@ -170,13 +170,13 @@ public struct ToastConfiguration: Hashable, Sendable {
             switch position {
             case .top:
                 self.transition = .asymmetric(
-                    insertion: .move(edge: .top).combined(with: .opacity),
-                    removal: .move(edge: .top).combined(with: .opacity)
+                    insertion: .move(edge: .top).combined(with: .opacity).combined(with: .scale(scale: 0.95)),
+                    removal: .move(edge: .top).combined(with: .opacity).combined(with: .scale(scale: 0.95))
                 )
             case .bottom:
                 self.transition = .asymmetric(
-                    insertion: .move(edge: .bottom).combined(with: .opacity),
-                    removal: .move(edge: .bottom).combined(with: .opacity)
+                    insertion: .move(edge: .bottom).combined(with: .opacity).combined(with: .scale(scale: 0.95)),
+                    removal: .move(edge: .bottom).combined(with: .opacity).combined(with: .scale(scale: 0.95))
                 )
             case .center, .custom:
                 self.transition = .opacity.combined(with: .scale(scale: 0.9))
@@ -311,13 +311,13 @@ public extension ToastConfiguration {
         switch position {
         case .top:
             config.transition = .asymmetric(
-                insertion: .move(edge: .top).combined(with: .opacity),
-                removal: .move(edge: .top).combined(with: .opacity)
+                insertion: .move(edge: .top).combined(with: .opacity).combined(with: .scale(scale: 0.95)),
+                removal: .move(edge: .top).combined(with: .opacity).combined(with: .scale(scale: 0.95))
             )
         case .bottom:
             config.transition = .asymmetric(
-                insertion: .move(edge: .bottom).combined(with: .opacity),
-                removal: .move(edge: .bottom).combined(with: .opacity)
+                insertion: .move(edge: .bottom).combined(with: .opacity).combined(with: .scale(scale: 0.95)),
+                removal: .move(edge: .bottom).combined(with: .opacity).combined(with: .scale(scale: 0.95))
             )
         case .center, .custom:
             config.transition = .opacity.combined(with: .scale(scale: 0.9))
