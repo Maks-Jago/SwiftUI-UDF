@@ -77,9 +77,7 @@ private struct DialogModifier: ViewModifier {
             }
             // Propagate dismissals back to original status
             .onChange(of: toastState) { newToastState in
-                print("🔴 DialogModifier: toastState changed to \(newToastState.status)")
                 if case .dismissed = newToastState.status {
-                    print("🔴 DialogModifier: Setting original status to dismissed")
                     status = .dismissed
                 }
             }

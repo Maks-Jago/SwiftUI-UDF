@@ -43,7 +43,6 @@ struct ToastDialogModifier: ViewModifier {
             }
             .overlay {
                 ToastContainer() { toastId in
-                    print("🔵 UI-triggered dismiss for toast \(toastId)")
                     if currentPresentedDialogId != nil {
                         dialogStatus = DialogStatus.dismissed
                     }
