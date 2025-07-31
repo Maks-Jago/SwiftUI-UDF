@@ -50,7 +50,7 @@ public extension RCDictionary {
         }
 
         mutating func retain() {
-//            referenceCount += 1
+            referenceCount += 1
         }
 
         mutating func release() -> Bool {
