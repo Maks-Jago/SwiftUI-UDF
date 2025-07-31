@@ -1,5 +1,5 @@
 {
-  "originHash" : "8b92a1ca3d05643bc17b94717f80e751826413dab75503637bd58f5f7454fc7c",
+  "originHash" : "40d5d93b7ec4a50a55a950611b98ce1b8752b150d1b5fc4dab2d22cf4f3e28a8",
   "pins" : [
     {
       "identity" : "runtime",
@@ -17,15 +17,6 @@
       "state" : {
         "revision" : "c1805596154bb3a265fd91b8ac0c4433b4348fb0",
         "version" : "1.2.0"
-      }
-    },
-    {
-      "identity" : "swiftfoundation",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/Maks-Jago/SwiftFoundation",
-      "state" : {
-        "revision" : "db94d721f897d8edbd9e045f3594cd5a370e1e71",
-        "version" : "0.4.0"
       }
     }
   ],

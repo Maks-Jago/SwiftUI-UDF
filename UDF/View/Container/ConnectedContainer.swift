@@ -9,7 +9,6 @@
 //
 //===----------------------------------------------------------------------===//
 
-import SwiftFoundation
 import Foundation
 import SwiftUI
 
@@ -113,15 +112,15 @@ struct ConnectedContainer<C: Component, State: AppReducer>: View {
     ///   - onContainerDidUnload: A closure executed when the container is unloaded.
     ///   - useHooks: A closure that provides an array of hooks to use within the container.
     init<BindedContainer: BindableContainer>(
-    @EquatableNoop containerType: BindedContainer.Type,
-    @EquatableNoop containerId: @escaping () -> BindedContainer.ID,
-    @EquatableNoop map: @escaping (EnvironmentStore<State>) -> C.Props,
-    @EquatableNoop scope: @escaping @Sendable (State) -> Scope,
-    @EquatableNoop onContainerAppear: @escaping @MainActor (EnvironmentStore<State>) -> Void,
-    @EquatableNoop onContainerDisappear: @escaping @MainActor (EnvironmentStore<State>) -> Void,
-    @EquatableNoop onContainerDidLoad: @escaping (EnvironmentStore<State>) -> Void,
-    @EquatableNoop onContainerDidUnload: @escaping (EnvironmentStore<State>) -> Void,
-    @EquatableNoop useHooks: @escaping () -> [Hook<State>]
+        containerType: BindedContainer.Type,
+        containerId: @escaping () -> BindedContainer.ID,
+        map: @escaping (EnvironmentStore<State>) -> C.Props,
+        scope: @escaping @Sendable (State) -> Scope,
+        onContainerAppear: @escaping @MainActor (EnvironmentStore<State>) -> Void,
+        onContainerDisappear: @escaping @MainActor (EnvironmentStore<State>) -> Void,
+        onContainerDidLoad: @escaping (EnvironmentStore<State>) -> Void,
+        onContainerDidUnload: @escaping (EnvironmentStore<State>) -> Void,
+        useHooks: @escaping () -> [Hook<State>]
     ) where BindedContainer.ID: Sendable {
         self.map = map
         self.scope = scope

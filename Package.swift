@@ -22,7 +22,6 @@ let package = Package(
     dependencies: [
         .package(url: "https://github.com/apple/swift-collections", from: "1.2.0"),
         .package(url: "https://github.com/urlaunched-com/Runtime", from: "2.2.6"),
-        .package(url: "https://github.com/Maks-Jago/SwiftFoundation", from: "0.3.4"),
     ],
     targets: [
         .target(
@@ -30,7 +29,6 @@ let package = Package(
             dependencies: [
                 .product(name: "OrderedCollections", package: "swift-collections"),
                 .product(name: "Runtime", package: "Runtime"),
-                .product(name: "SwiftFoundation", package: "SwiftFoundation"),
             ],
             path: "UDF"
         ),
