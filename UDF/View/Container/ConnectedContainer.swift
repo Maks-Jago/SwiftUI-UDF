@@ -64,8 +64,6 @@ struct ConnectedContainer<C: Component, State: AppReducer>: View {
 
     /// Provides access to the global `EnvironmentStore`.
     private var store: EnvironmentStore<State> { .global }
-    
-    private let viewId: AnyHashable
 
     /// Initializes the `ConnectedContainer` with closures for mapping state, managing scope,
     /// handling lifecycle events, and creating hooks.
@@ -91,7 +89,6 @@ struct ConnectedContainer<C: Component, State: AppReducer>: View {
         self.scope = scope
         self.onContainerAppear = onContainerAppear
         self.onContainerDisappear = onContainerDisappear
-        self.viewId = AnyHashable(ObjectIdentifier(C.self))
         self._containerLifecycle = .init(
             wrappedValue: ContainerLifecycle(
                 didLoadCommand: onContainerDidLoad,
@@ -129,7 +126,6 @@ struct ConnectedContainer<C: Component, State: AppReducer>: View {
         self.scope = scope
         self.onContainerAppear = onContainerAppear
         self.onContainerDisappear = onContainerDisappear
-        self.viewId = AnyHashable(containerId())
         self._containerLifecycle = .init(
             wrappedValue: ContainerLifecycle(
                 didLoadCommand: { store in
@@ -160,6 +156,5 @@ struct ConnectedContainer<C: Component, State: AppReducer>: View {
         return C(props: map(store))
             .onAppear { onContainerAppear(store) }
             .onDisappear { onContainerDisappear(store) }
-            .id(viewId)
     }
 }
