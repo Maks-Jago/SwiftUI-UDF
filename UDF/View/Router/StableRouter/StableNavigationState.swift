@@ -34,8 +34,8 @@ public final class StableNavigationManager: ObservableObject, @unchecked Sendabl
     /// Cached NavigationPath derived from the stable data
     @Published private var _cachedNavigationPath: NavigationPath = NavigationPath()
     
-    /// Current route stack stored as AnyHashable for NavigationStack compatibility
-    @Published private var currentRoutes: [AnyHashable] = []
+    /// Current route stack stored as AnyHashable for NavigationPath compatibility
+    private var currentRoutes: [AnyHashable] = []
     
     public init() {}
     
@@ -57,17 +57,6 @@ public final class StableNavigationManager: ObservableObject, @unchecked Sendabl
             set: { _ in
                 // NavigationPath is read-only in our stable system
                 // All modifications should go through stable navigation methods
-            }
-        )
-    }
-    
-    /// Binding to the route stack for direct NavigationStack usage
-    public var routeStack: Binding<[AnyHashable]> {
-        Binding(
-            get: { self.currentRoutes },
-            set: { newRoutes in
-                self.currentRoutes = newRoutes
-                self.updateStableData()
             }
         )
     }
