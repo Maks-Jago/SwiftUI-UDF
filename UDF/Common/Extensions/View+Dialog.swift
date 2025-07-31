@@ -75,6 +75,22 @@ private struct DialogModifier: ViewModifier {
             .onAppear {
                 routeDialog(status)
             }
+            // Propagate dismissals back to original status
+            .onChange(of: toastState) { newToastState in
+                if case .dismissed = newToastState.status {
+                    status = .dismissed
+                }
+            }
+            .onChange(of: alertState) { newAlertState in
+                if case .dismissed = newAlertState.status {
+                    status = .dismissed
+                }
+            }
+            .onChange(of: confirmationDialogStatus) { newConfirmationState in
+                if case .dismissed = newConfirmationState.status {
+                    status = .dismissed
+                }
+            }
             .modifier(AlertDialogModifier(dialogStatus: $alertState))
             .modifier(
                 ToastDialogModifier(
