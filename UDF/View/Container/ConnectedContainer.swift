@@ -46,25 +46,25 @@ import SwiftUI
 struct ConnectedContainer<C: Component, State: AppReducer>: View {
     /// A closure that maps the global store to the properties needed by the component.
     let map: (_ store: EnvironmentStore<State>) -> C.Props
-
+    
     /// A closure that defines the scope within the global state.
     let scope: @MainActor (_ state: State) -> Scope
-
+    
     /// A closure executed when the container appears in the view hierarchy.
     var onContainerAppear: @MainActor (EnvironmentStore<State>) -> Void
-
+    
     /// A closure executed when the container disappears from the view hierarchy.
     var onContainerDisappear: @MainActor (EnvironmentStore<State>) -> Void
-
+    
     /// The container's lifecycle manager that handles loading, unloading, and hooks.
     @StateObject var containerLifecycle: ContainerLifecycle<State>
-
+    
     /// The container state that observes changes in the scoped state.
     @ObservedObject var containerState: ContainerState<State>
-
+    
     /// Provides access to the global `EnvironmentStore`.
     private var store: EnvironmentStore<State> { .global }
-
+    
     /// Initializes the `ConnectedContainer` with closures for mapping state, managing scope,
     /// handling lifecycle events, and creating hooks.
     ///
@@ -98,7 +98,7 @@ struct ConnectedContainer<C: Component, State: AppReducer>: View {
         )
         self._containerState = .init(wrappedValue: .init(store: EnvironmentStore<State>.global, scope: scope))
     }
-
+    
     /// Initializes a `ConnectedContainer` for a bindable container type, managing state and lifecycle events.
     ///
     /// - Parameters:
@@ -148,13 +148,12 @@ struct ConnectedContainer<C: Component, State: AppReducer>: View {
         )
         self._containerState = .init(wrappedValue: .init(store: EnvironmentStore<State>.global, scope: scope))
     }
-
+    
     /// The main view body that renders the component and attaches lifecycle events.
     var body: some View {
-        containerLifecycle.set(didLoad: true, store: store)
-
-        return C(props: map(store))
+        C(props: map(store))
             .onAppear { onContainerAppear(store) }
             .onDisappear { onContainerDisappear(store) }
+            .task { containerLifecycle.set(didLoad: true, store: store) }
     }
 }
