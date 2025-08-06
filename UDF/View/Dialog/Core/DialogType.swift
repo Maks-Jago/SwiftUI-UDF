@@ -39,49 +39,49 @@ extension DialogTypeProtocol {
 
 }
 
-enum DialogCustomType<Icon: View, Content: View>: DialogTypeProtocol {
+public enum DialogCustomType<Icon: View, Content: View>: DialogTypeProtocol {
     case custom(content: DialogContent<Icon, Content>, style: DialogStyle)
 
-    var style: DialogStyle {
+    public var style: DialogStyle {
         switch self {
         case .custom(_, style: let style):
             return style
         }
     }
 
-    var title: String {
+    public var title: String {
         switch self {
         case let .custom(content, _):
             return content.title
         }
     }
 
-    var message: String? {
+    public var message: String? {
         switch self {
         case let .custom(content, _):
             return content.message
         }
     }
 
-    var actions: [any DialogAction] {
+    public var actions: [any DialogAction] {
         switch self {
         case let .custom(content, _):
             return content.actions
         }
     }
 
-    var category: DialogCategory {
+    public var category: DialogCategory {
         .custom
     }
     
-    func getIconView(theme: ToastTheme) -> AnyView? {
+    public func getIconView(theme: ToastTheme) -> AnyView? {
         switch self {
         case let .custom(content, _):
             return content.renderIcon()
         }
     }
     
-    func getCustomContentView() -> AnyView? {
+    public func getCustomContentView() -> AnyView? {
         switch self {
         case let .custom(content, _):
             if let customContentView = content.customContentView {
