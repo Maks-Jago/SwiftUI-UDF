@@ -7,7 +7,7 @@ import Foundation
 
 @Suite(.serialized) struct MiddlewareCancellationTests_Last {
     
-    struct MiddlewareCancellationAppState: AppReducer {
+    struct AppState: AppReducer {
         var middlewareFlow = MiddlewareFlow()
         var runForm = RunForm()
     }
@@ -53,22 +53,22 @@ import Foundation
 
     @Test func observableMiddlewareCancellation() async {
         // Ensure complete isolation from other tests
-        GlobalValue.clearValue(for: EnvironmentStore<MiddlewareCancellationAppState>.self)
+        GlobalValue.clearValue(for: EnvironmentStore<AppState>.self)
         
-        let store = await TestStore(initial: MiddlewareCancellationAppState())
+        let store = await TestStore(initial: AppState())
 
-        final class ObservableMiddlewareToCancel: Middleware<MiddlewareCancellationAppState>, @unchecked Sendable {
+        final class ObservableMiddlewareToCancel: Middleware<AppState>, @unchecked Sendable {
             var environment: Void!
 
             enum Сancellation: CaseIterable {
                 case message
             }
 
-            func scope(for state: MiddlewareCancellationAppState) -> Scope {
+            func scope(for state: AppState) -> Scope {
                 state.middlewareFlow
             }
 
-            func observe(state: MiddlewareCancellationAppState) {
+            func observe(state: AppState) {
                 switch state.middlewareFlow {
                 case .loading:
                     execute(
@@ -102,16 +102,16 @@ import Foundation
 
     @Test func observableRunMiddlewareToCancel() async {
         
-        final class ObservableRunMiddlewareToCancel: Middleware<MiddlewareCancellationAppState>, @unchecked Sendable {
+        final class ObservableRunMiddlewareToCancel: Middleware<AppState>, @unchecked Sendable {
             struct Environment {}
 
             var environment: Environment!
 
-            static func buildLiveEnvironment(for store: some Store<MiddlewareCancellationAppState>) -> Environment {
+            static func buildLiveEnvironment(for store: some Store<AppState>) -> Environment {
                 Environment()
             }
 
-            static func buildTestEnvironment(for store: some Store<MiddlewareCancellationAppState>) -> Environment {
+            static func buildTestEnvironment(for store: some Store<AppState>) -> Environment {
                 Environment()
             }
 
@@ -119,11 +119,11 @@ import Foundation
                 case runMessage
             }
 
-            func scope(for state: MiddlewareCancellationAppState) -> Scope {
+            func scope(for state: AppState) -> Scope {
                 state.middlewareFlow
             }
 
-            func observe(state: MiddlewareCancellationAppState) {
+            func observe(state: AppState) {
                 switch state.middlewareFlow {
                 case .loading:
                     run(RunEffect(), cancellation: Сancellation.runMessage)
@@ -151,8 +151,8 @@ import Foundation
             }
         }
         
-        GlobalValue.clearValue(for: EnvironmentStore<MiddlewareCancellationAppState>.self)
-        let store = await TestStore(initial: MiddlewareCancellationAppState())
+        GlobalValue.clearValue(for: EnvironmentStore<AppState>.self)
+        let store = await TestStore(initial: AppState())
         await store.subscribe(ObservableRunMiddlewareToCancel.self)
         await store.dispatch(Actions.Loading())
 
@@ -172,16 +172,16 @@ import Foundation
 
     @Test func reducibleMiddlewareToCancel() async {
         
-        final class ReducibleMiddlewareToCancel: Middleware<MiddlewareCancellationAppState>, @unchecked Sendable {
+        final class ReducibleMiddlewareToCancel: Middleware<AppState>, @unchecked Sendable {
             struct Environment {}
 
             var environment: Environment!
 
-            static func buildLiveEnvironment(for store: some Store<MiddlewareCancellationAppState>) -> Environment {
+            static func buildLiveEnvironment(for store: some Store<AppState>) -> Environment {
                 Environment()
             }
 
-            static func buildTestEnvironment(for store: some Store<MiddlewareCancellationAppState>) -> Environment {
+            static func buildTestEnvironment(for store: some Store<AppState>) -> Environment {
                 Environment()
             }
 
@@ -189,7 +189,7 @@ import Foundation
                 case reducibleMessage
             }
 
-            func reduce(_ action: some Action, for state: MiddlewareCancellationAppState) {
+            func reduce(_ action: some Action, for state: AppState) {
                 switch action {
                 case is Actions.Loading:
                     execute(
@@ -206,8 +206,8 @@ import Foundation
             }
         }
         
-        GlobalValue.clearValue(for: EnvironmentStore<MiddlewareCancellationAppState>.self)
-        let store = await TestStore(initial: MiddlewareCancellationAppState())
+        GlobalValue.clearValue(for: EnvironmentStore<AppState>.self)
+        let store = await TestStore(initial: AppState())
         await store.subscribe(ReducibleMiddlewareToCancel.self)
         await store.dispatch(Actions.Loading())
 

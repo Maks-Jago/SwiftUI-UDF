@@ -37,7 +37,7 @@ import UDFSwiftTesting
         }
     }
 
-    struct ContainerScopeAppState: AppReducer {
+    struct AppState: AppReducer {
         var plainForm = PlainForm()
         var userData = UserData()
     }
@@ -53,7 +53,7 @@ import UDFSwiftTesting
     @Test
     @MainActor func componentRenderingAfterStateMutation() async {
         // No need to clear GlobalValue as we're using explicit store injection
-        let store = EnvironmentStore(initial: ContainerScopeAppState(), logger: TestStoreLogger())
+        let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
         
         let itemsContainer = ItemsListContainer()
         let window = await PlatformWindow.render(container: itemsContainer.with(store: store))
@@ -70,7 +70,7 @@ import UDFSwiftTesting
 
     @MainActor func rootComponentRendering() async {
         // No need to clear GlobalValue as we're using explicit store injection
-        let store = EnvironmentStore(initial: ContainerScopeAppState(), logger: TestStoreLogger())
+        let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
         
         let rootContainer = RootContainer()
         let window = await PlatformWindow.render(container: rootContainer.with(store: store))
@@ -109,11 +109,11 @@ extension ContainerScopeTests {
 
         @Box var renderingNumber: Int = 0
 
-        func scope(for state: ContainerScopeTests.ContainerScopeAppState) -> Scope {
+        func scope(for state: ContainerScopeTests.AppState) -> Scope {
             state.plainForm
         }
 
-        func map(store: EnvironmentStore<ContainerScopeAppState>) -> ContainerComponent.Props {
+        func map(store: EnvironmentStore<AppState>) -> ContainerComponent.Props {
             renderingNumber += 1
             print("ItemsListContainer: renderingNumber - \(renderingNumber)")
 
@@ -144,11 +144,11 @@ extension ContainerScopeTests {
 
         @Box var renderingNumber: Int = 0
 
-        func scope(for state: ContainerScopeAppState) -> Scope {
+        func scope(for state: AppState) -> Scope {
             state.userData
         }
 
-        func map(store: EnvironmentStore<ContainerScopeAppState>) -> RootComponent.Props {
+        func map(store: EnvironmentStore<AppState>) -> RootComponent.Props {
             renderingNumber += 1
             print("RootContainer: renderingNumber - \(renderingNumber)")
 
@@ -168,7 +168,7 @@ extension ContainerScopeTests {
         var body: some View {
             print("props.isUserLoggedIn: \(props.isUserLoggedIn)")
             return Group {
-                Text("Root component - nested container removed to avoid GlobalValue dependency")
+                ItemsListContainer()
 
                 if props.isUserLoggedIn {
                     Text("user logged in")

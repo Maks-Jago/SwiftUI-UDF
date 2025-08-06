@@ -67,7 +67,7 @@ extension DialogType {
 }
 
 @Suite(.serialized) struct DialogTests {
-    struct DialogAppState: AppReducer {
+    struct AppState: AppReducer {
         var form = FormWithDialog()
     }
     
@@ -106,8 +106,8 @@ extension DialogType {
     }
     
     @Test func WhendialogRegistered_dialogCanBePresentedById() async {
-        GlobalValue.clearValue(for: EnvironmentStore<DialogAppState>.self)
-        let store = await TestStore(initial: DialogAppState())
+        GlobalValue.clearValue(for: EnvironmentStore<AppState>.self)
+        let store = await TestStore(initial: AppState())
         var status = await store.state.form.dialog.status
         #expect(status == .dismissed)
         
@@ -183,8 +183,8 @@ extension DialogType {
     // MARK: - Toast-Specific Tests
     
     @Test func WhenToastRegistered_ToastCanBePresentedById() async {
-        GlobalValue.clearValue(for: EnvironmentStore<DialogAppState>.self)
-        let store = await TestStore(initial: DialogAppState())
+        GlobalValue.clearValue(for: EnvironmentStore<AppState>.self)
+        let store = await TestStore(initial: AppState())
         var status = await store.state.form.dialog.status
         #expect(status == .dismissed)
         
@@ -212,8 +212,8 @@ extension DialogType {
     }
     
     @Test func CustomToastWithIcon() async {
-        GlobalValue.clearValue(for: EnvironmentStore<DialogAppState>.self)
-        let store = await TestStore(initial: DialogAppState())
+        GlobalValue.clearValue(for: EnvironmentStore<AppState>.self)
+        let store = await TestStore(initial: AppState())
         
         DialogRegistry.register(id: FormWithDialog.DialogId.customToastWithIcon) {
             DialogType.customToastWithIcon()
@@ -244,8 +244,8 @@ extension DialogType {
     }
     
     @Test func CustomViewToast() async {
-        GlobalValue.clearValue(for: EnvironmentStore<DialogAppState>.self)
-        let store = await TestStore(initial: DialogAppState())
+        GlobalValue.clearValue(for: EnvironmentStore<AppState>.self)
+        let store = await TestStore(initial: AppState())
         
         DialogRegistry.register(id: FormWithDialog.DialogId.customViewToast) {
             DialogType.customViewToast()

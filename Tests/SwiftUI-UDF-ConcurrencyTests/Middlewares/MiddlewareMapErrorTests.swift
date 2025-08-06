@@ -10,7 +10,7 @@ private extension Actions {
 }
 
 @Suite(.serialized) struct MiddlewareMapErrorTests {
-    struct MiddlewareMapErrorAppState: AppReducer {
+    struct AppState: AppReducer {
         var errorForm = ErrorForm()
 
         struct ErrorForm: Form {
@@ -36,18 +36,18 @@ private extension Actions {
         case statusCode(Int)
     }
 
-    final class LoadingMiddleware: Middleware<MiddlewareMapErrorTests.MiddlewareMapErrorAppState>, @unchecked Sendable {
+    final class LoadingMiddleware: Middleware<MiddlewareMapErrorTests.AppState>, @unchecked Sendable {
         enum Сancellation: CaseIterable {
             case message
         }
 
         var environment: Void!
 
-        func reduce(_ action: some Action, for state: MiddlewareMapErrorTests.MiddlewareMapErrorAppState) {
+        func reduce(_ action: some Action, for state: MiddlewareMapErrorTests.AppState) {
             switch action {
             case is Actions.StartLoading:
                 execute(
-                    flowId: MiddlewareMapErrorTests.MiddlewareMapErrorAppState.ErrorFlow.id,
+                    flowId: MiddlewareMapErrorTests.AppState.ErrorFlow.id,
                     cancellation: Сancellation.message,
                     mapError: mapAPIError
                 ) { _ in
@@ -74,8 +74,8 @@ private extension Actions {
     }
 
     @Test func mapError() async {
-        GlobalValue.clearValue(for: EnvironmentStore<MiddlewareMapErrorAppState>.self)
-        let store = await TestStore(initial: MiddlewareMapErrorTests.MiddlewareMapErrorAppState())
+        GlobalValue.clearValue(for: EnvironmentStore<AppState>.self)
+        let store = await TestStore(initial: MiddlewareMapErrorTests.AppState())
         await store.subscribe(LoadingMiddleware.self)
 
         await store.dispatch(Actions.StartLoading())

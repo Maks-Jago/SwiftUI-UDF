@@ -17,7 +17,7 @@ import UDFSwiftTesting
         }
     }
 
-    struct ContainerHookAppState: AppReducer {
+    struct AppState: AppReducer {
         var hookForm = HookForm()
     }
 
@@ -27,7 +27,7 @@ import UDFSwiftTesting
     }
 
     @Test func OneTimeHook() async throws {
-        let store = EnvironmentStore(initial: ContainerHookAppState(), logger: TestStoreLogger())
+        let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
         let rootContainer = RootContainer()
         let window = await PlatformWindow.render(container: rootContainer)
 
@@ -42,7 +42,7 @@ import UDFSwiftTesting
     }
 
     @Test func OneTimeHook_NotCalledAgainOnRedraw() async throws {
-        let store = EnvironmentStore(initial: ContainerHookAppState(), logger: TestStoreLogger())
+        let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
         let rootContainer = RootContainer()
         let window = await PlatformWindow.render(container: rootContainer)
 
@@ -72,7 +72,7 @@ import UDFSwiftTesting
     }
 
     @Test func DefaultHook_CalledCorrectNumberOfTimes() async throws {
-        let store = EnvironmentStore(initial: ContainerHookAppState(), logger: TestStoreLogger())
+        let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
         let rootContainer = RootContainer()
         let window = await PlatformWindow.render(container: rootContainer)
 
@@ -103,7 +103,7 @@ import UDFSwiftTesting
     }
 
     @Test func HooksPersistAcrossContainers() async throws {
-        let store = EnvironmentStore(initial: ContainerHookAppState(), logger: TestStoreLogger())
+        let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
         
         // Create and use the first container
         let rootContainer = RootContainer()
@@ -147,7 +147,7 @@ import UDFSwiftTesting
     }
 
     @Test func HookFiresWhenConditionAlreadyTrueOnContainerAppear() async throws {
-        let store = EnvironmentStore(initial: ContainerHookAppState(), logger: TestStoreLogger())
+        let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
 
         // Set the trigger value BEFORE creating the container
         // This simulates the scenario where the condition is already true
@@ -173,7 +173,7 @@ import UDFSwiftTesting
     }
 
     @Test func removeHook() async throws {
-        let store = EnvironmentStore(initial: ContainerHookAppState(), logger: TestStoreLogger())
+        let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
         let rootContainer = RemovableHookContainer()
 
         let window = await PlatformWindow.render(container: rootContainer)
@@ -198,7 +198,7 @@ import UDFSwiftTesting
     }
 
     @Test func HookWithAlwaysFalseCondition() async throws {
-        let store = EnvironmentStore(initial: ContainerHookAppState(), logger: TestStoreLogger())
+        let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
         let rootContainer = AlwaysFalseHookContainer()
 
         let window = await PlatformWindow.render(container: rootContainer)
@@ -218,7 +218,7 @@ import UDFSwiftTesting
     }
 
     @Test func MultipleHooksWithDifferentConditions() async throws {
-        let store = EnvironmentStore(initial: ContainerHookAppState(), logger: TestStoreLogger())
+        let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
         let rootContainer = MultipleHooksContainer()
 
         let window = await PlatformWindow.render(container: rootContainer)
@@ -247,7 +247,7 @@ import UDFSwiftTesting
     }
 
     @Test func HookWithComplexCondition() async throws {
-        let store = EnvironmentStore(initial: ContainerHookAppState(), logger: TestStoreLogger())
+        let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
         let rootContainer = ComplexConditionHookContainer()
 
         let window = await PlatformWindow.render(container: rootContainer)
@@ -268,7 +268,7 @@ import UDFSwiftTesting
     }
 
     @Test func HookFiresOnlyOnConditionTransition() async throws {
-        let store = EnvironmentStore(initial: ContainerHookAppState(), logger: TestStoreLogger())
+        let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
         let rootContainer = TransitionTestContainer()
 
         let window = await PlatformWindow.render(container: rootContainer)
@@ -303,7 +303,7 @@ import UDFSwiftTesting
     }
 
     @Test func HookWithNilConditionCheck() async throws {
-        let store = EnvironmentStore(initial: ContainerHookAppState(), logger: TestStoreLogger())
+        let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
         let rootContainer = NilSafeHookContainer()
 
         let window = await PlatformWindow.render(container: rootContainer)
@@ -322,7 +322,7 @@ import UDFSwiftTesting
     }
 
     @Test func HookWithStateRollback() async throws {
-        let store = EnvironmentStore(initial: ContainerHookAppState(), logger: TestStoreLogger())
+        let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
         let rootContainer = RollbackHookContainer()
 
         let window = await PlatformWindow.render(container: rootContainer)
@@ -345,7 +345,7 @@ import UDFSwiftTesting
     }
 
     @Test func ConditionalHookActivation() async throws {
-        let store = EnvironmentStore(initial: ContainerHookAppState(), logger: TestStoreLogger())
+        let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
         let rootContainer = ConditionalHookContainer()
 
         let window = await PlatformWindow.render(container: rootContainer)
@@ -379,15 +379,15 @@ extension ContainerHookTests {
     struct RemovableHookContainer: Container {
         typealias ContainerComponent = RootComponent
 
-        func scope(for state: ContainerHookAppState) -> Scope {
+        func scope(for state: AppState) -> Scope {
             state.hookForm
         }
 
-        func map(store: EnvironmentStore<ContainerHookAppState>) -> RootComponent.Props {
+        func map(store: EnvironmentStore<AppState>) -> RootComponent.Props {
             .init()
         }
 
-        func useHooks() -> [Hook<ContainerHookAppState>] {
+        func useHooks() -> [Hook<AppState>] {
             Hook.oneTimeHook(id: "RemovableHook") { state in
                 state.hookForm.triggerValue == "remove"
             } block: { store in
@@ -399,15 +399,15 @@ extension ContainerHookTests {
     struct AlwaysFalseHookContainer: Container {
         typealias ContainerComponent = RootComponent
 
-        func scope(for state: ContainerHookAppState) -> Scope {
+        func scope(for state: AppState) -> Scope {
             state.hookForm
         }
 
-        func map(store: EnvironmentStore<ContainerHookAppState>) -> RootComponent.Props {
+        func map(store: EnvironmentStore<AppState>) -> RootComponent.Props {
             .init()
         }
 
-        func useHooks() -> [Hook<ContainerHookAppState>] {
+        func useHooks() -> [Hook<AppState>] {
             Hook.hook(id: "AlwaysFalseHook") { _ in
                 false
             } block: { store in
@@ -419,15 +419,15 @@ extension ContainerHookTests {
     struct MultipleHooksContainer: Container {
         typealias ContainerComponent = RootComponent
 
-        func scope(for state: ContainerHookAppState) -> Scope {
+        func scope(for state: AppState) -> Scope {
             state.hookForm
         }
 
-        func map(store: EnvironmentStore<ContainerHookAppState>) -> RootComponent.Props {
+        func map(store: EnvironmentStore<AppState>) -> RootComponent.Props {
             .init()
         }
 
-        func useHooks() -> [Hook<ContainerHookAppState>] {
+        func useHooks() -> [Hook<AppState>] {
             Hook.hook(id: "FirstHook") { state in
                 state.hookForm.triggerValue == "first"
             } block: { store in
@@ -445,15 +445,15 @@ extension ContainerHookTests {
     struct ComplexConditionHookContainer: Container {
         typealias ContainerComponent = RootComponent
 
-        func scope(for state: ContainerHookAppState) -> Scope {
+        func scope(for state: AppState) -> Scope {
             state.hookForm
         }
 
-        func map(store: EnvironmentStore<ContainerHookAppState>) -> RootComponent.Props {
+        func map(store: EnvironmentStore<AppState>) -> RootComponent.Props {
             .init()
         }
 
-        func useHooks() -> [Hook<ContainerHookAppState>] {
+        func useHooks() -> [Hook<AppState>] {
             Hook.hook(id: "ComplexConditionHook") { state in
                 state.hookForm.triggerValue == "complex" && state.hookForm.callbacksCount == 5
             } block: { store in
@@ -465,15 +465,15 @@ extension ContainerHookTests {
     struct TransitionTestContainer: Container {
         typealias ContainerComponent = RootComponent
 
-        func scope(for state: ContainerHookAppState) -> Scope {
+        func scope(for state: AppState) -> Scope {
             state.hookForm
         }
 
-        func map(store: EnvironmentStore<ContainerHookAppState>) -> RootComponent.Props {
+        func map(store: EnvironmentStore<AppState>) -> RootComponent.Props {
             .init()
         }
 
-        func useHooks() -> [Hook<ContainerHookAppState>] {
+        func useHooks() -> [Hook<AppState>] {
             Hook.hook(id: "TransitionHook") { state in
                 state.hookForm.triggerValue == "true"
             } block: { store in
@@ -485,15 +485,15 @@ extension ContainerHookTests {
     struct NilSafeHookContainer: Container {
         typealias ContainerComponent = RootComponent
 
-        func scope(for state: ContainerHookAppState) -> Scope {
+        func scope(for state: AppState) -> Scope {
             state.hookForm
         }
 
-        func map(store: EnvironmentStore<ContainerHookAppState>) -> RootComponent.Props {
+        func map(store: EnvironmentStore<AppState>) -> RootComponent.Props {
             .init()
         }
 
-        func useHooks() -> [Hook<ContainerHookAppState>] {
+        func useHooks() -> [Hook<AppState>] {
             Hook.hook(id: "NilSafeHook") { state in
                 !state.hookForm.triggerValue.isEmpty && state.hookForm.triggerValue == "valid"
             } block: { store in
@@ -505,15 +505,15 @@ extension ContainerHookTests {
     struct RollbackHookContainer: Container {
         typealias ContainerComponent = RootComponent
 
-        func scope(for state: ContainerHookAppState) -> Scope {
+        func scope(for state: AppState) -> Scope {
             state.hookForm
         }
 
-        func map(store: EnvironmentStore<ContainerHookAppState>) -> RootComponent.Props {
+        func map(store: EnvironmentStore<AppState>) -> RootComponent.Props {
             .init()
         }
 
-        func useHooks() -> [Hook<ContainerHookAppState>] {
+        func useHooks() -> [Hook<AppState>] {
             Hook.hook(id: "RollbackHook") { state in
                 state.hookForm.triggerValue == "rollback"
             } block: { store in
@@ -526,15 +526,15 @@ extension ContainerHookTests {
     struct ConditionalHookContainer: Container {
         typealias ContainerComponent = RootComponent
 
-        func scope(for state: ContainerHookAppState) -> Scope {
+        func scope(for state: AppState) -> Scope {
             state.hookForm
         }
 
-        func map(store: EnvironmentStore<ContainerHookAppState>) -> RootComponent.Props {
+        func map(store: EnvironmentStore<AppState>) -> RootComponent.Props {
             .init()
         }
 
-        func useHooks() -> [Hook<ContainerHookAppState>] {
+        func useHooks() -> [Hook<AppState>] {
             Hook.hook(id: "ConditionalHook") { state in
                 state.hookForm.triggerValue == "trigger" && state.hookForm.callbacksCount % 2 == 0
             } block: { store in
@@ -546,15 +546,15 @@ extension ContainerHookTests {
     struct RootContainer: Container {
         typealias ContainerComponent = RootComponent
 
-        func scope(for state: ContainerHookAppState) -> Scope {
+        func scope(for state: AppState) -> Scope {
             state.hookForm
         }
 
-        func map(store: EnvironmentStore<ContainerHookAppState>) -> RootComponent.Props {
+        func map(store: EnvironmentStore<AppState>) -> RootComponent.Props {
             .init()
         }
 
-        func useHooks() -> [Hook<ContainerHookTests.ContainerHookAppState>] {
+        func useHooks() -> [Hook<ContainerHookTests.AppState>] {
             Hook.oneTimeHook(id: "OneTimeHook") { state in
                 state.hookForm.triggerValue == "1"
             } block: { store in

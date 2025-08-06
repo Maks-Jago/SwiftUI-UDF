@@ -16,7 +16,7 @@ import Testing
         }
     }
 
-    struct DelayedActionAppState: AppReducer {
+    struct AppState: AppReducer {
         var dataForm = DataForm()
     }
 
@@ -26,7 +26,7 @@ import Testing
     }
 
     @Test func WhenActionHasDelay_DataShouldBeUpdatedAfterDelay() async throws {
-        let store = EnvironmentStore(initial: DelayedActionAppState(), logger: TestStoreLogger())
+        let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
 
         store.dispatch(Actions.UpdateFormField(keyPath: \DataForm.title, value: "delayed title").with(delay: 1))
         store.dispatch(Actions.UpdateFormField(keyPath: \DataForm.title, value: "updated title"))
@@ -39,7 +39,7 @@ import Testing
     }
 
     @Test func WhenActionsHaveDelayInGroup_DataShouldBeUpdatedAfterDelay() async throws {
-        let store = EnvironmentStore(initial: DelayedActionAppState(), logger: TestStoreLogger())
+        let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
 
         store.dispatch(
             ActionGroup {
@@ -61,7 +61,7 @@ import Testing
     }
 
     @Test func WhenActionGroupHasDelay_DataShouldBeUpdatedAfterDelay() async throws {
-        let store = EnvironmentStore(initial: DelayedActionAppState(), logger: TestStoreLogger())
+        let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
 
         store.dispatch(
             ActionGroup {
@@ -79,7 +79,7 @@ import Testing
     }
 
     @Test func WhenSomeActionInGroupHasDelay_OnlyThatActionIsDelayed() async throws {
-        let store = EnvironmentStore(initial: DelayedActionAppState(), logger: TestStoreLogger())
+        let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
 
         store.dispatch(
             ActionGroup {
@@ -100,7 +100,7 @@ import Testing
     }
 
     @Test func DelayedActionsDDOS() async throws {
-        let store = EnvironmentStore(initial: DelayedActionAppState(), logger: TestStoreLogger())
+        let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
 
         store.dispatch(Actions.UpdateFormField(keyPath: \DataForm.count, value: 1).with(delay: 1))
         store.dispatch(Actions.UpdateFormField(keyPath: \DataForm.count, value: 2).with(delay: 2))

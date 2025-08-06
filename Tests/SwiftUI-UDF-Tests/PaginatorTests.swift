@@ -38,7 +38,7 @@ struct PaginatorTests {
         mutating func reduce(_ action: some Action) {}
     }
 
-    struct PaginatorAppState: AppReducer, Equatable {
+    struct AppState: AppReducer, Equatable {
         var itemsForm = ItemsForm()
     }
 
@@ -136,7 +136,7 @@ struct PaginatorTests {
     }
 
     @Test func paginatorLoading() async {
-        let store = await TestStore(initial: PaginatorAppState())
+        let store = await TestStore(initial: AppState())
         await store.dispatch(Actions.LoadPage(id: ItemFlow.id))
 
         let isLoading = await store.state.itemsForm.paginator.isLoading

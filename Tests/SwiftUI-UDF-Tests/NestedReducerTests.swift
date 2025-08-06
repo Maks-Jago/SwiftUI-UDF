@@ -7,7 +7,7 @@ import UDFSwiftTesting
 import Testing
 
 @Suite struct NestedReducerTests {
-    struct NestedReducerAppState: AppReducer {
+    struct AppState: AppReducer {
         var nested: NestedReducer = .init()
     }
 
@@ -65,7 +65,7 @@ import Testing
     var cancellation: AnyCancellable? = nil
 
     @Test func appState() async {
-        let store = await TestStore(initial: NestedReducerAppState())
+        let store = await TestStore(initial: AppState())
         await store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.title, value: "temp"))
         await store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.title, value: "temp_21"))
 

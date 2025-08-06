@@ -24,7 +24,7 @@ struct CachedTests {
         var id: ID
     }
 
-    struct CachedAppState: AppReducer {
+    struct AppState: AppReducer {
         var nestedForm = NestedForm()
     }
 
@@ -60,8 +60,8 @@ struct CachedTests {
 
     @Test func itemsCaching() async {
         // Clear only EnvironmentStore, not cache as this test specifically tests cache persistence
-        GlobalValue.clearValue(for: EnvironmentStore<CachedAppState>.self)
-        var store = await TestStore(initial: CachedAppState())
+        GlobalValue.clearValue(for: EnvironmentStore<AppState>.self)
+        var store = await TestStore(initial: AppState())
 
         let items = (0 ... 3).map { Item(id: .init(value: $0)) }
         await store.dispatch(Actions.DidLoadItems(items: items, id: "items"))
@@ -74,7 +74,7 @@ struct CachedTests {
 
         await fulfill(description: "waiting for cache syncing", sleep: 1.5)
 
-        store = await .init(initial: CachedAppState())
+        store = await .init(initial: AppState())
         isEmpty = await store.state.nestedForm.items.isEmpty
 
         #expect(!isEmpty)
@@ -84,8 +84,8 @@ struct CachedTests {
     }
 
     @Test func resetCache() async {
-        GlobalValue.clearValue(for: EnvironmentStore<CachedAppState>.self)
-        let store = await TestStore(initial: CachedAppState())
+        GlobalValue.clearValue(for: EnvironmentStore<AppState>.self)
+        let store = await TestStore(initial: AppState())
         let items = (0 ... 3).map { Item(id: .init(value: $0)) }
         await store.dispatch(Actions.DidLoadItems(items: items, id: "items"))
 
@@ -103,8 +103,8 @@ struct CachedTests {
     }
 
     @Test func singleObjectCaching() async {
-        GlobalValue.clearValue(for: EnvironmentStore<CachedAppState>.self)
-        let store = await TestStore(initial: CachedAppState())
+        GlobalValue.clearValue(for: EnvironmentStore<AppState>.self)
+        let store = await TestStore(initial: AppState())
 
         var selectedItem = await store.state.nestedForm.selectedItem
         #expect(selectedItem == nil)
@@ -121,8 +121,8 @@ struct CachedTests {
     }
 
     @Test func removeItemFromCacheById() async throws {
-        GlobalValue.clearValue(for: EnvironmentStore<CachedAppState>.self)
-        let store = await TestStore(initial: CachedAppState())
+        GlobalValue.clearValue(for: EnvironmentStore<AppState>.self)
+        let store = await TestStore(initial: AppState())
         await store.dispatch(Actions.ResetCache())
 
         let items = [Item(id: .init(value: 0))]

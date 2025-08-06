@@ -11,7 +11,7 @@ import Foundation
 import UDFSwiftTesting
 
 @Suite struct StoreInitializationTests {
-    struct StoreInitializationAppState: AppReducer {
+    struct AppState: AppReducer {
         var form1 = Form1()
 
         struct Form1: Reducible {
@@ -24,21 +24,21 @@ import UDFSwiftTesting
     }
 
     final class Middleware1: _Middleware, @unchecked Sendable {
-        var store: any Store<StoreInitializationTests.StoreInitializationAppState>
+        var store: any Store<StoreInitializationTests.AppState>
 
         var queue: DispatchQueue
 
-        init(store: some Store<StoreInitializationAppState>) {
+        init(store: some Store<AppState>) {
             self.store = store
             self.queue = .main
         }
 
-        init(store: some Store<StoreInitializationAppState>, queue: DispatchQueue) {
+        init(store: some Store<AppState>, queue: DispatchQueue) {
             self.store = store
             self.queue = queue
         }
 
-        func status(for state: StoreInitializationTests.StoreInitializationAppState) -> MiddlewareStatus { .active }
+        func status(for state: StoreInitializationTests.AppState) -> MiddlewareStatus { .active }
 
         func cancel(by cancelation: some Hashable) -> Bool {
             true
@@ -46,25 +46,25 @@ import UDFSwiftTesting
 
         func cancelAll() {}
 
-        func reduce(_ action: some Action, for state: StoreInitializationAppState) {}
+        func reduce(_ action: some Action, for state: AppState) {}
     }
 
     final class Middleware2: _Middleware, @unchecked Sendable {
-        var store: any Store<StoreInitializationTests.StoreInitializationAppState>
+        var store: any Store<StoreInitializationTests.AppState>
 
         var queue: DispatchQueue
 
-        init(store: some Store<StoreInitializationAppState>) {
+        init(store: some Store<AppState>) {
             self.store = store
             self.queue = .main
         }
 
-        init(store: some Store<StoreInitializationAppState>, queue: DispatchQueue) {
+        init(store: some Store<AppState>, queue: DispatchQueue) {
             self.store = store
             self.queue = queue
         }
 
-        func status(for state: StoreInitializationTests.StoreInitializationAppState) -> MiddlewareStatus { .active }
+        func status(for state: StoreInitializationTests.AppState) -> MiddlewareStatus { .active }
 
         func cancel(by cancelation: some Hashable) -> Bool {
             true
@@ -72,13 +72,13 @@ import UDFSwiftTesting
 
         func cancelAll() {}
 
-        func reduce(_ action: some Action, for state: StoreInitializationAppState) {}
+        func reduce(_ action: some Action, for state: AppState) {}
     }
 
-    var store: InternalStore<StoreInitializationAppState>!
+    var store: InternalStore<AppState>!
 
     init() throws {
-        store = InternalStore(initial: StoreInitializationAppState(), loggers: [])
+        store = InternalStore(initial: AppState(), loggers: [])
     }
 
     @Test func middlewareAsyncSubscription() async {

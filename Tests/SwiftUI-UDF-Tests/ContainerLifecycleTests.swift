@@ -5,7 +5,7 @@ import Testing
 import UDFSwiftTesting
 
 @Suite(.serialized) struct ContainerLifecycleTests {
-    struct ContainerLifecycleAppState: AppReducer {
+    struct AppState: AppReducer {
         var userData = UserData()
     }
 
@@ -29,7 +29,7 @@ import UDFSwiftTesting
     }
 
     @Test func ContainerLifecycle() async {
-        let store = EnvironmentStore(initial: ContainerLifecycleAppState(), logger: .consoleDebug)
+        let store = EnvironmentStore(initial: AppState(), logger: .consoleDebug)
         let rootContainer = RootContainer()
 
         var window: PlatformWindow? = await PlatformWindow.render(container: rootContainer)
@@ -50,21 +50,21 @@ extension ContainerLifecycleTests {
     struct RootContainer: Container {
         typealias ContainerComponent = RootComponent
 
-        func scope(for state: ContainerLifecycleAppState) -> Scope {
+        func scope(for state: AppState) -> Scope {
             state
         }
 
-        func map(store: EnvironmentStore<ContainerLifecycleAppState>) -> RootComponent.Props {
+        func map(store: EnvironmentStore<AppState>) -> RootComponent.Props {
             .init(
                 isUserLoggedIn: store.state.userData.isUserLoggedIn
             )
         }
 
-        func onContainerDidLoad(store: EnvironmentStore<ContainerLifecycleTests.ContainerLifecycleAppState>) {
+        func onContainerDidLoad(store: EnvironmentStore<ContainerLifecycleTests.AppState>) {
             store.dispatch(Actions.ContainerDidLoad())
         }
 
-        func onContainerDidUnload(store: EnvironmentStore<ContainerLifecycleTests.ContainerLifecycleAppState>) {
+        func onContainerDidUnload(store: EnvironmentStore<ContainerLifecycleTests.AppState>) {
             store.dispatch(Actions.ContainerDidUnload())
         }
     }
