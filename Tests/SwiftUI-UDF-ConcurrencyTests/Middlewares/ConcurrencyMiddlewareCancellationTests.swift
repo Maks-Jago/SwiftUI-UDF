@@ -5,7 +5,7 @@ import Testing
 import Foundation
 
 @Suite(.serialized) struct ConcurrencyMiddlewareCancellationTests {
-    struct ConcurrencyMiddlewareCancellationAppState: AppReducer {
+    struct AppState: AppReducer {
         var middlewareFlow = MiddlewareFlow()
         var runForm = RunForm()
     }
@@ -17,7 +17,7 @@ import Foundation
 
         mutating func reduce(_ action: some Action) {
             switch action {
-            case let action as Actions.DidCancelEffect:
+            case is Actions.DidCancelEffect:
                 self = .didCancel
 
             case is Actions.Loading:
@@ -51,12 +51,12 @@ import Foundation
 
     @Test func observableMiddlewareCancellation() async {
         // Clear any global state from other tests
-        GlobalValue.clearValue(for: EnvironmentStore<ConcurrencyMiddlewareCancellationAppState>.self)
-        
-        let store = await TestStore(initial: ConcurrencyMiddlewareCancellationAppState())
+        GlobalValue.clearValue(for: EnvironmentStore<AppState>.self)
+
+        let store = await TestStore(initial: AppState())
         await store.subscribe(ObservableMiddlewareToCancel.self)
         await store.dispatch(Actions.Loading())
-        
+
         // Give the middleware time to start the effect before checking state
         try? await Task.sleep(nanoseconds: 100_000_000) // 0.1 seconds
 
@@ -64,7 +64,7 @@ import Foundation
 
         #expect(middlewareFlow == .loading)
         await store.dispatch(Actions.CancelLoading())
-        
+
         // Give more time for cancellation to propagate
         try? await Task.sleep(nanoseconds: 200_000_000) // 0.2 seconds
         await store.wait()
@@ -81,18 +81,18 @@ private extension Actions {
 
 // MARK: - Middlewares
 private extension ConcurrencyMiddlewareCancellationTests {
-    final class ObservableMiddlewareToCancel: Middleware<ConcurrencyMiddlewareCancellationAppState>, @unchecked Sendable {
+    final class ObservableMiddlewareToCancel: Middleware<AppState>, @unchecked Sendable {
         struct Environment : Sendable{
             var loadItems: @Sendable () async -> [String]
         }
 
         var environment: Environment!
 
-        static func buildLiveEnvironment(for store: some Store<ConcurrencyMiddlewareCancellationAppState>) -> Environment {
+        static func buildLiveEnvironment(for store: some Store<AppState>) -> Environment {
             Environment(loadItems: { [] })
         }
 
-        static func buildTestEnvironment(for store: some Store<ConcurrencyMiddlewareCancellationAppState>) -> Environment {
+        static func buildTestEnvironment(for store: some Store<AppState>) -> Environment {
             Environment(loadItems: { [] })
         }
 
@@ -100,11 +100,11 @@ private extension ConcurrencyMiddlewareCancellationTests {
             case message
         }
 
-        func scope(for state: ConcurrencyMiddlewareCancellationAppState) -> Scope {
+        func scope(for state: AppState) -> Scope {
             state.middlewareFlow
         }
 
-        func observe(state: ConcurrencyMiddlewareCancellationAppState) {
+        func observe(state: AppState) {
             switch state.middlewareFlow {
             case .loading:
                 execute(

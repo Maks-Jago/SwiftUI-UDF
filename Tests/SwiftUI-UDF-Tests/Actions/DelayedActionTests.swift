@@ -25,7 +25,7 @@ import Testing
         var count: Int = 0
     }
 
-    @Test func WhenActionHasDelay_DataShouldBeUpdatedAfterDelay() async throws {
+    @Test func whenActionHasDelay_DataShouldBeUpdatedAfterDelay() async throws {
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
 
         store.dispatch(Actions.UpdateFormField(keyPath: \DataForm.title, value: "delayed title").with(delay: 1))
@@ -38,7 +38,7 @@ import Testing
         #expect(store.state.dataForm.title == "delayed title")
     }
 
-    @Test func WhenActionsHaveDelayInGroup_DataShouldBeUpdatedAfterDelay() async throws {
+    @Test func whenActionsHaveDelayInGroup_DataShouldBeUpdatedAfterDelay() async throws {
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
 
         store.dispatch(
@@ -60,7 +60,7 @@ import Testing
         #expect(store.state.dataForm.count == 1)
     }
 
-    @Test func WhenActionGroupHasDelay_DataShouldBeUpdatedAfterDelay() async throws {
+    @Test func whenActionGroupHasDelay_DataShouldBeUpdatedAfterDelay() async throws {
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
 
         store.dispatch(
@@ -78,7 +78,7 @@ import Testing
         #expect(store.state.dataForm.count == 1)
     }
 
-    @Test func WhenSomeActionInGroupHasDelay_OnlyThatActionIsDelayed() async throws {
+    @Test func whenSomeActionInGroupHasDelay_OnlyThatActionIsDelayed() async throws {
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
 
         store.dispatch(
@@ -99,7 +99,7 @@ import Testing
         #expect(store.state.dataForm.title == "delayed title")
     }
 
-    @Test func DelayedActionsDDOS() async throws {
+    @Test func delayedActionsDDOS() async throws {
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
 
         store.dispatch(Actions.UpdateFormField(keyPath: \DataForm.count, value: 1).with(delay: 1))

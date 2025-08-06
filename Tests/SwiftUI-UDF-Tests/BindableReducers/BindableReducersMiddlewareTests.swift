@@ -78,7 +78,7 @@ import Testing
         var itemReducible = ItemReducible()
     }
 
-    @Test func WhenLoadingDataForBindableReducers_OnleConcreteInstanceOfBindableFormShouldBeUpdated() async throws {
+    @Test func whenLoadingDataForBindableReducers_OnleConcreteInstanceOfBindableFormShouldBeUpdated() async throws {
         let store = await TestStore(initial: AppState())
         await store.subscribe(ItemsMiddleware.self)
 
@@ -121,7 +121,7 @@ import Testing
         #expect(itemsForm4.item != nil)
     }
 
-    @Test func WhenDispatchingBindedAction_DuplicationShouldBePrevented() async throws {
+    @Test func whenDispatchingBindedAction_DuplicationShouldBePrevented() async throws {
         let store = await TestStore(initial: AppState())
         await store.subscribe(ItemsMiddleware.self)
 

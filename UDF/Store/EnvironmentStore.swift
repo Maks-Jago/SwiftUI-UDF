@@ -46,8 +46,7 @@ public final class EnvironmentStore<State: AppReducer>: @unchecked Sendable {
         self._state = .init(wrappedValue: mutableState, store: store)
 
         sinkSubject()
-        
-        // Set global instance
+
         GlobalValue.set(self)
     }
 

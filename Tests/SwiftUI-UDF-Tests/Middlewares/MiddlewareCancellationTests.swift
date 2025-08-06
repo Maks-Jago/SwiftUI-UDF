@@ -19,7 +19,7 @@ import Foundation
 
         mutating func reduce(_ action: some Action) {
             switch action {
-            case _ as Actions.DidCancelEffect:
+            case is Actions.DidCancelEffect:
                 self = .none
 
             case is Actions.Loading:
@@ -54,7 +54,7 @@ import Foundation
     @Test func observableMiddlewareCancellation() async {
         // Ensure complete isolation from other tests
         GlobalValue.clearValue(for: EnvironmentStore<AppState>.self)
-        
+
         let store = await TestStore(initial: AppState())
 
         final class ObservableMiddlewareToCancel: Middleware<AppState>, @unchecked Sendable {
@@ -92,7 +92,7 @@ import Foundation
         #expect(middlewareFlow == .loading)
 
         await store.dispatch(Actions.CancelLoading())
-        
+
         // Wait for all middleware operations to complete
         await store.wait()
 
@@ -101,7 +101,6 @@ import Foundation
     }
 
     @Test func observableRunMiddlewareToCancel() async {
-        
         final class ObservableRunMiddlewareToCancel: Middleware<AppState>, @unchecked Sendable {
             struct Environment {}
 
@@ -150,7 +149,7 @@ import Foundation
                 }
             }
         }
-        
+
         GlobalValue.clearValue(for: EnvironmentStore<AppState>.self)
         let store = await TestStore(initial: AppState())
         await store.subscribe(ObservableRunMiddlewareToCancel.self)
@@ -171,7 +170,6 @@ import Foundation
     }
 
     @Test func reducibleMiddlewareToCancel() async {
-        
         final class ReducibleMiddlewareToCancel: Middleware<AppState>, @unchecked Sendable {
             struct Environment {}
 
@@ -205,7 +203,7 @@ import Foundation
                 }
             }
         }
-        
+
         GlobalValue.clearValue(for: EnvironmentStore<AppState>.self)
         let store = await TestStore(initial: AppState())
         await store.subscribe(ReducibleMiddlewareToCancel.self)
@@ -215,14 +213,12 @@ import Foundation
         #expect(middlewareFlow == .loading)
 
         await store.dispatch(Actions.CancelLoading())
-        
+
         // Wait for all middleware operations to complete
         await store.wait()
 
         middlewareFlow = await store.state.middlewareFlow
-        // After cancellation, state should be either .none (if DidCancelEffect came) 
-        // or .cancel (if effect was cancelled before Message could be sent)  
-        #expect(middlewareFlow == .none || middlewareFlow == .cancel, "Expected .none or .cancel, got \(middlewareFlow)")
+        #expect(middlewareFlow == .none)
     }
 }
 

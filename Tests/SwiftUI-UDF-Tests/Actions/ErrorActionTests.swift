@@ -2,13 +2,13 @@
 import Testing
 
 @Suite struct ErrorActionTests {
-    @Test func WhenErrorHasCustomCode_ErrorCodeEqualCustomCode() {
+    @Test func whenErrorHasCustomCode_ErrorCodeEqualCustomCode() {
         let error = Actions.Error(error: "Some error", id: "flow_id", code: 101)
         #expect(error.code == 101)
         #expect(error.error == error.errorDescription)
     }
 
-    @Test func WhenErrorDoesntHaveCustomCode_ErrorCodeShouldBeGeneratedFromHashCode() {
+    @Test func whenErrorDoesntHaveCustomCode_ErrorCodeShouldBeGeneratedFromHashCode() {
         let errorMessage = "Some error"
         let error = Actions.Error(error: errorMessage, id: "flow_id")
         #expect(error.code == errorMessage.hashValue)

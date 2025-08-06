@@ -3,7 +3,7 @@
 import Testing
 
 @Suite struct AlertActionBuilderTests {
-    @Test func WhenVoid_ActionGroupShouldBeEmpty() {
+    @Test func whenVoid_ActionGroupShouldBeEmpty() {
         let style = AlertBuilder.AlertStyle(title: "", text: "") {
             ()
         }
@@ -19,7 +19,7 @@ import Testing
         }
     }
     
-    @Test func AlertButton() {
+    @Test func alertButton() {
         let style = AlertBuilder.AlertStyle(title: "", text: "") {
             UDF.AlertButton.cancel("Cancel")
         }

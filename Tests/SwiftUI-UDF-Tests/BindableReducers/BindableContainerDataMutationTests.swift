@@ -59,22 +59,22 @@ import Testing
         fileprivate var itemsFlow
     }
 
-    @Test func WhenMutateBindableForm_OnleConcreteInstanceOfBindableFormShouldBeUpdated() async throws {
+    @Test func whenMutateBindableForm_OnleConcreteInstanceOfBindableFormShouldBeUpdated() async throws {
         let store = await TestStore(initial: AppState())
 
-        var bindedReducersFormCount = (await store.state.itemsForm).reducers.count
+        var bindedReducersFormCount = await store.state.itemsForm.reducers.count
         #expect(bindedReducersFormCount == 0)
 
-        var bindedReducersFlowCount = (await store.state.itemsFlow).reducers.count
+        var bindedReducersFlowCount = await store.state.itemsFlow.reducers.count
         #expect(bindedReducersFlowCount == 0)
 
         await store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 1)))
         await store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 2)))
 
-        bindedReducersFormCount = (await store.state.itemsForm).reducers.count
+        bindedReducersFormCount = await store.state.itemsForm.reducers.count
         #expect(bindedReducersFormCount == 2)
 
-        bindedReducersFlowCount = (await store.state.itemsFlow).reducers.count
+        bindedReducersFlowCount = await store.state.itemsFlow.reducers.count
         #expect(bindedReducersFlowCount == 2)
 
         await store.dispatch(
@@ -96,16 +96,16 @@ import Testing
         #expect(itemsCount == 2)
     }
 
-    @Test func WhenBindableActionDispatched_StorageShouldReceiveOriginalAction() async throws {
+    @Test func whenBindableActionDispatched_StorageShouldReceiveOriginalAction() async throws {
         let store = await TestStore(initial: AppState())
 
-        var bindedReducersFormCount = (await store.state.itemsForm).reducers.count
+        var bindedReducersFormCount = await store.state.itemsForm.reducers.count
         #expect(bindedReducersFormCount == 0)
 
         await store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 1)))
         await store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 2)))
 
-        bindedReducersFormCount = (await store.state.itemsForm).reducers.count
+        bindedReducersFormCount = await store.state.itemsForm.reducers.count
         #expect(bindedReducersFormCount == 2)
 
         let items = [Item(id: .init(value: 1)), Item(id: .init(value: 2))]

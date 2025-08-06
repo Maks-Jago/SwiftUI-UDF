@@ -34,7 +34,7 @@ import Testing
 
     @Test
     @MainActor
-    func RouterMocking() throws {
+    func routerMocking() throws {
         let itemsComponent = ItemsComponent(props: .init())
         let detailsView = itemsComponent.props.router.view(for: .details)
 

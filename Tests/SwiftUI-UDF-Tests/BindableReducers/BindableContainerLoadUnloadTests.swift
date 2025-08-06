@@ -20,66 +20,66 @@ import Testing
         fileprivate var itemsForm
     }
 
-    @Test func WhenTwoContainersLoaded_BindableReducerCountShouldBeEqual2() async throws {
+    @Test func whenTwoContainersLoaded_BindableReducerCountShouldBeEqual2() async throws {
         let store = await TestStore(initial: AppState())
 
-        var bindedReducersCount = (await store.state.itemsForm).reducers.count
+        var bindedReducersCount = await store.state.itemsForm.reducers.count
         #expect(bindedReducersCount == 0)
 
         await store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 1)))
 
-        bindedReducersCount = (await store.state.itemsForm).reducers.count
+        bindedReducersCount = await store.state.itemsForm.reducers.count
         #expect(bindedReducersCount == 1)
 
         await store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 2)))
 
-        bindedReducersCount = (await store.state.itemsForm).reducers.count
+        bindedReducersCount = await store.state.itemsForm.reducers.count
         #expect(bindedReducersCount == 2)
     }
 
-    @Test func WhenBindableContainerUnloaded_BindableReducerCountShouldBeEqual0() async throws {
+    @Test func whenBindableContainerUnloaded_BindableReducerCountShouldBeEqual0() async throws {
         let store = await TestStore(initial: AppState())
 
-        var bindedReducersCount = (await store.state.itemsForm).reducers.count
+        var bindedReducersCount = await store.state.itemsForm.reducers.count
         #expect(bindedReducersCount == 0)
 
         await store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 1)))
 
-        bindedReducersCount = (await store.state.itemsForm).reducers.count
+        bindedReducersCount = await store.state.itemsForm.reducers.count
         #expect(bindedReducersCount == 1)
 
         await store.dispatch(Actions._OnContainerDidUnLoad(containerType: ItemsContainer.self, id: .init(value: 1)))
 
-        bindedReducersCount = (await store.state.itemsForm).reducers.count
+        bindedReducersCount = await store.state.itemsForm.reducers.count
         #expect(bindedReducersCount == 0)
     }
 
-    @Test func WhenBindableContainerHasMultipleInstances_BindableReducerShouldNotBeReleased() async throws {
+    @Test func whenBindableContainerHasMultipleInstances_BindableReducerShouldNotBeReleased() async throws {
         let store = await TestStore(initial: AppState())
 
-        var bindedReducersCount = (await store.state.itemsForm).reducers.count
+        var bindedReducersCount = await store.state.itemsForm.reducers.count
         #expect(bindedReducersCount == 0)
 
         await store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 1)))
         await store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 1)))
         await store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 1)))
 
-        bindedReducersCount = (await store.state.itemsForm).reducers.count
+        bindedReducersCount = await store.state.itemsForm.reducers.count
         #expect(bindedReducersCount == 1)
 
         await store.dispatch(Actions._OnContainerDidUnLoad(containerType: ItemsContainer.self, id: .init(value: 1)))
 
-        bindedReducersCount = (await store.state.itemsForm).reducers.count
+        bindedReducersCount = await store.state.itemsForm.reducers.count
         #expect(bindedReducersCount == 1)
 
         await store.dispatch(Actions._OnContainerDidUnLoad(containerType: ItemsContainer.self, id: .init(value: 1)))
 
-        bindedReducersCount = (await store.state.itemsForm).reducers.count
+        bindedReducersCount = await store.state.itemsForm.reducers.count
         #expect(bindedReducersCount == 1)
 
         await store.dispatch(Actions._OnContainerDidUnLoad(containerType: ItemsContainer.self, id: .init(value: 1)))
 
-        bindedReducersCount = (await store.state.itemsForm).reducers.count
+        bindedReducersCount = await store.state.itemsForm.reducers.count
         #expect(bindedReducersCount == 0)
     }
 }

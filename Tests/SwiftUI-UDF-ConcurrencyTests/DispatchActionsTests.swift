@@ -18,7 +18,7 @@ import UDFSwiftTesting
         var title: String = ""
     }
 
-    @Test func UpdateFormFieldDispatch() async {
+    @Test func updateFormFieldDispatch() async {
         let store = InternalStore(initial: AppState(), loggers: [])
         var formTitle = await store.state.plainForm.title
         #expect(formTitle == "")

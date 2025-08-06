@@ -54,7 +54,7 @@ import UDFSwiftTesting
     @MainActor func componentRenderingAfterStateMutation() async {
         // No need to clear GlobalValue as we're using explicit store injection
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
-        
+
         let itemsContainer = ItemsListContainer()
         let window = await PlatformWindow.render(container: itemsContainer.with(store: store))
 
@@ -66,12 +66,11 @@ import UDFSwiftTesting
         #expect(itemsContainer.renderingNumber == 2)
     }
 
-    @Test 
-
+    @Test
     @MainActor func rootComponentRendering() async {
         // No need to clear GlobalValue as we're using explicit store injection
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
-        
+
         let rootContainer = RootContainer()
         let window = await PlatformWindow.render(container: rootContainer.with(store: store))
 

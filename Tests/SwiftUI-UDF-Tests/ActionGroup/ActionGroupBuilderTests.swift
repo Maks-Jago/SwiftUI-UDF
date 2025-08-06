@@ -9,7 +9,7 @@
 import Testing
 
 @Suite struct ActionGroupBuilderTests {
-    @Test func WhenVoid_ActionGroupShouldBeEmpty() {
+    @Test func whenVoid_ActionGroupShouldBeEmpty() {
         let group = ActionGroup {
             ()
         }
@@ -17,7 +17,7 @@ import Testing
         #expect(group.actions.isEmpty, "An ActionGroup shouldn't have action when there is some Void in the builder")
     }
 
-    @Test func WhenConditionFalse_ActionGroupShouldBeEmpty() {
+    @Test func whenConditionFalse_ActionGroupShouldBeEmpty() {
         let condition = false
 
         let group = ActionGroup {
@@ -29,7 +29,7 @@ import Testing
         #expect(group.actions.isEmpty)
     }
 
-    @Test func WhenConditionTrue_ActionGroupShouldNotBeEmpty() {
+    @Test func whenConditionTrue_ActionGroupShouldNotBeEmpty() {
         let condition = true
 
         let group = ActionGroup {
@@ -41,7 +41,7 @@ import Testing
         #expect(!group.actions.isEmpty)
     }
 
-    @Test func WhenConditionFalseWithPrefixAction_ActionGroupShouldHaveOneAction() {
+    @Test func whenConditionFalseWithPrefixAction_ActionGroupShouldHaveOneAction() {
         let condition = false
 
         let group = ActionGroup {
@@ -55,7 +55,7 @@ import Testing
         #expect(group.actions.count == 1)
     }
 
-    @Test func WhenElseConditionFalseWithPrefixAction_ActionGroupShouldHaveTwoActions() {
+    @Test func whenElseConditionFalseWithPrefixAction_ActionGroupShouldHaveTwoActions() {
         let condition = false
 
         let group = ActionGroup {
@@ -71,7 +71,7 @@ import Testing
         #expect(group.actions.count == 2)
     }
 
-    @Test func WhenIfElseConditionFalseWithPrefixAction_ActionGroupShouldHaveTwoActions() {
+    @Test func whenIfElseConditionFalseWithPrefixAction_ActionGroupShouldHaveTwoActions() {
         let condition = false
 
         let group = ActionGroup {
@@ -89,7 +89,7 @@ import Testing
         #expect(group.actions.count == 2)
     }
 
-    @Test func Switch() {
+    @Test func `switch`() {
         let value = 4
 
         let group = ActionGroup {
@@ -111,7 +111,7 @@ import Testing
         #expect(group.actions.count == 1)
     }
 
-    @Test func Loop() {
+    @Test func loop() {
         let group = ActionGroup {
             for i in 0 ... 3 {
                 Actions.Message(message: "m\(i)", id: "m\(i)")
@@ -123,7 +123,7 @@ import Testing
         #expect(group.actions.count == 5)
     }
 
-    @Test func OptionalAction() {
+    @Test func optionalAction() {
         let optionalActionWithValue: (any Action)? = Actions.Message(message: "m1", id: "m1")
         let optionalActionNil: (any Action)? = nil
 

@@ -40,7 +40,7 @@ extension AlertBuilder.AlertStyle {
         }
     }
     
-    @Test func WhenAlerBuilderRegistered_AlertCanBePresentedById() async {
+    @Test func whenAlerBuilderRegistered_AlertCanBePresentedById() async {
         let store = await TestStore(initial: AppState())
         var status = await store.state.form.alert.status
         

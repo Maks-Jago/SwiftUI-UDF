@@ -26,7 +26,7 @@ import Testing
         fileprivate var itemsForm
     }
 
-    @Test func BindableContainerLifecycle() async throws {
+    @Test func bindableContainerLifecycle() async throws {
         let store = EnvironmentStore(initial: AppState(), loggers: [])
 
         let itemId = Item.ID(value: 1)

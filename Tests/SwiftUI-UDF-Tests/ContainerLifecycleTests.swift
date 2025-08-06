@@ -28,7 +28,7 @@ import UDFSwiftTesting
         }
     }
 
-    @Test func ContainerLifecycle() async {
+    @Test func containerLifecycle() async {
         let store = EnvironmentStore(initial: AppState(), logger: .consoleDebug)
         let rootContainer = RootContainer()
 

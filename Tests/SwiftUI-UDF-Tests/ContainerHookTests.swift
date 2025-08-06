@@ -26,7 +26,7 @@ import UDFSwiftTesting
         var callbacksCount: Int = 0
     }
 
-    @Test func OneTimeHook() async throws {
+    @Test func oneTimeHook() async throws {
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
         let rootContainer = RootContainer()
         let window = await PlatformWindow.render(container: rootContainer)
@@ -41,7 +41,7 @@ import UDFSwiftTesting
         #expect(store.state.hookForm.triggerValue == "2")
     }
 
-    @Test func OneTimeHook_NotCalledAgainOnRedraw() async throws {
+    @Test func oneTimeHook_NotCalledAgainOnRedraw() async throws {
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
         let rootContainer = RootContainer()
         let window = await PlatformWindow.render(container: rootContainer)
@@ -71,7 +71,7 @@ import UDFSwiftTesting
         #expect(store.state.hookForm.triggerValue == "1")
     }
 
-    @Test func DefaultHook_CalledCorrectNumberOfTimes() async throws {
+    @Test func defaultHook_CalledCorrectNumberOfTimes() async throws {
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
         let rootContainer = RootContainer()
         let window = await PlatformWindow.render(container: rootContainer)
@@ -102,7 +102,7 @@ import UDFSwiftTesting
         #expect(store.state.hookForm.callbacksCount == triggerCount)
     }
 
-    @Test func HooksPersistAcrossContainers() async throws {
+    @Test func hooksPersistAcrossContainers() async throws {
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
         
         // Create and use the first container
@@ -146,7 +146,7 @@ import UDFSwiftTesting
         #expect(store.state.hookForm.triggerValue == "1", "One-time hook should not fire again in new container")
     }
 
-    @Test func HookFiresWhenConditionAlreadyTrueOnContainerAppear() async throws {
+    @Test func hookFiresWhenConditionAlreadyTrueOnContainerAppear() async throws {
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
 
         // Set the trigger value BEFORE creating the container
@@ -197,7 +197,7 @@ import UDFSwiftTesting
         #expect(store.state.hookForm.callbacksCount == 1, "Hook should not fire after being removed")
     }
 
-    @Test func HookWithAlwaysFalseCondition() async throws {
+    @Test func hookWithAlwaysFalseCondition() async throws {
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
         let rootContainer = AlwaysFalseHookContainer()
 
@@ -217,7 +217,7 @@ import UDFSwiftTesting
         #expect(store.state.hookForm.callbacksCount == 0)
     }
 
-    @Test func MultipleHooksWithDifferentConditions() async throws {
+    @Test func multipleHooksWithDifferentConditions() async throws {
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
         let rootContainer = MultipleHooksContainer()
 
@@ -246,7 +246,7 @@ import UDFSwiftTesting
         #expect(store.state.hookForm.callbacksCount == 10) // Second hook adds 10
     }
 
-    @Test func HookWithComplexCondition() async throws {
+    @Test func hookWithComplexCondition() async throws {
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
         let rootContainer = ComplexConditionHookContainer()
 
@@ -267,7 +267,7 @@ import UDFSwiftTesting
         #expect(store.state.hookForm.callbacksCount == 6)
     }
 
-    @Test func HookFiresOnlyOnConditionTransition() async throws {
+    @Test func hookFiresOnlyOnConditionTransition() async throws {
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
         let rootContainer = TransitionTestContainer()
 
@@ -302,7 +302,7 @@ import UDFSwiftTesting
         #expect(store.state.hookForm.callbacksCount == 2, "Hook should fire on false->true transition")
     }
 
-    @Test func HookWithNilConditionCheck() async throws {
+    @Test func hookWithNilConditionCheck() async throws {
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
         let rootContainer = NilSafeHookContainer()
 
@@ -321,7 +321,7 @@ import UDFSwiftTesting
         #expect(store.state.hookForm.callbacksCount == 1)
     }
 
-    @Test func HookWithStateRollback() async throws {
+    @Test func hookWithStateRollback() async throws {
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
         let rootContainer = RollbackHookContainer()
 
@@ -344,7 +344,7 @@ import UDFSwiftTesting
         #expect(store.state.hookForm.triggerValue == "reset")
     }
 
-    @Test func ConditionalHookActivation() async throws {
+    @Test func conditionalHookActivation() async throws {
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
         let rootContainer = ConditionalHookContainer()
 
