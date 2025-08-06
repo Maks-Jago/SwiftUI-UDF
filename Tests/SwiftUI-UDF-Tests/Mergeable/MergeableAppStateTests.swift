@@ -42,12 +42,12 @@ struct MergeableAppStateTests {
         }
     }
 
-    struct AppState: AppReducer {
+    struct MergeableTestAppState: AppReducer {
         var allItems = AllItems()
     }
 
     @Test func itemMerging() async throws {
-        let store = await TestStore(initial: AppState())
+        let store = await TestStore(initial: MergeableTestAppState())
         var item = Item(id: .init(value: 1), title: "original")
         await store.dispatch(Actions.DidLoadItem(item: item))
 

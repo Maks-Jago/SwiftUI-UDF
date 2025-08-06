@@ -66,8 +66,8 @@ extension DialogType {
     }
 }
 
-@Suite struct DialogTests {
-    struct AppState: AppReducer {
+@Suite(.serialized) struct DialogTests {
+    struct DialogAppState: AppReducer {
         var form = FormWithDialog()
     }
     
@@ -106,7 +106,8 @@ extension DialogType {
     }
     
     @Test func WhendialogRegistered_dialogCanBePresentedById() async {
-        let store = await TestStore(initial: AppState())
+        GlobalValue.clearValue(for: EnvironmentStore<DialogAppState>.self)
+        let store = await TestStore(initial: DialogAppState())
         var status = await store.state.form.dialog.status
         #expect(status == .dismissed)
         
@@ -182,7 +183,8 @@ extension DialogType {
     // MARK: - Toast-Specific Tests
     
     @Test func WhenToastRegistered_ToastCanBePresentedById() async {
-        let store = await TestStore(initial: AppState())
+        GlobalValue.clearValue(for: EnvironmentStore<DialogAppState>.self)
+        let store = await TestStore(initial: DialogAppState())
         var status = await store.state.form.dialog.status
         #expect(status == .dismissed)
         
@@ -210,7 +212,8 @@ extension DialogType {
     }
     
     @Test func CustomToastWithIcon() async {
-        let store = await TestStore(initial: AppState())
+        GlobalValue.clearValue(for: EnvironmentStore<DialogAppState>.self)
+        let store = await TestStore(initial: DialogAppState())
         
         DialogRegistry.register(id: FormWithDialog.DialogId.customToastWithIcon) {
             DialogType.customToastWithIcon()
@@ -241,7 +244,8 @@ extension DialogType {
     }
     
     @Test func CustomViewToast() async {
-        let store = await TestStore(initial: AppState())
+        GlobalValue.clearValue(for: EnvironmentStore<DialogAppState>.self)
+        let store = await TestStore(initial: DialogAppState())
         
         DialogRegistry.register(id: FormWithDialog.DialogId.customViewToast) {
             DialogType.customViewToast()

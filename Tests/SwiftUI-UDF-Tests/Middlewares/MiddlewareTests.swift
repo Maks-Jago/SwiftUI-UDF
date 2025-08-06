@@ -36,8 +36,8 @@ private extension Actions {
     }
 }
 
-@Suite struct MiddlewareTests {
-    struct AppState: AppReducer {
+@Suite(.serialized) struct MiddlewareTests {
+    struct MiddlewareAppState: AppReducer {
         var testForm = TestForm()
         var testFlow = TestFlow()
         var taskFlow = TaskFlow()
@@ -99,22 +99,22 @@ private extension Actions {
     // MARK: - Test Middlewares
     
     /// Tests only reduce functionality (like ReducibleMiddleware)
-    class ReduceOnlyMiddleware: Middleware<AppState>, @unchecked Sendable {
+    class ReduceOnlyMiddleware: Middleware<MiddlewareAppState>, @unchecked Sendable {
         struct Environment: Sendable {
             var processMessage: @Sendable (String) -> String
         }
         
         var environment: Environment!
         
-        static func buildLiveEnvironment(for store: some Store<AppState>) -> Environment {
+        static func buildLiveEnvironment(for store: some Store<MiddlewareAppState>) -> Environment {
             .init(processMessage: { "Processed: \($0)" })
         }
         
-        static func buildTestEnvironment(for store: some Store<AppState>) -> Environment {
+        static func buildTestEnvironment(for store: some Store<MiddlewareAppState>) -> Environment {
             .init(processMessage: { "Test: \($0)" })
         }
         
-        func reduce(_ action: some Action, for state: AppState) {
+        func reduce(_ action: some Action, for state: MiddlewareAppState) {
             switch action {
             case let action as Actions.SendMessage where action.id == nil:
                 let processed = environment.processMessage(action.message)
@@ -130,7 +130,7 @@ private extension Actions {
     }
     
     /// Tests only observe functionality (like ObservableMiddleware)
-    class ObserveOnlyMiddleware: Middleware<AppState>, @unchecked Sendable {
+    class ObserveOnlyMiddleware: Middleware<MiddlewareAppState>, @unchecked Sendable {
         struct Environment: Sendable {
             var reactToFlow: @Sendable (String) -> String
         }
@@ -138,19 +138,19 @@ private extension Actions {
         var environment: Environment!
         var observeCount = 0
         
-        static func buildLiveEnvironment(for store: some Store<AppState>) -> Environment {
+        static func buildLiveEnvironment(for store: some Store<MiddlewareAppState>) -> Environment {
             .init(reactToFlow: { "Reacted to: \($0)" })
         }
         
-        static func buildTestEnvironment(for store: some Store<AppState>) -> Environment {
+        static func buildTestEnvironment(for store: some Store<MiddlewareAppState>) -> Environment {
             .init(reactToFlow: { "Test reaction: \($0)" })
         }
         
-        func scope(for state: AppState) -> Scope {
+        func scope(for state: MiddlewareAppState) -> Scope {
             state.testFlow
         }
         
-        func observe(state: AppState) {
+        func observe(state: MiddlewareAppState) {
             observeCount += 1
             
             switch state.testFlow {
@@ -174,7 +174,7 @@ private extension Actions {
     }
     
     /// Tests both reduce and observe functionality (full Middleware)
-    class FullUnifiedMiddleware: Middleware<AppState>, @unchecked Sendable {
+    class FullUnifiedMiddleware: Middleware<MiddlewareAppState>, @unchecked Sendable {
         struct Environment: Sendable {
             var handleMessage: @Sendable (String) -> String
             var processTask: @Sendable (String) -> String
@@ -184,14 +184,14 @@ private extension Actions {
         var reduceCallCount = 0
         var observeCallCount = 0
         
-        static func buildLiveEnvironment(for store: some Store<AppState>) -> Environment {
+        static func buildLiveEnvironment(for store: some Store<MiddlewareAppState>) -> Environment {
             .init(
                 handleMessage: { "Handled: \($0)" },
                 processTask: { "Processed task: \($0)" }
             )
         }
         
-        static func buildTestEnvironment(for store: some Store<AppState>) -> Environment {
+        static func buildTestEnvironment(for store: some Store<MiddlewareAppState>) -> Environment {
             .init(
                 handleMessage: { "Test handled: \($0)" },
                 processTask: { "Test task: \($0)" }
@@ -199,12 +199,12 @@ private extension Actions {
         }
         
         @ScopeBuilder
-        func scope(for state: AppState) -> Scope {
+        func scope(for state: MiddlewareAppState) -> Scope {
             state.testFlow
             state.taskFlow
         }
         
-        func reduce(_ action: some Action, for state: AppState) {
+        func reduce(_ action: some Action, for state: MiddlewareAppState) {
             reduceCallCount += 1
             
             switch action {
@@ -220,7 +220,7 @@ private extension Actions {
             }
         }
         
-        func observe(state: AppState) {
+        func observe(state: MiddlewareAppState) {
             observeCallCount += 1
             
             switch state.taskFlow {
@@ -243,25 +243,25 @@ private extension Actions {
     }
     
     /// Tests middleware with conditional scope
-    class ConditionalScopeMiddleware: Middleware<AppState>, @unchecked Sendable {
+    class ConditionalScopeMiddleware: Middleware<MiddlewareAppState>, @unchecked Sendable {
         struct Environment: Sendable {}
         
         var environment: Environment!
         var shouldObserve = true
         
-        static func buildLiveEnvironment(for store: some Store<AppState>) -> Environment {
+        static func buildLiveEnvironment(for store: some Store<MiddlewareAppState>) -> Environment {
             .init()
         }
         
-        static func buildTestEnvironment(for store: some Store<AppState>) -> Environment {
+        static func buildTestEnvironment(for store: some Store<MiddlewareAppState>) -> Environment {
             .init()
         }
         
-        func scope(for state: AppState) -> Scope {
+        func scope(for state: MiddlewareAppState) -> Scope {
             state.testFlow
         }
         
-        func observe(state: AppState) {
+        func observe(state: MiddlewareAppState) {
             switch state.testFlow {
             case let .sending(message):
                 execute(
@@ -276,29 +276,29 @@ private extension Actions {
     }
     
     /// Tests middleware status changes
-    class StatusChangeMiddleware: Middleware<AppState>, @unchecked Sendable {
+    class StatusChangeMiddleware: Middleware<MiddlewareAppState>, @unchecked Sendable {
         struct Environment: Sendable {}
         
         var environment: Environment!
         var isActive = true
         
-        static func buildLiveEnvironment(for store: some Store<AppState>) -> Environment {
+        static func buildLiveEnvironment(for store: some Store<MiddlewareAppState>) -> Environment {
             .init()
         }
         
-        static func buildTestEnvironment(for store: some Store<AppState>) -> Environment {
+        static func buildTestEnvironment(for store: some Store<MiddlewareAppState>) -> Environment {
             .init()
         }
         
-        override func status(for state: AppState) -> MiddlewareStatus {
+        override func status(for state: MiddlewareAppState) -> MiddlewareStatus {
             isActive ? .active : .suspend
         }
         
-        func scope(for state: AppState) -> Scope {
+        func scope(for state: MiddlewareAppState) -> Scope {
             state.testFlow
         }
         
-        func observe(state: AppState) {
+        func observe(state: MiddlewareAppState) {
             switch state.testFlow {
             case let .sending(message):
                 execute(
@@ -311,7 +311,7 @@ private extension Actions {
             }
         }
         
-        func reduce(_ action: some Action, for state: AppState) {
+        func reduce(_ action: some Action, for state: MiddlewareAppState) {
             switch action {
             case let action as Actions.SendMessage:
                 execute(
@@ -379,7 +379,7 @@ private extension Actions {
     /// Tests that Middleware works correctly when only implementing reduce functionality
     @Test func reduceOnlyMiddleware() async {
         // Given: A middleware that only implements reduce() method
-        let store = await TestStore(initial: AppState())
+        let store = await TestStore(initial: MiddlewareAppState())
         await store.subscribe(ReduceOnlyMiddleware.self)
         
         // When: An action is dispatched that should be handled by reduce()
@@ -395,7 +395,7 @@ private extension Actions {
     /// Tests that Middleware works correctly when only implementing observe functionality
     @Test func observeOnlyMiddleware() async {
         // Given: A middleware that only implements observe() method with a specific scope
-        let store = await TestStore(initial: AppState())
+        let store = await TestStore(initial: MiddlewareAppState())
         await store.subscribe(ObserveOnlyMiddleware.self)
         
         // When: An action is dispatched that changes the observed state flow
@@ -411,7 +411,7 @@ private extension Actions {
     /// Tests that Middleware works correctly when implementing both reduce and observe functionality
     @Test func fullUnifiedMiddleware() async {
         // Given: A middleware that implements both reduce() and observe() methods
-        let store = await TestStore(initial: AppState())
+        let store = await TestStore(initial: MiddlewareAppState())
         await store.subscribe(FullUnifiedMiddleware.self)
         
         // When: An action is dispatched that should be handled by reduce()
@@ -435,20 +435,20 @@ private extension Actions {
     /// Tests that Middleware works correctly with multiple scopes
     @Test func multipleScopes() async {
         // Given: A middleware that observes multiple state flows
-        class MultiScopeMiddleware: Middleware<AppState>, @unchecked Sendable {
+        class MultiScopeMiddleware: Middleware<MiddlewareAppState>, @unchecked Sendable {
             struct Environment: Sendable {}
             var environment: Environment!
             
-            static func buildLiveEnvironment(for store: some Store<AppState>) -> Environment { .init() }
-            static func buildTestEnvironment(for store: some Store<AppState>) -> Environment { .init() }
+            static func buildLiveEnvironment(for store: some Store<MiddlewareAppState>) -> Environment { .init() }
+            static func buildTestEnvironment(for store: some Store<MiddlewareAppState>) -> Environment { .init() }
             
             @ScopeBuilder
-            func scope(for state: AppState) -> Scope {
+            func scope(for state: MiddlewareAppState) -> Scope {
                 state.testFlow
                 state.taskFlow
             }
             
-            func observe(state: AppState) {
+            func observe(state: MiddlewareAppState) {
                 switch state.testFlow {
                 case let .sending(message):
                     execute(
@@ -462,7 +462,7 @@ private extension Actions {
         }
         
         // When: The middleware is subscribed and an action changes one of the observed flows
-        let store = await TestStore(initial: AppState())
+        let store = await TestStore(initial: MiddlewareAppState())
         await store.subscribe(MultiScopeMiddleware.self)
         
         let message = "Multi Scope Message"
@@ -477,23 +477,23 @@ private extension Actions {
     /// Tests that Middleware correctly handles dynamic status changes
     @Test func middlewareStatusChanges() async {
         // Given: A middleware that changes status based on state conditions
-        class StateBasedStatusMiddleware: Middleware<AppState>, @unchecked Sendable {
+        class StateBasedStatusMiddleware: Middleware<MiddlewareAppState>, @unchecked Sendable {
             struct Environment: Sendable {}
             var environment: Environment!
             
-            static func buildLiveEnvironment(for store: some Store<AppState>) -> Environment { .init() }
-            static func buildTestEnvironment(for store: some Store<AppState>) -> Environment { .init() }
+            static func buildLiveEnvironment(for store: some Store<MiddlewareAppState>) -> Environment { .init() }
+            static func buildTestEnvironment(for store: some Store<MiddlewareAppState>) -> Environment { .init() }
             
-            override func status(for state: AppState) -> MiddlewareStatus {
+            override func status(for state: MiddlewareAppState) -> MiddlewareStatus {
                 // Suspend when counter > 5
                 return state.testForm.counter > 5 ? .suspend : .active
             }
             
-            func scope(for state: AppState) -> Scope {
+            func scope(for state: MiddlewareAppState) -> Scope {
                 state.testFlow
             }
             
-            func observe(state: AppState) {
+            func observe(state: MiddlewareAppState) {
                 switch state.testFlow {
                 case let .sending(message):
                     execute(
@@ -505,7 +505,7 @@ private extension Actions {
                 }
             }
             
-            func reduce(_ action: some Action, for state: AppState) {
+            func reduce(_ action: some Action, for state: MiddlewareAppState) {
                 switch action {
                 case let action as Actions.SendMessage:
                     execute(
@@ -518,7 +518,7 @@ private extension Actions {
             }
         }
         
-        let store = await TestStore(initial: AppState())
+        let store = await TestStore(initial: MiddlewareAppState())
         await store.subscribe(StateBasedStatusMiddleware.self)
         
         // When: Middleware is active (counter = 0) and actions are dispatched
@@ -566,7 +566,7 @@ private extension Actions {
     /// Tests that Middleware correctly observes changes across multiple scoped flows
     @Test func multipleScopesObservation() async {
         // Given: A middleware that observes multiple flows (testFlow and taskFlow)
-        let store = await TestStore(initial: AppState())
+        let store = await TestStore(initial: MiddlewareAppState())
         await store.subscribe(FullUnifiedMiddleware.self)
         
         // When: The first observed flow (testFlow) changes
@@ -584,20 +584,21 @@ private extension Actions {
     
     /// Tests that Middleware correctly handles effect cancellation when status changes
     @Test func middlewareCancellation() async {
+        GlobalValue.clearValue(for: EnvironmentStore<MiddlewareAppState>.self)
         // Given: A middleware that can be suspended and cancels effects accordingly
-        class CancellableMiddleware: Middleware<AppState>, @unchecked Sendable {
+        class CancellableMiddleware: Middleware<MiddlewareAppState>, @unchecked Sendable {
             struct Environment: Sendable {}
             var environment: Environment!
             
-            static func buildLiveEnvironment(for store: some Store<AppState>) -> Environment { .init() }
-            static func buildTestEnvironment(for store: some Store<AppState>) -> Environment { .init() }
+            static func buildLiveEnvironment(for store: some Store<MiddlewareAppState>) -> Environment { .init() }
+            static func buildTestEnvironment(for store: some Store<MiddlewareAppState>) -> Environment { .init() }
             
-            override func status(for state: AppState) -> MiddlewareStatus {
+            override func status(for state: MiddlewareAppState) -> MiddlewareStatus {
                 // Suspend when description contains "cancel"
                 return state.testForm.description.contains("cancel") ? .suspend : .active
             }
             
-            func reduce(_ action: some Action, for state: AppState) {
+            func reduce(_ action: some Action, for state: MiddlewareAppState) {
                 switch action {
                 case let action as Actions.CompleteTask:
                     // Add delay to simulate async work that can be cancelled
@@ -611,7 +612,7 @@ private extension Actions {
             }
         }
         
-        let store = await TestStore(initial: AppState())
+        let store = await TestStore(initial: MiddlewareAppState())
         await store.subscribe(CancellableMiddleware.self)
         
         // When: A task starts that would execute a delayed effect
@@ -629,15 +630,15 @@ private extension Actions {
     /// Tests that Middleware default implementations work correctly without custom logic
     @Test func defaultImplementations() async {
         // Given: A minimal middleware that uses only default implementations
-        class MinimalMiddleware: Middleware<AppState>, @unchecked Sendable {
+        class MinimalMiddleware: Middleware<MiddlewareAppState>, @unchecked Sendable {
             struct Environment: Sendable {}
             var environment: Environment!
             
-            static func buildLiveEnvironment(for store: some Store<AppState>) -> Environment {
+            static func buildLiveEnvironment(for store: some Store<MiddlewareAppState>) -> Environment {
                 .init()
             }
             
-            static func buildTestEnvironment(for store: some Store<AppState>) -> Environment {
+            static func buildTestEnvironment(for store: some Store<MiddlewareAppState>) -> Environment {
                 .init()
             }
             
@@ -647,7 +648,7 @@ private extension Actions {
             // - reduce(_:for:) does nothing
         }
         
-        let store = await TestStore(initial: AppState())
+        let store = await TestStore(initial: MiddlewareAppState())
         await store.subscribe(MinimalMiddleware.self)
         
         // When: Actions are dispatched that would normally be handled

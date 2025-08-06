@@ -10,7 +10,7 @@ import Testing
 import UDFSwiftTesting
 
 @Suite struct DispatchActionsTests {
-    struct AppState: AppReducer {
+    struct DispatchActionsAppState: AppReducer {
         var plainForm = PlainForm()
     }
 
@@ -19,7 +19,7 @@ import UDFSwiftTesting
     }
 
     @Test func UpdateFormFieldDispatch() async {
-        let store = InternalStore(initial: AppState(), loggers: [])
+        let store = InternalStore(initial: DispatchActionsAppState(), loggers: [])
         var formTitle = await store.state.plainForm.title
         #expect(formTitle == "")
 
@@ -39,7 +39,7 @@ import UDFSwiftTesting
 
         #expect(messageInternalUnwrappedAction.silent)
 
-        let testStore = await TestStore(initial: AppState())
+        let testStore = await TestStore(initial: DispatchActionsAppState())
         await testStore.dispatch(Actions.Message(id: "1"))
         await testStore.dispatch(Actions.Message(id: "2").silent())
         await testStore.dispatch(Actions.Message(id: "3"))

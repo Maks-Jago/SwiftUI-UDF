@@ -3,7 +3,7 @@
 import Testing
 
 @Suite struct AppStateInitialSetupTests {
-    struct AppState: AppReducer {
+    struct AppStateInitialSetupAppState: AppReducer {
         var form1 = Form1()
         var form2 = Form2()
     }
@@ -11,7 +11,7 @@ import Testing
     struct Form1: Form, InitialSetup {
         var title: String = ""
 
-        mutating func initialSetup(with state: AppState) {
+        mutating func initialSetup(with state: AppStateInitialSetupAppState) {
             title = "new title"
         }
     }
@@ -20,7 +20,7 @@ import Testing
         var nameWithValue: String = "name"
         var nested = NestedForm()
 
-        mutating func initialSetup(with state: AppState) {
+        mutating func initialSetup(with state: AppStateInitialSetupAppState) {
             nameWithValue += state.form1.title
         }
     }
@@ -28,13 +28,13 @@ import Testing
     struct NestedForm: Form, InitialSetup {
         var number: Int = 0
 
-        mutating func initialSetup(with state: AppState) {
+        mutating func initialSetup(with state: AppStateInitialSetupAppState) {
             number = 2
         }
     }
 
     @Test func initialSetups() async {
-        let store = await TestStore(initial: AppState())
+        let store = await TestStore(initial: AppStateInitialSetupAppState())
 
         let title = await store.state.form1.title
         #expect(title == "new title")

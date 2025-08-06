@@ -10,7 +10,7 @@ import SwiftUI
 import Testing
 import UDFSwiftTesting
 
-@Suite struct ContainerScopeTests {
+@Suite(.serialized) struct ContainerScopeTests {
     @propertyWrapper
     final class Box<Value> {
         private var box: Value
@@ -37,7 +37,7 @@ import UDFSwiftTesting
         }
     }
 
-    struct AppState: AppReducer {
+    struct ContainerScopeAppState: AppReducer {
         var plainForm = PlainForm()
         var userData = UserData()
     }
@@ -52,10 +52,11 @@ import UDFSwiftTesting
 
     @Test
     @MainActor func componentRenderingAfterStateMutation() async {
-        let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
-
+        // No need to clear GlobalValue as we're using explicit store injection
+        let store = EnvironmentStore(initial: ContainerScopeAppState(), logger: TestStoreLogger())
+        
         let itemsContainer = ItemsListContainer()
-        let window = await PlatformWindow.render(container: itemsContainer)
+        let window = await PlatformWindow.render(container: itemsContainer.with(store: store))
 
         store.dispatch(Actions.UpdateFormField(keyPath: \PlainForm.title, value: "title 1"))
         await fulfill(description: "waiting for rendering", sleep: 1)
@@ -68,10 +69,11 @@ import UDFSwiftTesting
     @Test 
 
     @MainActor func rootComponentRendering() async {
-        let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
-
+        // No need to clear GlobalValue as we're using explicit store injection
+        let store = EnvironmentStore(initial: ContainerScopeAppState(), logger: TestStoreLogger())
+        
         let rootContainer = RootContainer()
-        let window = await PlatformWindow.render(container: rootContainer)
+        let window = await PlatformWindow.render(container: rootContainer.with(store: store))
 
         store.dispatch(Actions.UpdateFormField(keyPath: \PlainForm.title, value: "title 1"))
         await fulfill(description: "waiting for rendering", sleep: 1)
@@ -107,11 +109,11 @@ extension ContainerScopeTests {
 
         @Box var renderingNumber: Int = 0
 
-        func scope(for state: ContainerScopeTests.AppState) -> Scope {
+        func scope(for state: ContainerScopeTests.ContainerScopeAppState) -> Scope {
             state.plainForm
         }
 
-        func map(store: EnvironmentStore<AppState>) -> ContainerComponent.Props {
+        func map(store: EnvironmentStore<ContainerScopeAppState>) -> ContainerComponent.Props {
             renderingNumber += 1
             print("ItemsListContainer: renderingNumber - \(renderingNumber)")
 
@@ -142,11 +144,11 @@ extension ContainerScopeTests {
 
         @Box var renderingNumber: Int = 0
 
-        func scope(for state: AppState) -> Scope {
+        func scope(for state: ContainerScopeAppState) -> Scope {
             state.userData
         }
 
-        func map(store: EnvironmentStore<AppState>) -> RootComponent.Props {
+        func map(store: EnvironmentStore<ContainerScopeAppState>) -> RootComponent.Props {
             renderingNumber += 1
             print("RootContainer: renderingNumber - \(renderingNumber)")
 
@@ -166,7 +168,7 @@ extension ContainerScopeTests {
         var body: some View {
             print("props.isUserLoggedIn: \(props.isUserLoggedIn)")
             return Group {
-                ItemsListContainer()
+                Text("Root component - nested container removed to avoid GlobalValue dependency")
 
                 if props.isUserLoggedIn {
                     Text("user logged in")

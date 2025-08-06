@@ -14,7 +14,7 @@ private extension Actions {
     struct ResetCache: Action {}
 }
 
-@Suite 
+@Suite(.serialized)
 struct CachedTests {
     struct Item: Equatable, Codable, Identifiable {
         struct ID: Hashable, Codable, Equatable {
@@ -24,18 +24,18 @@ struct CachedTests {
         var id: ID
     }
 
-    struct AppState: AppReducer {
+    struct CachedAppState: AppReducer {
         var nestedForm = NestedForm()
     }
 
     struct NestedForm: Form {
-        @Cached(key: "items", defaultValue: .init())
+        @Cached(key: "cached_test_items", defaultValue: .init())
         var items: OrderedSet<Item.ID>
 
-        @Cached(key: "selected_item", defaultValue: nil)
+        @Cached(key: "cached_test_selected_item", defaultValue: nil)
         var selectedItem: Item.ID?
 
-        @Cached(key: "items_by_id", defaultValue: [:])
+        @Cached(key: "cached_test_items_by_id", defaultValue: [:])
         var byId: [Item.ID: Item]
 
         mutating func reduce(_ action: some Action) {
@@ -59,7 +59,9 @@ struct CachedTests {
     }
 
     @Test func itemsCaching() async {
-        var store = await TestStore(initial: AppState())
+        // Clear only EnvironmentStore, not cache as this test specifically tests cache persistence
+        GlobalValue.clearValue(for: EnvironmentStore<CachedAppState>.self)
+        var store = await TestStore(initial: CachedAppState())
 
         let items = (0 ... 3).map { Item(id: .init(value: $0)) }
         await store.dispatch(Actions.DidLoadItems(items: items, id: "items"))
@@ -72,7 +74,7 @@ struct CachedTests {
 
         await fulfill(description: "waiting for cache syncing", sleep: 1.5)
 
-        store = await .init(initial: AppState())
+        store = await .init(initial: CachedAppState())
         isEmpty = await store.state.nestedForm.items.isEmpty
 
         #expect(!isEmpty)
@@ -82,7 +84,8 @@ struct CachedTests {
     }
 
     @Test func resetCache() async {
-        let store = await TestStore(initial: AppState())
+        GlobalValue.clearValue(for: EnvironmentStore<CachedAppState>.self)
+        let store = await TestStore(initial: CachedAppState())
         let items = (0 ... 3).map { Item(id: .init(value: $0)) }
         await store.dispatch(Actions.DidLoadItems(items: items, id: "items"))
 
@@ -100,7 +103,8 @@ struct CachedTests {
     }
 
     @Test func singleObjectCaching() async {
-        let store = await TestStore(initial: AppState())
+        GlobalValue.clearValue(for: EnvironmentStore<CachedAppState>.self)
+        let store = await TestStore(initial: CachedAppState())
 
         var selectedItem = await store.state.nestedForm.selectedItem
         #expect(selectedItem == nil)
@@ -117,7 +121,8 @@ struct CachedTests {
     }
 
     @Test func removeItemFromCacheById() async throws {
-        let store = await TestStore(initial: AppState())
+        GlobalValue.clearValue(for: EnvironmentStore<CachedAppState>.self)
+        let store = await TestStore(initial: CachedAppState())
         await store.dispatch(Actions.ResetCache())
 
         let items = [Item(id: .init(value: 0))]

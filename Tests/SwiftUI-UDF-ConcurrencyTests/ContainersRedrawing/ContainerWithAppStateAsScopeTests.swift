@@ -3,7 +3,7 @@ import SwiftUI
 import Testing
 import UDFSwiftTesting
 
-@Suite struct ContainerWithAppStateAsScopeTests {
+@Suite(.serialized) struct ContainerWithAppStateAsScopeTests {
     @propertyWrapper
     final class Box<Value> {
         private var box: Value
@@ -30,7 +30,7 @@ import UDFSwiftTesting
         }
     }
 
-    struct AppState: AppReducer {
+    struct ContainerWithAppStateAsScopeAppState: AppReducer {
         var plainForm = PlainForm()
         var userData = UserData()
     }
@@ -46,9 +46,12 @@ import UDFSwiftTesting
     #if os(iOS)
     @Test 
     @MainActor func rootComponentRendering() async {
-        let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
+        // No need to clear GlobalValue as we're using explicit store injection
+        let store = EnvironmentStore(initial: ContainerWithAppStateAsScopeAppState(), logger: TestStoreLogger())
+        
+        // Use explicit store injection - create container but access underlying container for counting
         let rootContainer = RootContainer()
-        let window = await PlatformWindow.render(container: rootContainer)
+        let window = await PlatformWindow.render(container: rootContainer.with(store: store))
         
         #expect(rootContainer.renderingNumber == 0)
         await fulfill(description: "waiting for first rendering", sleep: 1)
@@ -86,9 +89,11 @@ import UDFSwiftTesting
     @Test
     
     @MainActor func noneScope() async {
-        let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
+        // No need to clear GlobalValue as we're using explicit store injection
+        let store = EnvironmentStore(initial: ContainerWithAppStateAsScopeAppState(), logger: TestStoreLogger())
+        
         let noneScopeContainer = NoneScopeContainer()
-        let window = await PlatformWindow.render(container: noneScopeContainer)
+        let window = await PlatformWindow.render(container: noneScopeContainer.with(store: store))
         
         #expect(noneScopeContainer.renderingNumber == 0)
         await fulfill(description: "waiting for first rendering", sleep: 1)
@@ -106,19 +111,19 @@ import UDFSwiftTesting
 // MARK: - RootContainer
 extension ContainerWithAppStateAsScopeTests {
     struct RootContainer: Container {
-        func onContainerAppear(store: EnvironmentStore<AppState>) {}
-        func onContainerDisappear(store: EnvironmentStore<AppState>) {}
-        func onContainerDidLoad(store: EnvironmentStore<AppState>) {}
+        func onContainerAppear(store: EnvironmentStore<ContainerWithAppStateAsScopeAppState>) {}
+        func onContainerDisappear(store: EnvironmentStore<ContainerWithAppStateAsScopeAppState>) {}
+        func onContainerDidLoad(store: EnvironmentStore<ContainerWithAppStateAsScopeAppState>) {}
 
         typealias ContainerComponent = RootComponent
 
         @Box var renderingNumber: Int = 0
 
-        func scope(for state: AppState) -> Scope {
+        func scope(for state: ContainerWithAppStateAsScopeAppState) -> Scope {
             state
         }
 
-        func map(store: EnvironmentStore<AppState>) -> RootComponent.Props {
+        func map(store: EnvironmentStore<ContainerWithAppStateAsScopeAppState>) -> RootComponent.Props {
             renderingNumber += 1
             print("RootContainer: renderingNumber - \(renderingNumber)")
 
@@ -153,17 +158,17 @@ extension ContainerWithAppStateAsScopeTests {
     struct NoneScopeContainer: Container {
         typealias ContainerComponent = RootComponent
 
-        func onContainerAppear(store: EnvironmentStore<AppState>) {}
-        func onContainerDisappear(store: EnvironmentStore<AppState>) {}
-        func onContainerDidLoad(store: EnvironmentStore<AppState>) {}
+        func onContainerAppear(store: EnvironmentStore<ContainerWithAppStateAsScopeAppState>) {}
+        func onContainerDisappear(store: EnvironmentStore<ContainerWithAppStateAsScopeAppState>) {}
+        func onContainerDidLoad(store: EnvironmentStore<ContainerWithAppStateAsScopeAppState>) {}
 
         @Box var renderingNumber: Int = 0
 
-        func scope(for state: AppState) -> Scope {
+        func scope(for state: ContainerWithAppStateAsScopeAppState) -> Scope {
             .none
         }
 
-        func map(store: EnvironmentStore<ContainerWithAppStateAsScopeTests.AppState>) -> ContainerWithAppStateAsScopeTests.RootComponent
+        func map(store: EnvironmentStore<ContainerWithAppStateAsScopeTests.ContainerWithAppStateAsScopeAppState>) -> ContainerWithAppStateAsScopeTests.RootComponent
             .Props
         {
             renderingNumber += 1

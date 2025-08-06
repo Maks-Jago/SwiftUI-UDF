@@ -12,14 +12,14 @@
 import Foundation
 
 public extension ProcessInfo {
-    /// A computed property that checks if the current process is running within an XCTest environment.
+    /// A computed property that checks if the current process is running within a test environment.
     ///
-    /// This property returns `true` if the process contains an environment variable `"XCTestConfigurationFilePath"`,
-    /// indicating that the code is being executed in a test context.
+    /// This property returns `true` if the process contains environment variables indicating
+    /// that the code is being executed in a test context (either XCTest or Swift Testing).
     ///
     /// Example usage:
     /// ```
-    /// if ProcessInfo.processInfo.xcTest {
+    /// if ProcessInfo.processInfo.isRunningTests {
     ///     // Perform test-specific logic
     /// }
     /// ```

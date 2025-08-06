@@ -82,14 +82,28 @@ final class ContainerHooks<State: AppReducer>: @unchecked Sendable {
     ///   - oldState: The previous state wrapped in a `Box`.
     ///   - newState: The current state wrapped in a `Box`.
     private func checkHooks(oldState: Box<State>, newState: Box<State>) {
+        guard let store else { return }
         var hooksToRemove: [AnyHashable] = []
 
         for (key, hook) in hooks {
-            if hook.condition(newState.value), !hook.condition(oldState.value), let store {
+            // For oneTime hooks, check if already fired at store level
+            if hook.type == .oneTime && store.hasOneTimeHookFired(id: hook.id) {
+                hooksToRemove.append(key)
+                continue
+            }
+            
+            let oldCondition = hook.condition(oldState.value)
+            let newCondition = hook.condition(newState.value)
+            
+            // Fire hook if condition becomes true (transition from false to true)
+            let shouldFire = newCondition && !oldCondition
+            
+            if shouldFire {
                 hook.block(store)
 
                 switch hook.type {
                 case .oneTime:
+                    store.markOneTimeHookAsFired(id: hook.id)
                     hooksToRemove.append(key)
                 case .default:
                     break
@@ -109,11 +123,18 @@ final class ContainerHooks<State: AppReducer>: @unchecked Sendable {
         var hooksToRemove: [AnyHashable] = []
 
         for (key, hook) in hooks {
+            // For oneTime hooks, check if already fired at store level
+            if hook.type == .oneTime && store.hasOneTimeHookFired(id: hook.id) {
+                hooksToRemove.append(key)
+                continue
+            }
+            
             if hook.condition(currentState.value) {
                 hook.block(store)
 
                 switch hook.type {
                 case .oneTime:
+                    store.markOneTimeHookAsFired(id: hook.id)
                     hooksToRemove.append(key)
                 case .default:
                     break

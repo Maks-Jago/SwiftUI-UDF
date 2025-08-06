@@ -10,7 +10,7 @@ import SwiftUI
 import UDFSwiftTesting
 import Testing
 
-@Suite struct BindableReducersMiddlewareTests {
+@Suite(.serialized) struct BindableReducersMiddlewareTests {
     struct Item: Hashable, Identifiable {
         struct ID: Hashable {
             var value: Int

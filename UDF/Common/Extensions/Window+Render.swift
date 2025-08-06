@@ -49,6 +49,27 @@ import SwiftUI
             }
         }
 
+        static func render(container: some View) async -> UIWindow {
+            await MainActor.run {
+                let window = UIWindow(frame: .zero)
+
+                // Create a UIHostingController to host the SwiftUI view
+                let viewController = UIHostingController(rootView: container)
+                window.rootViewController = viewController
+
+                // Begin and end appearance transitions to simulate the view appearing on screen
+                viewController.beginAppearanceTransition(true, animated: false)
+                viewController.endAppearanceTransition()
+
+                // Trigger layout passes to ensure the view is rendered properly
+                viewController.view.setNeedsLayout()
+                viewController.view.layoutIfNeeded()
+                window.makeKeyAndVisible()
+
+                return window
+            }
+        }
+
         func release() {
             self.rootViewController = nil
         }
@@ -63,6 +84,17 @@ import SwiftUI
         }
 
         static func render(container: some Container) async -> NSWindow {
+            await MainActor.run {
+                let viewController = NSHostingController(rootView: container)
+                let window = NSWindow(controller: viewController)
+
+                viewController.view.needsLayout = true
+                viewController.view.layoutSubtreeIfNeeded()
+                return window
+            }
+        }
+
+        static func render(container: some View) async -> NSWindow {
             await MainActor.run {
                 let viewController = NSHostingController(rootView: container)
                 let window = NSWindow(controller: viewController)

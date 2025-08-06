@@ -4,7 +4,7 @@ import SwiftUI
 import UDFSwiftTesting
 import Testing
 
-@Suite struct BindableContainerLoadUnloadTests {
+@Suite(.serialized) struct BindableContainerLoadUnloadTests {
     struct Item: Identifiable {
         struct ID: Hashable {
             var value: Int

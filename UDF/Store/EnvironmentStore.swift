@@ -24,6 +24,11 @@ public final class EnvironmentStore<State: AppReducer>: @unchecked Sendable {
     private var cancelation: Cancellable?
     private let subscribersCoordinator: SubscribersCoordinator<StateSubscriber<State>> = SubscribersCoordinator()
     private let storeQueue: DispatchQueue = .init(label: "EnvironmentStore")
+    
+    // MARK: - Hook Registry
+    /// Registry to track fired oneTime hooks across all containers
+    private var firedOneTimeHooks: Set<AnyHashable> = []
+    private let hookRegistryQueue = DispatchQueue(label: "EnvironmentStore.hookRegistry", attributes: .concurrent)
 
     // MARK: - Initializers
 
@@ -41,6 +46,8 @@ public final class EnvironmentStore<State: AppReducer>: @unchecked Sendable {
         self._state = .init(wrappedValue: mutableState, store: store)
 
         sinkSubject()
+        
+        // Set global instance
         GlobalValue.set(self)
     }
 
@@ -182,11 +189,61 @@ extension EnvironmentStore {
     }
 }
 
+// MARK: - Hook Registry
+extension EnvironmentStore {
+    /// Checks if a oneTime hook has already been fired
+    func hasOneTimeHookFired(id: AnyHashable) -> Bool {
+        hookRegistryQueue.sync {
+            firedOneTimeHooks.contains(id)
+        }
+    }
+    
+    /// Marks a oneTime hook as fired
+    func markOneTimeHookAsFired(id: AnyHashable) {
+        hookRegistryQueue.sync(flags: .barrier) {
+            firedOneTimeHooks.insert(id)
+        }
+    }
+    
+    /// Clears all fired oneTime hooks (for testing only)
+    func clearFiredOneTimeHooks() {
+        guard ProcessInfo.processInfo.isRunningTests else {
+            assertionFailure("clearFiredOneTimeHooks() should only be called in tests")
+            return
+        }
+        hookRegistryQueue.sync(flags: .barrier) {
+            firedOneTimeHooks.removeAll()
+        }
+    }
+}
+
 // MARK: - Global
 extension EnvironmentStore {
     /// Provides a globally accessible instance of the `EnvironmentStore`.
     class var global: EnvironmentStore<State> {
         GlobalValue.value(for: EnvironmentStore<State>.self)
+    }
+}
+
+// MARK: - SwiftUI Environment Support
+import SwiftUI
+
+/// Environment key for passing EnvironmentStore through SwiftUI Environment
+public struct EnvironmentStoreKey<State: AppReducer>: SwiftUI.EnvironmentKey {
+    public static var defaultValue: EnvironmentStore<State>? { 
+        // In tests, try to return nil instead of crashing
+        if ProcessInfo.processInfo.isRunningTests {
+            return nil
+        }
+        return EnvironmentStore<State>.global 
+    }
+}
+
+public extension SwiftUI.EnvironmentValues {
+    /// Access to EnvironmentStore through SwiftUI Environment
+    subscript<State: AppReducer>(_ stateType: State.Type) -> EnvironmentStore<State>? {
+        get { self[EnvironmentStoreKey<State>.self] }
+        set { self[EnvironmentStoreKey<State>.self] = newValue }
     }
 }
 

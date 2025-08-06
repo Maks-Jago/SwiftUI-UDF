@@ -2,7 +2,7 @@ import SwiftUI
 @testable import UDF
 import Testing
 
-@Suite struct DialogQueueTests {
+@Suite(.serialized) struct DialogQueueTests {
     // MARK: - Test Helpers
     private func createToastDialog(_ message: String, duration: TimeInterval = 2.0) -> DialogType {
         let config = ToastConfiguration(defaultDuration: duration)
@@ -89,8 +89,8 @@ import Testing
             queueManager.dismiss(firstToastId)
         }
         
-        // Wait for sequential spacing
-        try? await Task.sleep(nanoseconds: 20_000_000) // 20ms
+        // Wait for sequential spacing and queue processing
+        try? await Task.sleep(nanoseconds: 50_000_000) // 50ms
         
         // Second toast should now be visible
         #expect(queueManager.visibleToasts.count == 1)

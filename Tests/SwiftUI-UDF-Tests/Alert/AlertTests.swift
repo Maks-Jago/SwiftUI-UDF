@@ -18,7 +18,7 @@ extension AlertBuilder.AlertStyle {
 }
 
 @Suite struct AlertTests {
-    struct AppState: AppReducer {
+    struct AlertAppState: AppReducer {
         var form = FormWithAlert()
     }
     
@@ -41,7 +41,7 @@ extension AlertBuilder.AlertStyle {
     }
     
     @Test func WhenAlerBuilderRegistered_AlertCanBePresentedById() async {
-        let store = await TestStore(initial: AppState())
+        let store = await TestStore(initial: AlertAppState())
         var status = await store.state.form.alert.status
         
         #expect(status == .dismissed)

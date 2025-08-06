@@ -21,7 +21,7 @@ import Testing
         }
     }
 
-    struct AppState: AppReducer {
+    struct StateCopyAppState: AppReducer {
         var someForm = SomeForm()
     }
 
@@ -42,7 +42,7 @@ import Testing
     }
 
     @Test func stateCopying() async {
-        let store = await TestStore(initial: AppState())
+        let store = await TestStore(initial: StateCopyAppState())
         await store.dispatch(Actions.UpdateFormField(keyPath: \SomeForm.item, value: .init(text: "new item text")))
 
         let item = await store.state.someForm.item

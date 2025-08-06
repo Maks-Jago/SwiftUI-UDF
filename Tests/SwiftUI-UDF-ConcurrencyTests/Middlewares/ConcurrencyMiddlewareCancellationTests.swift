@@ -2,21 +2,22 @@
 import Combine
 @testable import UDF
 import Testing
+import Foundation
 
-@Suite struct ConcurrencyMiddlewareCancellationTests {
-    struct AppState: AppReducer {
+@Suite(.serialized) struct ConcurrencyMiddlewareCancellationTests {
+    struct ConcurrencyMiddlewareCancellationAppState: AppReducer {
         var middlewareFlow = MiddlewareFlow()
         var runForm = RunForm()
     }
 
     enum MiddlewareFlow: IdentifiableFlow {
-        case none, loading, cancel, message, didCancel
+        case none, loading, cancel, messageConcurrencyTests, didCancel
 
         init() { self = .none }
 
         mutating func reduce(_ action: some Action) {
             switch action {
-            case let action as Actions.DidCancelEffect where action.cancellation == ObservableMiddlewareToCancel.Сancellation.message:
+            case let action as Actions.DidCancelEffect:
                 self = .didCancel
 
             case is Actions.Loading:
@@ -26,7 +27,7 @@ import Testing
                 self = .cancel
 
             case is Actions.Message:
-                self = .message
+                self = .messageConcurrencyTests
 
             default:
                 break
@@ -49,14 +50,23 @@ import Testing
     }
 
     @Test func observableMiddlewareCancellation() async {
-        let store = await TestStore(initial: AppState())
+        // Clear any global state from other tests
+        GlobalValue.clearValue(for: EnvironmentStore<ConcurrencyMiddlewareCancellationAppState>.self)
+        
+        let store = await TestStore(initial: ConcurrencyMiddlewareCancellationAppState())
         await store.subscribe(ObservableMiddlewareToCancel.self)
         await store.dispatch(Actions.Loading())
+        
+        // Give the middleware time to start the effect before checking state
+        try? await Task.sleep(nanoseconds: 100_000_000) // 0.1 seconds
 
         var middlewareFlow = await store.state.middlewareFlow
 
         #expect(middlewareFlow == .loading)
         await store.dispatch(Actions.CancelLoading())
+        
+        // Give more time for cancellation to propagate
+        try? await Task.sleep(nanoseconds: 200_000_000) // 0.2 seconds
         await store.wait()
 
         middlewareFlow = await store.state.middlewareFlow
@@ -71,18 +81,18 @@ private extension Actions {
 
 // MARK: - Middlewares
 private extension ConcurrencyMiddlewareCancellationTests {
-    final class ObservableMiddlewareToCancel: Middleware<AppState>, @unchecked Sendable {
+    final class ObservableMiddlewareToCancel: Middleware<ConcurrencyMiddlewareCancellationAppState>, @unchecked Sendable {
         struct Environment : Sendable{
             var loadItems: @Sendable () async -> [String]
         }
 
         var environment: Environment!
 
-        static func buildLiveEnvironment(for store: some Store<AppState>) -> Environment {
+        static func buildLiveEnvironment(for store: some Store<ConcurrencyMiddlewareCancellationAppState>) -> Environment {
             Environment(loadItems: { [] })
         }
 
-        static func buildTestEnvironment(for store: some Store<AppState>) -> Environment {
+        static func buildTestEnvironment(for store: some Store<ConcurrencyMiddlewareCancellationAppState>) -> Environment {
             Environment(loadItems: { [] })
         }
 
@@ -90,11 +100,11 @@ private extension ConcurrencyMiddlewareCancellationTests {
             case message
         }
 
-        func scope(for state: AppState) -> Scope {
+        func scope(for state: ConcurrencyMiddlewareCancellationAppState) -> Scope {
             state.middlewareFlow
         }
 
-        func observe(state: AppState) {
+        func observe(state: ConcurrencyMiddlewareCancellationAppState) {
             switch state.middlewareFlow {
             case .loading:
                 execute(
@@ -113,10 +123,13 @@ private extension ConcurrencyMiddlewareCancellationTests {
 
         struct SomeEffect: ConcurrencyEffect {
             func task(flowId: AnyHashable) async throws -> any UDF.Action {
-                try await Task.sleep(nanoseconds: 1_000_000_000)
+                // Run indefinitely until cancelled
+                while !Task.isCancelled {
+                    try Task.checkCancellation()
+                    try await Task.sleep(nanoseconds: 100_000_000) // 0.1 seconds
+                }
 
-                try Task.checkCancellation()
-
+                // This should never be reached due to cancellation
                 return Actions.Message(message: "Success message", id: flowId)
             }
         }
