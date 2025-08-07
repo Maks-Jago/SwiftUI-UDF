@@ -1,6 +1,7 @@
 
 import Combine
 @testable import UDF
+import UDFSwiftTesting
 import Testing
 import Foundation
 
@@ -11,13 +12,13 @@ import Foundation
     }
 
     enum MiddlewareFlow: IdentifiableFlow {
-        case none, loading, cancel, messageConcurrencyTests, didCancel
+        case none, loading, cancel, message, didCancel
 
         init() { self = .none }
 
         mutating func reduce(_ action: some Action) {
             switch action {
-            case is Actions.DidCancelEffect:
+            case let action as Actions.DidCancelEffect where action.cancellation == ObservableMiddlewareToCancel.Сancellation.message:
                 self = .didCancel
 
             case is Actions.Loading:
@@ -27,7 +28,7 @@ import Foundation
                 self = .cancel
 
             case is Actions.Message:
-                self = .messageConcurrencyTests
+                self = .message
 
             default:
                 break
@@ -50,26 +51,18 @@ import Foundation
     }
 
     @Test func observableMiddlewareCancellation() async {
-        // Clear any global state from other tests
-        GlobalValue.clearValue(for: EnvironmentStore<AppState>.self)
+        let store = EnvironmentStore(initial: AppState(), loggers: [])
+        store.subscribe(ObservableMiddlewareToCancel.self, environment: ObservableMiddlewareToCancel.Environment(loadItems: { [] }))
+        store.dispatch(Actions.Loading())
 
-        let store = await TestStore(initial: AppState())
-        await store.subscribe(ObservableMiddlewareToCancel.self)
-        await store.dispatch(Actions.Loading())
-
-        // Give the middleware time to start the effect before checking state
-        try? await Task.sleep(nanoseconds: 100_000_000) // 0.1 seconds
-
-        var middlewareFlow = await store.state.middlewareFlow
+        await fulfill(description: "waiting for middleware to process loading", sleep: 0.3)
+        var middlewareFlow = store.state.middlewareFlow
 
         #expect(middlewareFlow == .loading)
-        await store.dispatch(Actions.CancelLoading())
+        store.dispatch(Actions.CancelLoading())
+        await fulfill(description: "waiting for middleware operations", sleep: 0.6)
 
-        // Give more time for cancellation to propagate
-        try? await Task.sleep(nanoseconds: 200_000_000) // 0.2 seconds
-        await store.wait()
-
-        middlewareFlow = await store.state.middlewareFlow
+        middlewareFlow = store.state.middlewareFlow
         #expect(middlewareFlow == .didCancel)
     }
 }
@@ -123,13 +116,10 @@ private extension ConcurrencyMiddlewareCancellationTests {
 
         struct SomeEffect: ConcurrencyEffect {
             func task(flowId: AnyHashable) async throws -> any UDF.Action {
-                // Run indefinitely until cancelled
-                while !Task.isCancelled {
-                    try Task.checkCancellation()
-                    try await Task.sleep(nanoseconds: 100_000_000) // 0.1 seconds
-                }
+                try await Task.sleep(nanoseconds: 1_000_000_000) // 1 second
 
-                // This should never be reached due to cancellation
+                try Task.checkCancellation()
+
                 return Actions.Message(message: "Success message", id: flowId)
             }
         }

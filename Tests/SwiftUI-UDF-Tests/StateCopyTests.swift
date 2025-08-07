@@ -6,6 +6,7 @@
 //
 
 @testable import UDF
+import UDFSwiftTesting
 import Testing
 
 @Suite struct StateCopyTests {
@@ -42,10 +43,11 @@ import Testing
     }
 
     @Test func stateCopying() async {
-        let store = await TestStore(initial: StateCopyAppState())
-        await store.dispatch(Actions.UpdateFormField(keyPath: \SomeForm.item, value: .init(text: "new item text")))
+        let store = EnvironmentStore(initial: StateCopyAppState(), loggers: [])
+        store.dispatch(Actions.UpdateFormField(keyPath: \SomeForm.item, value: .init(text: "new item text")))
+        await fulfill(description: "waiting for action processing", sleep: 0.3)
 
-        let item = await store.state.someForm.item
+        let item = store.state.someForm.item
         #expect(item.text == "new item text")
     }
 }

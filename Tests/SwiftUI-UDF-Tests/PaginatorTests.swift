@@ -6,6 +6,7 @@
 //
 
 @testable import UDF
+import UDFSwiftTesting
 import Testing
 
 @Suite 
@@ -136,18 +137,20 @@ struct PaginatorTests {
     }
 
     @Test func paginatorLoading() async {
-        let store = await TestStore(initial: AppState())
-        await store.dispatch(Actions.LoadPage(id: ItemFlow.id))
+        let store = EnvironmentStore(initial: AppState(), loggers: [])
+        store.dispatch(Actions.LoadPage(id: ItemFlow.id))
+        await fulfill(description: "waiting for action processing", sleep: 0.3)
 
-        let isLoading = await store.state.itemsForm.paginator.isLoading
+        let isLoading = store.state.itemsForm.paginator.isLoading
         #expect(isLoading == true)
 
-        await store.dispatch(Actions.DidLoadItems(items: Item.fakeItems(count: 10), id: ItemFlow.id))
+        store.dispatch(Actions.DidLoadItems(items: Item.fakeItems(count: 10), id: ItemFlow.id))
+        await fulfill(description: "waiting for action processing", sleep: 0.3)
 
-        let pageNumber = await store.state.itemsForm.paginator.page.pageNumber
+        let pageNumber = store.state.itemsForm.paginator.page.pageNumber
         #expect(pageNumber == 1)
 
-        let itemsCount = await store.state.itemsForm.paginator.items.count
+        let itemsCount = store.state.itemsForm.paginator.items.count
         #expect(itemsCount == 10)
     }
 

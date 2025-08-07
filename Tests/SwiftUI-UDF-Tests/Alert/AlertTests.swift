@@ -1,5 +1,6 @@
 import SwiftUI
 @testable import UDF
+import UDFSwiftTesting
 import Testing
 
 private extension Actions {
@@ -17,7 +18,7 @@ extension AlertBuilder.AlertStyle {
     }
 }
 
-@Suite struct AlertTests {
+@Suite(.serialized) struct AlertTests {
     struct AppState: AppReducer {
         var form = FormWithAlert()
     }
@@ -41,8 +42,8 @@ extension AlertBuilder.AlertStyle {
     }
     
     @Test func whenAlerBuilderRegistered_AlertCanBePresentedById() async {
-        let store = await TestStore(initial: AppState())
-        var status = await store.state.form.alert.status
+        let store = EnvironmentStore(initial: AppState(), loggers: [])
+        var status = store.state.form.alert.status
         
         #expect(status == .dismissed)
         
@@ -52,8 +53,9 @@ extension AlertBuilder.AlertStyle {
             }
         }
         
-        await store.dispatch(Actions.PresentAlertWithAction())
-        status = await store.state.form.alert.status
+        store.dispatch(Actions.PresentAlertWithAction())
+        await fulfill(description: "waiting for action processing", sleep: 0.3)
+        status = store.state.form.alert.status
         
         #expect(status != .dismissed)
     }

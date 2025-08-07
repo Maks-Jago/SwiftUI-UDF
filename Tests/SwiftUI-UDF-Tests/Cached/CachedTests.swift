@@ -60,79 +60,82 @@ struct CachedTests {
 
     @Test func itemsCaching() async {
         // Clear only EnvironmentStore, not cache as this test specifically tests cache persistence
-        GlobalValue.clearValue(for: EnvironmentStore<AppState>.self)
-        var store = await TestStore(initial: AppState())
+        var store = EnvironmentStore(initial: AppState(), loggers: [])
 
         let items = (0 ... 3).map { Item(id: .init(value: $0)) }
-        await store.dispatch(Actions.DidLoadItems(items: items, id: "items"))
+        store.dispatch(Actions.DidLoadItems(items: items, id: "items"))
+        await fulfill(description: "waiting for cache action processing", sleep: 0.3)
 
-        var isEmpty = await store.state.nestedForm.items.isEmpty
+        var isEmpty = store.state.nestedForm.items.isEmpty
         #expect(!isEmpty)
 
-        var count = await store.state.nestedForm.items.count
+        var count = store.state.nestedForm.items.count
         #expect(count == 4)
 
         await fulfill(description: "waiting for cache syncing", sleep: 1.5)
 
-        store = await .init(initial: AppState())
-        isEmpty = await store.state.nestedForm.items.isEmpty
+        store = EnvironmentStore(initial: AppState(), loggers: [])
+        isEmpty = store.state.nestedForm.items.isEmpty
 
         #expect(!isEmpty)
-        count = await store.state.nestedForm.items.count
+        count = store.state.nestedForm.items.count
 
         #expect(count == 4)
     }
 
     @Test func resetCache() async {
-        GlobalValue.clearValue(for: EnvironmentStore<AppState>.self)
-        let store = await TestStore(initial: AppState())
+        let store = EnvironmentStore(initial: AppState(), loggers: [])
         let items = (0 ... 3).map { Item(id: .init(value: $0)) }
-        await store.dispatch(Actions.DidLoadItems(items: items, id: "items"))
+        store.dispatch(Actions.DidLoadItems(items: items, id: "items"))
 
-        var isEmpty = await store.state.nestedForm.items.isEmpty
+        var isEmpty = store.state.nestedForm.items.isEmpty
         #expect(!isEmpty)
 
-        let count = await store.state.nestedForm.items.count
+        let count = store.state.nestedForm.items.count
         #expect(count == 4)
 
         await fulfill(description: "waiting for cache syncing", sleep: 1.5)
-        await store.dispatch(Actions.ResetCache())
+        store.dispatch(Actions.ResetCache())
+        await fulfill(description: "waiting for reset cache processing", sleep: 0.3)
 
-        isEmpty = await store.state.nestedForm.items.isEmpty
+        isEmpty = store.state.nestedForm.items.isEmpty
         #expect(isEmpty)
     }
 
     @Test func singleObjectCaching() async {
-        GlobalValue.clearValue(for: EnvironmentStore<AppState>.self)
-        let store = await TestStore(initial: AppState())
+        let store = EnvironmentStore(initial: AppState(), loggers: [])
 
-        var selectedItem = await store.state.nestedForm.selectedItem
+        var selectedItem = store.state.nestedForm.selectedItem
         #expect(selectedItem == nil)
 
-        await store.dispatch(Actions.UpdateFormField(keyPath: \NestedForm.selectedItem, value: .init(value: 1)))
+        store.dispatch(Actions.UpdateFormField(keyPath: \NestedForm.selectedItem, value: .init(value: 1)))
+        await fulfill(description: "waiting for field update processing", sleep: 0.3)
 
-        selectedItem = await store.state.nestedForm.selectedItem
+        selectedItem = store.state.nestedForm.selectedItem
         #expect(selectedItem != nil)
 
-        await store.dispatch(Actions.ResetCache())
+        store.dispatch(Actions.ResetCache())
+        await fulfill(description: "waiting for reset cache processing", sleep: 0.3)
 
-        selectedItem = await store.state.nestedForm.selectedItem
+        selectedItem = store.state.nestedForm.selectedItem
         #expect(selectedItem == nil)
     }
 
     @Test func removeItemFromCacheById() async throws {
-        GlobalValue.clearValue(for: EnvironmentStore<AppState>.self)
-        let store = await TestStore(initial: AppState())
-        await store.dispatch(Actions.ResetCache())
+        let store = EnvironmentStore(initial: AppState(), loggers: [])
+        store.dispatch(Actions.ResetCache())
+        await fulfill(description: "waiting for cache reset", sleep: 0.3)
 
         let items = [Item(id: .init(value: 0))]
-        await store.dispatch(Actions.DidLoadItems(items: items, id: "items"))
+        store.dispatch(Actions.DidLoadItems(items: items, id: "items"))
+        await fulfill(description: "waiting for items to load", sleep: 0.3)
 
-        var isEmpty = await store.state.nestedForm.byId.isEmpty
+        var isEmpty = store.state.nestedForm.byId.isEmpty
         #expect(!isEmpty)
 
-        try await store.dispatch(Actions.DeleteItem(item: #require(items.first)))
-        isEmpty = await store.state.nestedForm.byId.isEmpty
+        try store.dispatch(Actions.DeleteItem(item: #require(items.first)))
+        await fulfill(description: "waiting for delete item processing", sleep: 0.3)
+        isEmpty = store.state.nestedForm.byId.isEmpty
 
         #expect(isEmpty)
     }

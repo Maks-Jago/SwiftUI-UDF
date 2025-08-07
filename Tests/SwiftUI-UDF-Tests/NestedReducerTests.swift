@@ -65,11 +65,13 @@ import Testing
     var cancellation: AnyCancellable? = nil
 
     @Test func appState() async {
-        let store = await TestStore(initial: AppState())
-        await store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.title, value: "temp"))
-        await store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.title, value: "temp_21"))
+        let store = EnvironmentStore(initial: AppState(), loggers: [])
+        store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.title, value: "temp"))
+        await fulfill(description: "waiting for first action processing", sleep: 0.3)
+        store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.title, value: "temp_21"))
+        await fulfill(description: "waiting for second action processing", sleep: 0.3)
 
-        let title = await store.state.nested.testForm.title
+        let title = store.state.nested.testForm.title
 
         #expect(title == "temp_21")
 

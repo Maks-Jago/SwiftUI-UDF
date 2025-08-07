@@ -21,65 +21,73 @@ import Testing
     }
 
     @Test func whenTwoContainersLoaded_BindableReducerCountShouldBeEqual2() async throws {
-        let store = await TestStore(initial: AppState())
+        let store = EnvironmentStore(initial: AppState(), loggers: [])
 
-        var bindedReducersCount = await store.state.itemsForm.reducers.count
+        var bindedReducersCount = store.state.itemsForm.reducers.count
         #expect(bindedReducersCount == 0)
 
-        await store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 1)))
+        store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 1)))
+        await fulfill(description: "waiting for action processing", sleep: 0.3)
 
-        bindedReducersCount = await store.state.itemsForm.reducers.count
+        bindedReducersCount = store.state.itemsForm.reducers.count
         #expect(bindedReducersCount == 1)
 
-        await store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 2)))
+        store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 2)))
+        await fulfill(description: "waiting for action processing", sleep: 0.3)
 
-        bindedReducersCount = await store.state.itemsForm.reducers.count
+        bindedReducersCount = store.state.itemsForm.reducers.count
         #expect(bindedReducersCount == 2)
     }
 
     @Test func whenBindableContainerUnloaded_BindableReducerCountShouldBeEqual0() async throws {
-        let store = await TestStore(initial: AppState())
+        let store = EnvironmentStore(initial: AppState(), loggers: [])
 
-        var bindedReducersCount = await store.state.itemsForm.reducers.count
+        var bindedReducersCount = store.state.itemsForm.reducers.count
         #expect(bindedReducersCount == 0)
 
-        await store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 1)))
+        store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 1)))
+        await fulfill(description: "waiting for action processing", sleep: 0.3)
 
-        bindedReducersCount = await store.state.itemsForm.reducers.count
+        bindedReducersCount = store.state.itemsForm.reducers.count
         #expect(bindedReducersCount == 1)
 
-        await store.dispatch(Actions._OnContainerDidUnLoad(containerType: ItemsContainer.self, id: .init(value: 1)))
+        store.dispatch(Actions._OnContainerDidUnLoad(containerType: ItemsContainer.self, id: .init(value: 1)))
+        await fulfill(description: "waiting for action processing", sleep: 0.3)
 
-        bindedReducersCount = await store.state.itemsForm.reducers.count
+        bindedReducersCount = store.state.itemsForm.reducers.count
         #expect(bindedReducersCount == 0)
     }
 
     @Test func whenBindableContainerHasMultipleInstances_BindableReducerShouldNotBeReleased() async throws {
-        let store = await TestStore(initial: AppState())
+        let store = EnvironmentStore(initial: AppState(), loggers: [])
 
-        var bindedReducersCount = await store.state.itemsForm.reducers.count
+        var bindedReducersCount = store.state.itemsForm.reducers.count
         #expect(bindedReducersCount == 0)
 
-        await store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 1)))
-        await store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 1)))
-        await store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 1)))
+        store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 1)))
+        store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 1)))
+        store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 1)))
+        await fulfill(description: "waiting for action processing", sleep: 0.3)
 
-        bindedReducersCount = await store.state.itemsForm.reducers.count
+        bindedReducersCount = store.state.itemsForm.reducers.count
         #expect(bindedReducersCount == 1)
 
-        await store.dispatch(Actions._OnContainerDidUnLoad(containerType: ItemsContainer.self, id: .init(value: 1)))
+        store.dispatch(Actions._OnContainerDidUnLoad(containerType: ItemsContainer.self, id: .init(value: 1)))
+        await fulfill(description: "waiting for action processing", sleep: 0.3)
 
-        bindedReducersCount = await store.state.itemsForm.reducers.count
+        bindedReducersCount = store.state.itemsForm.reducers.count
         #expect(bindedReducersCount == 1)
 
-        await store.dispatch(Actions._OnContainerDidUnLoad(containerType: ItemsContainer.self, id: .init(value: 1)))
+        store.dispatch(Actions._OnContainerDidUnLoad(containerType: ItemsContainer.self, id: .init(value: 1)))
+        await fulfill(description: "waiting for action processing", sleep: 0.3)
 
-        bindedReducersCount = await store.state.itemsForm.reducers.count
+        bindedReducersCount = store.state.itemsForm.reducers.count
         #expect(bindedReducersCount == 1)
 
-        await store.dispatch(Actions._OnContainerDidUnLoad(containerType: ItemsContainer.self, id: .init(value: 1)))
+        store.dispatch(Actions._OnContainerDidUnLoad(containerType: ItemsContainer.self, id: .init(value: 1)))
+        await fulfill(description: "waiting for action processing", sleep: 0.3)
 
-        bindedReducersCount = await store.state.itemsForm.reducers.count
+        bindedReducersCount = store.state.itemsForm.reducers.count
         #expect(bindedReducersCount == 0)
     }
 }

@@ -57,49 +57,52 @@ import Foundation
     }
 
     @Test func observableMiddlewareCancellation() async {
-        let store = await TestStore(initial: AppState())
-        await store.subscribe(ObservableMiddlewareToCancel.self)
-        await store.dispatch(Actions.Loading())
+        let store = EnvironmentStore(initial: AppState(), loggers: [])
+        store.subscribe(ObservableMiddlewareToCancel.self, environment: ObservableMiddlewareToCancel.Environment())
+        store.dispatch(Actions.Loading())
+        await fulfill(description: "waiting for middleware to process loading", sleep: 0.3)
 
-        var middlewareFlow = await store.state.middlewareFlow
+        var middlewareFlow = store.state.middlewareFlow
 
         #expect(middlewareFlow == .loading)
-        await store.dispatch(Actions.CancelLoading())
-        await store.wait()
+        store.dispatch(Actions.CancelLoading())
+        await fulfill(description: "waiting for middleware operations", sleep: 0.6)
 
-        middlewareFlow = await store.state.middlewareFlow
+        middlewareFlow = store.state.middlewareFlow
         #expect(middlewareFlow == .didCancel)
     }
 
     @Test func observableRunMiddlewareToCancel() async {
-        let store = await TestStore(initial: AppState())
-        await store.subscribe(ObservableRunMiddlewareToCancel.self)
-        await store.dispatch(Actions.Loading())
+        let store = EnvironmentStore(initial: AppState(), loggers: [])
+        store.subscribe(ObservableRunMiddlewareToCancel.self, environment: ObservableRunMiddlewareToCancel.Environment())
+        store.dispatch(Actions.Loading())
+        await fulfill(description: "waiting for middleware to process loading", sleep: 0.3)
 
-        var middlewareFlow = await store.state.middlewareFlow
+        var middlewareFlow = store.state.middlewareFlow
 
         #expect(middlewareFlow == .loading)
         await fulfill(description: "Wait for dispatch action", sleep: 2)
-        await store.dispatch(Actions.CancelLoading())
-        await store.wait()
+        store.dispatch(Actions.CancelLoading())
+        await fulfill(description: "waiting for middleware operations", sleep: 0.6)
 
-        middlewareFlow = await store.state.middlewareFlow
+        middlewareFlow = store.state.middlewareFlow
         #expect(middlewareFlow == .didCancel)
     }
 
     @Test func reducibleMiddlewareToCancel() async {
-        let store = await TestStore(initial: AppState())
-        await store.subscribe(ReducibleMiddlewareToCancel.self)
-        await store.dispatch(Actions.Loading())
+        let store = EnvironmentStore(initial: AppState(), loggers: [])
+        store.subscribe(ReducibleMiddlewareToCancel.self, environment: ReducibleMiddlewareToCancel.Environment())
+        store.dispatch(Actions.Loading())
+        await fulfill(description: "waiting for middleware to process loading", sleep: 0.3)
 
-        var middlewareFlow = await store.state.middlewareFlow
+        var middlewareFlow = store.state.middlewareFlow
         #expect(middlewareFlow == .loading)
 
-        await store.dispatch(Actions.CancelLoading())
-        await store.wait()
+        store.dispatch(Actions.CancelLoading())
+        await fulfill(description: "waiting for middleware operations", sleep: 0.6)
 
-        middlewareFlow = await store.state.middlewareFlow
-        let messagesCount = await store.state.runForm.messagesCount
+        middlewareFlow = store.state.middlewareFlow
+        let messagesCount = store.state.runForm.messagesCount
 
         #expect(messagesCount == 0)
         #expect(middlewareFlow == .didCancel)

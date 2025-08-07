@@ -1,5 +1,6 @@
 
 @testable import UDF
+import UDFSwiftTesting
 import Testing
 
 @Suite struct AppStateInitialSetupTests {
@@ -34,15 +35,15 @@ import Testing
     }
 
     @Test func initialSetups() async {
-        let store = await TestStore(initial: AppState())
+        let store = EnvironmentStore(initial: AppState(), loggers: [])
 
-        let title = await store.state.form1.title
+        let title = store.state.form1.title
         #expect(title == "new title")
 
-        let name = await store.state.form2.nameWithValue
+        let name = store.state.form2.nameWithValue
         #expect(name == "namenew title")
 
-        let nestedNumber = await store.state.form2.nested.number
+        let nestedNumber = store.state.form2.nested.number
         #expect(nestedNumber == 2)
     }
 }

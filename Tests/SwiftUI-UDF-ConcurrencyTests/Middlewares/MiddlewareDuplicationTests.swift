@@ -1,4 +1,5 @@
 @testable import UDF
+import UDFSwiftTesting
 import Testing
 
 @Suite struct MiddlewareDuplicationTests {
@@ -32,18 +33,18 @@ import Testing
     }
 
     @Test func middlewareDuplication() async {
-        let store = await TestStore(initial: AppState())
+        let store = EnvironmentStore(initial: AppState(), loggers: [])
 
-        await store.subscribe(build: { _ in
+        store.subscribe(build: { _ in
             TestMiddleware.self
             TestMiddleware.self
         })
 
-        await store.dispatch(TestAction())
-        await store.wait()
+        store.dispatch(TestAction())
+        await fulfill(description: "waiting for middleware operations", sleep: 0.3)
 
         // Verify that the middleware is only added once
-        let middlewaresCount = await store.state.testForm.reduceCallCount
+        let middlewaresCount = store.state.testForm.reduceCallCount
         #expect(middlewaresCount == 1, "Middleware should only be added once")
     }
 }

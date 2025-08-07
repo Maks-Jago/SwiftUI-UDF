@@ -74,14 +74,13 @@ private extension Actions {
     }
 
     @Test func mapError() async {
-        GlobalValue.clearValue(for: EnvironmentStore<AppState>.self)
-        let store = await TestStore(initial: MiddlewareMapErrorTests.AppState())
-        await store.subscribe(LoadingMiddleware.self)
+        let store = EnvironmentStore(initial: MiddlewareMapErrorTests.AppState(), loggers: [])
+        store.subscribe(LoadingMiddleware.self)
 
-        await store.dispatch(Actions.StartLoading())
-        await store.wait()
+        store.dispatch(Actions.StartLoading())
+        await fulfill(description: "waiting for middleware operations", sleep: 0.5)
 
-        let statusCode = await store.state.errorForm.errorStatusCode
+        let statusCode = store.state.errorForm.errorStatusCode
         #expect(statusCode == 400)
     }
 }

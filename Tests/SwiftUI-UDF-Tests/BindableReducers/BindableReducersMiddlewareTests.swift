@@ -79,21 +79,22 @@ import Testing
     }
 
     @Test func whenLoadingDataForBindableReducers_OnleConcreteInstanceOfBindableFormShouldBeUpdated() async throws {
-        let store = await TestStore(initial: AppState())
-        await store.subscribe(ItemsMiddleware.self)
+        let store = EnvironmentStore(initial: AppState(), loggers: [])
+        store.subscribe(ItemsMiddleware.self)
 
-        await store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 1)))
-        await store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 2)))
-        await store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 3)))
-        await store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 4)))
+        store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 1)))
+        store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 2)))
+        store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 3)))
+        store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 4)))
+        await fulfill(description: "waiting for container actions to process", sleep: 0.3)
 
-        let bindedReducersFormCount = await store.state.itemsForm.reducers.count
+        let bindedReducersFormCount = store.state.itemsForm.reducers.count
         #expect(bindedReducersFormCount == 4)
 
-        let bindedReducersFlowCount = await store.state.itemsFlow.reducers.count
+        let bindedReducersFlowCount = store.state.itemsFlow.reducers.count
         #expect(bindedReducersFlowCount == 4)
 
-        await store.dispatch(
+        store.dispatch(
             ActionGroup {
                 Actions.LoadItem(id: .init(value: 1))
                     .binded(to: ItemsContainer.self, by: Item.ID(value: 1))
@@ -106,43 +107,44 @@ import Testing
             }
         )
 
-        await store.wait()
+        await fulfill(description: "waiting for middleware operations", sleep: 0.3)
 
-        let itemsForm1: ItemsForm = try #require(await store.state.itemsForm[Item.ID(value: 1)])
+        let itemsForm1: ItemsForm = try #require(store.state.itemsForm[Item.ID(value: 1)])
         #expect(itemsForm1.item != nil)
 
-        let itemsForm2: ItemsForm = try #require(await store.state.itemsForm[Item.ID(value: 2)])
+        let itemsForm2: ItemsForm = try #require(store.state.itemsForm[Item.ID(value: 2)])
         #expect(itemsForm2.item == nil)
 
-        let itemsForm3: ItemsForm = try #require(await store.state.itemsForm[Item.ID(value: 3)])
+        let itemsForm3: ItemsForm = try #require(store.state.itemsForm[Item.ID(value: 3)])
         #expect(itemsForm3.item != nil)
 
-        let itemsForm4: ItemsForm = try #require(await store.state.itemsForm[Item.ID(value: 4)])
+        let itemsForm4: ItemsForm = try #require(store.state.itemsForm[Item.ID(value: 4)])
         #expect(itemsForm4.item != nil)
     }
 
     @Test func whenDispatchingBindedAction_DuplicationShouldBePrevented() async throws {
-        let store = await TestStore(initial: AppState())
-        await store.subscribe(ItemsMiddleware.self)
+        let store = EnvironmentStore(initial: AppState(), loggers: [])
+        store.subscribe(ItemsMiddleware.self)
 
-        await store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 1)))
+        store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 1)))
+        await fulfill(description: "waiting for container action to process", sleep: 0.3)
 
-        let bindedReducersFormCount = await store.state.itemsForm.reducers.count
+        let bindedReducersFormCount = store.state.itemsForm.reducers.count
         #expect(bindedReducersFormCount == 1)
 
-        let bindedReducersFlowCount = await store.state.itemsFlow.reducers.count
+        let bindedReducersFlowCount = store.state.itemsFlow.reducers.count
         #expect(bindedReducersFlowCount == 1)
 
-        await store.dispatch(
+        store.dispatch(
             ActionGroup {
                 Actions.LoadItem(id: .init(value: 1))
             }.binded(to: ItemsContainer.self, by: Item.ID(value: 1))
         )
 
-        await store.wait()
+        await fulfill(description: "waiting for middleware operations", sleep: 0.3)
 
-        let itemsForm1: ItemsForm = try #require(await store.state.itemsForm[Item.ID(value: 1)])
-        let itemsReducer = await store.state.itemReducible
+        let itemsForm1: ItemsForm = try #require(store.state.itemsForm[Item.ID(value: 1)])
+        let itemsReducer = store.state.itemReducible
 
         #expect(itemsForm1.item != nil)
         #expect(itemsReducer.didLoadItemReduced == 1)

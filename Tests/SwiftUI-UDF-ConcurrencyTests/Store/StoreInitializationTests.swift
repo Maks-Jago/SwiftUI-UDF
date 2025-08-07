@@ -101,7 +101,7 @@ import UDFSwiftTesting
 
         #expect(middlewaresCount == 0)
 
-        await fulfill(description: "Waiting for middlewares subscription", sleep: 0.1)
+        await fulfill(description: "Waiting for middlewares subscription", sleep: 0.3)
 
         middlewaresCount = await store.middlewares.count
         #expect(middlewaresCount != 0)

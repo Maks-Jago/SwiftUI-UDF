@@ -11,6 +11,7 @@
 
 import Combine
 @testable import UDF
+import UDFSwiftTesting
 import Testing
 import Foundation
 
@@ -376,56 +377,56 @@ private extension Actions {
     /// Tests that Middleware works correctly when only implementing reduce functionality
     @Test func reduceOnlyMiddleware() async {
         // Given: A middleware that only implements reduce() method
-        let store = await TestStore(initial: AppState())
-        await store.subscribe(ReduceOnlyMiddleware.self)
+        let store = EnvironmentStore(initial: AppState(), loggers: [])
+        store.subscribe(ReduceOnlyMiddleware.self, environment: ReduceOnlyMiddleware.Environment(processMessage: { "Test: \($0)" }))
 
         // When: An action is dispatched that should be handled by reduce()
         let message = "Test Message"
-        await store.dispatch(Actions.SendMessage(message: message))
-        await store.wait()
+        store.dispatch(Actions.SendMessage(message: message))
+        await fulfill(description: "waiting for middleware operations", sleep: 0.3)
 
         // Then: The action should be processed and state updated accordingly
-        let title = await store.state.testForm.title
+        let title = store.state.testForm.title
         #expect(title == "Test: \(message)")
     }
 
     /// Tests that Middleware works correctly when only implementing observe functionality
     @Test func observeOnlyMiddleware() async {
         // Given: A middleware that only implements observe() method with a specific scope
-        let store = await TestStore(initial: AppState())
-        await store.subscribe(ObserveOnlyMiddleware.self)
+        let store = EnvironmentStore(initial: AppState(), loggers: [])
+        store.subscribe(ObserveOnlyMiddleware.self, environment: ObserveOnlyMiddleware.Environment(reactToFlow: { "Test reaction: \($0)" }))
 
         // When: An action is dispatched that changes the observed state flow
         let message = "Flow Message"
-        await store.dispatch(Actions.SendMessage(message: message, id: TestFlow.id))
-        await store.wait()
+        store.dispatch(Actions.SendMessage(message: message, id: TestFlow.id))
+        await fulfill(description: "waiting for middleware operations", sleep: 0.3)
 
         // Then: The middleware should observe the state change and execute effects
-        let description = await store.state.testForm.description
+        let description = store.state.testForm.description
         #expect(description == "Test reaction: \(message)")
     }
 
     /// Tests that Middleware works correctly when implementing both reduce and observe functionality
     @Test func fullUnifiedMiddleware() async {
         // Given: A middleware that implements both reduce() and observe() methods
-        let store = await TestStore(initial: AppState())
-        await store.subscribe(FullUnifiedMiddleware.self)
+        let store = EnvironmentStore(initial: AppState(), loggers: [])
+        store.subscribe(FullUnifiedMiddleware.self, environment: FullUnifiedMiddleware.Environment(handleMessage: { "Test handled: \($0)" }, processTask: { "Test task: \($0)" }))
 
         // When: An action is dispatched that should be handled by reduce()
         let taskId = "task123"
-        await store.dispatch(Actions.CompleteTask(taskId: taskId))
-        await store.wait()
+        store.dispatch(Actions.CompleteTask(taskId: taskId))
+        await fulfill(description: "waiting for middleware operations", sleep: 0.3)
 
         // Then: The reduce method should process the action
-        let title = await store.state.testForm.title
+        let title = store.state.testForm.title
         #expect(title == "Test task: \(taskId)")
 
         // When: An action triggers a state change that should be observed
-        await store.dispatch(Actions.StartTask(taskId: "flow_task", id: TaskFlow.id))
-        await store.wait()
+        store.dispatch(Actions.StartTask(taskId: "flow_task", id: TaskFlow.id))
+        await fulfill(description: "waiting for middleware operations", sleep: 0.3)
 
         // Then: The observe method should react to the state change and auto-complete the task
-        let description = await store.state.testForm.description
+        let description = store.state.testForm.description
         #expect(description == "Task completed: flow_task")
     }
 
@@ -459,15 +460,15 @@ private extension Actions {
         }
 
         // When: The middleware is subscribed and an action changes one of the observed flows
-        let store = await TestStore(initial: AppState())
-        await store.subscribe(MultiScopeMiddleware.self)
+        let store = EnvironmentStore(initial: AppState(), loggers: [])
+        store.subscribe(MultiScopeMiddleware.self, environment: MultiScopeMiddleware.Environment())
 
         let message = "Multi Scope Message"
-        await store.dispatch(Actions.SendMessage(message: message, id: TestFlow.id))
-        await store.wait()
+        store.dispatch(Actions.SendMessage(message: message, id: TestFlow.id))
+        await fulfill(description: "waiting for middleware operations", sleep: 0.3)
 
         // Then: The middleware should observe the change and execute effects
-        let title = await store.state.testForm.title
+        let title = store.state.testForm.title
         #expect(title == "Multi: \(message)")
     }
 
@@ -515,47 +516,47 @@ private extension Actions {
             }
         }
 
-        let store = await TestStore(initial: AppState())
-        await store.subscribe(StateBasedStatusMiddleware.self)
+        let store = EnvironmentStore(initial: AppState(), loggers: [])
+        store.subscribe(StateBasedStatusMiddleware.self, environment: StateBasedStatusMiddleware.Environment())
 
         // When: Middleware is active (counter = 0) and actions are dispatched
         let message1 = "Active Message"
-        await store.dispatch(Actions.SendMessage(message: message1, id: TestFlow.id))
-        await store.wait()
+        store.dispatch(Actions.SendMessage(message: message1, id: TestFlow.id))
+        await fulfill(description: "waiting for middleware operations", sleep: 0.3)
 
         // Then: Both reduce and observe should work
-        var title = await store.state.testForm.title
-        var description = await store.state.testForm.description
+        var title = store.state.testForm.title
+        var description = store.state.testForm.description
         #expect(title == "Status: \(message1)")
         #expect(description == "Reduced: \(message1)")
 
         // When: State changes to suspend the middleware (counter > 5)
-        await store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.counter, value: 10))
-        await store.wait()
+        store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.counter, value: 10))
+        await fulfill(description: "waiting for middleware operations", sleep: 0.3)
 
         // And: Actions are dispatched while middleware is suspended
         let message2 = "Suspended Message"
-        await store.dispatch(Actions.SendMessage(message: message2, id: TestFlow.id))
-        await store.wait()
+        store.dispatch(Actions.SendMessage(message: message2, id: TestFlow.id))
+        await fulfill(description: "waiting for middleware operations", sleep: 0.3)
 
         // Then: Neither reduce nor observe should work
-        title = await store.state.testForm.title
-        description = await store.state.testForm.description
+        title = store.state.testForm.title
+        description = store.state.testForm.description
         #expect(title != "Status: \(message2)")
         #expect(description != "Reduced: \(message2)")
 
         // When: State changes to reactivate the middleware (counter <= 5)
-        await store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.counter, value: 1))
-        await store.wait()
+        store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.counter, value: 1))
+        await fulfill(description: "waiting for middleware operations", sleep: 0.3)
 
         // And: Actions are dispatched after reactivation
         let message3 = "Reactivated Message"
-        await store.dispatch(Actions.SendMessage(message: message3, id: TestFlow.id))
-        await store.wait()
+        store.dispatch(Actions.SendMessage(message: message3, id: TestFlow.id))
+        await fulfill(description: "waiting for middleware operations", sleep: 0.3)
 
         // Then: Both reduce and observe should work again
-        title = await store.state.testForm.title
-        description = await store.state.testForm.description
+        title = store.state.testForm.title
+        description = store.state.testForm.description
         #expect(title == "Status: \(message3)")
         #expect(description == "Reduced: \(message3)")
     }
@@ -563,25 +564,24 @@ private extension Actions {
     /// Tests that Middleware correctly observes changes across multiple scoped flows
     @Test func multipleScopesObservation() async {
         // Given: A middleware that observes multiple flows (testFlow and taskFlow)
-        let store = await TestStore(initial: AppState())
-        await store.subscribe(FullUnifiedMiddleware.self)
+        let store = EnvironmentStore(initial: AppState(), loggers: [])
+        store.subscribe(FullUnifiedMiddleware.self, environment: FullUnifiedMiddleware.Environment(handleMessage: { "Test handled: \($0)" }, processTask: { "Test task: \($0)" }))
 
         // When: The first observed flow (testFlow) changes
-        await store.dispatch(Actions.SendMessage(message: "test", id: TestFlow.id))
-        await store.wait()
+        store.dispatch(Actions.SendMessage(message: "test", id: TestFlow.id))
+        await fulfill(description: "waiting for middleware operations", sleep: 0.3)
 
         // And: The second observed flow (taskFlow) changes
-        await store.dispatch(Actions.StartTask(taskId: "task1", id: TaskFlow.id))
-        await store.wait()
+        store.dispatch(Actions.StartTask(taskId: "task1", id: TaskFlow.id))
+        await fulfill(description: "waiting for middleware operations", sleep: 0.3)
 
         // Then: The middleware should have observed both changes and executed effects
-        let description = await store.state.testForm.description
+        let description = store.state.testForm.description
         #expect(description == "Task completed: task1")
     }
 
     /// Tests that Middleware correctly handles effect cancellation when status changes
     @Test func middlewareCancellation() async {
-        GlobalValue.clearValue(for: EnvironmentStore<AppState>.self)
         // Given: A middleware that can be suspended and cancels effects accordingly
         class CancellableMiddleware: Middleware<AppState>, @unchecked Sendable {
             struct Environment: Sendable {}
@@ -609,18 +609,18 @@ private extension Actions {
             }
         }
 
-        let store = await TestStore(initial: AppState())
-        await store.subscribe(CancellableMiddleware.self)
+        let store = EnvironmentStore(initial: AppState(), loggers: [])
+        store.subscribe(CancellableMiddleware.self, environment: CancellableMiddleware.Environment())
 
         // When: A task starts that would execute a delayed effect
-        await store.dispatch(Actions.CompleteTask(taskId: "task1"))
+        store.dispatch(Actions.CompleteTask(taskId: "task1"))
 
         // And: The middleware is immediately suspended (which should cancel ongoing effects)
-        await store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.description, value: "cancel all"))
-        await store.wait()
+        store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.description, value: "cancel all"))
+        await fulfill(description: "waiting for middleware operations", sleep: 0.3)
 
         // Then: The delayed effect should have been cancelled before completion
-        let title = await store.state.testForm.title
+        let title = store.state.testForm.title
         #expect(title.isEmpty)
     }
 
@@ -645,15 +645,15 @@ private extension Actions {
             // - reduce(_:for:) does nothing
         }
 
-        let store = await TestStore(initial: AppState())
-        await store.subscribe(MinimalMiddleware.self)
+        let store = EnvironmentStore(initial: AppState(), loggers: [])
+        store.subscribe(MinimalMiddleware.self, environment: MinimalMiddleware.Environment())
 
         // When: Actions are dispatched that would normally be handled
-        await store.dispatch(Actions.SendMessage(message: "test"))
-        await store.wait()
+        store.dispatch(Actions.SendMessage(message: "test"))
+        await fulfill(description: "waiting for middleware operations", sleep: 0.3)
 
         // Then: State should remain unchanged since no custom logic is implemented
-        let state = await store.state
+        let state = store.state
         #expect(state.testForm.title.isEmpty)
         #expect(state.testForm.description.isEmpty)
         #expect(state.testForm.counter == 0)

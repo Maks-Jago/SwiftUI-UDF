@@ -1,6 +1,7 @@
 
 import Combine
 @testable import UDF
+import UDFSwiftTesting
 import Testing
 
 private extension Actions {
@@ -60,16 +61,16 @@ private extension Actions {
     }
 
     @Test func reducibleMiddleware() async {
-        let store = await TestStore(initial: AppState())
-        await store.subscribe(SendMessageMiddleware.self)
+        let store = EnvironmentStore(initial: AppState(), loggers: [])
+        store.subscribe(SendMessageMiddleware.self)
 
-        var formTitle = await store.state.testForm.title
+        var formTitle = store.state.testForm.title
         #expect(formTitle.isEmpty)
 
-        await store.dispatch(Actions.SendMessage(message: "Message 1"))
-        await store.wait()
+        store.dispatch(Actions.SendMessage(message: "Message 1"))
+        await fulfill(description: "waiting for middleware operations", sleep: 0.5)
 
-        formTitle = await store.state.testForm.title
+        formTitle = store.state.testForm.title
         #expect(formTitle == "Message 1")
     }
 }

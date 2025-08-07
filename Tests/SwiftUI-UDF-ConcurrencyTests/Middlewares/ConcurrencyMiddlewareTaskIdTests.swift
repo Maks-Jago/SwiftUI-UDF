@@ -1,6 +1,6 @@
 import Combine
 import Testing
-
+import UDFSwiftTesting
 @testable import UDF
 
 @Suite struct ConcurrencyMiddlewareTaskIdTests {
@@ -43,16 +43,16 @@ import Testing
     }
 
     @Test func reducibleMiddlewareTaskId() async {
-        let store = await TestStore(initial: AppState())
-        await store.subscribe(TestReducibleMiddleware.self)
+        let store = EnvironmentStore(initial: AppState(), loggers: [])
+        store.subscribe(TestReducibleMiddleware.self)
 
-        var runForm = await store.state.runForm
+        var runForm = store.state.runForm
         #expect(runForm.loadedCount == 0)
 
-        await store.dispatch(Actions.Loading(id: MiddlewareFlow.id))
-        await store.wait()
+        store.dispatch(Actions.Loading(id: MiddlewareFlow.id))
+        await fulfill(description: "waiting for middleware operations", sleep: 0.5)
 
-        runForm = await store.state.runForm
+        runForm = store.state.runForm
         #expect(runForm.loadedCount == 1)
     }
 }

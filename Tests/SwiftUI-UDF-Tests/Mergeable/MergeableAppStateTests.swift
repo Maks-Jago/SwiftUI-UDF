@@ -1,4 +1,5 @@
 @testable import UDF
+import UDFSwiftTesting
 import Testing
 
 @Suite
@@ -46,24 +47,27 @@ struct MergeableAppStateTests {
     }
 
     @Test func itemMerging() async throws {
-        let store = await TestStore(initial: AppState())
+        let store = EnvironmentStore(initial: AppState(), loggers: [])
         var item = Item(id: .init(value: 1), title: "original")
-        await store.dispatch(Actions.DidLoadItem(item: item))
+        store.dispatch(Actions.DidLoadItem(item: item))
+        await fulfill(description: "waiting for action processing", sleep: 0.3)
 
-        let isEmpty = await store.state.allItems.byId.isEmpty
+        let isEmpty = store.state.allItems.byId.isEmpty
 
         #expect(isEmpty == false)
         item.title = "mutated"
-        await store.dispatch(Actions.DidUpdateItem(item: item))
+        store.dispatch(Actions.DidUpdateItem(item: item))
+        await fulfill(description: "waiting for action processing", sleep: 0.3)
 
-        var allItems = await store.state.allItems
+        var allItems = store.state.allItems
         let storageItem = try #require(allItems.byId[item.id])
 
         #expect(item.title == storageItem.title)
 
         item.title = ""
-        await store.dispatch(Actions.DidUpdateItem(item: item))
-        allItems = await store.state.allItems
+        store.dispatch(Actions.DidUpdateItem(item: item))
+        await fulfill(description: "waiting for action processing", sleep: 0.3)
+        allItems = store.state.allItems
 
         let mergedItem = try #require(allItems.byId[item.id])
         #expect(mergedItem.title.isEmpty == false)

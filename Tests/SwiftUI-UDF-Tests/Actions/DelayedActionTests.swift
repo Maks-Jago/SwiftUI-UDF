@@ -30,10 +30,10 @@ import Testing
 
         store.dispatch(Actions.UpdateFormField(keyPath: \DataForm.title, value: "delayed title").with(delay: 1))
         store.dispatch(Actions.UpdateFormField(keyPath: \DataForm.title, value: "updated title"))
-        await fulfill(description: "waiting for delayed action", sleep: 0.2)
+        await fulfill(description: "waiting for delayed action", sleep: 0.3)
 
         #expect(store.state.dataForm.title == "updated title")
-        await fulfill(description: "waiting for delayed action", sleep: 1.5)
+        await fulfill(description: "waiting for delayed action", sleep: 1)
 
         #expect(store.state.dataForm.title == "delayed title")
     }
@@ -52,10 +52,10 @@ import Testing
         )
 
         #expect(store.state.dataForm.title.isEmpty)
-        await fulfill(description: "waiting for delayed action", sleep: 1.6)
+        await fulfill(description: "waiting for delayed action", sleep: 1.1)
 
         #expect(store.state.dataForm.title == "delayed title")
-        await fulfill(description: "waiting for delayed action", sleep: 1.5)
+        await fulfill(description: "waiting for delayed action", sleep: 1)
 
         #expect(store.state.dataForm.count == 1)
     }
@@ -72,7 +72,7 @@ import Testing
         )
 
         #expect(store.state.dataForm.title.isEmpty)
-        await fulfill(description: "waiting for delayed action", sleep: 1.6)
+        await fulfill(description: "waiting for delayed action", sleep: 1.1)
 
         #expect(store.state.dataForm.title == "delayed title")
         #expect(store.state.dataForm.count == 1)
@@ -92,10 +92,10 @@ import Testing
 
         #expect(store.state.dataForm.count == 0)
         #expect(store.state.dataForm.title.isEmpty)
-        await fulfill(description: "waiting for delayed action", sleep: 0.2)
+        await fulfill(description: "waiting for delayed action", sleep: 0.3)
 
         #expect(store.state.dataForm.count == 1)
-        await fulfill(description: "waiting for delayed action", sleep: 1.5)
+        await fulfill(description: "waiting for delayed action", sleep: 1)
         #expect(store.state.dataForm.title == "delayed title")
     }
 
@@ -109,19 +109,19 @@ import Testing
         store.dispatch(Actions.UpdateFormField(keyPath: \DataForm.count, value: 5).with(delay: 5))
 
         #expect(store.state.dataForm.count == 0)
-        await fulfill(description: "waiting for delayed action", sleep: 1.2)
+        await fulfill(description: "waiting for delayed action", sleep: 1.1)
 
         #expect(store.state.dataForm.count == 1)
-        await fulfill(description: "waiting for delayed action", sleep: 1.2)
+        await fulfill(description: "waiting for delayed action", sleep: 1.1)
 
         #expect(store.state.dataForm.count == 2)
-        await fulfill(description: "waiting for delayed action", sleep: 1.2)
+        await fulfill(description: "waiting for delayed action", sleep: 1.1)
 
         #expect(store.state.dataForm.count == 3)
-        await fulfill(description: "waiting for delayed action", sleep: 1.2)
+        await fulfill(description: "waiting for delayed action", sleep: 1.1)
 
         #expect(store.state.dataForm.count == 4)
-        await fulfill(description: "waiting for delayed action", sleep: 1.2)
+        await fulfill(description: "waiting for delayed action", sleep: 1.1)
 
         #expect(store.state.dataForm.count == 5)
     }

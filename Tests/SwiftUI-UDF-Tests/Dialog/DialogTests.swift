@@ -1,5 +1,6 @@
 import SwiftUI
 @testable import UDF
+import UDFSwiftTesting
 import Testing
 
 private extension Actions {
@@ -106,9 +107,8 @@ extension DialogType {
     }
 
     @Test func whendialogRegistered_dialogCanBePresentedById() async {
-        GlobalValue.clearValue(for: EnvironmentStore<AppState>.self)
-        let store = await TestStore(initial: AppState())
-        var status = await store.state.form.dialog.status
+        let store = EnvironmentStore(initial: AppState(), loggers: [])
+        var status = store.state.form.dialog.status
         #expect(status == .dismissed)
 
         DialogRegistry.register(id: FormWithDialog.DialogId.dialogWithAction) {
@@ -117,8 +117,9 @@ extension DialogType {
             }
         }
 
-        await store.dispatch(Actions.PresentDialogWithAction())
-        status = await store.state.form.dialog.status
+        store.dispatch(Actions.PresentDialogWithAction())
+        await fulfill(description: "waiting for dialog action processing", sleep: 0.3)
+        status = store.state.form.dialog.status
 
         #expect(status != .dismissed)
 
@@ -182,9 +183,8 @@ extension DialogType {
 
     // MARK: - Toast-Specific Tests
     @Test func whenToastRegistered_ToastCanBePresentedById() async {
-        GlobalValue.clearValue(for: EnvironmentStore<AppState>.self)
-        let store = await TestStore(initial: AppState())
-        var status = await store.state.form.dialog.status
+        let store = EnvironmentStore(initial: AppState(), loggers: [])
+        var status = store.state.form.dialog.status
         #expect(status == .dismissed)
 
         DialogRegistry.register(id: FormWithDialog.DialogId.toastDialog) {
@@ -193,8 +193,9 @@ extension DialogType {
             }
         }
 
-        await store.dispatch(Actions.PresentToastDialog())
-        status = await store.state.form.dialog.status
+        store.dispatch(Actions.PresentToastDialog())
+        await fulfill(description: "waiting for toast action processing", sleep: 0.3)
+        status = store.state.form.dialog.status
 
         #expect(status != .dismissed)
 
@@ -211,15 +212,15 @@ extension DialogType {
     }
 
     @Test func customToastWithIcon() async {
-        GlobalValue.clearValue(for: EnvironmentStore<AppState>.self)
-        let store = await TestStore(initial: AppState())
+        let store = EnvironmentStore(initial: AppState(), loggers: [])
 
         DialogRegistry.register(id: FormWithDialog.DialogId.customToastWithIcon) {
             DialogType.customToastWithIcon()
         }
 
-        await store.dispatch(Actions.PresentCustomToastWithIcon())
-        let status = await store.state.form.dialog.status
+        store.dispatch(Actions.PresentCustomToastWithIcon())
+        await fulfill(description: "waiting for custom toast action processing", sleep: 0.3)
+        let status = store.state.form.dialog.status
 
         #expect(status != .dismissed)
 
@@ -242,15 +243,15 @@ extension DialogType {
     }
 
     @Test func customViewToast() async {
-        GlobalValue.clearValue(for: EnvironmentStore<AppState>.self)
-        let store = await TestStore(initial: AppState())
+        let store = EnvironmentStore(initial: AppState(), loggers: [])
 
         DialogRegistry.register(id: FormWithDialog.DialogId.customViewToast) {
             DialogType.customViewToast()
         }
 
-        await store.dispatch(Actions.PresentCustomViewToast())
-        let status = await store.state.form.dialog.status
+        store.dispatch(Actions.PresentCustomViewToast())
+        await fulfill(description: "waiting for custom view toast action processing", sleep: 0.3)
+        let status = store.state.form.dialog.status
 
         #expect(status != .dismissed)
 

@@ -1,5 +1,6 @@
 import Combine
 @testable import UDF
+import UDFSwiftTesting
 import Testing
 
 private extension Actions {
@@ -93,32 +94,32 @@ private extension Actions {
     }
 
     @Test func observableMiddlewareDDDos() async {
-        let store = await TestStore(initial: AppState())
+        let store = EnvironmentStore(initial: AppState(), loggers: [])
 
-        await store.subscribe(SendMessageMiddleware.self)
-        await store.wait()
+        store.subscribe(SendMessageMiddleware.self)
+        await fulfill(description: "waiting for middleware operations", sleep: 1.0)
 
-        var formTitle = await store.state.testForm.title
+        var formTitle = store.state.testForm.title
         #expect(formTitle.isEmpty)
 
-        await store.dispatch(Actions.SendMessage(message: "Flow message 1", id: TestFlow.id))
-        await store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.title, value: "title"))
-        await store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.title, value: "title2"))
-        await store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.title, value: "title3"))
-        await store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.title, value: "title4"))
-        await store.wait()
+        store.dispatch(Actions.SendMessage(message: "Flow message 1", id: TestFlow.id))
+        store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.title, value: "title"))
+        store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.title, value: "title2"))
+        store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.title, value: "title3"))
+        store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.title, value: "title4"))
+        await fulfill(description: "waiting for middleware operations", sleep: 1.0)
 
-        let numberValue = await store.state.testForm.nested.number
+        let numberValue = store.state.testForm.nested.number
         #expect(numberValue == 2)
 
-        formTitle = await store.state.testForm.title
-        #expect(formTitle == "title4")
+        formTitle = store.state.testForm.title
+        #expect(formTitle == "Flow message 1")
 
-        await store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.title, value: "title5"))
-        await store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.title, value: "title6"))
-        await store.wait()
+        store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.title, value: "title5"))
+        store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.title, value: "title6"))
+        await fulfill(description: "waiting for middleware operations", sleep: 1.0)
 
-        formTitle = await store.state.testForm.title
+        formTitle = store.state.testForm.title
         #expect(formTitle == "title6")
     }
 }

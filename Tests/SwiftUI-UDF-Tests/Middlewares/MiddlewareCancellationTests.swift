@@ -19,7 +19,14 @@ import Foundation
 
         mutating func reduce(_ action: some Action) {
             switch action {
-            case is Actions.DidCancelEffect:
+            case let action as Actions.DidCancelEffect where action.cancellation == ObservableMiddlewareToCancel.Сancellation.message:
+                self = .none
+
+            case let action as Actions.DidCancelEffect
+                where action.cancellation == ReducibleMiddlewareToCancel.Сancellation.reducibleMessage:
+                self = .none
+
+            case let action as Actions.DidCancelEffect where action.cancellation == ObservableRunMiddlewareToCancel.Сancellation.runMessage:
                 self = .none
 
             case is Actions.Loading:
@@ -52,172 +59,58 @@ import Foundation
     }
 
     @Test func observableMiddlewareCancellation() async {
-        // Ensure complete isolation from other tests
-        GlobalValue.clearValue(for: EnvironmentStore<AppState>.self)
+        let store = EnvironmentStore(initial: AppState(), loggers: [])
+        store.subscribe(ObservableMiddlewareToCancel.self, environment: ())
+        store.dispatch(Actions.Loading())
+        await fulfill(description: "waiting for middleware to process loading", sleep: 0.3)
 
-        let store = await TestStore(initial: AppState())
-
-        final class ObservableMiddlewareToCancel: Middleware<AppState>, @unchecked Sendable {
-            var environment: Void!
-
-            enum Сancellation: CaseIterable {
-                case message
-            }
-
-            func scope(for state: AppState) -> Scope {
-                state.middlewareFlow
-            }
-
-            func observe(state: AppState) {
-                switch state.middlewareFlow {
-                case .loading:
-                    execute(
-                        Effect(action: Actions.Message(id: "message_id")).delay(duration: 0.5, queue: queue),
-                        cancellation: Сancellation.message
-                    )
-
-                case .cancel:
-                    cancel(by: Сancellation.message)
-
-                default:
-                    break
-                }
-            }
-        }
-
-        await store.subscribe(ObservableMiddlewareToCancel.self)
-        await store.dispatch(Actions.Loading())
-
-        var middlewareFlow = await store.state.middlewareFlow
+        var middlewareFlow = store.state.middlewareFlow
         #expect(middlewareFlow == .loading)
 
-        await store.dispatch(Actions.CancelLoading())
+        store.dispatch(Actions.CancelLoading())
 
         // Wait for all middleware operations to complete
-        await store.wait()
+        await fulfill(description: "waiting for middleware operations", sleep: 0.3)
 
-        middlewareFlow = await store.state.middlewareFlow
+        middlewareFlow = store.state.middlewareFlow
         #expect(middlewareFlow == .none)
     }
 
     @Test func observableRunMiddlewareToCancel() async {
-        final class ObservableRunMiddlewareToCancel: Middleware<AppState>, @unchecked Sendable {
-            struct Environment {}
+        let store = EnvironmentStore(initial: AppState(), loggers: [])
+        store.subscribe(ObservableRunMiddlewareToCancel.self, environment: ObservableRunMiddlewareToCancel.Environment())
+        store.dispatch(Actions.Loading())
+        await fulfill(description: "waiting for middleware to process loading", sleep: 0.3)
 
-            var environment: Environment!
-
-            static func buildLiveEnvironment(for store: some Store<AppState>) -> Environment {
-                Environment()
-            }
-
-            static func buildTestEnvironment(for store: some Store<AppState>) -> Environment {
-                Environment()
-            }
-
-            enum Сancellation: CaseIterable {
-                case runMessage
-            }
-
-            func scope(for state: AppState) -> Scope {
-                state.middlewareFlow
-            }
-
-            func observe(state: AppState) {
-                switch state.middlewareFlow {
-                case .loading:
-                    run(RunEffect(), cancellation: Сancellation.runMessage)
-
-                case .cancel:
-                    cancel(by: Сancellation.runMessage)
-
-                default:
-                    break
-                }
-            }
-
-            struct RunEffect: Effectable {
-                var upstream: AnyPublisher<any Action, Never> {
-                    Timer.publish(every: 1, on: RunLoop.main, in: .default)
-                        .autoconnect()
-                        .flatMap { _ in
-                            Future<any Action, Never> { promise in
-                                promise(.success(Actions.Message(id: "message_id")))
-                            }
-                            .receive(on: DispatchQueue.main)
-                        }
-                        .eraseToAnyPublisher()
-                }
-            }
-        }
-
-        GlobalValue.clearValue(for: EnvironmentStore<AppState>.self)
-        let store = await TestStore(initial: AppState())
-        await store.subscribe(ObservableRunMiddlewareToCancel.self)
-        await store.dispatch(Actions.Loading())
-
-        var middlewareFlow = await store.state.middlewareFlow
+        var middlewareFlow = store.state.middlewareFlow
         #expect(middlewareFlow == .loading)
 
         await fulfill(description: "waiting for messages to increase messages count in form", sleep: 2)
-        await store.dispatch(Actions.CancelLoading())
-        await store.wait()
+        store.dispatch(Actions.CancelLoading())
+        await fulfill(description: "waiting for middleware operations", sleep: 0.3)
 
-        let messagesCount = await store.state.runForm.messagesCount
+        let messagesCount = store.state.runForm.messagesCount
         #expect(messagesCount >= 1)
 
-        middlewareFlow = await store.state.middlewareFlow
+        middlewareFlow = store.state.middlewareFlow
         #expect(middlewareFlow == .none)
     }
 
     @Test func reducibleMiddlewareToCancel() async {
-        final class ReducibleMiddlewareToCancel: Middleware<AppState>, @unchecked Sendable {
-            struct Environment {}
+        let store = EnvironmentStore(initial: AppState(), loggers: [])
+        store.subscribe(ReducibleMiddlewareToCancel.self, environment: ReducibleMiddlewareToCancel.Environment())
+        store.dispatch(Actions.Loading())
+        await fulfill(description: "waiting for middleware to process loading", sleep: 0.3)
 
-            var environment: Environment!
-
-            static func buildLiveEnvironment(for store: some Store<AppState>) -> Environment {
-                Environment()
-            }
-
-            static func buildTestEnvironment(for store: some Store<AppState>) -> Environment {
-                Environment()
-            }
-
-            enum Сancellation: CaseIterable {
-                case reducibleMessage
-            }
-
-            func reduce(_ action: some Action, for state: AppState) {
-                switch action {
-                case is Actions.Loading:
-                    execute(
-                        Effect(action: Actions.Message(id: "message_id")).delay(duration: 0.5, queue: queue),
-                        cancellation: Сancellation.reducibleMessage
-                    )
-
-                case is Actions.CancelLoading:
-                    cancel(by: Сancellation.reducibleMessage)
-
-                default:
-                    break
-                }
-            }
-        }
-
-        GlobalValue.clearValue(for: EnvironmentStore<AppState>.self)
-        let store = await TestStore(initial: AppState())
-        await store.subscribe(ReducibleMiddlewareToCancel.self)
-        await store.dispatch(Actions.Loading())
-
-        var middlewareFlow = await store.state.middlewareFlow
+        var middlewareFlow = store.state.middlewareFlow
         #expect(middlewareFlow == .loading)
 
-        await store.dispatch(Actions.CancelLoading())
+        store.dispatch(Actions.CancelLoading())
 
         // Wait for all middleware operations to complete
-        await store.wait()
+        await fulfill(description: "waiting for middleware operations", sleep: 0.3)
 
-        middlewareFlow = await store.state.middlewareFlow
+        middlewareFlow = store.state.middlewareFlow
         #expect(middlewareFlow == .none)
     }
 }
@@ -225,5 +118,119 @@ import Foundation
 private extension Actions {
     struct Loading: Action {}
     struct CancelLoading: Action {}
+}
+
+// MARK: - Middlewares
+private extension MiddlewareCancellationTests_Last {
+    final class ObservableMiddlewareToCancel: Middleware<AppState>, @unchecked Sendable {
+        var environment: Void!
+
+        enum Сancellation: CaseIterable {
+            case message
+        }
+
+        func scope(for state: AppState) -> Scope {
+            state.middlewareFlow
+        }
+
+        func observe(state: AppState) {
+            switch state.middlewareFlow {
+            case .loading:
+                execute(
+                    Effect(action: Actions.Message(id: "message_id")).delay(duration: 1, queue: queue),
+                    cancellation: Сancellation.message
+                )
+
+            case .cancel:
+                cancel(by: Сancellation.message)
+
+            default:
+                break
+            }
+        }
+    }
+
+    final class ObservableRunMiddlewareToCancel: Middleware<AppState>, @unchecked Sendable {
+        struct Environment {}
+
+        var environment: Environment!
+
+        static func buildLiveEnvironment(for store: some Store<AppState>) -> Environment {
+            Environment()
+        }
+
+        static func buildTestEnvironment(for store: some Store<AppState>) -> Environment {
+            Environment()
+        }
+
+        enum Сancellation: CaseIterable {
+            case runMessage
+        }
+
+        func scope(for state: AppState) -> Scope {
+            state.middlewareFlow
+        }
+
+        func observe(state: AppState) {
+            switch state.middlewareFlow {
+            case .loading:
+                run(RunEffect(), cancellation: Сancellation.runMessage)
+
+            case .cancel:
+                cancel(by: Сancellation.runMessage)
+
+            default:
+                break
+            }
+        }
+
+        struct RunEffect: Effectable {
+            var upstream: AnyPublisher<any Action, Never> {
+                Timer.publish(every: 1, on: RunLoop.main, in: .default)
+                    .autoconnect()
+                    .flatMap { _ in
+                        Future<any Action, Never> { promise in
+                            promise(.success(Actions.Message(id: "message_id")))
+                        }
+                        .receive(on: DispatchQueue.main)
+                    }
+                    .eraseToAnyPublisher()
+            }
+        }
+    }
+
+    final class ReducibleMiddlewareToCancel: Middleware<AppState>, @unchecked Sendable {
+        struct Environment {}
+
+        var environment: Environment!
+
+        static func buildLiveEnvironment(for store: some Store<AppState>) -> Environment {
+            Environment()
+        }
+
+        static func buildTestEnvironment(for store: some Store<AppState>) -> Environment {
+            Environment()
+        }
+
+        enum Сancellation: CaseIterable {
+            case reducibleMessage
+        }
+
+        func reduce(_ action: some Action, for state: AppState) {
+            switch action {
+            case is Actions.Loading:
+                execute(
+                    Effect(action: Actions.Message(id: "message_id")).delay(duration: 1, queue: queue),
+                    cancellation: Сancellation.reducibleMessage
+                )
+
+            case is Actions.CancelLoading:
+                cancel(by: Сancellation.reducibleMessage)
+
+            default:
+                break
+            }
+        }
+    }
 }
 
