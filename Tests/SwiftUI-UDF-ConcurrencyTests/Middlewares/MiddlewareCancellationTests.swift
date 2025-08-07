@@ -4,7 +4,7 @@ import UDFSwiftTesting
 import Testing
 import Foundation
 
-@Suite struct MiddlewareCancellationTests {
+@Suite(.serialized) struct MiddlewareCancellationTests {
     struct AppState: AppReducer {
         var middlewareFlow = MiddlewareFlow()
         var runForm = RunForm()

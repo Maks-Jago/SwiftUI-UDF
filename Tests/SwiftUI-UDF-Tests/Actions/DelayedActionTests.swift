@@ -109,19 +109,19 @@ import Testing
         store.dispatch(Actions.UpdateFormField(keyPath: \DataForm.count, value: 5).with(delay: 5))
 
         #expect(store.state.dataForm.count == 0)
-        await fulfill(description: "waiting for delayed action", sleep: 1.1)
+        await fulfillPrecise(description: "waiting for delayed action", sleep: 1.1)
 
         #expect(store.state.dataForm.count == 1)
-        await fulfill(description: "waiting for delayed action", sleep: 1.1)
+        await fulfillPrecise(description: "waiting for delayed action", sleep: 1.1)
 
         #expect(store.state.dataForm.count == 2)
-        await fulfill(description: "waiting for delayed action", sleep: 1.1)
+        await fulfillPrecise(description: "waiting for delayed action", sleep: 1.1)
 
         #expect(store.state.dataForm.count == 3)
-        await fulfill(description: "waiting for delayed action", sleep: 1.1)
+        await fulfillPrecise(description: "waiting for delayed action", sleep: 1.1)
 
         #expect(store.state.dataForm.count == 4)
-        await fulfill(description: "waiting for delayed action", sleep: 1.1)
+        await fulfillPrecise(description: "waiting for delayed action", sleep: 1.1)
 
         #expect(store.state.dataForm.count == 5)
     }
