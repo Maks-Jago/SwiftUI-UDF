@@ -151,9 +151,10 @@ struct ConnectedContainer<C: Component, State: AppReducer>: View {
     
     /// The main view body that renders the component and attaches lifecycle events.
     var body: some View {
-        C(props: map(store))
+        containerLifecycle.set(didLoad: true, store: store)
+        
+        return C(props: map(store))
             .onAppear { onContainerAppear(store) }
             .onDisappear { onContainerDisappear(store) }
-            .task { containerLifecycle.set(didLoad: true, store: store) }
     }
 }
