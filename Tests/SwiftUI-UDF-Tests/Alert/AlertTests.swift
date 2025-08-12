@@ -40,8 +40,9 @@ extension AlertBuilder.AlertStyle {
             }
         }
     }
-    
-    @Test func whenAlerBuilderRegistered_AlertCanBePresentedById() async {
+
+    @Test
+    func whenAlerBuilderRegistered_AlertCanBePresentedById() async {
         let store = EnvironmentStore(initial: AppState(), loggers: [])
         var status = store.state.form.alert.status
         
@@ -54,7 +55,9 @@ extension AlertBuilder.AlertStyle {
         }
         
         store.dispatch(Actions.PresentAlertWithAction())
-        await fulfill(description: "waiting for action processing", sleep: 0.3)
+        await waitForCondition {
+            store.state.form.alert.status != .dismissed
+        }
         status = store.state.form.alert.status
         
         #expect(status != .dismissed)

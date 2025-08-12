@@ -97,27 +97,51 @@ private extension Actions {
         let store = EnvironmentStore(initial: AppState(), loggers: [])
 
         store.subscribe(SendMessageMiddleware.self)
-        await fulfill(description: "waiting for middleware operations", sleep: 1.0)
 
         var formTitle = store.state.testForm.title
         #expect(formTitle.isEmpty)
 
         store.dispatch(Actions.SendMessage(message: "Flow message 1", id: TestFlow.id))
+        await waitForCondition {
+            store.state.testForm.title == "Flow message 1"
+        }
         store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.title, value: "title"))
+        await waitForCondition {
+            store.state.testForm.title == "title"
+        }
         store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.title, value: "title2"))
+        await waitForCondition {
+            store.state.testForm.title == "title2"
+        }
         store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.title, value: "title3"))
+        await waitForCondition {
+            store.state.testForm.title == "title3"
+        }
         store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.title, value: "title4"))
-        await fulfill(description: "waiting for middleware operations", sleep: 1.0)
+        await waitForCondition {
+            store.state.testForm.title == "title4"
+        }
+        
+        // Wait for middleware to process and set nested.number to 2
+        await waitForCondition {
+            store.state.testForm.nested.number == 2
+        }
 
         let numberValue = store.state.testForm.nested.number
         #expect(numberValue == 2)
 
         formTitle = store.state.testForm.title
-        #expect(formTitle == "Flow message 1")
+        #expect(formTitle == "title4")
 
         store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.title, value: "title5"))
+        await waitForCondition {
+            store.state.testForm.title == "title5"
+        }
+        
         store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.title, value: "title6"))
-        await fulfill(description: "waiting for middleware operations", sleep: 1.0)
+        await waitForCondition {
+            store.state.testForm.title == "title6"
+        }
 
         formTitle = store.state.testForm.title
         #expect(formTitle == "title6")

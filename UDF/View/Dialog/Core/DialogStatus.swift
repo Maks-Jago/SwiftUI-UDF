@@ -170,35 +170,48 @@ public struct DialogStatus: Equatable, Identifiable, Sendable {
         }
     }
     
+    /// Initializes a dialog state with a title, message, actions, and style.
+    ///
+    /// Creates a custom dialog with the specified title, message, and interactive
+    /// actions. This initializer provides a convenient way to create dialogs with
+    /// both informational content and user interaction options.
+    ///
+    /// - Parameters:
+    ///   - title: The title text to display at the top of the dialog.
+    ///   - message: The main message content to display in the dialog body.
+    ///   - actions: A closure that returns an array of dialog actions using the
+    ///     `DialogContentBuilder`. These typically include buttons for user interaction.
+    ///   - style: The dialog style for presentation. Defaults to `.alert`.
+    ///
+    /// ## Example:
+    /// ```swift
+    /// dialog = .init(
+    ///     title: "Delete Item",
+    ///     message: "Are you sure you want to delete this item? This action cannot be undone.",
+    ///     style: .alert
+    /// ) {
+    ///     DialogButton.destructive("Delete") { performDelete() }
+    ///     DialogButton.cancel("Cancel")
+    /// }
+    /// ```
+    public init(
+        title: String,
+        message: String,
+        style: DialogStyle = .alert,
+        @DialogActionsBuilder _ actions: @Sendable () -> [any DialogAction]
+    ) {
+        let content = DialogContent(
+            title: title,
+            message: message,
+            actions: actions
+        )
+        
+        self = .init(
+            dialog: DialogCustomType.custom(content: content, style: style)
+        )
+    }
+    
     // MARK: - Advanced Initializers
-    
-    /// Creates a confirmation dialog with message and actions.
-    ///
-    /// - Parameters:
-    ///   - message: The message to display in the dialog.
-    ///   - configuration: Dialog configuration. Defaults to .default.
-    ///   - actions: Action buttons for the dialog.
-    public init(
-        confirmationDialog message: String,
-        configuration: ConfirmationDialogConfiguration = .default,
-        @DialogContentBuilder actions: @Sendable () -> [any DialogAction]
-    ) {
-        let content = DialogContent(title: "", message: message, actions: actions)
-        self = .init(dialog: DialogCustomType.custom(content: content, style: .confirmationDialog(configuration)))
-    }
-    
-    /// Creates a simple confirmation dialog with just message and actions.
-    ///
-    /// - Parameters:
-    ///   - message: The message to display.
-    ///   - configuration: Dialog configuration.
-    ///   - actions: Action buttons for the dialog.
-    public init(
-        confirmationDialog message: String,
-        @DialogActionsBuilder actions: @Sendable () -> [any DialogAction]
-    ) {
-        self.init(confirmationDialog: message, configuration: .default, actions: actions)
-    }
     
     /// Initializes a dialog state with custom content using a result builder.
     ///

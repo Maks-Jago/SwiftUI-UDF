@@ -69,10 +69,13 @@ public enum DialogRegistry {
     /// ## Example:
     /// ```swift
     /// DialogRegistry.register(id: "deleteConfirmation") {
-    ///     .custom(content: DialogContent("Delete Item", message: "This cannot be undone") {
-    ///         DialogButton.destructive("Delete") { performDelete() }
-    ///         DialogButton.cancel("Cancel")
-    ///     })
+    ///     DialogCustomType.custom(
+    ///         content: DialogContent("Delete Item", message: "This cannot be undone") {
+    ///             DialogButton.destructive("Delete") { performDelete() }
+    ///             DialogButton.cancel("Cancel")
+    ///         },
+    ///         style: .alert
+    ///     )
     /// }
     /// ```
     public static func register<ID: Hashable & Sendable>(
@@ -211,6 +214,91 @@ public enum DialogRegistry {
                 let content = DialogContent(message)
                 return DialogCustomType.custom(content: content, style: style)
             }
+        }
+    }
+}
+
+// MARK: - ToastRegistry Extension
+
+/// Toast-specific registration extensions for `DialogRegistry`.
+///
+/// This extension provides convenient methods for registering toast dialogs
+/// with common configurations and patterns. Toasts are non-modal dialogs
+/// that appear as overlay notifications.
+public extension DialogRegistry {
+    
+    /// Registers a toast dialog with custom content and configuration.
+    ///
+    /// This method provides a convenient way to register toast dialogs with
+    /// rich content and custom styling. Unlike alerts, toasts support theming,
+    /// positioning, and non-modal presentation.
+    ///
+    /// - Parameters:
+    ///   - id: A unique identifier for the toast.
+    ///   - content: The dialog content with title, message, and actions.
+    ///   - configuration: Toast-specific configuration for styling and behavior.
+    ///
+    /// ## Example:
+    /// ```swift
+    /// DialogRegistry.registerToast(id: "uploadProgress") {
+    ///     DialogContent(
+    ///         title: "Uploading File",
+    ///         actions: {
+    ///             DialogButton.cancel("Cancel") { cancelUpload() }
+    ///         }
+    ///     )
+    /// } configuration: {
+    ///     ToastConfiguration(
+    ///         theme: .vibrant,
+    ///         position: .bottom,
+    ///         defaultDuration: 5.0
+    ///     )
+    /// }
+    /// ```
+    static func registerToast<ID: Hashable & Sendable>(
+        id: ID,
+        content: @escaping @Sendable () -> DialogContent<EmptyView, EmptyView>,
+        configuration: @escaping @Sendable () -> ToastConfiguration = { .default }
+    ) {
+        register(id: id) {
+            DialogCustomType.custom(
+                content: content(),
+                style: .toast(configuration())
+            )
+        }
+    }
+    
+    /// Registers a toast with custom SwiftUI content.
+    ///
+    /// This method allows registration of toasts with completely custom SwiftUI views,
+    /// providing maximum flexibility for rich notifications, progress indicators,
+    /// and interactive toast experiences.
+    ///
+    /// - Parameters:
+    ///   - id: A unique identifier for the toast.
+    ///   - title: The toast title.
+    ///   - customView: A closure returning the custom SwiftUI content.
+    ///   - configuration: Toast configuration for styling and behavior.
+    ///
+    /// ## Example:
+    /// ```swift
+    /// DialogRegistry.registerCustomToast(id: "downloadProgress", title: "Downloading") {
+    ///     VStack(spacing: 8) {
+    ///         ProgressView(value: downloadProgress)
+    ///         Text("\(Int(downloadProgress * 100))% complete")
+    ///             .font(.caption)
+    ///     }
+    /// }
+    /// ```
+    static func registerCustomToast<ID: Hashable & Sendable, CustomContent: View>(
+        id: ID,
+        title: String,
+        customContent: @escaping @Sendable () -> CustomContent,
+        configuration: @escaping @Sendable () -> ToastConfiguration = { .default }
+    ) {
+        register(id: id) {
+            let content = DialogContent(title: title, customContent: customContent)
+            return DialogCustomType.custom(content: content, style: .toast(configuration()))
         }
     }
 }

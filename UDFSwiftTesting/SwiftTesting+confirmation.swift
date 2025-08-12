@@ -57,6 +57,13 @@ public func fulfillPrecise(description: Comment, sleep: TimeInterval) async {
     try? await Task.sleep(nanoseconds: nanoseconds)
 }
 
+/// Waits for a condition to become true indefinitely
+public func waitForCondition(condition: @escaping () -> Bool) async {
+    while !condition() {
+        try? await Task.sleep(nanoseconds: 10_000_000) // 10ms
+    }
+}
+
 /// Debug function to check performance calibration
 public func printPerformanceInfo() {
     let calibrator = PerformanceCalibrator.shared

@@ -63,40 +63,38 @@ struct ToastContainer: View {
     var body: some View {
         GeometryReader { geometry in
             ZStack {
-                ForEach([ToastPosition.top, .center, .bottom], id: \.self) { position in
-                    let toastsForPosition = queueManager.visibleToasts.filter { displayInfo in
-                        let config = effectiveConfiguration(for: displayInfo)
-                        return config.position == position
-                    }
-
-                    if !toastsForPosition.isEmpty {
-                        VStack(spacing: queueManager.configuration.stackSpacing) {
-                            ForEach(position == .bottom ? toastsForPosition.reversed() : toastsForPosition, id: \.self) { displayInfo in
-                                let configuration = effectiveConfiguration(for: displayInfo)
-                                let toast: any DialogTypeProtocol = displayInfo.toast
-
-                                ToastView(
-                                    toast: toast,
-                                    configuration: configuration,
-                                    onDismiss: {
-                                        queueManager.dismiss(displayInfo.id)
-                                        onDismiss(displayInfo.id)
-                                    }
-                                )
-                                .padding(.horizontal)
-                                .transition(configuration.transition)
-                                .id(displayInfo.id)
-                                .allowsHitTesting(configuration.tapToDismiss || configuration.swipeToDismiss)
-                            }
+                Color.clear
+                    .ignoresSafeArea()
+                    .allowsHitTesting(false)
+                
+                ForEach(queueManager.visibleToasts, id: \.self) { displayInfo in
+                    let configuration = effectiveConfiguration(for: displayInfo)
+                    let toast: any DialogTypeProtocol = displayInfo.toast
+                    
+                    ToastView(
+                        toast: toast,
+                        configuration: configuration,
+                        onDismiss: {
+                            queueManager.dismiss(displayInfo.id)
+                            onDismiss(displayInfo.id)
                         }
-                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: alignment(for: position))
-                        .offset(offset(for: position, in: geometry))
-                    }
+                    )
+                    .transition(configuration.transition)
+                    .id(displayInfo.id)
+                    .allowsHitTesting(true)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: alignment(for: configuration.position))
+                    .offset(offset(for: configuration.position, in: geometry))
+                    .offset(y: stackOffset(for: displayInfo))
                 }
             }
-            .animation(.default, value: queueManager.visibleToasts)
+            .animation(queueManager.configuration.queueAnimation, value: queueManager.visibleToasts)
         }
         .onAppear {
+            // Set the dismiss callback to notify parent when toasts are dismissed
+            queueManager.setDismissCallback { toastId in
+                onDismiss(toastId)
+            }
+            
             if let initialToasts = _initialToasts {
                 for toast in initialToasts {
                     queueManager.enqueue(toast)

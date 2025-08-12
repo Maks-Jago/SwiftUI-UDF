@@ -112,22 +112,26 @@ import UDFSwiftTesting
         #expect(store.state.hookForm.triggerValue == "")
         await window.redraw()
 
-        await fulfill(description: "waiting for rendering", sleep: 0.3)
-
         // Activate the one-time hook
         store.$state.hookForm.triggerValue.wrappedValue = "1"
 
-        await fulfill(description: "waiting for hook execution", sleep: 0.3)
+        await waitForCondition {
+            store.state.hookForm.triggerValue == "2"
+        }
         #expect(store.state.hookForm.triggerValue == "2")
 
         // Reset triggerValue for further testing
         store.$state.hookForm.triggerValue.wrappedValue = ""
-        await fulfill(description: "waiting for rendering", sleep: 0.3)
+        await waitForCondition {
+            store.state.hookForm.triggerValue == ""
+        }
         #expect(store.state.hookForm.triggerValue == "")
 
         // Attempt to trigger the one-time hook again
         store.$state.hookForm.triggerValue.wrappedValue = "1"
-        await fulfill(description: "waiting for hook execution", sleep: 0.3)
+        await waitForCondition {
+            store.state.hookForm.triggerValue == "1"
+        }
 
         // The one-time hook should not fire again, so triggerValue should remain "1"
         #expect(store.state.hookForm.triggerValue == "1", "One-time hook should not fire again")
@@ -138,11 +142,8 @@ import UDFSwiftTesting
         #expect(store.state.hookForm.triggerValue == "1") // triggerValue from previous step
         await window.redraw()
 
-        await fulfill(description: "waiting for rendering", sleep: 0.3)
-
         // Since hooks are persistent, the one-time hook will not fire again
         // So triggerValue should remain "1"
-        await fulfill(description: "waiting for hook execution", sleep: 0.3)
         #expect(store.state.hookForm.triggerValue == "1", "One-time hook should not fire again in new container")
     }
 
