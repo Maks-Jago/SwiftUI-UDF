@@ -162,6 +162,8 @@ public enum AlertBuilder {
                                 dialogActions.append(DialogButton(title: button.title, action: button.action))
                             } else if let textField = action as? AlertTextField {
                                 dialogActions.append(DialogTextField(title: textField.title, text: textField.text))
+                            } else if let dialogButton = action as? DialogButton {
+                                dialogActions.append(dialogButton)
                             }
                         }
                     }
