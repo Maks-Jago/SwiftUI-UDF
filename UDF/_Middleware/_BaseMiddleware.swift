@@ -133,7 +133,7 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
         // Capture file name, function name, and line number for debugging and logging purposes
         let filePosition = fileFunctionLine(effect, fileName: fileName, functionName: functionName, lineNumber: lineNumber)
 
-        // Registering for XCTest to wait for asynchronous code in tests
+        // Registering for testing framework to wait for asynchronous code
         TestGroup.shared.enter()
 
         // Subscribe to the effect and store the cancellation token

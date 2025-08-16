@@ -4,7 +4,7 @@ import SwiftUI
 import Testing
 import UDFSwiftTesting
 
-@Suite(.serialized) struct ContainerLifecycleTests {
+@Suite struct ContainerLifecycleTests {
     struct AppState: AppReducer {
         var userData = UserData()
     }
@@ -34,15 +34,13 @@ import UDFSwiftTesting
 
         var window: PlatformWindow? = await PlatformWindow.render(container: rootContainer)
         await window?.redraw()
-
-        await fulfill(description: "waiting for rendering", sleep: 1)
-        #expect(store.state.userData.didLoad)
+        var success = await waitForCondition { store.state.userData.didLoad }
+        #expect(success)
 
         await window?.release()
         window = nil
-
-        await fulfill(description: "waiting for rendering", sleep: 1)
-        #expect(store.state.userData.didUnload)
+        success = await waitForCondition { store.state.userData.didUnload }
+        #expect(success)
     }
 }
 

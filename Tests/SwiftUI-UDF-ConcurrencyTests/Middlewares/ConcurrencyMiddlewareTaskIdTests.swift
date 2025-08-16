@@ -46,14 +46,11 @@ import UDFSwiftTesting
         let store = EnvironmentStore(initial: AppState(), loggers: [])
         store.subscribe(TestReducibleMiddleware.self)
 
-        var runForm = store.state.runForm
-        #expect(runForm.loadedCount == 0)
+        #expect(store.state.runForm.loadedCount == 0)
 
         store.dispatch(Actions.Loading(id: MiddlewareFlow.id))
-        await fulfill(description: "waiting for middleware operations", sleep: 0.5)
-
-        runForm = store.state.runForm
-        #expect(runForm.loadedCount == 1)
+        let success = await waitForCondition { store.state.runForm.loadedCount == 1 }
+        #expect(success)
     }
 }
 

@@ -108,8 +108,7 @@ extension DialogType {
 
     @Test func whendialogRegistered_dialogCanBePresentedById() async {
         let store = EnvironmentStore(initial: AppState(), loggers: [])
-        var status = store.state.form.dialog.status
-        #expect(status == .dismissed)
+        #expect(store.state.form.dialog.status == .dismissed)
 
         DialogRegistry.register(id: FormWithDialog.DialogId.dialogWithAction) {
             DialogType.dialogWithAction {
@@ -118,12 +117,10 @@ extension DialogType {
         }
 
         store.dispatch(Actions.PresentDialogWithAction())
-        await fulfill(description: "waiting for dialog action processing", sleep: 0.3)
-        status = store.state.form.dialog.status
+        let success = await waitForCondition { store.state.form.dialog.status != .dismissed }
+        #expect(success)
 
-        #expect(status != .dismissed)
-
-        if case .presented(let dialogType) = status {
+        if case .presented(let dialogType) = store.state.form.dialog.status {
             #expect(dialogType.style == .alert)
         } else {
             Issue.record("Expected presented dialog")
@@ -184,8 +181,7 @@ extension DialogType {
     // MARK: - Toast-Specific Tests
     @Test func whenToastRegistered_ToastCanBePresentedById() async {
         let store = EnvironmentStore(initial: AppState(), loggers: [])
-        var status = store.state.form.dialog.status
-        #expect(status == .dismissed)
+        #expect(store.state.form.dialog.status == .dismissed)
 
         DialogRegistry.register(id: FormWithDialog.DialogId.toastDialog) {
             DialogType.toastWithAction {
@@ -194,13 +190,11 @@ extension DialogType {
         }
 
         store.dispatch(Actions.PresentToastDialog())
-        await fulfill(description: "waiting for toast action processing", sleep: 0.3)
-        status = store.state.form.dialog.status
-
-        #expect(status != .dismissed)
+        let success = await waitForCondition { store.state.form.dialog.status != .dismissed }
+        #expect(success)
 
         // Verify it's a toast style
-        if case .presented(let dialogType) = status {
+        if case .presented(let dialogType) = store.state.form.dialog.status {
             if case .toast = dialogType.style {
                 #expect(true, "Correct toast style")
             } else {
@@ -219,13 +213,11 @@ extension DialogType {
         }
 
         store.dispatch(Actions.PresentCustomToastWithIcon())
-        await fulfill(description: "waiting for custom toast action processing", sleep: 0.3)
-        let status = store.state.form.dialog.status
-
-        #expect(status != .dismissed)
+        let success = await waitForCondition { store.state.form.dialog.status != .dismissed }
+        #expect(success)
 
         // Verify it's a toast with custom icon
-        if case .presented(let dialogType) = status,
+        if case .presented(let dialogType) = store.state.form.dialog.status,
            case DialogCustomType<Image, EmptyView>.custom(let content, let style) = dialogType {
 
             // Check style is toast
@@ -250,13 +242,11 @@ extension DialogType {
         }
 
         store.dispatch(Actions.PresentCustomViewToast())
-        await fulfill(description: "waiting for custom view toast action processing", sleep: 0.3)
-        let status = store.state.form.dialog.status
-
-        #expect(status != .dismissed)
+        let success = await waitForCondition { store.state.form.dialog.status != .dismissed }
+        #expect(success)
 
         // Verify it's a toast with custom view
-        if case .presented(let dialogType) = status {
+        if case .presented(let dialogType) = store.state.form.dialog.status {
             // Check style is toast
             if case .toast(let config) = dialogType.style {
                 #expect(config.position == .center)
@@ -375,10 +365,8 @@ extension DialogType {
         
         // Present the toast
         store.dispatch(Actions.PresentToastDialog())
-        await fulfill(description: "waiting for dialog presentation", sleep: 0.3)
-        
-        var status = store.state.form.dialog.status
-        #expect(status != .dismissed, "Toast should be presented initially")
+        let success = await waitForCondition { store.state.form.dialog.status != .dismissed }
+        #expect(success)
         
         // For manual dismiss, we'll test by creating a dismissed dialog directly
         // (This mimics the end result of what should happen when user taps dismiss)
@@ -405,18 +393,16 @@ extension DialogType {
         
         // Present the toast
         store.dispatch(Actions.PresentToastDialog())
-        await fulfill(description: "waiting for dialog presentation", sleep: 0.3)
-        
-        var status = store.state.form.dialog.status
-        #expect(status != .dismissed, "Toast should be presented initially")
+        let success = await waitForCondition { store.state.form.dialog.status != .dismissed }
+        #expect(success)
         
         // Wait longer than typical auto-dismiss time
-        await fulfill(description: "waiting to verify no auto-dismiss", sleep: 0.3)
+        await sleep()
         
         // Verify the dialog status is still presented (not auto-dismissed)
-        status = store.state.form.dialog.status
-        #expect(status != .dismissed, "Toast with zero duration should not auto-dismiss")
+        #expect(store.state.form.dialog.status != .dismissed, "Toast with zero duration should not auto-dismiss")
     }
+
     // MARK: - Registry Tests
     @Test func registryBehavior() {
         let testId = "test-dialog"

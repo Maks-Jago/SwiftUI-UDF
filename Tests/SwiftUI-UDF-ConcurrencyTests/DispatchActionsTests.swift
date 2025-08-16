@@ -20,14 +20,13 @@ import UDFSwiftTesting
 
     @Test func updateFormFieldDispatch() async {
         let store = InternalStore(initial: AppState(), loggers: [])
-        var formTitle = await store.state.plainForm.title
+        let formTitle = await store.state.plainForm.title
         #expect(formTitle == "")
 
-        store.dispatch(Actions.UpdateFormField(keyPath: \PlainForm.title, value: "new form title"))
-        await fulfill(description: "Waiting for middlewares subscription", sleep: 0.5)
-
-        formTitle = await store.state.plainForm.title
-        #expect(formTitle == "new form title")
+        let newFormTitle = "new form title"
+        store.dispatch(Actions.UpdateFormField(keyPath: \PlainForm.title, value: newFormTitle))
+        let success = await waitForAsyncCondition { await store.state.plainForm.title == newFormTitle}
+        #expect(success)
     }
 
     @Test func silentActionDispatch() async throws {

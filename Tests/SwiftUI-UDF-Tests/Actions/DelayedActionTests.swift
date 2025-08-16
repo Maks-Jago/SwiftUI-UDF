@@ -3,7 +3,7 @@
 import UDFSwiftTesting
 import Testing
 
-@Suite(.serialized) struct DelayedActionTests_Last {
+@Suite struct DelayedActionTests_Last {
     private struct TestStoreLogger: ActionLogger {
         var actionFilters: [ActionFilter] = [VerboseActionFilter()]
         var actionDescriptor: ActionDescriptor = StringDescribingActionDescriptor()
@@ -28,75 +28,87 @@ import Testing
     @Test func whenActionHasDelay_DataShouldBeUpdatedAfterDelay() async throws {
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
 
-        store.dispatch(Actions.UpdateFormField(keyPath: \DataForm.title, value: "delayed title").with(delay: 1))
-        store.dispatch(Actions.UpdateFormField(keyPath: \DataForm.title, value: "updated title"))
-        await fulfill(description: "waiting for delayed action", sleep: 0.3)
+        let delayedTitle = "delayed title1"
+        let updatedTitle = "updated title"
+        store.dispatch(Actions.UpdateFormField(keyPath: \DataForm.title, value: delayedTitle).with(delay: 1))
+        store.dispatch(Actions.UpdateFormField(keyPath: \DataForm.title, value: updatedTitle))
+        var success = await waitForCondition { store.state.dataForm.title == updatedTitle }
+        #expect(success)
 
-        #expect(store.state.dataForm.title == "updated title")
-        await fulfill(description: "waiting for delayed action", sleep: 1)
-
-        #expect(store.state.dataForm.title == "delayed title")
+        success = await waitForCondition { store.state.dataForm.title == delayedTitle }
+        #expect(success)
     }
 
     @Test func whenActionsHaveDelayInGroup_DataShouldBeUpdatedAfterDelay() async throws {
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
 
+        let delayedTitle = "delayed title2"
+        let count = 1
         store.dispatch(
             ActionGroup {
-                Actions.UpdateFormField(keyPath: \DataForm.title, value: "delayed title")
+                Actions.UpdateFormField(keyPath: \DataForm.title, value: delayedTitle)
                     .with(delay: 1)
 
-                Actions.UpdateFormField(keyPath: \DataForm.count, value: 1)
+                Actions.UpdateFormField(keyPath: \DataForm.count, value: count)
                     .with(delay: 2)
             }
         )
 
         #expect(store.state.dataForm.title.isEmpty)
-        await fulfill(description: "waiting for delayed action", sleep: 1.1)
 
-        #expect(store.state.dataForm.title == "delayed title")
-        await fulfill(description: "waiting for delayed action", sleep: 1)
+        var success = await waitForCondition { store.state.dataForm.title == delayedTitle }
+        #expect(success)
+        #expect(store.state.dataForm.count == 0)
 
-        #expect(store.state.dataForm.count == 1)
+        success = await waitForCondition { store.state.dataForm.count == count }
+        #expect(success)
     }
 
     @Test func whenActionGroupHasDelay_DataShouldBeUpdatedAfterDelay() async throws {
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
 
+        let delayedTitle = "delayed title3"
+        let count = 1
         store.dispatch(
             ActionGroup {
-                Actions.UpdateFormField(keyPath: \DataForm.title, value: "delayed title")
-                Actions.UpdateFormField(keyPath: \DataForm.count, value: 1)
+                Actions.UpdateFormField(keyPath: \DataForm.title, value: delayedTitle)
+                Actions.UpdateFormField(keyPath: \DataForm.count, value: count)
             }
             .with(delay: 1)
         )
 
         #expect(store.state.dataForm.title.isEmpty)
-        await fulfill(description: "waiting for delayed action", sleep: 1.1)
 
-        #expect(store.state.dataForm.title == "delayed title")
-        #expect(store.state.dataForm.count == 1)
+        var success = await waitForCondition { store.state.dataForm.title == delayedTitle }
+        #expect(success)
+
+        success = await waitForCondition { store.state.dataForm.count == count }
+        #expect(success)
     }
 
     @Test func whenSomeActionInGroupHasDelay_OnlyThatActionIsDelayed() async throws {
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
 
+        let delayedTitle = "delayed title4"
+        let count = 1
         store.dispatch(
             ActionGroup {
-                Actions.UpdateFormField(keyPath: \DataForm.title, value: "delayed title")
+                Actions.UpdateFormField(keyPath: \DataForm.title, value: delayedTitle)
                     .with(delay: 1)
 
-                Actions.UpdateFormField(keyPath: \DataForm.count, value: 1)
+                Actions.UpdateFormField(keyPath: \DataForm.count, value: count)
             }
         )
 
         #expect(store.state.dataForm.count == 0)
         #expect(store.state.dataForm.title.isEmpty)
-        await fulfill(description: "waiting for delayed action", sleep: 0.3)
 
-        #expect(store.state.dataForm.count == 1)
-        await fulfill(description: "waiting for delayed action", sleep: 1)
-        #expect(store.state.dataForm.title == "delayed title")
+        var success = await waitForCondition { store.state.dataForm.count == count }
+        #expect(success)
+        #expect(store.state.dataForm.title.isEmpty)
+
+        success = await waitForCondition { store.state.dataForm.title == delayedTitle }
+        #expect(success)
     }
 
     @Test func delayedActionsDDOS() async throws {
@@ -109,20 +121,20 @@ import Testing
         store.dispatch(Actions.UpdateFormField(keyPath: \DataForm.count, value: 5).with(delay: 5))
 
         #expect(store.state.dataForm.count == 0)
-        await fulfillPrecise(description: "waiting for delayed action", sleep: 1.1)
 
-        #expect(store.state.dataForm.count == 1)
-        await fulfillPrecise(description: "waiting for delayed action", sleep: 1.1)
+        var success = await waitForCondition { store.state.dataForm.count == 1 }
+        #expect(success)
 
-        #expect(store.state.dataForm.count == 2)
-        await fulfillPrecise(description: "waiting for delayed action", sleep: 1.1)
+        success = await waitForCondition { store.state.dataForm.count == 2 }
+        #expect(success)
 
-        #expect(store.state.dataForm.count == 3)
-        await fulfillPrecise(description: "waiting for delayed action", sleep: 1.1)
+        success = await waitForCondition { store.state.dataForm.count == 3 }
+        #expect(success)
 
-        #expect(store.state.dataForm.count == 4)
-        await fulfillPrecise(description: "waiting for delayed action", sleep: 1.1)
+        success = await waitForCondition { store.state.dataForm.count == 4 }
+        #expect(success)
 
-        #expect(store.state.dataForm.count == 5)
+        success = await waitForCondition { store.state.dataForm.count == 5 }
+        #expect(success)
     }
 }

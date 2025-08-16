@@ -139,19 +139,15 @@ struct PaginatorTests {
     @Test func paginatorLoading() async {
         let store = EnvironmentStore(initial: AppState(), loggers: [])
         store.dispatch(Actions.LoadPage(id: ItemFlow.id))
-        await fulfill(description: "waiting for action processing", sleep: 0.3)
-
-        let isLoading = store.state.itemsForm.paginator.isLoading
-        #expect(isLoading == true)
+        var success = await waitForCondition { store.state.itemsForm.paginator.isLoading == true }
+        #expect(success)
 
         store.dispatch(Actions.DidLoadItems(items: Item.fakeItems(count: 10), id: ItemFlow.id))
-        await fulfill(description: "waiting for action processing", sleep: 0.3)
-
-        let pageNumber = store.state.itemsForm.paginator.page.pageNumber
-        #expect(pageNumber == 1)
-
-        let itemsCount = store.state.itemsForm.paginator.items.count
-        #expect(itemsCount == 10)
+        success = await waitForCondition {
+            store.state.itemsForm.paginator.page.pageNumber == 1 &&
+            store.state.itemsForm.paginator.items.count == 10
+        }
+        #expect(success)
     }
 
     @Test func moveItem() throws {
@@ -169,10 +165,10 @@ struct PaginatorTests {
         let isFailure = paginator.moveItem(fromIndex: 0, toIndex: 14) // toIndex >= items.count
         #expect(!isFailure)
 
-        let itemAt10Index = try #require(paginator.elements[10])
+        let itemAt10Index = paginator.elements[10]
         let isMovedIntoBeginning = paginator.moveItem(fromIndex: 10, toIndex: 0)
         #expect(isMovedIntoBeginning)
-        let firstItemId = try #require(paginator.items.first)
+        let firstItemId = paginator.items.first
         #expect(itemAt10Index == firstItemId)
     }
 

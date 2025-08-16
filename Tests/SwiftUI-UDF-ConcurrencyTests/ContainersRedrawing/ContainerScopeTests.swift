@@ -10,7 +10,7 @@ import SwiftUI
 import Testing
 import UDFSwiftTesting
 
-@Suite(.serialized) struct ContainerScopeTests {
+@Suite struct ContainerScopeTests {
     @propertyWrapper
     final class Box<Value> {
         private var box: Value
@@ -52,51 +52,47 @@ import UDFSwiftTesting
 
     @Test
     @MainActor func componentRenderingAfterStateMutation() async {
-        // No need to clear GlobalValue as we're using explicit store injection
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
 
         let itemsContainer = ItemsListContainer()
         let window = await PlatformWindow.render(container: itemsContainer.with(store: store))
 
         store.dispatch(Actions.UpdateFormField(keyPath: \PlainForm.title, value: "title 1"))
-        await fulfill(description: "waiting for rendering", sleep: 1)
-        window.redraw()
-        await fulfill(description: "waiting for rendering", sleep: 1)
+        _ = await waitForMainActorCondition { itemsContainer.renderingNumber == 1 }
 
-        #expect(itemsContainer.renderingNumber == 2)
+        window.redraw()
+        let success = await waitForMainActorCondition { itemsContainer.renderingNumber == 2 }
+        #expect(success)
     }
 
     @Test
     @MainActor func rootComponentRendering() async {
-        // No need to clear GlobalValue as we're using explicit store injection
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
 
         let rootContainer = RootContainer()
         let window = await PlatformWindow.render(container: rootContainer.with(store: store))
 
         store.dispatch(Actions.UpdateFormField(keyPath: \PlainForm.title, value: "title 1"))
-        await fulfill(description: "waiting for rendering", sleep: 1)
-        #expect(rootContainer.renderingNumber == 1)
+        var success = await waitForMainActorCondition { rootContainer.renderingNumber == 1 }
+        #expect(success)
 
         store.dispatch(Actions.UpdateFormField(keyPath: \UserData.isUserLoggedIn, value: true))
-        await fulfill(description: "waiting for rendering", sleep: 1)
 
         window.redraw()
-        await fulfill(description: "waiting for rendering", sleep: 1)
-        #expect(rootContainer.renderingNumber == 2)
+        success = await waitForMainActorCondition { rootContainer.renderingNumber == 2 }
+        #expect(success)
 
         store.dispatch(Actions.UpdateFormField(keyPath: \UserData.isUserLoggedIn, value: false))
-        await fulfill(description: "waiting for rendering", sleep: 1)
 
         window.redraw()
-        await fulfill(description: "waiting for rendering", sleep: 1)
-        #expect(rootContainer.renderingNumber == 3)
+        success = await waitForMainActorCondition { rootContainer.renderingNumber == 3 }
+        #expect(success)
 
         store.dispatch(Actions.UpdateFormField(keyPath: \PlainForm.title, value: "title 2"))
-        await fulfill(description: "waiting for rendering", sleep: 1)
+        await sleep()
 
         window.redraw()
-        await fulfill(description: "waiting for rendering", sleep: 1)
+        await sleep()
         #expect(rootContainer.renderingNumber == 3)
     }
 }

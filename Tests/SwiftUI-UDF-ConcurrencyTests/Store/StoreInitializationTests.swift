@@ -82,7 +82,7 @@ import UDFSwiftTesting
     }
 
     @Test func middlewareAsyncSubscription() async {
-        var middlewaresCount = await store.middlewares.count
+        let middlewaresCount = await store.middlewares.count
         #expect(middlewaresCount == 0)
 
         let middleware1 = Middleware1(
@@ -99,16 +99,12 @@ import UDFSwiftTesting
 
         await store.subscribe(middleware)
 
-        #expect(middlewaresCount == 0)
-
-        await fulfill(description: "Waiting for middlewares subscription", sleep: 0.3)
-
-        middlewaresCount = await store.middlewares.count
-        #expect(middlewaresCount != 0)
+        let success = await waitForAsyncCondition { await store.middlewares.count != 0 }
+        #expect(success)
     }
 
     @Test func middlewareSubscription() async {
-        var middlewaresCount = await store.middlewares.count
+        let middlewaresCount = await store.middlewares.count
         #expect(middlewaresCount == 0)
 
         let middleware1 = Middleware1(
@@ -125,7 +121,7 @@ import UDFSwiftTesting
 
         await store.subscribe(middleware)
 
-        middlewaresCount = await store.middlewares.count
-        #expect(middlewaresCount != 0)
+        let success = await waitForAsyncCondition { await store.middlewares.count != 0 }
+        #expect(success)
     }
 }

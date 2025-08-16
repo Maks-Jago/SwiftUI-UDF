@@ -10,7 +10,7 @@ import SwiftUI
 import UDFSwiftTesting
 import Testing
 
-@Suite(.serialized) struct BindableReducersMiddlewareTests {
+@Suite struct BindableReducersMiddlewareTests {
     struct Item: Hashable, Identifiable {
         struct ID: Hashable {
             var value: Int
@@ -86,13 +86,12 @@ import Testing
         store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 2)))
         store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 3)))
         store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 4)))
-        await fulfill(description: "waiting for container actions to process", sleep: 0.3)
 
-        let bindedReducersFormCount = store.state.itemsForm.reducers.count
-        #expect(bindedReducersFormCount == 4)
+        var success = await waitForCondition { store.state.itemsForm.reducers.count == 4 }
+        #expect(success)
 
-        let bindedReducersFlowCount = store.state.itemsFlow.reducers.count
-        #expect(bindedReducersFlowCount == 4)
+        success = await waitForCondition { store.state.itemsFlow.reducers.count == 4 }
+        #expect(success)
 
         store.dispatch(
             ActionGroup {
@@ -107,19 +106,17 @@ import Testing
             }
         )
 
-        await fulfill(description: "waiting for middleware operations", sleep: 0.3)
+        success = await waitForCondition { store.state.itemsForm[Item.ID(value: 1)]?.item != nil }
+        #expect(success)
 
-        let itemsForm1: ItemsForm = try #require(store.state.itemsForm[Item.ID(value: 1)])
-        #expect(itemsForm1.item != nil)
+        success = await waitForCondition { store.state.itemsForm[Item.ID(value: 2)]?.item == nil }
+        #expect(success)
 
-        let itemsForm2: ItemsForm = try #require(store.state.itemsForm[Item.ID(value: 2)])
-        #expect(itemsForm2.item == nil)
+        success = await waitForCondition { store.state.itemsForm[Item.ID(value: 3)]?.item != nil }
+        #expect(success)
 
-        let itemsForm3: ItemsForm = try #require(store.state.itemsForm[Item.ID(value: 3)])
-        #expect(itemsForm3.item != nil)
-
-        let itemsForm4: ItemsForm = try #require(store.state.itemsForm[Item.ID(value: 4)])
-        #expect(itemsForm4.item != nil)
+        success = await waitForCondition { store.state.itemsForm[Item.ID(value: 4)]?.item != nil }
+        #expect(success)
     }
 
     @Test func whenDispatchingBindedAction_DuplicationShouldBePrevented() async throws {
@@ -127,13 +124,12 @@ import Testing
         store.subscribe(ItemsMiddleware.self)
 
         store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 1)))
-        await fulfill(description: "waiting for container action to process", sleep: 0.3)
 
-        let bindedReducersFormCount = store.state.itemsForm.reducers.count
-        #expect(bindedReducersFormCount == 1)
+        var success = await waitForCondition { store.state.itemsForm.reducers.count == 1 }
+        #expect(success)
 
-        let bindedReducersFlowCount = store.state.itemsFlow.reducers.count
-        #expect(bindedReducersFlowCount == 1)
+        success = await waitForCondition { store.state.itemsFlow.reducers.count == 1 }
+        #expect(success)
 
         store.dispatch(
             ActionGroup {
@@ -141,13 +137,11 @@ import Testing
             }.binded(to: ItemsContainer.self, by: Item.ID(value: 1))
         )
 
-        await fulfill(description: "waiting for middleware operations", sleep: 0.3)
+        success = await waitForCondition { store.state.itemsForm[Item.ID(value: 1)]?.item != nil }
+        #expect(success)
 
-        let itemsForm1: ItemsForm = try #require(store.state.itemsForm[Item.ID(value: 1)])
-        let itemsReducer = store.state.itemReducible
-
-        #expect(itemsForm1.item != nil)
-        #expect(itemsReducer.didLoadItemReduced == 1)
+        success = await waitForCondition { store.state.itemReducible.didLoadItemReduced == 1 }
+        #expect(success)
     }
 }
 

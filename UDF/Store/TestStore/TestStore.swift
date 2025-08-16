@@ -34,7 +34,7 @@ public final class TestStore<State: AppReducer> {
 
     public init(initial state: State) {
         guard ProcessInfo.processInfo.isRunningTests else {
-            fatalError("XCTestStore is only for using in Test targets")
+            fatalError("TestStore is only for using in Test targets")
         }
 
         var mutableState = state

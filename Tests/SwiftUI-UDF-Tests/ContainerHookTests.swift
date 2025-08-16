@@ -34,11 +34,10 @@ import UDFSwiftTesting
         #expect(store.state.hookForm.triggerValue == "")
         await window.redraw()
 
-        await fulfill(description: "waiting for rendering", sleep: 0.3)
         store.$state.hookForm.triggerValue.wrappedValue = "1"
 
-        await fulfill(description: "waiting for dispatch", sleep: 0.5)
-        #expect(store.state.hookForm.triggerValue == "2")
+        let success = await waitForCondition { store.state.hookForm.triggerValue == "2" }
+        #expect(success)
     }
 
     @Test func oneTimeHook_NotCalledAgainOnRedraw() async throws {
@@ -49,23 +48,21 @@ import UDFSwiftTesting
         #expect(store.state.hookForm.triggerValue == "")
         await window.redraw()
 
-        await fulfill(description: "waiting for rendering", sleep: 0.3)
-
         // Set triggerValue to "1" to activate the one-time hook
         store.$state.hookForm.triggerValue.wrappedValue = "1"
 
-        await fulfill(description: "waiting for hook execution", sleep: 0.3)
-        #expect(store.state.hookForm.triggerValue == "2")
+        let success = await waitForCondition { store.state.hookForm.triggerValue == "2" }
+        #expect(success)
 
         // Change the state to cause a redraw
         store.$state.hookForm.triggerValue.wrappedValue = "3"
-        await fulfill(description: "waiting for redraw", sleep: 0.3)
+        await sleep()
 
         #expect(store.state.hookForm.triggerValue == "3")
 
         // Set triggerValue back to "1" to test if the one-time hook fires again
         store.$state.hookForm.triggerValue.wrappedValue = "1"
-        await fulfill(description: "waiting for hook execution", sleep: 0.3)
+        await sleep()
 
         // The triggerValue should remain "1" because the one-time hook should not fire again
         #expect(store.state.hookForm.triggerValue == "1")
@@ -79,8 +76,6 @@ import UDFSwiftTesting
         #expect(store.state.hookForm.triggerValue == "")
         await window.redraw()
 
-        await fulfill(description: "waiting for rendering", sleep: 0.3)
-
         // Reset the hook call counter
         store.$state.hookForm.callbacksCount.wrappedValue = 0
 
@@ -90,12 +85,11 @@ import UDFSwiftTesting
         for _ in 1 ... triggerCount {
             // Set triggerValue to "3" to meet the hook's condition
             store.$state.hookForm.triggerValue.wrappedValue = "3"
-
-            await fulfill(description: "waiting for hook execution", sleep: 0.3)
+            _ = await waitForCondition { store.$state.hookForm.triggerValue.wrappedValue == "3" }
 
             // Reset triggerValue to allow the condition to be met again
             store.$state.hookForm.triggerValue.wrappedValue = ""
-            await fulfill(description: "waiting for reset", sleep: 0.3)
+            _ = await waitForCondition { store.$state.hookForm.triggerValue.wrappedValue == "" }
         }
 
         // Assert that the hook was called the expected number of times
@@ -115,25 +109,21 @@ import UDFSwiftTesting
         // Activate the one-time hook
         store.$state.hookForm.triggerValue.wrappedValue = "1"
 
-        await waitForCondition {
-            store.state.hookForm.triggerValue == "2"
-        }
-        #expect(store.state.hookForm.triggerValue == "2")
+        var success = await waitForCondition { store.state.hookForm.triggerValue == "2" }
+        #expect(success)
 
         // Reset triggerValue for further testing
         store.$state.hookForm.triggerValue.wrappedValue = ""
-        await waitForCondition {
-            store.state.hookForm.triggerValue == ""
-        }
-        #expect(store.state.hookForm.triggerValue == "")
+        success = await waitForCondition { store.state.hookForm.triggerValue == "" }
+        #expect(success)
 
         // Attempt to trigger the one-time hook again
         store.$state.hookForm.triggerValue.wrappedValue = "1"
-        await waitForCondition {
-            store.state.hookForm.triggerValue == "1"
-        }
+        success = await waitForCondition { store.state.hookForm.triggerValue == "1" }
+        #expect(success)
 
         // The one-time hook should not fire again, so triggerValue should remain "1"
+        await sleep()
         #expect(store.state.hookForm.triggerValue == "1", "One-time hook should not fire again")
 
         let newRootContainer = RootContainer()
@@ -153,24 +143,19 @@ import UDFSwiftTesting
         // Set the trigger value BEFORE creating the container
         // This simulates the scenario where the condition is already true
         store.$state.hookForm.triggerValue.wrappedValue = "1"
-
-        await fulfill(description: "waiting for settings initial value", sleep: 0.3)
-
-        #expect(store.state.hookForm.triggerValue == "1")
+        var success = await waitForCondition { store.state.hookForm.triggerValue == "1" }
+        #expect(success)
 
         // Now create the container - the hook condition is already satisfied
         let rootContainer = RootContainer()
         let window = await PlatformWindow.render(container: rootContainer)
 
         await window.redraw()
-        await fulfill(description: "waiting for hook execution", sleep: 0.3)
 
         // The hook should have fired even though the condition was already true
         // when the container appeared, changing "1" to "2"
-        #expect(
-            store.state.hookForm.triggerValue == "2", 
-            "Hook should fire at least once even if condition was already true when container appeared"
-        )
+        success = await waitForCondition { store.state.hookForm.triggerValue == "2" }
+        #expect(success, "Hook should fire at least once even if condition was already true when container appeared")
     }
 
     @Test func removeHook() async throws {
@@ -180,20 +165,17 @@ import UDFSwiftTesting
         let window = await PlatformWindow.render(container: rootContainer)
         await window.redraw()
 
-        await fulfill(description: "waiting for rendering", sleep: 0.3)
-
         // Trigger the hook that removes itself
         store.$state.hookForm.triggerValue.wrappedValue = "remove"
-        await fulfill(description: "waiting for hook execution", sleep: 0.3)
-
-        #expect(store.state.hookForm.callbacksCount == 1)
+        let success = await waitForCondition { store.state.hookForm.callbacksCount == 1 }
+        #expect(success)
 
         // Try to trigger again - hook should be removed and not fire
         store.$state.hookForm.triggerValue.wrappedValue = ""
-        await fulfill(description: "waiting for reset", sleep: 0.3)
+        await sleep()
 
         store.$state.hookForm.triggerValue.wrappedValue = "remove"
-        await fulfill(description: "waiting for hook execution", sleep: 0.3)
+        await sleep()
 
         #expect(store.state.hookForm.callbacksCount == 1, "Hook should not fire after being removed")
     }
@@ -205,14 +187,12 @@ import UDFSwiftTesting
         let window = await PlatformWindow.render(container: rootContainer)
         await window.redraw()
 
-        await fulfill(description: "waiting for rendering", sleep: 0.3)
-
         // Change state multiple times
         store.$state.hookForm.triggerValue.wrappedValue = "1"
-        await fulfill(description: "waiting for state change", sleep: 0.3)
+        await sleep()
 
         store.$state.hookForm.triggerValue.wrappedValue = "2"
-        await fulfill(description: "waiting for state change", sleep: 0.3)
+        await sleep()
 
         // Hook should never fire, so callbacksCount should remain 0
         #expect(store.state.hookForm.callbacksCount == 0)
@@ -225,26 +205,22 @@ import UDFSwiftTesting
         let window = await PlatformWindow.render(container: rootContainer)
         await window.redraw()
 
-        await fulfill(description: "waiting for rendering", sleep: 0.3)
-
         // Reset counters
         store.$state.hookForm.callbacksCount.wrappedValue = 0
 
         // Trigger first hook condition
         store.$state.hookForm.triggerValue.wrappedValue = "first"
-        await fulfill(description: "waiting for first hook", sleep: 0.3)
-
-        #expect(store.state.hookForm.callbacksCount == 1)
+        var success = await waitForCondition { store.state.hookForm.callbacksCount == 1 }
+        #expect(success)
 
         // Reset and trigger second hook condition
         store.$state.hookForm.triggerValue.wrappedValue = ""
         store.$state.hookForm.callbacksCount.wrappedValue = 0
-        await fulfill(description: "waiting for reset", sleep: 0.3)
+        await sleep()
 
         store.$state.hookForm.triggerValue.wrappedValue = "second"
-        await fulfill(description: "waiting for second hook", sleep: 0.3)
-
-        #expect(store.state.hookForm.callbacksCount == 10) // Second hook adds 10
+        success = await waitForCondition { store.state.hookForm.callbacksCount == 10 }
+        #expect(success) // Second hook adds 10
     }
 
     @Test func hookWithComplexCondition() async throws {
@@ -254,18 +230,16 @@ import UDFSwiftTesting
         let window = await PlatformWindow.render(container: rootContainer)
         await window.redraw()
 
-        await fulfill(description: "waiting for rendering", sleep: 0.3)
-
         // Reset counters
         store.$state.hookForm.callbacksCount.wrappedValue = 0
 
         // Test condition that checks both triggerValue and callbacksCount
         store.$state.hookForm.triggerValue.wrappedValue = "complex"
         store.$state.hookForm.callbacksCount.wrappedValue = 5
-        await fulfill(description: "waiting for hook execution", sleep: 0.3)
 
         // Hook should have fired and incremented callbacksCount
-        #expect(store.state.hookForm.callbacksCount == 6)
+        let success = await waitForCondition { store.state.hookForm.callbacksCount == 6 }
+        #expect(success)
     }
 
     @Test func hookFiresOnlyOnConditionTransition() async throws {
@@ -275,32 +249,31 @@ import UDFSwiftTesting
         let window = await PlatformWindow.render(container: rootContainer)
         await window.redraw()
 
-        await fulfill(description: "waiting for rendering", sleep: 0.3)
-
         // Start with condition false, then true
         store.$state.hookForm.triggerValue.wrappedValue = "false"
         store.$state.hookForm.callbacksCount.wrappedValue = 0
-        await fulfill(description: "waiting for state change", sleep: 0.3)
 
         store.$state.hookForm.triggerValue.wrappedValue = "true"
-        await fulfill(description: "waiting for hook execution", sleep: 0.3)
-
-        #expect(store.state.hookForm.callbacksCount == 1)
+        var success = await waitForCondition { store.state.hookForm.callbacksCount == 1 }
+        #expect(success)
 
         // Keep condition true - hook should not fire again
         store.$state.hookForm.triggerValue.wrappedValue = "true"
-        await fulfill(description: "waiting for state change", sleep: 0.3)
+        await sleep()
 
         #expect(store.state.hookForm.callbacksCount == 1, "Hook should not fire when condition remains true")
 
         // Change to false, then true again - hook should fire
         store.$state.hookForm.triggerValue.wrappedValue = "false"
-        await fulfill(description: "waiting for state change", sleep: 0.3)
+        success = await waitForCondition { store.state.hookForm.triggerValue == "false" }
+        #expect(success)
 
         store.$state.hookForm.triggerValue.wrappedValue = "true"
-        await fulfill(description: "waiting for hook execution", sleep: 0.3)
+        success = await waitForCondition { store.state.hookForm.triggerValue == "true" }
+        #expect(success)
 
-        #expect(store.state.hookForm.callbacksCount == 2, "Hook should fire on false->true transition")
+        success = await waitForCondition { store.state.hookForm.callbacksCount == 2 }
+        #expect(success, "Hook should fire on false->true transition")
     }
 
     @Test func hookWithNilConditionCheck() async throws {
@@ -310,14 +283,14 @@ import UDFSwiftTesting
         let window = await PlatformWindow.render(container: rootContainer)
         await window.redraw()
 
-        await fulfill(description: "waiting for rendering", sleep: 0.3)
-
         // This tests hooks that might deal with optional values safely
         store.$state.hookForm.triggerValue.wrappedValue = ""
-        await fulfill(description: "waiting for state change", sleep: 0.3)
+        var success = await waitForCondition { store.state.hookForm.triggerValue.isEmpty }
+        #expect(success)
 
         store.$state.hookForm.triggerValue.wrappedValue = "valid"
-        await fulfill(description: "waiting for hook execution", sleep: 0.3)
+        success = await waitForCondition { store.state.hookForm.triggerValue == "valid" }
+        #expect(success)
 
         #expect(store.state.hookForm.callbacksCount == 1)
     }
@@ -329,20 +302,19 @@ import UDFSwiftTesting
         let window = await PlatformWindow.render(container: rootContainer)
         await window.redraw()
 
-        await fulfill(description: "waiting for rendering", sleep: 0.3)
-
         // Set up initial state
         store.$state.hookForm.triggerValue.wrappedValue = "initial"
         store.$state.hookForm.callbacksCount.wrappedValue = 5
-        await fulfill(description: "waiting for initial state", sleep: 0.3)
 
         // Trigger rollback condition
         store.$state.hookForm.triggerValue.wrappedValue = "rollback"
-        await fulfill(description: "waiting for rollback hook", sleep: 0.3)
 
         // Hook should have reset the counter
-        #expect(store.state.hookForm.callbacksCount == 0)
-        #expect(store.state.hookForm.triggerValue == "reset")
+        let success = await waitForCondition {
+            store.state.hookForm.callbacksCount == 0 &&
+            store.state.hookForm.triggerValue == "reset"
+        }
+        #expect(success)
     }
 
     @Test func conditionalHookActivation() async throws {
@@ -352,24 +324,22 @@ import UDFSwiftTesting
         let window = await PlatformWindow.render(container: rootContainer)
         await window.redraw()
 
-        await fulfill(description: "waiting for rendering", sleep: 0.3)
-
         // Reset counters
         store.$state.hookForm.callbacksCount.wrappedValue = 0
 
         // Only trigger when callbacksCount is even
         store.$state.hookForm.callbacksCount.wrappedValue = 2
         store.$state.hookForm.triggerValue.wrappedValue = "trigger"
-        await fulfill(description: "waiting for hook execution", sleep: 0.3)
-
-        #expect(store.state.hookForm.callbacksCount == 3) // 2 + 1
+        var success = await waitForCondition { store.state.hookForm.callbacksCount == 3 } // 2 + 1
+        #expect(success)
 
         // Reset triggerValue and try with odd number
         store.$state.hookForm.triggerValue.wrappedValue = ""
-        await fulfill(description: "waiting for reset", sleep: 0.3)
+        success = await waitForCondition { store.state.hookForm.triggerValue.isEmpty }
+        #expect(success)
 
         store.$state.hookForm.triggerValue.wrappedValue = "trigger"
-        await fulfill(description: "waiting for hook execution", sleep: 0.3)
+        await sleep()
 
         #expect(store.state.hookForm.callbacksCount == 3, "Hook should not fire when callbacksCount is odd")
     }

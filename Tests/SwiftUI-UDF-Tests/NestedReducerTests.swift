@@ -66,15 +66,16 @@ import Testing
 
     @Test func appState() async {
         let store = EnvironmentStore(initial: AppState(), loggers: [])
+
         store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.title, value: "temp"))
-        await fulfill(description: "waiting for first action processing", sleep: 0.3)
+        var success = await waitForCondition { store.state.nested.testForm.title == "temp" }
+        #expect(success)
+
         store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.title, value: "temp_21"))
-        await fulfill(description: "waiting for second action processing", sleep: 0.3)
+        success = await waitForCondition { store.state.nested.testForm.title == "temp_21" }
+        #expect(success)
 
-        let title = store.state.nested.testForm.title
-
-        #expect(title == "temp_21")
-
-        await fulfill(description: "locationFlow must be in `requestPermissions` case", sleep: 1)
+        // TODO: This is the original code and just fulfill here. For what?
+        // await fulfill(description: "locationFlow must be in `requestPermissions` case", sleep: 1)
     }
 }

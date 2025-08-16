@@ -9,7 +9,7 @@ private extension Actions {
     struct StartLoading: Action {}
 }
 
-@Suite(.serialized) struct MiddlewareMapErrorTests {
+@Suite struct MiddlewareMapErrorTests {
     struct AppState: AppReducer {
         var errorForm = ErrorForm()
 
@@ -78,9 +78,7 @@ private extension Actions {
         store.subscribe(LoadingMiddleware.self)
 
         store.dispatch(Actions.StartLoading())
-        await fulfill(description: "waiting for middleware operations", sleep: 0.5)
-
-        let statusCode = store.state.errorForm.errorStatusCode
-        #expect(statusCode == 400)
+        let success = await waitForCondition { store.state.errorForm.errorStatusCode == 400 }
+        #expect(success)
     }
 }

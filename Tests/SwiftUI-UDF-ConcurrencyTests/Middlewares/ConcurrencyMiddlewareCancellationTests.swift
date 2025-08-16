@@ -5,7 +5,7 @@ import UDFSwiftTesting
 import Testing
 import Foundation
 
-@Suite(.serialized) struct ConcurrencyMiddlewareCancellationTests {
+@Suite struct ConcurrencyMiddlewareCancellationTests {
     struct AppState: AppReducer {
         var middlewareFlow = MiddlewareFlow()
         var runForm = RunForm()
@@ -53,17 +53,14 @@ import Foundation
     @Test func observableMiddlewareCancellation() async {
         let store = EnvironmentStore(initial: AppState(), loggers: [])
         store.subscribe(ObservableMiddlewareToCancel.self, environment: ObservableMiddlewareToCancel.Environment(loadItems: { [] }))
+
         store.dispatch(Actions.Loading())
+        var success = await waitForCondition { store.state.middlewareFlow == .loading }
+        #expect(success)
 
-        await fulfill(description: "waiting for middleware to process loading", sleep: 0.3)
-        var middlewareFlow = store.state.middlewareFlow
-
-        #expect(middlewareFlow == .loading)
         store.dispatch(Actions.CancelLoading())
-        await fulfill(description: "waiting for middleware operations", sleep: 0.6)
-
-        middlewareFlow = store.state.middlewareFlow
-        #expect(middlewareFlow == .didCancel)
+        success = await waitForCondition { store.state.middlewareFlow == .didCancel }
+        #expect(success)
     }
 }
 

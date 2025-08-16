@@ -33,20 +33,18 @@ import Testing
         let itemsContainer = ItemsContainer(id: itemId)
         var window: PlatformWindow? = await PlatformWindow.render(container: itemsContainer)
 
-        await fulfill(description: "waiting for rendering", sleep: 1)
+        await sleep()
         await window?.redraw()
-        await fulfill(description: "waiting for rendering", sleep: 1)
 
-        var form: ItemsForm? = store.state.itemsForm[itemId]
-        _ = try #require(form)
+        var success = await waitForCondition { store.state.itemsForm[itemId] != nil }
+        #expect(success)
 
         window = nil
-        await fulfill(description: "waiting for rendering", sleep: 1)
+        await sleep()
         await window?.redraw()
-        await fulfill(description: "waiting for rendering", sleep: 1)
 
-        form = store.state.itemsForm[itemId]
-        #expect(form == nil)
+        success = await waitForCondition { store.state.itemsForm[itemId] == nil }
+        #expect(success)
     }
 }
 

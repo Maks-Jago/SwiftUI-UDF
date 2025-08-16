@@ -13,47 +13,37 @@ private extension Actions {
 @Suite struct MiddlewareSubscriptionTests {
     @Test func middlewareSubscriptions() async {
         let store = EnvironmentStore(initial: AppState(), loggers: [])
-
         store.subscribe(ObservableMiddleware.self, environment: ())
         store.subscribe(ReducibleMiddleware.self, environment: ())
-        await fulfill(description: "waiting for middleware subscription", sleep: 0.3)
-
-        var type = store.state.testForm.type
-        #expect(type == nil)
+        await sleep()
+        #expect(store.state.testForm.type == nil)
 
         store.dispatch(Actions.TestMiddleware(type: .observable))
-        await fulfill(description: "waiting for middleware operations", sleep: 0.5)
-        type = store.state.testForm.type
-        #expect(type == .observable)
+        var success = await waitForCondition { store.state.testForm.type == .observable }
+        #expect(success)
 
         store.dispatch(Actions.TestMiddleware(type: .reducible))
-        await fulfill(description: "waiting for middleware operations", sleep: 0.5)
-        type = store.state.testForm.type
-        #expect(type == .reducible)
+        success = await waitForCondition { store.state.testForm.type == .reducible }
+        #expect(success)
     }
 
     @Test func environmentMiddlewareSubscription() async {
         let store = EnvironmentStore(initial: AppState(), loggers: [])
-
         store.subscribe(EnvironmentMiddleware.self, environment: EnvironmentMiddleware.Environment())
-        store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.type, value: .testEnvironment))
-        await fulfill(description: "waiting for middleware operations", sleep: 0.5)
 
-        let middlewareId = store.state.testForm.type
-        #expect(middlewareId == .testEnvironment)
+        store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.type, value: .testEnvironment))
+        let success = await waitForCondition { store.state.testForm.type == .testEnvironment }
+        #expect(success)
     }
 
     func liveEnvironmentMiddlewareSubscription() async {
         let store = EnvironmentStore(initial: AppState(), loggers: [])
-
         setLiveEnvironment()
-
         store.subscribe(EnvironmentMiddleware.self, environment: EnvironmentMiddleware.Environment())
-        store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.type, value: .liveEnvironment))
-        await fulfill(description: "waiting for middleware operations", sleep: 0.5)
 
-        let middlewareId = store.state.testForm.type
-        #expect(middlewareId == .liveEnvironment)
+        store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.type, value: .liveEnvironment))
+        let success = await waitForCondition { store.state.testForm.type == .liveEnvironment }
+        #expect(success)
     }
 }
 

@@ -4,7 +4,7 @@ import SwiftUI
 import UDFSwiftTesting
 import Testing
 
-@Suite(.serialized) struct BindableContainerDataMutationTests {
+@Suite struct BindableContainerDataMutationTests {
     struct Item: Hashable, Identifiable {
         struct ID: Hashable {
             var value: Int
@@ -61,34 +61,24 @@ import Testing
 
     @Test func whenMutateBindableForm_OnleConcreteInstanceOfBindableFormShouldBeUpdated() async throws {
         let store = EnvironmentStore(initial: AppState(), loggers: [])
-
-        let itemsForm = try #require(store.state.itemsForm)
-        var bindedReducersFormCount = itemsForm.reducers.count
-        #expect(bindedReducersFormCount == 0)
-
-        let itemsFlow = try #require(store.state.itemsFlow)  
-        var bindedReducersFlowCount = itemsFlow.reducers.count
-        #expect(bindedReducersFlowCount == 0)
+        #expect(store.state.itemsForm.reducers.count == 0)
+        #expect(store.state.itemsFlow.reducers.count == 0)
 
         store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 1)))
         store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 2)))
-        await fulfill(description: "waiting for container load actions to process", sleep: 0.3)
 
-        let itemsFormAfter = try #require(store.state.itemsForm)
-        bindedReducersFormCount = itemsFormAfter.reducers.count
-        #expect(bindedReducersFormCount == 2)
+        var success = await waitForCondition { store.state.itemsForm.reducers.count == 2 }
+        #expect(success)
 
-        let itemsFlowAfter = try #require(store.state.itemsFlow)
-        bindedReducersFlowCount = itemsFlowAfter.reducers.count
-        #expect(bindedReducersFlowCount == 2)
+        success = await waitForCondition { store.state.itemsFlow.reducers.count == 2 }
+        #expect(success)
 
         store.dispatch(
             Actions.UpdateFormField(keyPath: \ItemsForm.item, value: .init(value: 2))
                 .binded(to: ItemsContainer.self, by: .init(value: 2))
         )
-        await fulfill(description: "waiting for form update action to process", sleep: 0.3)
-
-        _ = try #require(store.state.itemsForm[Item.ID(value: 2)]?.item)
+        success = await waitForCondition { store.state.itemsForm[Item.ID(value: 2)]?.item != nil }
+        #expect(success)
 
         store.dispatch(
             Actions.DidLoadItems(
@@ -97,26 +87,21 @@ import Testing
             )
             .binded(to: ItemsContainer.self, by: .init(value: 2))
         )
-        await fulfill(description: "waiting for load items action to process", sleep: 0.3)
-
-        let itemsCount = try #require(store.state.itemsForm[Item.ID(value: 2)]?.paginator.items.count)
-        #expect(itemsCount == 2)
+        success = await waitForCondition {
+            store.state.itemsForm[Item.ID(value: 2)]?.paginator.items.count == 2
+        }
+        #expect(success)
     }
 
     @Test func whenBindableActionDispatched_StorageShouldReceiveOriginalAction() async throws {
         let store = EnvironmentStore(initial: AppState(), loggers: [])
-
-        let itemsForm = try #require(store.state.itemsForm)
-        var bindedReducersFormCount = itemsForm.reducers.count
-        #expect(bindedReducersFormCount == 0)
+        #expect(store.state.itemsForm.reducers.count == 0)
 
         store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 1)))
         store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 2)))
-        await fulfill(description: "waiting for container load actions to process", sleep: 0.3)
 
-        let itemsFormAfter2 = try #require(store.state.itemsForm)
-        bindedReducersFormCount = itemsFormAfter2.reducers.count
-        #expect(bindedReducersFormCount == 2)
+        var success = await waitForCondition { store.state.itemsForm.reducers.count == 2 }
+        #expect(success)
 
         let items = [Item(id: .init(value: 1)), Item(id: .init(value: 2))]
 
@@ -124,10 +109,8 @@ import Testing
             Actions.DidLoadItems(items: items, id: ItemsFlow.id)
                 .binded(to: ItemsContainer.self, by: Item.ID(value: 1))
         )
-        await fulfill(description: "waiting for load items action to process", sleep: 0.3)
-
-        let allItems = store.state.allItems.byId
-        #expect(!allItems.isEmpty)
+        success = await waitForCondition { !store.state.allItems.byId.isEmpty }
+        #expect(success)
 
         let itemsForm1 = try #require(store.state.itemsForm[Item.ID(value: 1)])
         #expect(!itemsForm1.paginator.items.isEmpty)

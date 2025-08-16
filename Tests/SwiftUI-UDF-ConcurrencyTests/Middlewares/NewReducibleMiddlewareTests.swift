@@ -63,14 +63,11 @@ private extension Actions {
     @Test func reducibleMiddleware() async {
         let store = EnvironmentStore(initial: AppState(), loggers: [])
         store.subscribe(SendMessageMiddleware.self)
+        #expect(store.state.testForm.title.isEmpty)
 
-        var formTitle = store.state.testForm.title
-        #expect(formTitle.isEmpty)
-
-        store.dispatch(Actions.SendMessage(message: "Message 1"))
-        await fulfill(description: "waiting for middleware operations", sleep: 0.5)
-
-        formTitle = store.state.testForm.title
-        #expect(formTitle == "Message 1")
+        let message = "Message 1"
+        store.dispatch(Actions.SendMessage(message: message))
+        let success = await waitForCondition { store.state.testForm.title == message }
+        #expect(success)
     }
 }

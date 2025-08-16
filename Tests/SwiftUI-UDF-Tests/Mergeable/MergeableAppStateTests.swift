@@ -49,27 +49,26 @@ struct MergeableAppStateTests {
     @Test func itemMerging() async throws {
         let store = EnvironmentStore(initial: AppState(), loggers: [])
         var item = Item(id: .init(value: 1), title: "original")
+
         store.dispatch(Actions.DidLoadItem(item: item))
-        await fulfill(description: "waiting for action processing", sleep: 0.3)
+        var success = await waitForCondition { !store.state.allItems.byId.isEmpty }
+        #expect(success)
 
-        let isEmpty = store.state.allItems.byId.isEmpty
-
-        #expect(isEmpty == false)
         item.title = "mutated"
         store.dispatch(Actions.DidUpdateItem(item: item))
-        await fulfill(description: "waiting for action processing", sleep: 0.3)
-
-        var allItems = store.state.allItems
-        let storageItem = try #require(allItems.byId[item.id])
-
-        #expect(item.title == storageItem.title)
+        
+        success = await waitForThrowingCondition {
+            let storageItem = try #require(store.state.allItems.byId[item.id])
+            return item.title == storageItem.title
+        }
+        #expect(success)
 
         item.title = ""
         store.dispatch(Actions.DidUpdateItem(item: item))
-        await fulfill(description: "waiting for action processing", sleep: 0.3)
-        allItems = store.state.allItems
 
-        let mergedItem = try #require(allItems.byId[item.id])
-        #expect(mergedItem.title.isEmpty == false)
+        await sleep()
+
+        let mergedItem = try #require(store.state.allItems.byId[item.id])
+        #expect(!mergedItem.title.isEmpty)
     }
 }
