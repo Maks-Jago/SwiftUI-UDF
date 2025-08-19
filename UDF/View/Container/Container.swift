@@ -149,7 +149,6 @@ public extension Container {
 // MARK: - Store
 public extension Container {
     /// Provides access to the global `EnvironmentStore` for the container's state.
-    /// This will try to get from Environment first, then fall back to global
     var store: EnvironmentStore<ContainerState> { .global }
 
     /// The body of the container view. Connects the `ContainerComponent` with the `ContainerState` using a `ConnectedContainer`.
