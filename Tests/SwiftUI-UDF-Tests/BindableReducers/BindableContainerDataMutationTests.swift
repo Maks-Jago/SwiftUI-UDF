@@ -60,62 +60,62 @@ import Testing
     }
 
     @Test func whenMutateBindableForm_OnleConcreteInstanceOfBindableFormShouldBeUpdated() async throws {
-        let store = EnvironmentStore(initial: AppState(), loggers: [])
-        #expect(store.state.itemsForm.reducers.count == 0)
-        #expect(store.state.itemsFlow.reducers.count == 0)
+        let store = await TestStore(initial: AppState())
+        #expect(await store.state.itemsForm.reducers.count == 0)
+        #expect(await store.state.itemsFlow.reducers.count == 0)
 
-        store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 1)))
-        store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 2)))
+        await store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 1)))
+        await store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 2)))
 
-        var success = await waitForCondition { store.state.itemsForm.reducers.count == 2 }
+        var success = await waitForAsyncCondition { await store.state.itemsForm.reducers.count == 2 }
         #expect(success)
 
-        success = await waitForCondition { store.state.itemsFlow.reducers.count == 2 }
+        success = await waitForAsyncCondition { await store.state.itemsFlow.reducers.count == 2 }
         #expect(success)
 
-        store.dispatch(
+        await store.dispatch(
             Actions.UpdateFormField(keyPath: \ItemsForm.item, value: .init(value: 2))
                 .binded(to: ItemsContainer.self, by: .init(value: 2))
         )
-        success = await waitForCondition { store.state.itemsForm[Item.ID(value: 2)]?.item != nil }
+        success = await waitForAsyncCondition { await store.state.itemsForm[Item.ID(value: 2)]?.item != nil }
         #expect(success)
 
-        store.dispatch(
+        await store.dispatch(
             Actions.DidLoadItems(
                 items: [Item(id: .init(value: 4)), Item(id: .init(value: 5))],
                 id: ItemsFlow.id
             )
             .binded(to: ItemsContainer.self, by: .init(value: 2))
         )
-        success = await waitForCondition {
-            store.state.itemsForm[Item.ID(value: 2)]?.paginator.items.count == 2
+        success = await waitForAsyncCondition {
+            await store.state.itemsForm[Item.ID(value: 2)]?.paginator.items.count == 2
         }
         #expect(success)
     }
 
     @Test func whenBindableActionDispatched_StorageShouldReceiveOriginalAction() async throws {
-        let store = EnvironmentStore(initial: AppState(), loggers: [])
-        #expect(store.state.itemsForm.reducers.count == 0)
+        let store = await TestStore(initial: AppState())
+        #expect(await store.state.itemsForm.reducers.count == 0)
 
-        store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 1)))
-        store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 2)))
+        await store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 1)))
+        await store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 2)))
 
-        var success = await waitForCondition { store.state.itemsForm.reducers.count == 2 }
+        var success = await waitForAsyncCondition { await store.state.itemsForm.reducers.count == 2 }
         #expect(success)
 
         let items = [Item(id: .init(value: 1)), Item(id: .init(value: 2))]
 
-        store.dispatch(
+        await store.dispatch(
             Actions.DidLoadItems(items: items, id: ItemsFlow.id)
                 .binded(to: ItemsContainer.self, by: Item.ID(value: 1))
         )
-        success = await waitForCondition { !store.state.allItems.byId.isEmpty }
+        success = await waitForAsyncCondition { await !store.state.allItems.byId.isEmpty }
         #expect(success)
 
-        let itemsForm1 = try #require(store.state.itemsForm[Item.ID(value: 1)])
+        let itemsForm1 = try await #require(store.state.itemsForm[Item.ID(value: 1)])
         #expect(!itemsForm1.paginator.items.isEmpty)
 
-        let itemsForm2 = try #require(store.state.itemsForm[Item.ID(value: 2)])
+        let itemsForm2 = try await #require(store.state.itemsForm[Item.ID(value: 2)])
         #expect(itemsForm2.paginator.items.isEmpty)
     }
 }

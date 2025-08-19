@@ -21,7 +21,7 @@ import Testing
     
     @Test func alertButton() {
         let style = AlertBuilder.AlertStyle(title: "", text: "") {
-            UDF.AlertButton.cancel("Cancel")
+            AlertButton.cancel("Cancel")
         }
         
         let alertType = style.type

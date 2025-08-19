@@ -98,7 +98,7 @@ import UDFSwiftTesting
 
     @Test func hooksPersistAcrossContainers() async throws {
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
-        
+
         // Create and use the first container
         let rootContainer = RootContainer()
         var window = await PlatformWindow.render(container: rootContainer)

@@ -59,14 +59,14 @@ public func waitForMainActorCondition(timeout: TimeInterval = 5, condition: @esc
     return true
 }
 
-/// Waits for a throwing condition to become true with timeout (supports #require)
+/// Waits for a throwing async condition to become true with timeout (supports #require)
 /// - Returns: true if condition was met, false if timeout occurred
-public func waitForThrowingCondition(timeout: TimeInterval = 5, condition: @escaping () throws -> Bool) async -> Bool {
+public func waitForThrowingAsyncCondition(timeout: TimeInterval = 5, condition: @escaping () async throws -> Bool) async -> Bool {
     let startTime = CFAbsoluteTimeGetCurrent()
 
     while true {
         do {
-            if try condition() {
+            if try await condition() {
                 return true
             }
         } catch {

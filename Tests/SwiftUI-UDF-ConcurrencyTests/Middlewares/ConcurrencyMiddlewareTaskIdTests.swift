@@ -43,13 +43,13 @@ import UDFSwiftTesting
     }
 
     @Test func reducibleMiddlewareTaskId() async {
-        let store = EnvironmentStore(initial: AppState(), loggers: [])
-        store.subscribe(TestReducibleMiddleware.self)
+        let store = await TestStore(initial: AppState())
+        await store.subscribe(TestReducibleMiddleware.self)
 
-        #expect(store.state.runForm.loadedCount == 0)
+        #expect(await store.state.runForm.loadedCount == 0)
 
-        store.dispatch(Actions.Loading(id: MiddlewareFlow.id))
-        let success = await waitForCondition { store.state.runForm.loadedCount == 1 }
+        await store.dispatch(Actions.Loading(id: MiddlewareFlow.id))
+        let success = await waitForAsyncCondition { await store.state.runForm.loadedCount == 1 }
         #expect(success)
     }
 }

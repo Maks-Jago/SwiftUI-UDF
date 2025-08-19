@@ -1,6 +1,7 @@
 import SwiftUI
 @testable import UDF
 import Testing
+import UDFSwiftTesting
 
 @Suite(.serialized) struct DialogQueueTests {
     // MARK: - Test Helpers
@@ -89,11 +90,12 @@ import Testing
             queueManager.dismiss(firstToastId)
         }
 
-        // Wait for sequential spacing and queue processing
-        try? await Task.sleep(nanoseconds: 50_000_000) // 50ms
+        // Wait for sequential spacing
+        try? await Task.sleep(nanoseconds: 20_000_000) // 20ms
 
+        let success = await waitForMainActorCondition { queueManager.visibleToasts.count == 1 }
         // Second toast should now be visible
-        #expect(queueManager.visibleToasts.count == 1)
+        #expect(success)
         #expect(queueManager.queuedToasts.count == 1)
 
         if let visibleToast = queueManager.visibleToasts.first {

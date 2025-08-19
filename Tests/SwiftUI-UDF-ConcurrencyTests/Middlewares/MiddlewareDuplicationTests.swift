@@ -33,18 +33,18 @@ import Testing
     }
 
     @Test func middlewareDuplication() async {
-        let store = EnvironmentStore(initial: AppState(), loggers: [])
+        let store = await TestStore(initial: AppState())
 
-        store.subscribe(build: { _ in
+        await store.subscribe(build: { _ in
             TestMiddleware.self
             TestMiddleware.self
         })
 
-        store.dispatch(TestAction())
-        _ = await waitForCondition { store.state.testForm.reduceCallCount == 1 }
+        await store.dispatch(TestAction())
+        _ = await waitForAsyncCondition { await store.state.testForm.reduceCallCount == 1 }
         await sleep()
 
-        let middlewaresCount = store.state.testForm.reduceCallCount
+        let middlewaresCount = await store.state.testForm.reduceCallCount
         #expect(middlewaresCount == 1, "Middleware should only be added once")
     }
 }

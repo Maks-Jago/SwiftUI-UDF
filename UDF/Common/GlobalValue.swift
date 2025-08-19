@@ -23,7 +23,7 @@ actor GlobalValue {
     /// - Returns: The singleton instance of the specified type.
     /// - Note: This method will crash if the requested singleton is not set prior to this call.
     static func value<T: AnyObject>(for vType: T.Type) -> T {
-        let key = String(reflecting: T.self)  // reflecting даёт полное имя с модулем
+        let key = String(reflecting: T.self)
         return queue.sync {
             if let singleton = values[key] {
                 return singleton as! T

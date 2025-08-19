@@ -17,7 +17,7 @@ import SwiftUI
     @MainActor
     func dialogButton() {
         let content = DialogContent(title: "", message: "", actions: {
-            UDF.DialogButton.cancel("Cancel")
+            DialogButton.cancel("Cancel")
         })
 
         #expect(content.actions.count == 1)
@@ -36,9 +36,9 @@ import SwiftUI
     @MainActor
     func multipleDialogButtons() {
         let content = DialogContent(title: "Test", message: "Multiple buttons", actions: {
-            UDF.DialogButton.default("OK")
-            UDF.DialogButton.cancel("Cancel")
-            UDF.DialogButton.destructive("Delete")
+            DialogButton.default("OK")
+            DialogButton.cancel("Cancel")
+            DialogButton.destructive("Delete")
         })
 
         #expect(content.actions.count == 3)
@@ -63,7 +63,7 @@ import SwiftUI
         @State var testText = ""
 
         let content = DialogContent("Input Required") {
-            UDF.DialogTextField(title: "Enter name", text: $testText)
+            DialogTextField(title: "Enter name", text: $testText)
         }
 
         #expect(content.actions.count == 1)
@@ -82,10 +82,10 @@ import SwiftUI
         @State var email = ""
 
         let content = DialogContent("User Registration") {
-            UDF.DialogTextField(title: "Name", text: $name)
-            UDF.DialogTextField(title: "Email", text: $email)
-            UDF.DialogButton.default("Register")
-            UDF.DialogButton.cancel("Cancel")
+            DialogTextField(title: "Name", text: $name)
+            DialogTextField(title: "Email", text: $email)
+            DialogButton.default("Register")
+            DialogButton.cancel("Cancel")
         }
 
         #expect(content.actions.count == 4)
@@ -110,14 +110,14 @@ import SwiftUI
         let showDelete = false
 
         let content = DialogContent("Conditional Actions") {
-            UDF.DialogButton.default("OK")
+            DialogButton.default("OK")
 
             if showCancel {
-                UDF.DialogButton.cancel("Cancel")
+                DialogButton.cancel("Cancel")
             }
 
             if showDelete {
-                UDF.DialogButton.destructive("Delete")
+                DialogButton.destructive("Delete")
             }
         }
 
@@ -134,11 +134,11 @@ import SwiftUI
         let showOptionalActions = false
 
         let content = DialogContent("Basic Action") {
-            UDF.DialogButton.default("OK")
+            DialogButton.default("OK")
 
             if showOptionalActions {
-                UDF.DialogButton.cancel("Cancel")
-                UDF.DialogButton.destructive("Delete")
+                DialogButton.cancel("Cancel")
+                DialogButton.destructive("Delete")
             }
         }
 
@@ -154,7 +154,7 @@ import SwiftUI
         var actionExecuted = false
 
         let content = DialogContent("Action Test") {
-            UDF.DialogButton(title: "Custom Action") {
+            DialogButton(title: "Custom Action") {
                 actionExecuted = true
             }
         }
@@ -174,7 +174,7 @@ import SwiftUI
     @MainActor
     func buttonModifiers() {
         let content = DialogContent("Modified Button") {
-            UDF.DialogButton(title: "Disabled Button")
+            DialogButton(title: "Disabled Button")
                 .disabled(true)
                 .role(.destructive)
         }
@@ -198,13 +198,13 @@ import SwiftUI
     }
 
     @Test func actionEquality() {
-        let button1 = UDF.DialogButton.cancel("Cancel")
-        let button2 = UDF.DialogButton.cancel("Cancel")
+        let button1 = DialogButton.cancel("Cancel")
+        let button2 = DialogButton.cancel("Cancel")
 
         // Buttons with same properties should be equal
         #expect(button1 == button2)
 
-        let button3 = UDF.DialogButton.default("Cancel")
+        let button3 = DialogButton.default("Cancel")
         #expect(button1 != button3) // Different roles
     }
 }

@@ -36,14 +36,14 @@ private extension Actions {
         case statusCode(Int)
     }
 
-    final class LoadingMiddleware: Middleware<MiddlewareMapErrorTests.AppState>, @unchecked Sendable {
+    final class LoadingMiddleware: Middleware<AppState>, @unchecked Sendable {
         enum Сancellation: CaseIterable {
             case message
         }
 
         var environment: Void!
 
-        func reduce(_ action: some Action, for state: MiddlewareMapErrorTests.AppState) {
+        func reduce(_ action: some Action, for state: AppState) {
             switch action {
             case is Actions.StartLoading:
                 execute(
@@ -74,11 +74,11 @@ private extension Actions {
     }
 
     @Test func mapError() async {
-        let store = EnvironmentStore(initial: MiddlewareMapErrorTests.AppState(), loggers: [])
-        store.subscribe(LoadingMiddleware.self)
+        let store = await TestStore(initial: AppState())
+        await store.subscribe(LoadingMiddleware.self)
 
-        store.dispatch(Actions.StartLoading())
-        let success = await waitForCondition { store.state.errorForm.errorStatusCode == 400 }
+        await store.dispatch(Actions.StartLoading())
+        let success = await waitForAsyncCondition { await store.state.errorForm.errorStatusCode == 400 }
         #expect(success)
     }
 }

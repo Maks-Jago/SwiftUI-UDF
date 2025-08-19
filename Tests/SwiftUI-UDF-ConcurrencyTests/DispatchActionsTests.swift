@@ -38,10 +38,10 @@ import UDFSwiftTesting
 
         #expect(messageInternalUnwrappedAction.silent)
 
-        let testStore = EnvironmentStore(initial: AppState(), loggers: [])
-        testStore.dispatch(Actions.Message(id: "1"))
-        testStore.dispatch(Actions.Message(id: "2").silent())
-        testStore.dispatch(Actions.Message(id: "3"))
+        let testStore = await TestStore(initial: AppState())
+        await testStore.dispatch(Actions.Message(id: "1"))
+        await testStore.dispatch(Actions.Message(id: "2").silent())
+        await testStore.dispatch(Actions.Message(id: "3"))
     }
 
     @Test func silentAnimatedActionDispatch() throws {

@@ -79,21 +79,21 @@ import Testing
     }
 
     @Test func whenLoadingDataForBindableReducers_OnleConcreteInstanceOfBindableFormShouldBeUpdated() async throws {
-        let store = EnvironmentStore(initial: AppState(), loggers: [])
-        store.subscribe(ItemsMiddleware.self)
+        let store = await TestStore(initial: AppState())
+        await store.subscribe(ItemsMiddleware.self)
 
-        store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 1)))
-        store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 2)))
-        store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 3)))
-        store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 4)))
+        await store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 1)))
+        await store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 2)))
+        await store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 3)))
+        await store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 4)))
 
-        var success = await waitForCondition { store.state.itemsForm.reducers.count == 4 }
+        var success = await waitForAsyncCondition { await store.state.itemsForm.reducers.count == 4 }
         #expect(success)
 
-        success = await waitForCondition { store.state.itemsFlow.reducers.count == 4 }
+        success = await waitForAsyncCondition { await store.state.itemsFlow.reducers.count == 4 }
         #expect(success)
 
-        store.dispatch(
+        await store.dispatch(
             ActionGroup {
                 Actions.LoadItem(id: .init(value: 1))
                     .binded(to: ItemsContainer.self, by: Item.ID(value: 1))
@@ -106,41 +106,41 @@ import Testing
             }
         )
 
-        success = await waitForCondition { store.state.itemsForm[Item.ID(value: 1)]?.item != nil }
+        success = await waitForAsyncCondition { await store.state.itemsForm[Item.ID(value: 1)]?.item != nil }
         #expect(success)
 
-        success = await waitForCondition { store.state.itemsForm[Item.ID(value: 2)]?.item == nil }
+        success = await waitForAsyncCondition { await store.state.itemsForm[Item.ID(value: 2)]?.item == nil }
         #expect(success)
 
-        success = await waitForCondition { store.state.itemsForm[Item.ID(value: 3)]?.item != nil }
+        success = await waitForAsyncCondition { await store.state.itemsForm[Item.ID(value: 3)]?.item != nil }
         #expect(success)
 
-        success = await waitForCondition { store.state.itemsForm[Item.ID(value: 4)]?.item != nil }
+        success = await waitForAsyncCondition { await store.state.itemsForm[Item.ID(value: 4)]?.item != nil }
         #expect(success)
     }
 
     @Test func whenDispatchingBindedAction_DuplicationShouldBePrevented() async throws {
-        let store = EnvironmentStore(initial: AppState(), loggers: [])
-        store.subscribe(ItemsMiddleware.self)
+        let store = await TestStore(initial: AppState())
+        await store.subscribe(ItemsMiddleware.self)
 
-        store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 1)))
+        await store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 1)))
 
-        var success = await waitForCondition { store.state.itemsForm.reducers.count == 1 }
+        var success = await waitForAsyncCondition { await store.state.itemsForm.reducers.count == 1 }
         #expect(success)
 
-        success = await waitForCondition { store.state.itemsFlow.reducers.count == 1 }
+        success = await waitForAsyncCondition { await store.state.itemsFlow.reducers.count == 1 }
         #expect(success)
 
-        store.dispatch(
+        await store.dispatch(
             ActionGroup {
                 Actions.LoadItem(id: .init(value: 1))
             }.binded(to: ItemsContainer.self, by: Item.ID(value: 1))
         )
 
-        success = await waitForCondition { store.state.itemsForm[Item.ID(value: 1)]?.item != nil }
+        success = await waitForAsyncCondition { await store.state.itemsForm[Item.ID(value: 1)]?.item != nil }
         #expect(success)
 
-        success = await waitForCondition { store.state.itemReducible.didLoadItemReduced == 1 }
+        success = await waitForAsyncCondition { await store.state.itemReducible.didLoadItemReduced == 1 }
         #expect(success)
     }
 }

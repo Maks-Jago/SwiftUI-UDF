@@ -5,8 +5,7 @@ import UDFSwiftTesting
 import Testing
 import Foundation
 
-@Suite struct MiddlewareCancellationTests_Last {
-    
+@Suite struct MiddlewareCancellationTests {
     struct AppState: AppReducer {
         var middlewareFlow = MiddlewareFlow()
         var runForm = RunForm()
@@ -59,41 +58,41 @@ import Foundation
     }
 
     @Test func observableMiddlewareCancellation() async {
-        let store = EnvironmentStore(initial: AppState(), loggers: [])
-        store.subscribe(ObservableMiddlewareToCancel.self, environment: ())
-        store.dispatch(Actions.Loading())
-        var success = await waitForCondition { store.state.middlewareFlow == .loading }
+        let store = await TestStore(initial: AppState())
+        await store.subscribe(ObservableMiddlewareToCancel.self, environment: ())
+        await store.dispatch(Actions.Loading())
+        var success = await waitForAsyncCondition { await store.state.middlewareFlow == .loading }
         #expect(success)
 
-        store.dispatch(Actions.CancelLoading())
-        success = await waitForCondition { store.state.middlewareFlow == .none }
+        await store.dispatch(Actions.CancelLoading())
+        success = await waitForAsyncCondition { await store.state.middlewareFlow == .none }
         #expect(success)
     }
 
     @Test func observableRunMiddlewareToCancel() async {
-        let store = EnvironmentStore(initial: AppState(), loggers: [])
-        store.subscribe(ObservableRunMiddlewareToCancel.self, environment: ObservableRunMiddlewareToCancel.Environment())
-        store.dispatch(Actions.Loading())
-        var success = await waitForCondition { store.state.middlewareFlow == .loading }
+        let store = await TestStore(initial: AppState())
+        await store.subscribe(ObservableRunMiddlewareToCancel.self, environment: ObservableRunMiddlewareToCancel.Environment())
+        await store.dispatch(Actions.Loading())
+        var success = await waitForAsyncCondition { await store.state.middlewareFlow == .loading }
         #expect(success)
 
-        success = await waitForCondition { store.state.runForm.messagesCount > 0 }
+        success = await waitForAsyncCondition { await store.state.runForm.messagesCount > 0 }
         #expect(success)
 
-        store.dispatch(Actions.CancelLoading())
-        success = await waitForCondition { store.state.middlewareFlow == .none }
+        await store.dispatch(Actions.CancelLoading())
+        success = await waitForAsyncCondition { await store.state.middlewareFlow == .none }
         #expect(success)
     }
 
     @Test func reducibleMiddlewareToCancel() async {
-        let store = EnvironmentStore(initial: AppState(), loggers: [])
-        store.subscribe(ReducibleMiddlewareToCancel.self, environment: ReducibleMiddlewareToCancel.Environment())
-        store.dispatch(Actions.Loading())
-        var success = await waitForCondition { store.state.middlewareFlow == .loading }
+        let store = await TestStore(initial: AppState())
+        await store.subscribe(ReducibleMiddlewareToCancel.self, environment: ReducibleMiddlewareToCancel.Environment())
+        await store.dispatch(Actions.Loading())
+        var success = await waitForAsyncCondition { await store.state.middlewareFlow == .loading }
         #expect(success)
 
-        store.dispatch(Actions.CancelLoading())
-        success = await waitForCondition { store.state.middlewareFlow == .none }
+        await store.dispatch(Actions.CancelLoading())
+        success = await waitForAsyncCondition { await store.state.middlewareFlow == .none }
         #expect(success)
     }
 }
@@ -104,7 +103,7 @@ private extension Actions {
 }
 
 // MARK: - Middlewares
-private extension MiddlewareCancellationTests_Last {
+private extension MiddlewareCancellationTests {
     final class ObservableMiddlewareToCancel: Middleware<AppState>, @unchecked Sendable {
         var environment: Void!
 

@@ -12,37 +12,41 @@ private extension Actions {
 
 @Suite struct MiddlewareSubscriptionTests {
     @Test func middlewareSubscriptions() async {
-        let store = EnvironmentStore(initial: AppState(), loggers: [])
-        store.subscribe(ObservableMiddleware.self, environment: ())
-        store.subscribe(ReducibleMiddleware.self, environment: ())
-        await sleep()
-        #expect(store.state.testForm.type == nil)
+        let store = await TestStore(initial: AppState())
+        await store.subscribe(build: { store in
+            ObservableMiddleware.self
+            ReducibleMiddleware(store: store)
+        })
 
-        store.dispatch(Actions.TestMiddleware(type: .observable))
-        var success = await waitForCondition { store.state.testForm.type == .observable }
+        await sleep()
+
+        #expect(await store.state.testForm.type == nil)
+
+        await store.dispatch(Actions.TestMiddleware(type: .observable))
+        var success = await waitForAsyncCondition { await store.state.testForm.type == .observable }
         #expect(success)
 
-        store.dispatch(Actions.TestMiddleware(type: .reducible))
-        success = await waitForCondition { store.state.testForm.type == .reducible }
+        await store.dispatch(Actions.TestMiddleware(type: .reducible))
+        success = await waitForAsyncCondition { await store.state.testForm.type == .reducible }
         #expect(success)
     }
 
     @Test func environmentMiddlewareSubscription() async {
-        let store = EnvironmentStore(initial: AppState(), loggers: [])
-        store.subscribe(EnvironmentMiddleware.self, environment: EnvironmentMiddleware.Environment())
+        let store = await TestStore(initial: AppState())
+        await store.subscribe(EnvironmentMiddleware.self)
 
-        store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.type, value: .testEnvironment))
-        let success = await waitForCondition { store.state.testForm.type == .testEnvironment }
+        await store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.type, value: .testEnvironment))
+        let success = await waitForAsyncCondition { await store.state.testForm.type == .testEnvironment }
         #expect(success)
     }
 
-    func liveEnvironmentMiddlewareSubscription() async {
-        let store = EnvironmentStore(initial: AppState(), loggers: [])
+    @Test func liveEnvironmentMiddlewareSubscription() async {
+        let store = await TestStore(initial: AppState())
         setLiveEnvironment()
-        store.subscribe(EnvironmentMiddleware.self, environment: EnvironmentMiddleware.Environment())
+        await store.subscribe(EnvironmentMiddleware.self)
 
-        store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.type, value: .liveEnvironment))
-        let success = await waitForCondition { store.state.testForm.type == .liveEnvironment }
+        await store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.type, value: .liveEnvironment))
+        let success = await waitForAsyncCondition { await store.state.testForm.type == .liveEnvironment }
         #expect(success)
     }
 }

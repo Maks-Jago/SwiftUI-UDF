@@ -62,53 +62,14 @@ struct ConnectedContainer<C: Component, State: AppReducer>: View {
     /// The container state that observes changes in the scoped state.
     @ObservedObject var containerState: ContainerState<State>
 
-    /// The store to use for this container - either provided explicitly or global
-    private let explicitStore: EnvironmentStore<State>?
-    
-    /// Provides access to the `EnvironmentStore`.
-    private var store: EnvironmentStore<State> { 
-        explicitStore ?? .global 
-    }
-    /// Initializes the `ConnectedContainer` with closures for mapping state, managing scope,
-    /// handling lifecycle events, and creating hooks.
-    ///
-    /// - Parameters:
-    ///   - map: A closure to map the `EnvironmentStore` to the component's properties.
-    ///   - scope: A closure to extract a specific scope from the global state.
-    ///   - onContainerAppear: A closure executed when the container appears.
-    ///   - onContainerDisappear: A closure executed when the container disappears.
-    ///   - onContainerDidLoad: A closure executed when the container is loaded.
-    ///   - onContainerDidUnload: A closure executed when the container is unloaded.
-    ///   - useHooks: A closure that provides an array of hooks to use within the container.
-    init(
-        map: @escaping (EnvironmentStore<State>) -> C.Props,
-        scope: @escaping @Sendable (State) -> Scope,
-        onContainerAppear: @escaping @MainActor (EnvironmentStore<State>) -> Void,
-        onContainerDisappear: @escaping @MainActor (EnvironmentStore<State>) -> Void,
-        onContainerDidLoad: @escaping (EnvironmentStore<State>) -> Void,
-        onContainerDidUnload: @escaping (EnvironmentStore<State>) -> Void,
-        useHooks: @escaping () -> [Hook<State>]
-    ) {
-        self.explicitStore = nil
-        self.map = map
-        self.scope = scope
-        self.onContainerAppear = onContainerAppear
-        self.onContainerDisappear = onContainerDisappear
-        self._containerLifecycle = .init(
-            wrappedValue: ContainerLifecycle(
-                didLoadCommand: onContainerDidLoad,
-                didUnloadCommand: onContainerDidUnload,
-                useHooks: useHooks
-            )
-        )
-        self._containerState = .init(wrappedValue: .init(store: EnvironmentStore<State>.global, scope: scope))
-    }
+    /// Provides access to the `EnvironmentStore`, which can be either global or explicitly provided.
+    private var store: EnvironmentStore<State>
 
-    /// Initializes the `ConnectedContainer` with an explicit store and closures for mapping state, managing scope,
+    /// Initializes the `ConnectedContainer` with an  store and closures for mapping state, managing scope,
     /// handling lifecycle events, and creating hooks.
     ///
     /// - Parameters:
-    ///   - store: The explicit store to use instead of global
+    ///   - store: The `EnvironmentStore` instance to use for this container. Defaults to `.global` if not provided.
     ///   - map: A closure to map the `EnvironmentStore` to the component's properties.
     ///   - scope: A closure to extract a specific scope from the global state.
     ///   - onContainerAppear: A closure executed when the container appears.
@@ -117,7 +78,7 @@ struct ConnectedContainer<C: Component, State: AppReducer>: View {
     ///   - onContainerDidUnload: A closure executed when the container is unloaded.
     ///   - useHooks: A closure that provides an array of hooks to use within the container.
     init(
-        store: EnvironmentStore<State>,
+        store: EnvironmentStore<State> = .global,
         map: @escaping (EnvironmentStore<State>) -> C.Props,
         scope: @escaping @Sendable (State) -> Scope,
         onContainerAppear: @escaping @MainActor (EnvironmentStore<State>) -> Void,
@@ -126,7 +87,7 @@ struct ConnectedContainer<C: Component, State: AppReducer>: View {
         onContainerDidUnload: @escaping (EnvironmentStore<State>) -> Void,
         useHooks: @escaping () -> [Hook<State>]
     ) {
-        self.explicitStore = store
+        self.store = store
         self.map = map
         self.scope = scope
         self.onContainerAppear = onContainerAppear
@@ -143,6 +104,7 @@ struct ConnectedContainer<C: Component, State: AppReducer>: View {
     /// Initializes a `ConnectedContainer` for a bindable container type, managing state and lifecycle events.
     ///
     /// - Parameters:
+    ///   - store: The `EnvironmentStore` instance to use for this container. Defaults to `.global` if not provided.
     ///   - containerType: The type of the bindable container.
     ///   - containerId: A closure that returns the container's unique identifier.
     ///   - map: A closure to map the `EnvironmentStore` to the component's properties.
@@ -153,6 +115,7 @@ struct ConnectedContainer<C: Component, State: AppReducer>: View {
     ///   - onContainerDidUnload: A closure executed when the container is unloaded.
     ///   - useHooks: A closure that provides an array of hooks to use within the container.
     init<BindedContainer: BindableContainer>(
+        store: EnvironmentStore<State> = .global,
         containerType: BindedContainer.Type,
         containerId: @escaping () -> BindedContainer.ID,
         map: @escaping (EnvironmentStore<State>) -> C.Props,
@@ -163,7 +126,7 @@ struct ConnectedContainer<C: Component, State: AppReducer>: View {
         onContainerDidUnload: @escaping (EnvironmentStore<State>) -> Void,
         useHooks: @escaping () -> [Hook<State>]
     ) where BindedContainer.ID: Sendable {
-        self.explicitStore = nil
+        self.store = store
         self.map = map
         self.scope = scope
         self.onContainerAppear = onContainerAppear
@@ -189,59 +152,6 @@ struct ConnectedContainer<C: Component, State: AppReducer>: View {
             )
         )
         self._containerState = .init(wrappedValue: .init(store: EnvironmentStore<State>.global, scope: scope))
-    }
-
-    /// Initializes a `ConnectedContainer` for a bindable container type with explicit store, managing state and lifecycle events.
-    ///
-    /// - Parameters:
-    ///   - store: The explicit store to use instead of global
-    ///   - containerType: The type of the bindable container.
-    ///   - containerId: A closure that returns the container's unique identifier.
-    ///   - map: A closure to map the `EnvironmentStore` to the component's properties.
-    ///   - scope: A closure to extract a specific scope from the global state.
-    ///   - onContainerAppear: A closure executed when the container appears.
-    ///   - onContainerDisappear: A closure executed when the container disappears.
-    ///   - onContainerDidLoad: A closure executed when the container is loaded.
-    ///   - onContainerDidUnload: A closure executed when the container is unloaded.
-    ///   - useHooks: A closure that provides an array of hooks to use within the container.
-    init<BindedContainer: BindableContainer>(
-        store: EnvironmentStore<State>,
-        containerType: BindedContainer.Type,
-        containerId: @escaping () -> BindedContainer.ID,
-        map: @escaping (EnvironmentStore<State>) -> C.Props,
-        scope: @escaping @Sendable (State) -> Scope,
-        onContainerAppear: @escaping @MainActor (EnvironmentStore<State>) -> Void,
-        onContainerDisappear: @escaping @MainActor (EnvironmentStore<State>) -> Void,
-        onContainerDidLoad: @escaping (EnvironmentStore<State>) -> Void,
-        onContainerDidUnload: @escaping (EnvironmentStore<State>) -> Void,
-        useHooks: @escaping () -> [Hook<State>]
-    ) where BindedContainer.ID: Sendable {
-        self.explicitStore = store
-        self.map = map
-        self.scope = scope
-        self.onContainerAppear = onContainerAppear
-        self.onContainerDisappear = onContainerDisappear
-        self._containerLifecycle = .init(
-            wrappedValue: ContainerLifecycle(
-                didLoadCommand: { store in
-                    store.dispatch(
-                        Actions._OnContainerDidLoad(containerType: containerType, id: containerId()).silent(),
-                        priority: .userInteractive
-                    )
-                    onContainerDidLoad(store)
-                },
-                didUnloadCommand: { store in
-                    onContainerDidUnload(store)
-                    store.dispatch(
-                        Actions._OnContainerDidUnLoad(containerType: containerType, id: containerId())
-                            .with(delay: 0.15)
-                            .silent()
-                    )
-                },
-                useHooks: useHooks
-            )
-        )
-        self._containerState = .init(wrappedValue: .init(store: store, scope: scope))
     }
 
     /// The main view body that renders the component and attaches lifecycle events.

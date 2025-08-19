@@ -51,15 +51,15 @@ import Foundation
     }
 
     @Test func observableMiddlewareCancellation() async {
-        let store = EnvironmentStore(initial: AppState(), loggers: [])
-        store.subscribe(ObservableMiddlewareToCancel.self, environment: ObservableMiddlewareToCancel.Environment(loadItems: { [] }))
+        let store = await TestStore(initial: AppState())
+        await store.subscribe(ObservableMiddlewareToCancel.self, environment: ObservableMiddlewareToCancel.Environment(loadItems: { [] }))
 
-        store.dispatch(Actions.Loading())
-        var success = await waitForCondition { store.state.middlewareFlow == .loading }
+        await store.dispatch(Actions.Loading())
+        var success = await waitForAsyncCondition { await store.state.middlewareFlow == .loading }
         #expect(success)
 
-        store.dispatch(Actions.CancelLoading())
-        success = await waitForCondition { store.state.middlewareFlow == .didCancel }
+        await store.dispatch(Actions.CancelLoading())
+        success = await waitForAsyncCondition { await store.state.middlewareFlow == .didCancel }
         #expect(success)
     }
 }

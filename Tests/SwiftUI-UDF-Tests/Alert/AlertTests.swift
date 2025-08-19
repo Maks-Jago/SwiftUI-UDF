@@ -43,8 +43,8 @@ extension AlertBuilder.AlertStyle {
 
     @Test
     func whenAlerBuilderRegistered_AlertCanBePresentedById() async {
-        let store = EnvironmentStore(initial: AppState(), loggers: [])
-        #expect(store.state.form.alert.status == .dismissed)
+        let store = await TestStore(initial: AppState())
+        #expect(await store.state.form.alert.status == .dismissed)
         
         AlertBuilder.registerAlert(by: FormWithAlert.AlertId.alertWithAction) {
             .alertWithAction {
@@ -52,9 +52,9 @@ extension AlertBuilder.AlertStyle {
             }
         }
         
-        store.dispatch(Actions.PresentAlertWithAction())
+        await store.dispatch(Actions.PresentAlertWithAction())
         // Sometimes fails. Ping to the channel if reproduce once
-        let success = await waitForCondition(timeout: 10) { store.state.form.alert.status != .dismissed }
+        let success = await waitForAsyncCondition(timeout: 10) { await store.state.form.alert.status != .dismissed }
         #expect(success)
     }
 }

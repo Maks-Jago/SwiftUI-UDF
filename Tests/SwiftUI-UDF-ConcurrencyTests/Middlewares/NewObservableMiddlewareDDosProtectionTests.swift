@@ -94,56 +94,52 @@ private extension Actions {
     }
 
     @Test func observableMiddlewareDDDos() async {
-        let store = EnvironmentStore(initial: AppState(), loggers: [])
+        let store = await TestStore(initial: AppState())
 
-        store.subscribe(SendMessageMiddleware.self)
+        await store.subscribe(SendMessageMiddleware.self)
 
-        var formTitle = store.state.testForm.title
+        var formTitle = await store.state.testForm.title
         #expect(formTitle.isEmpty)
 
-        store.dispatch(Actions.SendMessage(message: "Flow message 1", id: TestFlow.id))
-        await waitForCondition {
-            store.state.testForm.title == "Flow message 1"
+        await store.dispatch(Actions.SendMessage(message: "Flow message 1", id: TestFlow.id))
+        _ = await waitForAsyncCondition {
+            await store.state.testForm.title == "Flow message 1"
         }
-        store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.title, value: "title"))
-        await waitForCondition {
-            store.state.testForm.title == "title"
+        await store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.title, value: "title"))
+        _ = await waitForAsyncCondition {
+            await store.state.testForm.title == "title"
         }
-        store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.title, value: "title2"))
-        await waitForCondition {
-            store.state.testForm.title == "title2"
+        await store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.title, value: "title2"))
+        _ = await waitForAsyncCondition {
+            await store.state.testForm.title == "title2"
         }
-        store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.title, value: "title3"))
-        await waitForCondition {
-            store.state.testForm.title == "title3"
+        await store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.title, value: "title3"))
+        _ = await waitForAsyncCondition {
+            await store.state.testForm.title == "title3"
         }
-        store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.title, value: "title4"))
-        await waitForCondition {
-            store.state.testForm.title == "title4"
+        await store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.title, value: "title4"))
+        _ = await waitForAsyncCondition {
+            await store.state.testForm.title == "title4"
         }
         
         // Wait for middleware to process and set nested.number to 2
-        await waitForCondition {
-            store.state.testForm.nested.number == 2
+        var success = await waitForAsyncCondition {
+            await store.state.testForm.nested.number == 2
         }
+        #expect(success)
 
-        let numberValue = store.state.testForm.nested.number
-        #expect(numberValue == 2)
-
-        formTitle = store.state.testForm.title
+        formTitle = await store.state.testForm.title
         #expect(formTitle == "title4")
 
-        store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.title, value: "title5"))
-        await waitForCondition {
-            store.state.testForm.title == "title5"
+        await store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.title, value: "title5"))
+        _ = await waitForAsyncCondition {
+            await store.state.testForm.title == "title5"
         }
         
-        store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.title, value: "title6"))
-        await waitForCondition {
-            store.state.testForm.title == "title6"
+        await store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.title, value: "title6"))
+        success = await waitForAsyncCondition {
+            await store.state.testForm.title == "title6"
         }
-
-        formTitle = store.state.testForm.title
-        #expect(formTitle == "title6")
+        #expect(success)
     }
 }

@@ -150,14 +150,7 @@ public extension Container {
 public extension Container {
     /// Provides access to the global `EnvironmentStore` for the container's state.
     /// This will try to get from Environment first, then fall back to global
-    var store: EnvironmentStore<ContainerState> { 
-        // Try to get from SwiftUI Environment if available
-        if ProcessInfo.processInfo.isRunningTests {
-            // In tests, try to avoid global access and provide better error message
-            return EnvironmentStore<ContainerState>.global
-        }
-        return .global 
-    }
+    var store: EnvironmentStore<ContainerState> { .global }
 
     /// The body of the container view. Connects the `ContainerComponent` with the `ContainerState` using a `ConnectedContainer`.
     var body: some View {
