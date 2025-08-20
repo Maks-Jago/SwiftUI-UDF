@@ -11,31 +11,40 @@
 
 import Foundation
 
+// TODO: Try to refuse GlobalValue for SwiftTesting
 /// A utility for storing and accessing global singleton values within the application.
-actor GlobalValue {
+struct GlobalValue {
     /// A dictionary to store singletons using their type's name as the key.
-    private static var values = [String: AnyObject]()
+    /// Thread-safety guaranteed by concurrent queue with barrier synchronization.
+    nonisolated(unsafe) private static var values = [String: AnyObject]()
 
-    /// Retrieves a stored singleton for the specified type.
+    /// Concurrent queue for thread-safe read/write operations.
+    private static let queue = DispatchQueue(label: "GlobalValue.queue", attributes: .concurrent)
+
+    /// Retrieves a stored singleton for the specified type in a thread-safe manner.
     ///
     /// - Parameter vType: The type of the singleton to retrieve.
     /// - Returns: The singleton instance of the specified type.
-    /// - Note: This method will crash if the requested singleton is not set prior to this call.
+    /// - Note: This method will crash if the requested singleton has not been set prior to this call.
     static func value<T: AnyObject>(for vType: T.Type) -> T {
         let key = String(reflecting: T.self)
-        if let singleton = values[key] {
-            return singleton as! T
-        } else {
-            fatalError("You have to initialize EnvironmentStore before using any Containers")
+        return queue.sync {
+            if let singleton = values[key] {
+                return singleton as! T
+            } else {
+                fatalError("You have to initialize EnvironmentStore before using any Containers")
+            }
         }
     }
 
-    /// Stores a singleton value.
+    /// Stores a singleton value in a thread-safe manner.
     ///
     /// - Parameter value: The singleton instance to store.
-    /// - Note: The value is stored using its type's name as the key.
+    /// - Note: The value is stored using its type's fully qualified name as the key.
     static func set<T: AnyObject>(_ value: T) {
         let key = String(reflecting: T.self)
-        values[key] = value
+        queue.sync(flags: .barrier) {
+            values[key] = value
+        }
     }
 }
