@@ -31,7 +31,7 @@ import Testing
 
         let itemId = Item.ID(value: 1)
         let itemsContainer = ItemsContainer(id: itemId)
-        var window: PlatformWindow? = await PlatformWindow.render(container: itemsContainer)
+        var window: PlatformWindow? = await PlatformWindow.render(view: itemsContainer)
 
         await sleep()
         await window?.redraw()

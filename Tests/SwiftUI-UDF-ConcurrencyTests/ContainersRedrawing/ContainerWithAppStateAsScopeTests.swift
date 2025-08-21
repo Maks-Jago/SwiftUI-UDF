@@ -49,7 +49,7 @@ import UDFSwiftTesting
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
 
         let rootContainer = RootContainer()
-        let window = await PlatformWindow.render(container: rootContainer.with(store: store))
+        let window = await PlatformWindow.render(view: rootContainer.with(store: store))
 
         #expect(rootContainer.renderingNumber == 0)
         var success = await waitForMainActorCondition { rootContainer.renderingNumber == 1 }
@@ -89,7 +89,7 @@ import UDFSwiftTesting
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
 
         let noneScopeContainer = NoneScopeContainer()
-        let window = await PlatformWindow.render(container: noneScopeContainer.with(store: store))
+        let window = await PlatformWindow.render(view: noneScopeContainer.with(store: store))
 
         #expect(noneScopeContainer.renderingNumber == 0)
         let success = await waitForMainActorCondition { noneScopeContainer.renderingNumber == 1 }

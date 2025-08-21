@@ -29,7 +29,7 @@ import UDFSwiftTesting
     @Test func oneTimeHook() async throws {
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
         let rootContainer = RootContainer()
-        let window = await PlatformWindow.render(container: rootContainer)
+        let window = await PlatformWindow.render(view: rootContainer)
 
         #expect(store.state.hookForm.triggerValue == "")
         await window.redraw()
@@ -43,7 +43,7 @@ import UDFSwiftTesting
     @Test func oneTimeHook_NotCalledAgainOnRedraw() async throws {
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
         let rootContainer = RootContainer()
-        let window = await PlatformWindow.render(container: rootContainer)
+        let window = await PlatformWindow.render(view: rootContainer)
 
         #expect(store.state.hookForm.triggerValue == "")
         await window.redraw()
@@ -71,7 +71,7 @@ import UDFSwiftTesting
     @Test func defaultHook_CalledCorrectNumberOfTimes() async throws {
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
         let rootContainer = RootContainer()
-        let window = await PlatformWindow.render(container: rootContainer)
+        let window = await PlatformWindow.render(view: rootContainer)
 
         #expect(store.state.hookForm.triggerValue == "")
         await window.redraw()
@@ -101,7 +101,7 @@ import UDFSwiftTesting
 
         // Create and use the first container
         let rootContainer = RootContainer()
-        var window = await PlatformWindow.render(container: rootContainer)
+        var window = await PlatformWindow.render(view: rootContainer)
 
         #expect(store.state.hookForm.triggerValue == "")
         await window.redraw()
@@ -127,7 +127,7 @@ import UDFSwiftTesting
         #expect(store.state.hookForm.triggerValue == "1", "One-time hook should not fire again")
 
         let newRootContainer = RootContainer()
-        window = await PlatformWindow.render(container: newRootContainer)
+        window = await PlatformWindow.render(view: newRootContainer)
 
         #expect(store.state.hookForm.triggerValue == "1") // triggerValue from previous step
         await window.redraw()
@@ -148,7 +148,7 @@ import UDFSwiftTesting
 
         // Now create the container - the hook condition is already satisfied
         let rootContainer = RootContainer()
-        let window = await PlatformWindow.render(container: rootContainer)
+        let window = await PlatformWindow.render(view: rootContainer)
 
         await window.redraw()
 
@@ -162,7 +162,7 @@ import UDFSwiftTesting
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
         let rootContainer = RemovableHookContainer()
 
-        let window = await PlatformWindow.render(container: rootContainer)
+        let window = await PlatformWindow.render(view: rootContainer)
         await window.redraw()
 
         // Trigger the hook that removes itself
@@ -184,7 +184,7 @@ import UDFSwiftTesting
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
         let rootContainer = AlwaysFalseHookContainer()
 
-        let window = await PlatformWindow.render(container: rootContainer)
+        let window = await PlatformWindow.render(view: rootContainer)
         await window.redraw()
 
         // Change state multiple times
@@ -202,7 +202,7 @@ import UDFSwiftTesting
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
         let rootContainer = MultipleHooksContainer()
 
-        let window = await PlatformWindow.render(container: rootContainer)
+        let window = await PlatformWindow.render(view: rootContainer)
         await window.redraw()
 
         // Reset counters
@@ -227,7 +227,7 @@ import UDFSwiftTesting
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
         let rootContainer = ComplexConditionHookContainer()
 
-        let window = await PlatformWindow.render(container: rootContainer)
+        let window = await PlatformWindow.render(view: rootContainer)
         await window.redraw()
 
         // Reset counters
@@ -246,7 +246,7 @@ import UDFSwiftTesting
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
         let rootContainer = TransitionTestContainer()
 
-        let window = await PlatformWindow.render(container: rootContainer)
+        let window = await PlatformWindow.render(view: rootContainer)
         await window.redraw()
 
         // Start with condition false, then true
@@ -280,7 +280,7 @@ import UDFSwiftTesting
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
         let rootContainer = NilSafeHookContainer()
 
-        let window = await PlatformWindow.render(container: rootContainer)
+        let window = await PlatformWindow.render(view: rootContainer)
         await window.redraw()
 
         // This tests hooks that might deal with optional values safely
@@ -299,7 +299,7 @@ import UDFSwiftTesting
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
         let rootContainer = RollbackHookContainer()
 
-        let window = await PlatformWindow.render(container: rootContainer)
+        let window = await PlatformWindow.render(view: rootContainer)
         await window.redraw()
 
         // Set up initial state
@@ -321,7 +321,7 @@ import UDFSwiftTesting
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
         let rootContainer = ConditionalHookContainer()
 
-        let window = await PlatformWindow.render(container: rootContainer)
+        let window = await PlatformWindow.render(view: rootContainer)
         await window.redraw()
 
         // Reset counters

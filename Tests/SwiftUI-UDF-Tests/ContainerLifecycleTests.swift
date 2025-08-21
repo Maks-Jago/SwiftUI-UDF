@@ -32,7 +32,7 @@ import UDFSwiftTesting
         let store = EnvironmentStore(initial: AppState(), logger: .consoleDebug)
         let rootContainer = RootContainer()
 
-        var window: PlatformWindow? = await PlatformWindow.render(container: rootContainer)
+        var window: PlatformWindow? = await PlatformWindow.render(view: rootContainer)
         await window?.redraw()
         var success = await waitForCondition { store.state.userData.didLoad }
         #expect(success)

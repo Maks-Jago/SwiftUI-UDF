@@ -55,7 +55,7 @@ import UDFSwiftTesting
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
 
         let itemsContainer = ItemsListContainer()
-        let window = await PlatformWindow.render(container: itemsContainer.with(store: store))
+        let window = await PlatformWindow.render(view: itemsContainer.with(store: store))
 
         store.dispatch(Actions.UpdateFormField(keyPath: \PlainForm.title, value: "title 1"))
         _ = await waitForMainActorCondition { itemsContainer.renderingNumber == 1 }
@@ -70,7 +70,7 @@ import UDFSwiftTesting
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
 
         let rootContainer = RootContainer()
-        let window = await PlatformWindow.render(container: rootContainer.with(store: store))
+        let window = await PlatformWindow.render(view: rootContainer.with(store: store))
 
         store.dispatch(Actions.UpdateFormField(keyPath: \PlainForm.title, value: "title 1"))
         var success = await waitForMainActorCondition { rootContainer.renderingNumber == 1 }
