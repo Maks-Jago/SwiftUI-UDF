@@ -14,6 +14,9 @@ import Foundation
 // TODO: Try to refuse GlobalValue for SwiftTesting
 /// A utility for storing and accessing global singleton values within the application.
 struct GlobalValue {
+    /// Prevents instantiation of this utility struct.
+    private init() {}
+
     /// A dictionary to store singletons using their type's name as the key.
     /// Thread-safety guaranteed by concurrent queue with barrier synchronization.
     nonisolated(unsafe) private static var values = [String: AnyObject]()
