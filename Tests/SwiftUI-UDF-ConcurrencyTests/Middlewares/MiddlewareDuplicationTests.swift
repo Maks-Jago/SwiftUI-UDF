@@ -41,7 +41,7 @@ import Testing
         })
 
         await store.dispatch(TestAction())
-        _ = await waitForAsyncCondition { await store.state.testForm.reduceCallCount == 1 }
+        await waitForCondition { await store.state.testForm.reduceCallCount == 1 }
         await sleep()
 
         let middlewaresCount = await store.state.testForm.reduceCallCount

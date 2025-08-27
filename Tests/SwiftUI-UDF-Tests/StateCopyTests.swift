@@ -45,7 +45,7 @@ import Testing
     @Test func stateCopying() async {
         let store = await TestStore(initial: AppState())
         await store.dispatch(Actions.UpdateFormField(keyPath: \SomeForm.item, value: .init(text: "new item text")))
-        let success = await waitForAsyncCondition { await store.state.someForm.item.text ==  "new item text"}
+        let success = await waitForCondition { await store.state.someForm.item.text ==  "new item text"}
         #expect(success)
     }
 }

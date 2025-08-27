@@ -117,7 +117,7 @@ extension DialogType {
         }
 
         await store.dispatch(Actions.PresentDialogWithAction())
-        let success = await waitForAsyncCondition { await store.state.form.dialog.status != .dismissed }
+        let success = await waitForCondition { await store.state.form.dialog.status != .dismissed }
         #expect(success)
 
         if case .presented(let dialogType) = await store.state.form.dialog.status {
@@ -190,7 +190,7 @@ extension DialogType {
         }
 
         await store.dispatch(Actions.PresentToastDialog())
-        let success = await waitForAsyncCondition { await store.state.form.dialog.status != .dismissed }
+        let success = await waitForCondition { await store.state.form.dialog.status != .dismissed }
         #expect(success)
 
         // Verify it's a toast style
@@ -213,7 +213,7 @@ extension DialogType {
         }
 
         await store.dispatch(Actions.PresentCustomToastWithIcon())
-        let success = await waitForAsyncCondition { await store.state.form.dialog.status != .dismissed }
+        let success = await waitForCondition { await store.state.form.dialog.status != .dismissed }
         #expect(success)
 
         // Verify it's a toast with custom icon
@@ -242,7 +242,7 @@ extension DialogType {
         }
 
         await store.dispatch(Actions.PresentCustomViewToast())
-        let success = await waitForAsyncCondition { await store.state.form.dialog.status != .dismissed }
+        let success = await waitForCondition { await store.state.form.dialog.status != .dismissed }
         #expect(success)
 
         // Verify it's a toast with custom view
@@ -364,7 +364,7 @@ extension DialogType {
         
         // Present the toast
         await store.dispatch(Actions.PresentToastDialog())
-        let success = await waitForAsyncCondition { await store.state.form.dialog.status != .dismissed }
+        let success = await waitForCondition { await store.state.form.dialog.status != .dismissed }
         #expect(success)
         
         // For manual dismiss, we'll test by creating a dismissed dialog directly
@@ -392,7 +392,7 @@ extension DialogType {
         
         // Present the toast
         await store.dispatch(Actions.PresentToastDialog())
-        let success = await waitForAsyncCondition { await store.state.form.dialog.status != .dismissed }
+        let success = await waitForCondition { await store.state.form.dialog.status != .dismissed }
         #expect(success)
         
         // Wait longer than typical auto-dismiss time

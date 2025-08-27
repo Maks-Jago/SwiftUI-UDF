@@ -61,11 +61,11 @@ import Foundation
         await store.subscribe(ObservableMiddlewareToCancel.self, environment: ObservableMiddlewareToCancel.Environment())
 
         await store.dispatch(Actions.Loading())
-        var success = await waitForAsyncCondition { await store.state.middlewareFlow == .loading }
+        var success = await waitForCondition { await store.state.middlewareFlow == .loading }
         #expect(success)
 
         await store.dispatch(Actions.CancelLoading())
-        success = await waitForAsyncCondition { await store.state.middlewareFlow == .didCancel }
+        success = await waitForCondition { await store.state.middlewareFlow == .didCancel }
         #expect(success)
     }
 
@@ -74,11 +74,11 @@ import Foundation
         await store.subscribe(ObservableRunMiddlewareToCancel.self, environment: ObservableRunMiddlewareToCancel.Environment())
 
         await store.dispatch(Actions.Loading())
-        var success = await waitForAsyncCondition { await store.state.middlewareFlow == .loading }
+        var success = await waitForCondition { await store.state.middlewareFlow == .loading }
         #expect(success)
 
         await store.dispatch(Actions.CancelLoading())
-        success = await waitForAsyncCondition { await store.state.middlewareFlow == .didCancel }
+        success = await waitForCondition { await store.state.middlewareFlow == .didCancel }
         #expect(success)
     }
 
@@ -87,11 +87,11 @@ import Foundation
         await store.subscribe(ReducibleMiddlewareToCancel.self, environment: ReducibleMiddlewareToCancel.Environment())
 
         await store.dispatch(Actions.Loading())
-        var success = await waitForAsyncCondition { await store.state.middlewareFlow == .loading }
+        var success = await waitForCondition { await store.state.middlewareFlow == .loading }
         #expect(success)
 
         await store.dispatch(Actions.CancelLoading())
-        success = await waitForAsyncCondition { await store.state.middlewareFlow == .didCancel }
+        success = await waitForCondition { await store.state.middlewareFlow == .didCancel }
 
         #expect(await store.state.runForm.messagesCount == 0)
         #expect(success)

@@ -67,7 +67,7 @@ private extension Actions {
 
         let message = "Message 1"
         await store.dispatch(Actions.SendMessage(message: message))
-        let success = await waitForAsyncCondition { await store.state.testForm.title == message }
+        let success = await waitForCondition { await store.state.testForm.title == message }
         #expect(success)
     }
 }

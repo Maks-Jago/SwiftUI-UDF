@@ -58,7 +58,7 @@ import UDFSwiftTesting
         let window = await PlatformWindow.render(view: itemsContainer.with(store: store))
 
         store.dispatch(Actions.UpdateFormField(keyPath: \PlainForm.title, value: "title 1"))
-        _ = await waitForMainActorCondition { itemsContainer.renderingNumber == 1 }
+        await waitForMainActorCondition { itemsContainer.renderingNumber == 1 }
 
         window.redraw()
         let success = await waitForMainActorCondition { itemsContainer.renderingNumber == 2 }
@@ -88,11 +88,11 @@ import UDFSwiftTesting
         success = await waitForMainActorCondition { rootContainer.renderingNumber == 3 }
         #expect(success)
 
-        store.dispatch(Actions.UpdateFormField(keyPath: \PlainForm.title, value: "title 2"))
-        await sleep()
+        let title2 = "title 2"
+        store.dispatch(Actions.UpdateFormField(keyPath: \PlainForm.title, value: title2))
+        await waitForMainActorCondition { store.state.plainForm.title == title2 }
 
         window.redraw()
-        await sleep()
         #expect(rootContainer.renderingNumber == 3)
     }
 }

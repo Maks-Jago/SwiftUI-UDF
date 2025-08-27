@@ -67,17 +67,17 @@ import Testing
         await store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 1)))
         await store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 2)))
 
-        var success = await waitForAsyncCondition { await store.state.itemsForm.reducers.count == 2 }
+        var success = await waitForCondition { await store.state.itemsForm.reducers.count == 2 }
         #expect(success)
 
-        success = await waitForAsyncCondition { await store.state.itemsFlow.reducers.count == 2 }
+        success = await waitForCondition { await store.state.itemsFlow.reducers.count == 2 }
         #expect(success)
 
         await store.dispatch(
             Actions.UpdateFormField(keyPath: \ItemsForm.item, value: .init(value: 2))
                 .binded(to: ItemsContainer.self, by: .init(value: 2))
         )
-        success = await waitForAsyncCondition { await store.state.itemsForm[Item.ID(value: 2)]?.item != nil }
+        success = await waitForCondition { await store.state.itemsForm[Item.ID(value: 2)]?.item != nil }
         #expect(success)
 
         await store.dispatch(
@@ -87,7 +87,7 @@ import Testing
             )
             .binded(to: ItemsContainer.self, by: .init(value: 2))
         )
-        success = await waitForAsyncCondition {
+        success = await waitForCondition {
             await store.state.itemsForm[Item.ID(value: 2)]?.paginator.items.count == 2
         }
         #expect(success)
@@ -100,7 +100,7 @@ import Testing
         await store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 1)))
         await store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 2)))
 
-        var success = await waitForAsyncCondition { await store.state.itemsForm.reducers.count == 2 }
+        var success = await waitForCondition { await store.state.itemsForm.reducers.count == 2 }
         #expect(success)
 
         let items = [Item(id: .init(value: 1)), Item(id: .init(value: 2))]
@@ -109,7 +109,7 @@ import Testing
             Actions.DidLoadItems(items: items, id: ItemsFlow.id)
                 .binded(to: ItemsContainer.self, by: Item.ID(value: 1))
         )
-        success = await waitForAsyncCondition { await !store.state.allItems.byId.isEmpty }
+        success = await waitForCondition { await !store.state.allItems.byId.isEmpty }
         #expect(success)
 
         let itemsForm1 = try await #require(store.state.itemsForm[Item.ID(value: 1)])

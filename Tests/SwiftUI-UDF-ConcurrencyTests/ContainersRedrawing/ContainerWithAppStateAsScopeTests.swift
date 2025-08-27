@@ -55,29 +55,31 @@ import UDFSwiftTesting
         var success = await waitForMainActorCondition { rootContainer.renderingNumber == 1 }
         #expect(success)
 
-        store.dispatch(Actions.UpdateFormField(keyPath: \PlainForm.title, value: "title 1"))
-        await sleep()
+        let title1 = "title 1"
+        store.dispatch(Actions.UpdateFormField(keyPath: \PlainForm.title, value: title1))
+        await waitForMainActorCondition { store.state.plainForm.title == title1 }
 
         window.redraw()
         success = await waitForMainActorCondition { rootContainer.renderingNumber == 2 }
         #expect(success)
 
         store.dispatch(Actions.UpdateFormField(keyPath: \UserData.isUserLoggedIn, value: true))
-        await sleep()
+        await waitForMainActorCondition { store.state.userData.isUserLoggedIn }
 
         window.redraw()
         success = await waitForMainActorCondition { rootContainer.renderingNumber == 3 }
         #expect(success)
 
         store.dispatch(Actions.UpdateFormField(keyPath: \UserData.isUserLoggedIn, value: false))
-        await sleep()
+        await waitForMainActorCondition { !store.state.userData.isUserLoggedIn }
 
         window.redraw()
         success = await waitForMainActorCondition { rootContainer.renderingNumber == 4 }
         #expect(success)
 
-        store.dispatch(Actions.UpdateFormField(keyPath: \PlainForm.title, value: "title 2"))
-        await sleep()
+        let title2 = "title 2"
+        store.dispatch(Actions.UpdateFormField(keyPath: \PlainForm.title, value: title2))
+        await waitForMainActorCondition { store.state.plainForm.title == title2 }
 
         window.redraw()
         success = await waitForMainActorCondition { rootContainer.renderingNumber == 5 }
@@ -95,8 +97,9 @@ import UDFSwiftTesting
         let success = await waitForMainActorCondition { noneScopeContainer.renderingNumber == 1 }
         #expect(success)
 
-        store.dispatch(Actions.UpdateFormField(keyPath: \PlainForm.title, value: "title 1"))
-        await sleep()
+        let title1 = "title 1"
+        store.dispatch(Actions.UpdateFormField(keyPath: \PlainForm.title, value: title1))
+        await waitForMainActorCondition { store.state.plainForm.title == title1 }
 
         window.redraw()
         #expect(noneScopeContainer.renderingNumber == 1)

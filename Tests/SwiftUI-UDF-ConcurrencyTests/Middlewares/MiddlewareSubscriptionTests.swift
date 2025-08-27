@@ -18,16 +18,14 @@ private extension Actions {
             ReducibleMiddleware(store: store)
         })
 
-        await sleep()
-
         #expect(await store.state.testForm.type == nil)
 
         await store.dispatch(Actions.TestMiddleware(type: .observable))
-        var success = await waitForAsyncCondition { await store.state.testForm.type == .observable }
+        var success = await waitForCondition { await store.state.testForm.type == .observable }
         #expect(success)
 
         await store.dispatch(Actions.TestMiddleware(type: .reducible))
-        success = await waitForAsyncCondition { await store.state.testForm.type == .reducible }
+        success = await waitForCondition { await store.state.testForm.type == .reducible }
         #expect(success)
     }
 
@@ -36,7 +34,7 @@ private extension Actions {
         await store.subscribe(EnvironmentMiddleware.self)
 
         await store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.type, value: .testEnvironment))
-        let success = await waitForAsyncCondition { await store.state.testForm.type == .testEnvironment }
+        let success = await waitForCondition { await store.state.testForm.type == .testEnvironment }
         #expect(success)
     }
 
@@ -46,7 +44,7 @@ private extension Actions {
         await store.subscribe(EnvironmentMiddleware.self)
 
         await store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.type, value: .liveEnvironment))
-        let success = await waitForAsyncCondition { await store.state.testForm.type == .liveEnvironment }
+        let success = await waitForCondition { await store.state.testForm.type == .liveEnvironment }
         #expect(success)
     }
 }

@@ -33,14 +33,12 @@ import Testing
         let itemsContainer = ItemsContainer(id: itemId)
         var window: PlatformWindow? = await PlatformWindow.render(view: itemsContainer)
 
-        await sleep()
         await window?.redraw()
 
         var success = await waitForCondition { store.state.itemsForm[itemId] != nil }
         #expect(success)
 
         window = nil
-        await sleep()
         await window?.redraw()
 
         success = await waitForCondition { store.state.itemsForm[itemId] == nil }

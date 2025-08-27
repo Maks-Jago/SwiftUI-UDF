@@ -55,11 +55,11 @@ import Foundation
         await store.subscribe(ObservableMiddlewareToCancel.self, environment: ObservableMiddlewareToCancel.Environment(loadItems: { [] }))
 
         await store.dispatch(Actions.Loading())
-        var success = await waitForAsyncCondition { await store.state.middlewareFlow == .loading }
+        var success = await waitForCondition { await store.state.middlewareFlow == .loading }
         #expect(success)
 
         await store.dispatch(Actions.CancelLoading())
-        success = await waitForAsyncCondition { await store.state.middlewareFlow == .didCancel }
+        success = await waitForCondition { await store.state.middlewareFlow == .didCancel }
         #expect(success)
     }
 }

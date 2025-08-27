@@ -61,11 +61,11 @@ import Foundation
         let store = await TestStore(initial: AppState())
         await store.subscribe(ObservableMiddlewareToCancel.self, environment: ())
         await store.dispatch(Actions.Loading())
-        var success = await waitForAsyncCondition { await store.state.middlewareFlow == .loading }
+        var success = await waitForCondition { await store.state.middlewareFlow == .loading }
         #expect(success)
 
         await store.dispatch(Actions.CancelLoading())
-        success = await waitForAsyncCondition { await store.state.middlewareFlow == .none }
+        success = await waitForCondition { await store.state.middlewareFlow == .none }
         #expect(success)
     }
 
@@ -73,14 +73,14 @@ import Foundation
         let store = await TestStore(initial: AppState())
         await store.subscribe(ObservableRunMiddlewareToCancel.self, environment: ObservableRunMiddlewareToCancel.Environment())
         await store.dispatch(Actions.Loading())
-        var success = await waitForAsyncCondition { await store.state.middlewareFlow == .loading }
+        var success = await waitForCondition { await store.state.middlewareFlow == .loading }
         #expect(success)
 
-        success = await waitForAsyncCondition { await store.state.runForm.messagesCount > 0 }
+        success = await waitForCondition { await store.state.runForm.messagesCount > 0 }
         #expect(success)
 
         await store.dispatch(Actions.CancelLoading())
-        success = await waitForAsyncCondition { await store.state.middlewareFlow == .none }
+        success = await waitForCondition { await store.state.middlewareFlow == .none }
         #expect(success)
     }
 
@@ -88,11 +88,11 @@ import Foundation
         let store = await TestStore(initial: AppState())
         await store.subscribe(ReducibleMiddlewareToCancel.self, environment: ReducibleMiddlewareToCancel.Environment())
         await store.dispatch(Actions.Loading())
-        var success = await waitForAsyncCondition { await store.state.middlewareFlow == .loading }
+        var success = await waitForCondition { await store.state.middlewareFlow == .loading }
         #expect(success)
 
         await store.dispatch(Actions.CancelLoading())
-        success = await waitForAsyncCondition { await store.state.middlewareFlow == .none }
+        success = await waitForCondition { await store.state.middlewareFlow == .none }
         #expect(success)
     }
 }

@@ -139,13 +139,13 @@ struct PaginatorTests {
     @Test func paginatorLoading() async {
         let store = await TestStore(initial: AppState())
         await store.dispatch(Actions.LoadPage(id: ItemFlow.id))
-        var success = await waitForAsyncCondition { await store.state.itemsForm.paginator.isLoading == true }
+        var success = await waitForCondition { await store.state.itemsForm.paginator.isLoading == true }
         #expect(success)
 
         await store.dispatch(Actions.DidLoadItems(items: Item.fakeItems(count: 10), id: ItemFlow.id))
-        success = await waitForAsyncCondition { await store.state.itemsForm.paginator.page.pageNumber == 1 }
+        success = await waitForCondition { await store.state.itemsForm.paginator.page.pageNumber == 1 }
         #expect(success)
-        success = await waitForAsyncCondition { await store.state.itemsForm.paginator.items.count == 10 }
+        success = await waitForCondition { await store.state.itemsForm.paginator.items.count == 10 }
         #expect(success)
     }
 

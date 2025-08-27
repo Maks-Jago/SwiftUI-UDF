@@ -87,10 +87,10 @@ import Testing
         await store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 3)))
         await store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 4)))
 
-        var success = await waitForAsyncCondition { await store.state.itemsForm.reducers.count == 4 }
+        var success = await waitForCondition { await store.state.itemsForm.reducers.count == 4 }
         #expect(success)
 
-        success = await waitForAsyncCondition { await store.state.itemsFlow.reducers.count == 4 }
+        success = await waitForCondition { await store.state.itemsFlow.reducers.count == 4 }
         #expect(success)
 
         await store.dispatch(
@@ -106,16 +106,16 @@ import Testing
             }
         )
 
-        success = await waitForAsyncCondition { await store.state.itemsForm[Item.ID(value: 1)]?.item != nil }
+        success = await waitForCondition { await store.state.itemsForm[Item.ID(value: 1)]?.item != nil }
         #expect(success)
 
-        success = await waitForAsyncCondition { await store.state.itemsForm[Item.ID(value: 2)]?.item == nil }
+        success = await waitForCondition { await store.state.itemsForm[Item.ID(value: 2)]?.item == nil }
         #expect(success)
 
-        success = await waitForAsyncCondition { await store.state.itemsForm[Item.ID(value: 3)]?.item != nil }
+        success = await waitForCondition { await store.state.itemsForm[Item.ID(value: 3)]?.item != nil }
         #expect(success)
 
-        success = await waitForAsyncCondition { await store.state.itemsForm[Item.ID(value: 4)]?.item != nil }
+        success = await waitForCondition { await store.state.itemsForm[Item.ID(value: 4)]?.item != nil }
         #expect(success)
     }
 
@@ -125,10 +125,10 @@ import Testing
 
         await store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 1)))
 
-        var success = await waitForAsyncCondition { await store.state.itemsForm.reducers.count == 1 }
+        var success = await waitForCondition { await store.state.itemsForm.reducers.count == 1 }
         #expect(success)
 
-        success = await waitForAsyncCondition { await store.state.itemsFlow.reducers.count == 1 }
+        success = await waitForCondition { await store.state.itemsFlow.reducers.count == 1 }
         #expect(success)
 
         await store.dispatch(
@@ -137,10 +137,10 @@ import Testing
             }.binded(to: ItemsContainer.self, by: Item.ID(value: 1))
         )
 
-        success = await waitForAsyncCondition { await store.state.itemsForm[Item.ID(value: 1)]?.item != nil }
+        success = await waitForCondition { await store.state.itemsForm[Item.ID(value: 1)]?.item != nil }
         #expect(success)
 
-        success = await waitForAsyncCondition { await store.state.itemReducible.didLoadItemReduced == 1 }
+        success = await waitForCondition { await store.state.itemReducible.didLoadItemReduced == 1 }
         #expect(success)
     }
 }

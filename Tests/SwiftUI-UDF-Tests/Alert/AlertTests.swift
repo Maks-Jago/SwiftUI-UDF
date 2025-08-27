@@ -54,7 +54,7 @@ extension AlertBuilder.AlertStyle {
         
         await store.dispatch(Actions.PresentAlertWithAction())
         // Sometimes fails. Ping to the channel if reproduce once
-        let success = await waitForAsyncCondition(timeout: 10) { await store.state.form.alert.status != .dismissed }
+        let success = await waitForCondition(timeout: 10) { await store.state.form.alert.status != .dismissed }
         #expect(success)
     }
 }

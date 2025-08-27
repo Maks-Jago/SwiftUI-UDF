@@ -7,67 +7,26 @@ public func sleep(_ seconds: TimeInterval = 0.3) async {
     try? await Task.sleep(nanoseconds: nanoseconds)
 }
 
-/// Waits for a sync condition to become true with timeout (general purpose)
-/// - Returns: true if condition was met, false if timeout occurred
-public func waitForCondition(timeout: TimeInterval = 5, condition: @escaping () -> Bool) async -> Bool {
-    let startTime = CFAbsoluteTimeGetCurrent()
-
-    while !condition() {
-        let elapsed = CFAbsoluteTimeGetCurrent() - startTime
-        if elapsed >= timeout {
-            return false
-        }
-
-        try? await Task.sleep(nanoseconds: 10_000_000) // 10ms
-    }
-    
-    return true
-}
-
-/// Waits for an async condition to become true with timeout (supports cross-actor access)
-/// - Returns: true if condition was met, false if timeout occurred
-public func waitForAsyncCondition(timeout: TimeInterval = 5, condition: @escaping () async -> Bool) async -> Bool {
-    let startTime = CFAbsoluteTimeGetCurrent()
-
-    while !(await condition()) {
-        let elapsed = CFAbsoluteTimeGetCurrent() - startTime
-        if elapsed >= timeout {
-            return false
-        }
-
-        try? await Task.sleep(nanoseconds: 10_000_000) // 10ms
-    }
-    
-    return true
-}
-
-/// Waits for a MainActor condition to become true with timeout (UI/MainActor isolated)
-/// - Returns: true if condition was met, false if timeout occurred
-@MainActor
-public func waitForMainActorCondition(timeout: TimeInterval = 5, condition: @escaping () -> Bool) async -> Bool {
-    let startTime = CFAbsoluteTimeGetCurrent()
-
-    while !condition() {
-        let elapsed = CFAbsoluteTimeGetCurrent() - startTime
-        if elapsed >= timeout {
-            return false
-        }
-
-        try? await Task.sleep(nanoseconds: 10_000_000) // 10ms
-    }
-    
-    return true
-}
-
-/// Waits for a throwing async condition to become true with timeout (supports #require)
-/// - Returns: true if condition was met, false if timeout occurred
-public func waitForThrowingAsyncCondition(timeout: TimeInterval = 5, condition: @escaping () async throws -> Bool) async -> Bool {
+/// Core timeout polling implementation used by all waitForCondition variants.
+///
+/// This function provides the shared timeout and polling logic, continuously checking
+/// a condition until it succeeds or the timeout is reached.
+///
+/// - Parameters:
+///   - timeout: Maximum time to wait for the condition (in seconds).
+///   - pollInterval: Time between condition checks (in nanoseconds).
+///   - conditionCheck: The condition to evaluate, returning a result when successful or nil to continue polling.
+/// - Returns: The result from conditionCheck if successful, nil if timeout occurs.
+private func waitForConditionCore<T>(
+    timeout: TimeInterval,
+    conditionCheck: () async throws -> T?
+) async -> T? {
     let startTime = CFAbsoluteTimeGetCurrent()
 
     while true {
         do {
-            if try await condition() {
-                return true
+            if let result = try await conditionCheck() {
+                return result
             }
         } catch {
             // Continue waiting if condition throws
@@ -75,9 +34,87 @@ public func waitForThrowingAsyncCondition(timeout: TimeInterval = 5, condition: 
 
         let elapsed = CFAbsoluteTimeGetCurrent() - startTime
         if elapsed >= timeout {
+            return nil
+        }
+
+        try? await Task.sleep(nanoseconds: 10_000_000)
+    }
+}
+
+/// Waits for a synchronous condition to become true within the specified timeout.
+///
+/// - Parameters:
+///   - timeout: Maximum time to wait (defaults to 5 seconds).
+///   - condition: The condition to check repeatedly.
+/// - Returns: `true` if condition was met, `false` if timeout occurred.
+@discardableResult
+public func waitForCondition(
+    timeout: TimeInterval = 5,
+    condition: @escaping () -> Bool
+) async -> Bool {
+    await waitForConditionCore(timeout: timeout) {
+        condition() ? true : nil
+    } != nil
+}
+
+/// Waits for an asynchronous condition to become true within the specified timeout.
+///
+/// - Parameters:
+///   - timeout: Maximum time to wait (defaults to 5 seconds).
+///   - condition: The async condition to check repeatedly.
+/// - Returns: `true` if condition was met, `false` if timeout occurred.
+@discardableResult
+public func waitForCondition(
+    timeout: TimeInterval = 5,
+    condition: @escaping () async -> Bool
+) async -> Bool {
+    await waitForConditionCore(timeout: timeout) {
+        await condition() ? true : nil
+    } != nil
+}
+
+/// Waits for a throwing asynchronous condition to become true within the specified timeout.
+///
+/// Errors thrown by the condition are caught and polling continues until timeout.
+///
+/// - Parameters:
+///   - timeout: Maximum time to wait (defaults to 5 seconds).
+///   - condition: The throwing async condition to check repeatedly.
+/// - Returns: `true` if condition was met, `false` if timeout occurred.
+public func waitForCondition(
+    timeout: TimeInterval = 5,
+    condition: @escaping () async throws -> Bool
+) async -> Bool {
+    await waitForConditionCore(timeout: timeout) {
+        try await condition() ? true : nil
+    } != nil
+}
+
+/// Waits for a MainActor condition to become true with timeout (UI/MainActor isolated)
+///
+/// This function must be called from the MainActor context and the condition
+/// is evaluated on the MainActor.
+///
+/// - Parameters:
+///   - timeout: Maximum time to wait (defaults to 5 seconds).
+///   - condition: The condition to check repeatedly.
+/// - Returns: `true` if condition was met, `false` if timeout occurred.
+@MainActor
+@discardableResult
+public func waitForMainActorCondition(
+    timeout: TimeInterval = 5,
+    condition: @escaping () -> Bool
+) async -> Bool {
+    let startTime = CFAbsoluteTimeGetCurrent()
+
+    while !condition() {
+        let elapsed = CFAbsoluteTimeGetCurrent() - startTime
+        if elapsed >= timeout {
             return false
         }
 
-        try? await Task.sleep(nanoseconds: 10_000_000) // 10ms
+        try? await Task.sleep(nanoseconds: 10_000_000)
     }
+
+    return true
 }

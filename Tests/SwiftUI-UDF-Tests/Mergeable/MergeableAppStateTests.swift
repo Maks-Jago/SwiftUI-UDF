@@ -51,13 +51,13 @@ struct MergeableAppStateTests {
         var item = Item(id: .init(value: 1), title: "original")
 
         await store.dispatch(Actions.DidLoadItem(item: item))
-        var success = await waitForAsyncCondition { await !store.state.allItems.byId.isEmpty }
+        var success = await waitForCondition { await !store.state.allItems.byId.isEmpty }
         #expect(success)
 
         item.title = "mutated"
         await store.dispatch(Actions.DidUpdateItem(item: item))
-        
-        success = await waitForThrowingAsyncCondition {
+
+        success = await waitForCondition {
             let storageItem = try await #require(store.state.allItems.byId[item.id])
             return item.title == storageItem.title
         }

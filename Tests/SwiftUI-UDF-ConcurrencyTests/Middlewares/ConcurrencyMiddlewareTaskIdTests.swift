@@ -49,7 +49,7 @@ import UDFSwiftTesting
         #expect(await store.state.runForm.loadedCount == 0)
 
         await store.dispatch(Actions.Loading(id: MiddlewareFlow.id))
-        let success = await waitForAsyncCondition { await store.state.runForm.loadedCount == 1 }
+        let success = await waitForCondition { await store.state.runForm.loadedCount == 1 }
         #expect(success)
     }
 }

@@ -102,28 +102,28 @@ private extension Actions {
         #expect(formTitle.isEmpty)
 
         await store.dispatch(Actions.SendMessage(message: "Flow message 1", id: TestFlow.id))
-        _ = await waitForAsyncCondition {
+        await waitForCondition {
             await store.state.testForm.title == "Flow message 1"
         }
         await store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.title, value: "title"))
-        _ = await waitForAsyncCondition {
+        await waitForCondition {
             await store.state.testForm.title == "title"
         }
         await store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.title, value: "title2"))
-        _ = await waitForAsyncCondition {
+        await waitForCondition {
             await store.state.testForm.title == "title2"
         }
         await store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.title, value: "title3"))
-        _ = await waitForAsyncCondition {
+        await waitForCondition {
             await store.state.testForm.title == "title3"
         }
         await store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.title, value: "title4"))
-        _ = await waitForAsyncCondition {
+        await waitForCondition {
             await store.state.testForm.title == "title4"
         }
         
         // Wait for middleware to process and set nested.number to 2
-        var success = await waitForAsyncCondition {
+        var success = await waitForCondition {
             await store.state.testForm.nested.number == 2
         }
         #expect(success)
@@ -132,12 +132,12 @@ private extension Actions {
         #expect(formTitle == "title4")
 
         await store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.title, value: "title5"))
-        _ = await waitForAsyncCondition {
+        await waitForCondition {
             await store.state.testForm.title == "title5"
         }
         
         await store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.title, value: "title6"))
-        success = await waitForAsyncCondition {
+        success = await waitForCondition {
             await store.state.testForm.title == "title6"
         }
         #expect(success)

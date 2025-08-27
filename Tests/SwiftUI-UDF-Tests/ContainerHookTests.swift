@@ -85,11 +85,11 @@ import UDFSwiftTesting
         for _ in 1 ... triggerCount {
             // Set triggerValue to "3" to meet the hook's condition
             store.$state.hookForm.triggerValue.wrappedValue = "3"
-            _ = await waitForCondition { store.$state.hookForm.triggerValue.wrappedValue == "3" }
+            await waitForCondition { store.$state.hookForm.triggerValue.wrappedValue == "3" }
 
             // Reset triggerValue to allow the condition to be met again
             store.$state.hookForm.triggerValue.wrappedValue = ""
-            _ = await waitForCondition { store.$state.hookForm.triggerValue.wrappedValue == "" }
+            await waitForCondition { store.$state.hookForm.triggerValue.wrappedValue == "" }
         }
 
         // Assert that the hook was called the expected number of times

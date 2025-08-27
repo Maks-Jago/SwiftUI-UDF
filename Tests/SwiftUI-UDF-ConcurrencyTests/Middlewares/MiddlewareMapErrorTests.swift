@@ -78,7 +78,7 @@ private extension Actions {
         await store.subscribe(LoadingMiddleware.self)
 
         await store.dispatch(Actions.StartLoading())
-        let success = await waitForAsyncCondition { await store.state.errorForm.errorStatusCode == 400 }
+        let success = await waitForCondition { await store.state.errorForm.errorStatusCode == 400 }
         #expect(success)
     }
 }

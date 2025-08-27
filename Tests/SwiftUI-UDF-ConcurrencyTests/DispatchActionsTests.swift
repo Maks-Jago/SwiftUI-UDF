@@ -25,7 +25,7 @@ import UDFSwiftTesting
 
         let newFormTitle = "new form title"
         store.dispatch(Actions.UpdateFormField(keyPath: \PlainForm.title, value: newFormTitle))
-        let success = await waitForAsyncCondition { await store.state.plainForm.title == newFormTitle}
+        let success = await waitForCondition { await store.state.plainForm.title == newFormTitle}
         #expect(success)
     }
 
