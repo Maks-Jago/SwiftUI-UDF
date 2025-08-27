@@ -102,25 +102,10 @@ private extension Actions {
         #expect(formTitle.isEmpty)
 
         await store.dispatch(Actions.SendMessage(message: "Flow message 1", id: TestFlow.id))
-        await waitForCondition {
-            await store.state.testForm.title == "Flow message 1"
-        }
         await store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.title, value: "title"))
-        await waitForCondition {
-            await store.state.testForm.title == "title"
-        }
         await store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.title, value: "title2"))
-        await waitForCondition {
-            await store.state.testForm.title == "title2"
-        }
         await store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.title, value: "title3"))
-        await waitForCondition {
-            await store.state.testForm.title == "title3"
-        }
         await store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.title, value: "title4"))
-        await waitForCondition {
-            await store.state.testForm.title == "title4"
-        }
         
         // Wait for middleware to process and set nested.number to 2
         var success = await waitForCondition {
@@ -132,9 +117,6 @@ private extension Actions {
         #expect(formTitle == "title4")
 
         await store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.title, value: "title5"))
-        await waitForCondition {
-            await store.state.testForm.title == "title5"
-        }
         
         await store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.title, value: "title6"))
         success = await waitForCondition {
