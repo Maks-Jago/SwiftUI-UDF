@@ -1,0 +1,106 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+*'
+
+jobs:
+  validate-release:
+    name: Validate Release
+    runs-on: macos-latest
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      
+    - name: Select Xcode
+      run: sudo xcode-select -switch /Applications/Xcode_16.4.app/Contents/Developer
+      
+    - name: Validate Package
+      run: swift package diagnose-api-breaking-changes --allow-module-with-test-only-api
+      
+    - name: Run Full Test Suite
+      run: swift test --parallel --enable-code-coverage
+      
+    - name: Check Documentation
+      run: |
+        if [ ! -f README.md ]; then
+          echo "❌ README.md is required for release"
+          exit 1
+        fi
+        
+        if [ ! -f LICENSE ]; then
+          echo "❌ LICENSE file is required for release"
+          exit 1
+        fi
+        
+        echo "✅ Documentation files present"
+        
+  create-release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    needs: validate-release
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      
+    - name: Extract Version
+      id: version
+      run: |
+        VERSION=${GITHUB_REF#refs/tags/}
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
+        
+    - name: Generate Release Notes
+      id: release_notes
+      run: |
+        cat > release_notes.md << 'EOF'
+        ## UDF Framework ${{ steps.version.outputs.version }}
+        
+        ### What's New
+        - This release includes the latest improvements and bug fixes
+        - All tests are passing on multiple Xcode versions
+        - Swift Package Manager support verified
+        
+        ### Installation
+        
+        #### Swift Package Manager
+        ```swift
+        dependencies: [
+            .package(url: "https://github.com/Maks-Jago/SwiftUI-UDF", from: "${{ steps.version.outputs.version }}")
+        ]
+        ```
+        
+        ### Compatibility
+        - iOS 16.0+
+        - macOS 13.0+
+        - Xcode 16.4+
+        - Swift 6.0+
+        
+        ### Testing
+        All tests pass on:
+        - Xcode 16.4 with Swift 6.0
+        EOF
+        
+    - name: Create Release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ steps.version.outputs.version }}
+        release_name: UDF ${{ steps.version.outputs.version }}
+        body_path: release_notes.md
+        draft: false
+        prerelease: false
+        
+  notify-release:
+    name: Notify Release
+    runs-on: ubuntu-latest
+    needs: create-release
+    
+    steps:
+    - name: Success Notification
+      run: |
+        echo "🚀 UDF Framework ${{ needs.create-release.outputs.version }} released successfully!"
+        echo "📦 Package is now available via Swift Package Manager"

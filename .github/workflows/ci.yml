@@ -1,0 +1,201 @@
+name: CI
+
+on:
+  push:
+    branches: [ 1.5.x, main, develop, 'feature/**' ]
+  pull_request:
+    branches: [ 1.5.x, main, develop ]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: SwiftLint
+    runs-on: macos-latest
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      
+    - name: SwiftLint
+      uses: norio-nomura/action-swiftlint@3.2.1
+      with:
+        args: --strict
+
+  test-swift-package:
+    name: Test Swift Package
+    runs-on: macos-latest
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        xcode: ['16.4']
+        
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      
+    - name: Select Xcode ${{ matrix.xcode }}
+      run: sudo xcode-select -switch /Applications/Xcode_${{ matrix.xcode }}.app/Contents/Developer
+      
+    - name: Show versions
+      run: |
+        xcodebuild -version
+        swift --version
+        
+    - name: Cache Swift PM
+      uses: actions/cache@v4
+      with:
+        path: .build
+        key: ${{ runner.os }}-xcode${{ matrix.xcode }}-spm-${{ hashFiles('**/Package.resolved') }}
+        restore-keys: |
+          ${{ runner.os }}-xcode${{ matrix.xcode }}-spm-
+          
+    - name: Resolve Package Dependencies
+      run: swift package resolve
+      
+    - name: Build Debug
+      run: swift build -c debug
+      
+    - name: Build Release  
+      run: swift build -c release
+      
+    - name: Run Tests
+      run: |
+        swift test \
+          --parallel \
+          --enable-code-coverage \
+          --build-path .build
+          
+    - name: Generate Code Coverage
+      if: matrix.xcode == '16.4'
+      run: |
+        xcrun llvm-cov export \
+          .build/debug/UDFPackageTests.xctest/Contents/MacOS/UDFPackageTests \
+          --format="lcov" \
+          --instr-profile .build/debug/codecov/default.profdata \
+          > coverage.lcov
+          
+    - name: Upload Coverage to Codecov
+      if: matrix.xcode == '16.4'
+      uses: codecov/codecov-action@v4
+      with:
+        file: coverage.lcov
+        token: ${{ secrets.CODECOV_TOKEN }}
+        fail_ci_if_error: false
+
+  test-example-project:
+    name: Test Example Integration
+    runs-on: macos-latest
+    needs: test-swift-package
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      
+    - name: Select Xcode
+      run: sudo xcode-select -switch /Applications/Xcode_16.4.app/Contents/Developer
+      
+    - name: Create Example Project
+      run: |
+        mkdir -p ExampleProject
+        cd ExampleProject
+        swift package init --type executable
+        
+        # Add UDF dependency
+        cat > Package.swift << 'EOF'
+        // swift-tools-version: 6.0
+        import PackageDescription
+        
+        let package = Package(
+            name: "ExampleProject",
+            platforms: [.macOS(.v13), .iOS(.v16)],
+            dependencies: [
+                .package(path: "../")
+            ],
+            targets: [
+                .executableTarget(
+                    name: "ExampleProject",
+                    dependencies: [
+                        .product(name: "UDF", package: "UDFArchitecture")
+                    ]
+                ),
+                .testTarget(
+                    name: "ExampleProjectTests",
+                    dependencies: [
+                        "ExampleProject",
+                        .product(name: "UDFSwiftTesting", package: "UDFArchitecture")
+                    ]
+                )
+            ]
+        )
+        EOF
+        
+        # Simple integration test
+        cat > Sources/ExampleProject/main.swift << 'EOF'
+        import UDF
+        import Foundation
+        
+        struct AppState: AppReducer {
+            var counter: Int = 0
+        }
+        
+        struct IncrementAction: Action {}
+        
+        extension AppState {
+            mutating func reduce(_ action: some Action) {
+                switch action {
+                case is IncrementAction:
+                    counter += 1
+                default:
+                    break
+                }
+            }
+        }
+        
+        let store = EnvironmentStore(initial: AppState())
+        print("Initial counter: \(store.state.counter)")
+        
+        store.dispatch(IncrementAction())
+        print("After increment: \(store.state.counter)")
+        EOF
+        
+    - name: Build Example
+      run: |
+        cd ExampleProject
+        swift build
+        
+    - name: Run Example
+      run: |
+        cd ExampleProject
+        swift run
+        
+  validate-package:
+    name: Validate Package
+    runs-on: macos-latest
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      
+    - name: Validate Package
+      run: |
+        swift package diagnose-api-breaking-changes --allow-module-with-test-only-api
+        swift package compute-checksum
+        
+  notify-success:
+    name: Notify Success
+    runs-on: ubuntu-latest
+    needs: [lint, test-swift-package, test-example-project, validate-package]
+    if: success()
+    
+    steps:
+    - name: Success Notification
+      run: |
+        echo "✅ All CI checks passed successfully!"
+        echo "- Linting: ✅"
+        echo "- Swift Package Tests: ✅" 
+        echo "- Example Integration: ✅"
+        echo "- Package Validation: ✅"
