@@ -119,14 +119,14 @@ jobs:
                 .executableTarget(
                     name: "ExampleProject",
                     dependencies: [
-                        .product(name: "UDF", package: "UDFArchitecture")
+                        .product(name: "UDF", package: "SwiftUI-UDF")
                     ]
                 ),
                 .testTarget(
                     name: "ExampleProjectTests",
                     dependencies: [
                         "ExampleProject",
-                        .product(name: "UDFSwiftTesting", package: "UDFArchitecture")
+                        .product(name: "UDFSwiftTesting", package: "SwiftUI-UDF")
                     ]
                 )
             ]
