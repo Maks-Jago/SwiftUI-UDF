@@ -50,6 +50,8 @@ jobs:
       run: swift build -c release
       
     - name: Run Tests
+      env:
+        SWIFT_TESTING: "1"
       run: |
         swift test \
           --parallel \
@@ -61,7 +63,7 @@ jobs:
       if: matrix.xcode == '16.4'
       run: |
         xcrun llvm-cov export \
-          .build/debug/UDFPackageTests.xctest/Contents/MacOS/UDFPackageTests \
+          .build/arm64-apple-macosx/debug/SwiftUI-UDFPackageTests.xctest/Contents/MacOS/SwiftUI-UDFPackageTests \
           --format="lcov" \
           --instr-profile .build/debug/codecov/default.profdata \
           > coverage.lcov
@@ -172,16 +174,3 @@ jobs:
       run: |
         swift package describe
         
-  notify-success:
-    name: Notify Success
-    runs-on: ubuntu-latest
-    needs: [test-swift-package, test-example-project, validate-package]
-    if: success()
-    
-    steps:
-    - name: Success Notification
-      run: |
-        echo "✅ All CI checks passed successfully!"
-        echo "- Swift Package Tests: ✅" 
-        echo "- Example Integration: ✅"
-        echo "- Package Validation: ✅"

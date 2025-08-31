@@ -27,6 +27,8 @@ public extension ProcessInfo {
         NSClassFromString("Testing.Test") != nil ||
         environment["XCTestConfigurationFilePath"] != nil ||
         NSClassFromString("XCTestCase") != nil ||
+        environment["SWIFT_TESTING"] != nil ||
+        arguments.contains("test") ||
         Bundle.allBundles.contains { $0.bundlePath.hasSuffix(".xctest") }
     }
 }

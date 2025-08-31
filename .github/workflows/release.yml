@@ -26,6 +26,8 @@ jobs:
         fi
       
     - name: Run Full Test Suite
+      env:
+        SWIFT_TESTING: "1"
       run: swift test --parallel --enable-code-coverage --enable-experimental-swift-testing
       
     - name: Check Documentation
@@ -97,13 +99,3 @@ jobs:
         draft: false
         prerelease: false
         
-  notify-release:
-    name: Notify Release
-    runs-on: ubuntu-latest
-    needs: create-release
-    
-    steps:
-    - name: Success Notification
-      run: |
-        echo "🚀 UDF Framework ${{ needs.create-release.outputs.version }} released successfully!"
-        echo "📦 Package is now available via Swift Package Manager"
