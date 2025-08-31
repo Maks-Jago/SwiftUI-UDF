@@ -13,7 +13,7 @@ concurrency:
 jobs:
   lint:
     name: SwiftLint
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     
     steps:
     - name: Checkout
@@ -182,7 +182,7 @@ jobs:
       
     - name: Validate Package
       run: |
-        swift package diagnose-api-breaking-changes --allow-module-with-test-only-api
+        swift package diagnose-api-breaking-changes --allow-module-with-test-only-api HEAD~1
         swift package compute-checksum
         
   notify-success:

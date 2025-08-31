@@ -18,7 +18,7 @@ jobs:
       run: sudo xcode-select -switch /Applications/Xcode_16.4.app/Contents/Developer
       
     - name: Validate Package
-      run: swift package diagnose-api-breaking-changes --allow-module-with-test-only-api
+      run: swift package diagnose-api-breaking-changes --allow-module-with-test-only-api HEAD~1
       
     - name: Run Full Test Suite
       run: swift test --parallel --enable-code-coverage
