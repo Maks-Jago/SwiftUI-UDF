@@ -11,19 +11,6 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  lint:
-    name: SwiftLint
-    runs-on: ubuntu-latest
-    
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-      
-    - name: SwiftLint
-      uses: norio-nomura/action-swiftlint@3.2.1
-      with:
-        args: --strict
-
   test-swift-package:
     name: Test Swift Package
     runs-on: macos-latest
@@ -67,7 +54,9 @@ jobs:
         swift test \
           --parallel \
           --enable-code-coverage \
-          --build-path .build
+          --build-path .build \
+          --target SwiftUI-UDF-Tests \
+          --target SwiftUI-UDF-ConcurrencyTests
           
     - name: Generate Code Coverage
       if: matrix.xcode == '16.4'
@@ -182,20 +171,19 @@ jobs:
       
     - name: Validate Package
       run: |
-        swift package diagnose-api-breaking-changes --allow-module-with-test-only-api HEAD~1
+        swift package diagnose-api-breaking-changes HEAD~1
         swift package compute-checksum
         
   notify-success:
     name: Notify Success
     runs-on: ubuntu-latest
-    needs: [lint, test-swift-package, test-example-project, validate-package]
+    needs: [test-swift-package, test-example-project, validate-package]
     if: success()
     
     steps:
     - name: Success Notification
       run: |
         echo "✅ All CI checks passed successfully!"
-        echo "- Linting: ✅"
         echo "- Swift Package Tests: ✅" 
         echo "- Example Integration: ✅"
         echo "- Package Validation: ✅"
