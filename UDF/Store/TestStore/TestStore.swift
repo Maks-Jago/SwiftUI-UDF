@@ -7,13 +7,7 @@
 
 import Combine
 import SwiftUI
-import Testing
 
-@globalActor public actor TestStoreActor {
-    public private(set) static var shared = TestStoreActor()
-}
-
-@TestStoreActor
 public final class TestStore<State: AppReducer> {
     private struct TestStoreLogger: ActionLogger {
         var actionFilters: [ActionFilter] = [VerboseActionFilter()]
