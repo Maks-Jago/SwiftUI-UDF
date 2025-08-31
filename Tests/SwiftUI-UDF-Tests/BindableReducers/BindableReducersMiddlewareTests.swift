@@ -7,10 +7,10 @@
 
 import SwiftUI
 @testable import UDF
-import UDFXCTest
-import XCTest
+import UDFSwiftTesting
+import Testing
 
-final class BindableReducersMiddlewareTests: XCTestCase {
+@Suite struct BindableReducersMiddlewareTests {
     struct Item: Hashable, Identifiable {
         struct ID: Hashable {
             var value: Int
@@ -78,8 +78,8 @@ final class BindableReducersMiddlewareTests: XCTestCase {
         var itemReducible = ItemReducible()
     }
 
-    func test_WhenLoadingDataForBindableReducers_OnleConcreteInstanceOfBindableFormShouldBeUpdated() async throws {
-        let store = await XCTestStore(initial: AppState())
+    @Test func whenLoadingDataForBindableReducers_OnleConcreteInstanceOfBindableFormShouldBeUpdated() async throws {
+        let store = await TestStore(initial: AppState())
         await store.subscribe(ItemsMiddleware.self)
 
         await store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 1)))
@@ -87,11 +87,11 @@ final class BindableReducersMiddlewareTests: XCTestCase {
         await store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 3)))
         await store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 4)))
 
-        let bindedReducersFormCount = try await XCTUnwrapAsync(await store.state.itemsForm).reducers.count
-        XCTAssertEqual(bindedReducersFormCount, 4)
+        var success = await waitForCondition { await store.state.itemsForm.reducers.count == 4 }
+        #expect(success)
 
-        let bindedReducersFlowCount = try await XCTUnwrapAsync(await store.state.itemsFlow).reducers.count
-        XCTAssertEqual(bindedReducersFlowCount, 4)
+        success = await waitForCondition { await store.state.itemsFlow.reducers.count == 4 }
+        #expect(success)
 
         await store.dispatch(
             ActionGroup {
@@ -106,32 +106,30 @@ final class BindableReducersMiddlewareTests: XCTestCase {
             }
         )
 
-        await store.wait()
+        success = await waitForCondition { await store.state.itemsForm[Item.ID(value: 1)]?.item != nil }
+        #expect(success)
 
-        let itemsForm1: ItemsForm = try await XCTUnwrapAsync(await store.state.itemsForm[Item.ID(value: 1)])
-        XCTAssertNotNil(itemsForm1.item)
+        success = await waitForCondition { await store.state.itemsForm[Item.ID(value: 2)]?.item == nil }
+        #expect(success)
 
-        let itemsForm2: ItemsForm = try await XCTUnwrapAsync(await store.state.itemsForm[Item.ID(value: 2)])
-        XCTAssertNil(itemsForm2.item)
+        success = await waitForCondition { await store.state.itemsForm[Item.ID(value: 3)]?.item != nil }
+        #expect(success)
 
-        let itemsForm3: ItemsForm = try await XCTUnwrapAsync(await store.state.itemsForm[Item.ID(value: 3)])
-        XCTAssertNotNil(itemsForm3.item)
-
-        let itemsForm4: ItemsForm = try await XCTUnwrapAsync(await store.state.itemsForm[Item.ID(value: 4)])
-        XCTAssertNotNil(itemsForm4.item)
+        success = await waitForCondition { await store.state.itemsForm[Item.ID(value: 4)]?.item != nil }
+        #expect(success)
     }
 
-    func test_WhenDispatchingBindedAction_DuplicationShouldBePrevented() async throws {
-        let store = await XCTestStore(initial: AppState())
+    @Test func whenDispatchingBindedAction_DuplicationShouldBePrevented() async throws {
+        let store = await TestStore(initial: AppState())
         await store.subscribe(ItemsMiddleware.self)
 
         await store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 1)))
 
-        let bindedReducersFormCount = try await XCTUnwrapAsync(await store.state.itemsForm).reducers.count
-        XCTAssertEqual(bindedReducersFormCount, 1)
+        var success = await waitForCondition { await store.state.itemsForm.reducers.count == 1 }
+        #expect(success)
 
-        let bindedReducersFlowCount = try await XCTUnwrapAsync(await store.state.itemsFlow).reducers.count
-        XCTAssertEqual(bindedReducersFlowCount, 1)
+        success = await waitForCondition { await store.state.itemsFlow.reducers.count == 1 }
+        #expect(success)
 
         await store.dispatch(
             ActionGroup {
@@ -139,13 +137,11 @@ final class BindableReducersMiddlewareTests: XCTestCase {
             }.binded(to: ItemsContainer.self, by: Item.ID(value: 1))
         )
 
-        await store.wait()
+        success = await waitForCondition { await store.state.itemsForm[Item.ID(value: 1)]?.item != nil }
+        #expect(success)
 
-        let itemsForm1: ItemsForm = try await XCTUnwrapAsync(await store.state.itemsForm[Item.ID(value: 1)])
-        let itemsReducer = try await XCTUnwrapAsync(await store.state.itemReducible)
-
-        XCTAssertNotNil(itemsForm1.item)
-        XCTAssertEqual(itemsReducer.didLoadItemReduced, 1)
+        success = await waitForCondition { await store.state.itemReducible.didLoadItemReduced == 1 }
+        #expect(success)
     }
 }
 

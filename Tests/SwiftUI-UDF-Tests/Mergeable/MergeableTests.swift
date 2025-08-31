@@ -6,9 +6,10 @@
 //
 
 @testable import UDF
-import XCTest
+import Testing
 
-class MergeableTests: XCTestCase {
+@Suite
+struct MergeableTests {
     struct Item: Mergeable, Equatable {
         struct Id: Hashable {
             var value: Int
@@ -26,13 +27,13 @@ class MergeableTests: XCTestCase {
         }
     }
 
-    func testItemMerging() {
+    @Test func itemMerging() {
         var item = Item(id: .init(value: 1), title: "title 1", text: "text", number: 12.23)
         let item2 = Item(id: .init(value: 1), title: "title 2", text: "new text", number: 0)
         item = item.merging(item2)
 
-        XCTAssertEqual(item.title, "title 2")
-        XCTAssertEqual(item.text, "new text")
-        XCTAssertTrue(item.number > 0)
+        #expect(item.title == "title 2")
+        #expect(item.text == "new text")
+        #expect(item.number > 0)
     }
 }

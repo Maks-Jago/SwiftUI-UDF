@@ -28,12 +28,12 @@ import SwiftUI
         ///
         /// - Parameter container: A SwiftUI container that conforms to the `Container` protocol.
         /// - Returns: A `UIWindow` containing the rendered container.
-        static func render(container: some Container) async -> UIWindow {
+        static func render(view: some View) async -> UIWindow {
             await MainActor.run {
                 let window = UIWindow(frame: .zero)
 
                 // Create a UIHostingController to host the SwiftUI container
-                let viewController = UIHostingController(rootView: container)
+                let viewController = UIHostingController(rootView: view)
                 window.rootViewController = viewController
 
                 // Begin and end appearance transitions to simulate the view appearing on screen
@@ -62,9 +62,9 @@ import SwiftUI
             self.contentViewController = controller
         }
 
-        static func render(container: some Container) async -> NSWindow {
+        static func render(view: some View) async -> NSWindow {
             await MainActor.run {
-                let viewController = NSHostingController(rootView: container)
+                let viewController = NSHostingController(rootView: view)
                 let window = NSWindow(controller: viewController)
 
                 viewController.view.needsLayout = true

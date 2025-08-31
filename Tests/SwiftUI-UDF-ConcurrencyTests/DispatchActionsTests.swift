@@ -6,9 +6,10 @@
 //
 
 @testable import UDF
-import XCTest
+import Testing
+import UDFSwiftTesting
 
-final class DispatchActionsTests: XCTestCase {
+@Suite struct DispatchActionsTests {
     struct AppState: AppReducer {
         var plainForm = PlainForm()
     }
@@ -17,50 +18,49 @@ final class DispatchActionsTests: XCTestCase {
         var title: String = ""
     }
 
-    func test_UpdateFormFieldDispatch() async {
+    @Test func updateFormFieldDispatch() async {
         let store = InternalStore(initial: AppState(), loggers: [])
-        var formTitle = await store.state.plainForm.title
-        XCTAssertEqual(formTitle, "")
+        let formTitle = await store.state.plainForm.title
+        #expect(formTitle == "")
 
-        store.dispatch(Actions.UpdateFormField(keyPath: \PlainForm.title, value: "new form title"))
-        await fulfill(description: "Waiting for middlewares subscription", sleep: 0.5)
-
-        formTitle = await store.state.plainForm.title
-        XCTAssertEqual(formTitle, "new form title")
+        let newFormTitle = "new form title"
+        store.dispatch(Actions.UpdateFormField(keyPath: \PlainForm.title, value: newFormTitle))
+        let success = await waitForCondition { await store.state.plainForm.title == newFormTitle}
+        #expect(success)
     }
 
-    func test_silentActionDispatch() async throws {
+    @Test func silentActionDispatch() async throws {
         let messageAction = Actions.Message(message: "Message 1", id: "1")
         let messageInternalAction = messageAction.silent()
 
-        let messageInternalGroup: ActionGroup = try XCTUnwrap(messageInternalAction as? ActionGroup)
-        let messageInternalUnwrappedAction: InternalAction = try XCTUnwrap(messageInternalGroup._actions.first)
+        let messageInternalGroup: ActionGroup = try #require(messageInternalAction as? ActionGroup)
+        let messageInternalUnwrappedAction: InternalAction = try #require(messageInternalGroup._actions.first)
 
-        XCTAssertTrue(messageInternalUnwrappedAction.silent)
+        #expect(messageInternalUnwrappedAction.silent)
 
-        let testStore = await XCTestStore(initial: AppState())
+        let testStore = await TestStore(initial: AppState())
         await testStore.dispatch(Actions.Message(id: "1"))
         await testStore.dispatch(Actions.Message(id: "2").silent())
         await testStore.dispatch(Actions.Message(id: "3"))
     }
 
-    func test_silentAnimatedActionDispatch() throws {
+    @Test func silentAnimatedActionDispatch() throws {
         let animatedMessageAction1 = Actions.Message(message: "Message 1", id: "1")
             .with(animation: .linear)
             .silent()
 
-        let animatedMessageAction1Group: ActionGroup = try XCTUnwrap(animatedMessageAction1 as? ActionGroup)
-        let animatedMessageAction1UnwrappedAction: InternalAction = try XCTUnwrap(animatedMessageAction1Group._actions.first)
+        let animatedMessageAction1Group: ActionGroup = try #require(animatedMessageAction1 as? ActionGroup)
+        let animatedMessageAction1UnwrappedAction: InternalAction = try #require(animatedMessageAction1Group._actions.first)
 
-        XCTAssertTrue(animatedMessageAction1UnwrappedAction.silent)
+        #expect(animatedMessageAction1UnwrappedAction.silent)
 
         let animatedMessageAction2 = Actions.Message(message: "Message 2", id: "2")
             .silent()
             .with(animation: .linear)
 
-        let animatedMessageAction2Group: ActionGroup = try XCTUnwrap(animatedMessageAction2 as? ActionGroup)
-        let animatedMessageAction2UnwrappedAction: InternalAction = try XCTUnwrap(animatedMessageAction2Group._actions.first)
+        let animatedMessageAction2Group: ActionGroup = try #require(animatedMessageAction2 as? ActionGroup)
+        let animatedMessageAction2UnwrappedAction: InternalAction = try #require(animatedMessageAction2Group._actions.first)
 
-        XCTAssertTrue(animatedMessageAction2UnwrappedAction.silent)
+        #expect(animatedMessageAction2UnwrappedAction.silent)
     }
 }

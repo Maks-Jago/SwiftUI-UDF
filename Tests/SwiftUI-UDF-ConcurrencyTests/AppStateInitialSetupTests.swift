@@ -1,8 +1,9 @@
 
 @testable import UDF
-import XCTest
+import UDFSwiftTesting
+import Testing
 
-final class AppStateInitialSetupTests: XCTestCase {
+@Suite struct AppStateInitialSetupTests {
     struct AppState: AppReducer {
         var form1 = Form1()
         var form2 = Form2()
@@ -33,16 +34,16 @@ final class AppStateInitialSetupTests: XCTestCase {
         }
     }
 
-    func test_initialSetups() async {
-        let store = await XCTestStore(initial: AppState())
+    @Test func initialSetups() async {
+        let store = await TestStore(initial: AppState())
 
         let title = await store.state.form1.title
-        XCTAssertEqual(title, "new title")
+        #expect(title == "new title")
 
         let name = await store.state.form2.nameWithValue
-        XCTAssertEqual(name, "namenew title")
+        #expect(name == "namenew title")
 
         let nestedNumber = await store.state.form2.nested.number
-        XCTAssertEqual(nestedNumber, 2)
+        #expect(nestedNumber == 2)
     }
 }

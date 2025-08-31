@@ -1,10 +1,11 @@
 
 import Combine
 @testable import UDF
-import UDFXCTest
-import XCTest
+import UDFSwiftTesting
+import Testing
+import Foundation
 
-final class MiddlewareCancellationTests: XCTestCase {
+@Suite struct MiddlewareCancellationTests {
     struct AppState: AppReducer {
         var middlewareFlow = MiddlewareFlow()
         var runForm = RunForm()
@@ -56,54 +57,43 @@ final class MiddlewareCancellationTests: XCTestCase {
         }
     }
 
-    func testObservableMiddlewareCancellation() async {
-        let store = await XCTestStore(initial: AppState())
-
-        await store.subscribe(ObservableMiddlewareToCancel.self)
+    @Test func observableMiddlewareCancellation() async {
+        let store = await TestStore(initial: AppState())
+        await store.subscribe(ObservableMiddlewareToCancel.self, environment: ())
         await store.dispatch(Actions.Loading())
-
-        var middlewareFlow = await store.state.middlewareFlow
-        XCTAssertEqual(middlewareFlow, .loading)
+        var success = await waitForCondition { await store.state.middlewareFlow == .loading }
+        #expect(success)
 
         await store.dispatch(Actions.CancelLoading())
-        await store.wait()
-
-        middlewareFlow = await store.state.middlewareFlow
-        XCTAssertEqual(middlewareFlow, .none)
+        success = await waitForCondition { await store.state.middlewareFlow == .none }
+        #expect(success)
     }
 
-    func testObservableRunMiddlewareToCancel() async {
-        let store = await XCTestStore(initial: AppState())
-        await store.subscribe(ObservableRunMiddlewareToCancel.self)
+    @Test func observableRunMiddlewareToCancel() async {
+        let store = await TestStore(initial: AppState())
+        await store.subscribe(ObservableRunMiddlewareToCancel.self, environment: ObservableRunMiddlewareToCancel.Environment())
         await store.dispatch(Actions.Loading())
+        var success = await waitForCondition { await store.state.middlewareFlow == .loading }
+        #expect(success)
 
-        var middlewareFlow = await store.state.middlewareFlow
-        XCTAssertEqual(middlewareFlow, .loading)
+        success = await waitForCondition { await store.state.runForm.messagesCount > 0 }
+        #expect(success)
 
-        await fulfill(description: "waiting for messages to increase messages count in form", sleep: 2)
         await store.dispatch(Actions.CancelLoading())
-        await store.wait()
-
-        let messagesCount = await store.state.runForm.messagesCount
-        XCTAssertGreaterThanOrEqual(messagesCount, 1)
-
-        middlewareFlow = await store.state.middlewareFlow
-        XCTAssertEqual(middlewareFlow, .none)
+        success = await waitForCondition { await store.state.middlewareFlow == .none }
+        #expect(success)
     }
 
-    func testReducibleMiddlewareToCancel() async {
-        let store = await XCTestStore(initial: AppState())
-        await store.subscribe(ReducibleMiddlewareToCancel.self)
+    @Test func reducibleMiddlewareToCancel() async {
+        let store = await TestStore(initial: AppState())
+        await store.subscribe(ReducibleMiddlewareToCancel.self, environment: ReducibleMiddlewareToCancel.Environment())
         await store.dispatch(Actions.Loading())
-
-        var middlewareFlow = await store.state.middlewareFlow
-        XCTAssertEqual(middlewareFlow, .loading)
+        var success = await waitForCondition { await store.state.middlewareFlow == .loading }
+        #expect(success)
 
         await store.dispatch(Actions.CancelLoading())
-        await store.wait()
-
-        middlewareFlow = await store.state.middlewareFlow
-        XCTAssertEqual(middlewareFlow, .none)
+        success = await waitForCondition { await store.state.middlewareFlow == .none }
+        #expect(success)
     }
 }
 
@@ -121,11 +111,11 @@ private extension MiddlewareCancellationTests {
             case message
         }
 
-        func scope(for state: MiddlewareCancellationTests.AppState) -> Scope {
+        func scope(for state: AppState) -> Scope {
             state.middlewareFlow
         }
 
-        func observe(state: MiddlewareCancellationTests.AppState) {
+        func observe(state: AppState) {
             switch state.middlewareFlow {
             case .loading:
                 execute(
@@ -159,11 +149,11 @@ private extension MiddlewareCancellationTests {
             case runMessage
         }
 
-        func scope(for state: MiddlewareCancellationTests.AppState) -> Scope {
+        func scope(for state: AppState) -> Scope {
             state.middlewareFlow
         }
 
-        func observe(state: MiddlewareCancellationTests.AppState) {
+        func observe(state: AppState) {
             switch state.middlewareFlow {
             case .loading:
                 run(RunEffect(), cancellation: Сancellation.runMessage)
@@ -208,7 +198,7 @@ private extension MiddlewareCancellationTests {
             case reducibleMessage
         }
 
-        func reduce(_ action: some Action, for state: MiddlewareCancellationTests.AppState) {
+        func reduce(_ action: some Action, for state: AppState) {
             switch action {
             case is Actions.Loading:
                 execute(
@@ -225,3 +215,4 @@ private extension MiddlewareCancellationTests {
         }
     }
 }
+

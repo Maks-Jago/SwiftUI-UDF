@@ -1,9 +1,9 @@
 import Combine
-import XCTest
-
+import Testing
+import UDFSwiftTesting
 @testable import UDF
 
-final class ConcurrencyMiddlewareTaskIdTests: XCTestCase {
+@Suite struct ConcurrencyMiddlewareTaskIdTests {
     struct AppState: AppReducer {
         var middlewareFlow = MiddlewareFlow()
         var runForm = RunForm()
@@ -42,18 +42,15 @@ final class ConcurrencyMiddlewareTaskIdTests: XCTestCase {
         }
     }
 
-    func testReducibleMiddlewareTaskId() async {
-        let store = await XCTestStore(initial: AppState())
+    @Test func reducibleMiddlewareTaskId() async {
+        let store = await TestStore(initial: AppState())
         await store.subscribe(TestReducibleMiddleware.self)
 
-        var runForm = await store.state.runForm
-        XCTAssertEqual(runForm.loadedCount, 0)
+        #expect(await store.state.runForm.loadedCount == 0)
 
         await store.dispatch(Actions.Loading(id: MiddlewareFlow.id))
-        await store.wait()
-
-        runForm = await store.state.runForm
-        XCTAssertEqual(runForm.loadedCount, 1)
+        let success = await waitForCondition { await store.state.runForm.loadedCount == 1 }
+        #expect(success)
     }
 }
 

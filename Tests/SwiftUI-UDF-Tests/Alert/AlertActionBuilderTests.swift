@@ -1,9 +1,9 @@
 
 @testable import UDF
-import XCTest
+import Testing
 
-final class AlertActionBuilderTests: XCTestCase {
-    func test_WhenVoid_ActionGroupShouldBeEmpty() {
+@Suite struct AlertActionBuilderTests {
+    @Test func whenVoid_ActionGroupShouldBeEmpty() {
         let style = AlertBuilder.AlertStyle(title: "", text: "") {
             ()
         }
@@ -12,14 +12,14 @@ final class AlertActionBuilderTests: XCTestCase {
         
         switch alertType {
         case let .customActions(_, _, actions):
-            XCTAssertTrue(actions().isEmpty, "An Alert should have no action when there is some Void in the builder")
+            #expect(actions().isEmpty, "An Alert should have no action when there is some Void in the builder")
             
         default:
-            XCTFail("Alert type should be custom")
+            Issue.record("Alert type should be custom")
         }
     }
     
-    func test_AlertButton() {
+    @Test func alertButton() {
         let style = AlertBuilder.AlertStyle(title: "", text: "") {
             AlertButton.cancel("Cancel")
         }
@@ -28,10 +28,10 @@ final class AlertActionBuilderTests: XCTestCase {
         
         switch alertType {
         case let .customActions(_, _, actions):
-            XCTAssertEqual(actions().count, 1)
+            #expect(actions().count == 1)
             
         default:
-            XCTFail("Alert type should be custom")
+            Issue.record("Alert type should be custom")
         }
     }
 }

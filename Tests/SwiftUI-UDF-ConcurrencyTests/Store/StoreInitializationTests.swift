@@ -6,9 +6,11 @@
 //
 
 @testable import UDF
-import XCTest
+import Testing
+import Foundation
+import UDFSwiftTesting
 
-final class StoreInitializationTests: XCTestCase {
+@Suite struct StoreInitializationTests {
     struct AppState: AppReducer {
         var form1 = Form1()
 
@@ -75,13 +77,13 @@ final class StoreInitializationTests: XCTestCase {
 
     var store: InternalStore<AppState>!
 
-    override func setUpWithError() throws {
+    init() throws {
         store = InternalStore(initial: AppState(), loggers: [])
     }
 
-    func test_middlewareAsyncSubscription() async {
-        var middlewaresCount = await store.middlewares.count
-        XCTAssertEqual(middlewaresCount, 0)
+    @Test func middlewareAsyncSubscription() async {
+        let middlewaresCount = await store.middlewares.count
+        #expect(middlewaresCount == 0)
 
         let middleware1 = Middleware1(
             store: store,
@@ -97,17 +99,13 @@ final class StoreInitializationTests: XCTestCase {
 
         await store.subscribe(middleware)
 
-        XCTAssertEqual(middlewaresCount, 0)
-
-        await fulfill(description: "Waiting for middlewares subscription", sleep: 0.1)
-
-        middlewaresCount = await store.middlewares.count
-        XCTAssertNotEqual(middlewaresCount, 0)
+        let success = await waitForCondition { await store.middlewares.count != 0 }
+        #expect(success)
     }
 
-    func test_middlewareSubscription() async {
-        var middlewaresCount = await store.middlewares.count
-        XCTAssertEqual(middlewaresCount, 0)
+    @Test func middlewareSubscription() async {
+        let middlewaresCount = await store.middlewares.count
+        #expect(middlewaresCount == 0)
 
         let middleware1 = Middleware1(
             store: store,
@@ -123,7 +121,7 @@ final class StoreInitializationTests: XCTestCase {
 
         await store.subscribe(middleware)
 
-        middlewaresCount = await store.middlewares.count
-        XCTAssertNotEqual(middlewaresCount, 0)
+        let success = await waitForCondition { await store.middlewares.count != 0 }
+        #expect(success)
     }
 }
