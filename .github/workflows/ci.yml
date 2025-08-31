@@ -93,62 +93,51 @@ jobs:
         swift package init --type executable
         
         # Add UDF dependency
-        cat > Package.swift << 'EOF'
-        // swift-tools-version: 6.0
-        import PackageDescription
-        
-        let package = Package(
+        echo '// swift-tools-version: 6.0
+import PackageDescription
+
+let package = Package(
+    name: "ExampleProject",
+    platforms: [.macOS(.v13), .iOS(.v16)],
+    dependencies: [
+        .package(path: "../")
+    ],
+    targets: [
+        .executableTarget(
             name: "ExampleProject",
-            platforms: [.macOS(.v13), .iOS(.v16)],
             dependencies: [
-                .package(path: "../")
-            ],
-            targets: [
-                .executableTarget(
-                    name: "ExampleProject",
-                    dependencies: [
-                        .product(name: "UDF", package: "SwiftUI-UDF")
-                    ]
-                ),
-                .testTarget(
-                    name: "ExampleProjectTests",
-                    dependencies: [
-                        "ExampleProject",
-                        .product(name: "UDFSwiftTesting", package: "SwiftUI-UDF")
-                    ]
-                )
+                .product(name: "UDF", package: "SwiftUI-UDF")
             ]
         )
-        EOF
+    ]
+)' > Package.swift
         
         # Simple integration test
-        cat > Sources/main.swift << 'EOF'
-        import UDF
-        import Foundation
-        
-        struct AppState: AppReducer {
-            var counter: Int = 0
+        echo 'import UDF
+import Foundation
+
+struct AppState: AppReducer {
+    var counter: Int = 0
+}
+
+struct IncrementAction: Action {}
+
+extension AppState {
+    mutating func reduce(_ action: some Action) {
+        switch action {
+        case is IncrementAction:
+            counter += 1
+        default:
+            break
         }
-        
-        struct IncrementAction: Action {}
-        
-        extension AppState {
-            mutating func reduce(_ action: some Action) {
-                switch action {
-                case is IncrementAction:
-                    counter += 1
-                default:
-                    break
-                }
-            }
-        }
-        
-        let store = EnvironmentStore(initial: AppState())
-        print("Initial counter: \(store.state.counter)")
-        
-        store.dispatch(IncrementAction())
-        print("After increment: \(store.state.counter)")
-        EOF
+    }
+}
+
+let store = EnvironmentStore(initial: AppState())
+print("Initial counter: \(store.state.counter)")
+
+store.dispatch(IncrementAction())
+print("After increment: \(store.state.counter)")' > Sources/main.swift
         
     - name: Build Example
       run: |
