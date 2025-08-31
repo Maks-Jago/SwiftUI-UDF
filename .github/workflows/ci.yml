@@ -136,7 +136,7 @@ jobs:
             }
         }
         
-        let store = EnvironmentStore(initial: AppState())
+        let store = EnvironmentStore(initial: AppState(), loggers: [])
         print("Initial counter: \(store.state.counter)")
         
         store.dispatch(IncrementAction())
