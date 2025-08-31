@@ -50,8 +50,6 @@ jobs:
       run: swift build -c release
       
     - name: Run Tests
-      env:
-        SWIFT_TESTING: "1"
       run: |
         swift test \
           --parallel \

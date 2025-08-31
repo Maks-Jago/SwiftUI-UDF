@@ -26,8 +26,6 @@ jobs:
         fi
       
     - name: Run Full Test Suite
-      env:
-        SWIFT_TESTING: "1"
       run: swift test --parallel --enable-code-coverage --enable-experimental-swift-testing
       
     - name: Check Documentation

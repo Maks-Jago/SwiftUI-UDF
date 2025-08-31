@@ -39,14 +39,12 @@ jobs:
       run: swift build
       
     - name: Run Tests
-      env:
-        SWIFT_TESTING: "1"
       run: swift test --parallel --enable-experimental-swift-testing
       
     - name: Generate Test Report
       if: always()
       run: |
-        SWIFT_TESTING=1 swift test --parallel --enable-code-coverage --enable-experimental-swift-testing 2>&1 | tee test-output.log || true
+        swift test --parallel --enable-code-coverage --enable-experimental-swift-testing 2>&1 | tee test-output.log || true
         
     - name: Upload Test Results
       if: always()
