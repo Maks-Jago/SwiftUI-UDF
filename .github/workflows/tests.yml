@@ -39,12 +39,12 @@ jobs:
       run: swift build
       
     - name: Run Tests
-      run: swift test --parallel --target SwiftUI-UDF-Tests --target SwiftUI-UDF-ConcurrencyTests
+      run: swift test --parallel --enable-experimental-swift-testing
       
     - name: Generate Test Report
       if: always()
       run: |
-        swift test --parallel --enable-code-coverage --target SwiftUI-UDF-Tests --target SwiftUI-UDF-ConcurrencyTests 2>&1 | tee test-output.log || true
+        swift test --parallel --enable-code-coverage --enable-experimental-swift-testing 2>&1 | tee test-output.log || true
         
     - name: Upload Test Results
       if: always()

@@ -44,16 +44,17 @@ jobs:
       run: swift package resolve
       
     - name: Build Debug
-      run: swift build -c debug --target UDF --target UDFSwiftTesting
+      run: swift build -c debug
       
     - name: Build Release  
-      run: swift build -c release --target UDF --target UDFSwiftTesting
+      run: swift build -c release
       
     - name: Run Tests
       run: |
         swift test \
           --parallel \
           --enable-code-coverage \
+          --enable-experimental-swift-testing \
           --build-path .build
           
     - name: Generate Code Coverage
@@ -169,7 +170,7 @@ jobs:
       
     - name: Validate Package
       run: |
-        swift package compute-checksum
+        swift package describe
         
   notify-success:
     name: Notify Success

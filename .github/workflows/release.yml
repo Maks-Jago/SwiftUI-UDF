@@ -26,7 +26,7 @@ jobs:
         fi
       
     - name: Run Full Test Suite
-      run: swift test --parallel --enable-code-coverage --target SwiftUI-UDF-Tests --target SwiftUI-UDF-ConcurrencyTests
+      run: swift test --parallel --enable-code-coverage --enable-experimental-swift-testing
       
     - name: Check Documentation
       run: |
