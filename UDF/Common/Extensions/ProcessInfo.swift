@@ -24,10 +24,9 @@ public extension ProcessInfo {
     /// }
     /// ```
     var isRunningTests: Bool {
-        return ProcessInfo.processInfo.processName == "swiftpm-testing-helper" ||
-               NSClassFromString("Testing.Test") != nil ||
-               environment["XCTestConfigurationFilePath"] != nil ||
-               NSClassFromString("XCTestCase") != nil ||
-               Bundle.allBundles.contains { $0.bundlePath.hasSuffix(".xctest") }
+        environment["XCTestConfigurationFilePath"] != nil ||
+        NSClassFromString("XCTestCase") != nil ||
+        Bundle.allBundles.contains { $0.bundlePath.hasSuffix(".xctest") } ||
+        processName == "xctest"
     }
 }
