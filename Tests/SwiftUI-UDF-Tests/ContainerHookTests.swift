@@ -287,7 +287,7 @@ import UDFSwiftTesting
     /// ✘ Test hookWithNilConditionCheck() failed after 5.027 seconds with 1 issue.
     ///
     /// success = await waitForCondition { store.state.hookForm.triggerValue == "valid" } - failed, since 'valid' was not established
-    @Test(.disabled("the last expectation of 'success' was not fulfilled, since 'valid' was not established"))
+    @Test
     func hookWithNilConditionCheck() async throws {
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
         let rootContainer = NilSafeHookContainer()
