@@ -96,7 +96,7 @@ import UDFSwiftTesting
         #expect(store.state.hookForm.callbacksCount == triggerCount)
     }
 
-    @Test func hooksPersistAcrossContainers() async throws {
+    @Test func oneTimeHooksRecreatedWithNewContainers() async throws {
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
 
         // Create and use the first container
@@ -132,9 +132,8 @@ import UDFSwiftTesting
         #expect(store.state.hookForm.triggerValue == "1") // triggerValue from previous step
         await window.redraw()
 
-        // TODO: ask Arthur about this test
-        // Since hooks are persistent, the one-time hook will not fire again
-        // So triggerValue should remain "1"
+        // One-time hooks are recreated with each new container instance
+        // So the hook will fire again when the condition is met in the new container
         success = await waitForCondition { store.state.hookForm.triggerValue == "2" }
         #expect(success)
     }
@@ -295,7 +294,8 @@ import UDFSwiftTesting
         success = await waitForCondition { store.state.hookForm.triggerValue == "valid" }
         #expect(success)
 
-        #expect(store.state.hookForm.callbacksCount == 1)
+        success = await waitForCondition { store.state.hookForm.callbacksCount == 1 }
+        #expect(success)
     }
 
     @Test func hookWithStateRollback() async throws {
