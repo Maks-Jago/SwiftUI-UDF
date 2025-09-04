@@ -552,7 +552,7 @@ private extension Actions {
 
         // for github debug
         await sleep()
-        await print("middlewareStatusChanges print \(store.state.testForm.title)")
+        await store.dispatch(Actions.SendMessage(message: "test print: \(store.state.testForm.title)", id: TestFlow.id))
 
         // Then: Both reduce and observe should work again
         success = await waitForCondition { await store.state.testForm.title == "Status: \(message3)" }
