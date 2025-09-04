@@ -550,6 +550,10 @@ private extension Actions {
         let message3 = "Reactivated Message"
         await store.dispatch(Actions.SendMessage(message: message3, id: TestFlow.id))
 
+        // for github debug
+        await sleep()
+        await print("middlewareStatusChanges print \(store.state.testForm.title)")
+
         // Then: Both reduce and observe should work again
         success = await waitForCondition { await store.state.testForm.title == "Status: \(message3)" }
         #expect(success)
