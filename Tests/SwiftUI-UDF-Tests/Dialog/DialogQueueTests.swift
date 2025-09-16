@@ -386,13 +386,174 @@ final class DialogQueueTests: XCTestCase {
             maxQueueSize: 1
         )
         let queueManager = ToastQueueManager(configuration: config)
-        
+
         // Should handle gracefully
         queueManager.enqueue(createToastDialog("Toast 1"))
-        
+
         // With 0 max stack, should fallback to sequential
         XCTAssertLessThanOrEqual(queueManager.visibleToasts.count, 1)
     }
-    
-    
+
+    // MARK: - Auto-Dismiss Callback Tests
+
+    @MainActor
+    func test_QueueManager_AutoDismissCallback_ExecutedOnTimerExpiry() async {
+        let queueManager = ToastQueueManager()
+        var callbackExecuted = false
+
+        let config = ToastConfiguration(
+            defaultDuration: 0.1, // Very short duration
+            onAutoDismiss: {
+                Task { @MainActor in
+                    callbackExecuted = true
+                }
+            }
+        )
+        let content = DialogContent("Test Toast")
+        let toast = DialogCustomType.custom(content: content, style: .toast(config))
+
+        queueManager.enqueue(toast)
+
+        // Wait for auto-dismiss
+        try? await Task.sleep(nanoseconds: 150_000_000) // 0.15 seconds
+
+        XCTAssertTrue(callbackExecuted, "onAutoDismiss callback should be executed")
+        XCTAssertEqual(queueManager.visibleToasts.count, 0, "Toast should be dismissed")
+    }
+
+    @MainActor
+    func test_QueueManager_AutoDismissCallback_NotExecutedOnManualDismiss() {
+        let queueManager = ToastQueueManager()
+        var callbackExecuted = false
+
+        let config = ToastConfiguration(
+            defaultDuration: 10.0, // Long duration to prevent auto-dismiss
+            onAutoDismiss: {
+                Task { @MainActor in
+                    callbackExecuted = true
+                }
+            }
+        )
+        let content = DialogContent("Test Toast")
+        let toast = DialogCustomType.custom(content: content, style: .toast(config))
+
+        queueManager.enqueue(toast)
+
+        // Manually dismiss
+        if let toastId = queueManager.visibleToasts.first?.id {
+            queueManager.dismiss(toastId)
+        }
+
+        XCTAssertFalse(callbackExecuted, "onAutoDismiss callback should NOT be executed on manual dismiss")
+        XCTAssertEqual(queueManager.visibleToasts.count, 0, "Toast should be dismissed")
+    }
+
+    @MainActor
+    func test_QueueManager_AutoDismissCallback_SequentialMode() async {
+        let config = ToastQueueConfiguration(displayMode: .sequential)
+        let queueManager = ToastQueueManager(configuration: config)
+
+        var callback1Executed = false
+        var callback2Executed = false
+
+        let toast1Config = ToastConfiguration(
+            defaultDuration: 0.1,
+            onAutoDismiss: {
+                Task { @MainActor in
+                    callback1Executed = true
+                }
+            }
+        )
+        let toast2Config = ToastConfiguration(
+            defaultDuration: 0.1,
+            onAutoDismiss: {
+                Task { @MainActor in
+                    callback2Executed = true
+                }
+            }
+        )
+
+        let toast1 = DialogCustomType.custom(content: DialogContent("Toast 1"), style: .toast(toast1Config))
+        let toast2 = DialogCustomType.custom(content: DialogContent("Toast 2"), style: .toast(toast2Config))
+
+        queueManager.enqueue(toast1)
+        queueManager.enqueue(toast2)
+
+        // In sequential mode, only first toast should be visible initially
+        XCTAssertEqual(queueManager.visibleToasts.count, 1)
+        XCTAssertEqual(queueManager.queuedToasts.count, 1)
+
+        // Wait for both toasts to auto-dismiss
+        try? await Task.sleep(nanoseconds: 500_000_000) // 0.5 seconds
+
+        XCTAssertTrue(callback1Executed, "First toast callback should execute")
+        XCTAssertTrue(callback2Executed, "Second toast callback should execute after first is dismissed")
+        XCTAssertEqual(queueManager.visibleToasts.count, 0)
+        XCTAssertEqual(queueManager.queuedToasts.count, 0)
+    }
+
+    @MainActor
+    func test_QueueManager_AutoDismissCallback_StackedMode() async {
+        let config = ToastQueueConfiguration(
+            displayMode: .stacked,
+            maxStackedToasts: 2
+        )
+        let queueManager = ToastQueueManager(configuration: config)
+
+        var callback1Executed = false
+        var callback2Executed = false
+
+        let toast1Config = ToastConfiguration(
+            defaultDuration: 0.1,
+            onAutoDismiss: {
+                Task { @MainActor in
+                    callback1Executed = true
+                }
+            }
+        )
+        let toast2Config = ToastConfiguration(
+            defaultDuration: 0.1,
+            onAutoDismiss: {
+                Task { @MainActor in
+                    callback2Executed = true
+                }
+            }
+        )
+
+        let toast1 = DialogCustomType.custom(content: DialogContent("Toast 1"), style: .toast(toast1Config))
+        let toast2 = DialogCustomType.custom(content: DialogContent("Toast 2"), style: .toast(toast2Config))
+
+        queueManager.enqueue(toast1)
+        queueManager.enqueue(toast2)
+
+        // In stacked mode, both toasts should be visible
+        XCTAssertEqual(queueManager.visibleToasts.count, 2)
+        XCTAssertEqual(queueManager.queuedToasts.count, 0)
+
+        // Wait for both toasts to auto-dismiss
+        try? await Task.sleep(nanoseconds: 200_000_000) // 0.2 seconds
+
+        XCTAssertTrue(callback1Executed, "First toast callback should execute")
+        XCTAssertTrue(callback2Executed, "Second toast callback should execute")
+        XCTAssertEqual(queueManager.visibleToasts.count, 0)
+    }
+
+    @MainActor
+    func test_QueueManager_AutoDismissCallback_NoCallbackForNonToastStyle() async {
+        let queueManager = ToastQueueManager()
+        var callbackExecuted = false
+
+        // Create a regular DialogType (not toast style)
+        let dialog = DialogType.info(message: "Regular dialog", style: .alert)
+
+        queueManager.enqueue(dialog)
+
+        // Wait briefly
+        try? await Task.sleep(nanoseconds: 50_000_000) // 0.05 seconds
+
+        // No callback should be executed for non-toast dialogs
+        XCTAssertFalse(callbackExecuted)
+    }
+
+
 }

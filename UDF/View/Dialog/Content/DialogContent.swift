@@ -271,7 +271,7 @@ public struct DialogContent<Icon: View, CustomContent: View>: Equatable, Sendabl
         message: String? = nil,
         actions: [any DialogAction] = [],
         iconBuilder: (@Sendable () -> Icon)? = nil,
-        customContentBuilder: (@Sendable () -> CustomContent)? = nil
+        customContentBuilder: (@Sendable () -> CustomContent)? = nil,
     ) {
         self.title = title
         self.message = message

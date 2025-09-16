@@ -237,6 +237,7 @@ public extension DialogRegistry {
     ///   - id: A unique identifier for the toast.
     ///   - content: The dialog content with title, message, and actions.
     ///   - configuration: Toast-specific configuration for styling and behavior.
+    ///   - onAutoDismiss: Optional callback executed when toast auto-dismisses due to timer.
     ///
     /// ## Example:
     /// ```swift
@@ -253,17 +254,28 @@ public extension DialogRegistry {
     ///         position: .bottom,
     ///         defaultDuration: 5.0
     ///     )
+    /// } onAutoDismiss: {
+    ///     print("Upload toast dismissed")
     /// }
     /// ```
     static func registerToast<ID: Hashable & Sendable>(
         id: ID,
         content: @escaping @Sendable () -> DialogContent<EmptyView, EmptyView>,
-        configuration: @escaping @Sendable () -> ToastConfiguration = { .default }
+        configuration: @escaping @Sendable () -> ToastConfiguration = { .default },
+        onAutoDismiss: (@Sendable () -> Void)? = nil
     ) {
         register(id: id) {
-            DialogCustomType.custom(
-                content: content(),
-                style: .toast(configuration())
+            let dialogContent = content()
+            var config = configuration()
+
+            // Set the onAutoDismiss callback in the configuration
+            if let onAutoDismiss = onAutoDismiss {
+                config.onAutoDismiss = onAutoDismiss
+            }
+
+            return DialogCustomType.custom(
+                content: dialogContent,
+                style: .toast(config)
             )
         }
     }
@@ -277,8 +289,9 @@ public extension DialogRegistry {
     /// - Parameters:
     ///   - id: A unique identifier for the toast.
     ///   - title: The toast title.
-    ///   - customView: A closure returning the custom SwiftUI content.
+    ///   - customContent: A closure returning the custom SwiftUI content.
     ///   - configuration: Toast configuration for styling and behavior.
+    ///   - onAutoDismiss: Optional callback executed when toast auto-dismisses due to timer.
     ///
     /// ## Example:
     /// ```swift
@@ -288,17 +301,27 @@ public extension DialogRegistry {
     ///         Text("\(Int(downloadProgress * 100))% complete")
     ///             .font(.caption)
     ///     }
+    /// } onAutoDismiss: {
+    ///     print("Download progress dismissed")
     /// }
     /// ```
     static func registerCustomToast<ID: Hashable & Sendable, CustomContent: View>(
         id: ID,
         title: String,
         customContent: @escaping @Sendable () -> CustomContent,
-        configuration: @escaping @Sendable () -> ToastConfiguration = { .default }
+        configuration: @escaping @Sendable () -> ToastConfiguration = { .default },
+        onAutoDismiss: (@Sendable () -> Void)? = nil
     ) {
         register(id: id) {
             let content = DialogContent(title: title, customContent: customContent)
-            return DialogCustomType.custom(content: content, style: .toast(configuration()))
+            var config = configuration()
+
+            // Set the onAutoDismiss callback in the configuration
+            if let onAutoDismiss = onAutoDismiss {
+                config.onAutoDismiss = onAutoDismiss
+            }
+
+            return DialogCustomType.custom(content: content, style: .toast(config))
         }
     }
 }
