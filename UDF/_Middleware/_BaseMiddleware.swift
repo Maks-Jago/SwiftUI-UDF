@@ -144,7 +144,7 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
                 // Handle cancellation: Remove the task from cancellations and dispatch cancellation action
                 self?.cancellations[anyId] = nil
                 self?.store.dispatch(
-                    Actions.DidCancelEffect(by: cancellation),
+                    mapAction(Actions.DidCancelEffect(by: cancellation)),
                     fileName: filePosition.fileName,
                     functionName: filePosition.functionName,
                     lineNumber: filePosition.lineNumber
@@ -254,7 +254,7 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
                 // Handle cancellation: Remove the task from cancellations and dispatch cancellation action
                 self?.cancellations[anyId] = nil
                 self?.store.dispatch(
-                    Actions.DidCancelEffect(by: cancellation),
+                    mapAction(Actions.DidCancelEffect(by: cancellation)),
                     fileName: filePosition.fileName,
                     functionName: filePosition.functionName,
                     lineNumber: filePosition.lineNumber
@@ -330,7 +330,7 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
                 // Handle cancellation: Remove the task from cancellations and dispatch cancellation action
                 self?.cancellations[anyId] = nil
                 self?.store.dispatch(
-                    Actions.DidCancelEffect(by: cancellation),
+                    mapAction(Actions.DidCancelEffect(by: cancellation)),
                     fileName: filePosition.fileName,
                     functionName: filePosition.functionName,
                     lineNumber: filePosition.lineNumber
@@ -463,7 +463,7 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
 
                 // Check if the task was cancelled and dispatch appropriate actions
                 if Task.isCancelled {
-                    self?.dispatch(action: Actions.DidCancelEffect(by: cancellation), filePosition: filePosition)
+                    self?.dispatch(action: mapAction(Actions.DidCancelEffect(by: cancellation)), filePosition: filePosition)
                 } else {
                     self?.dispatch(action: mapAction(action), filePosition: filePosition)
                 }
@@ -471,7 +471,7 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
             } catch {
                 // Handle errors and task cancellation
                 if error is CancellationError {
-                    self?.dispatch(action: Actions.DidCancelEffect(by: cancellation), filePosition: filePosition)
+                    self?.dispatch(action: mapAction(Actions.DidCancelEffect(by: cancellation)), filePosition: filePosition)
                 } else if !Task.isCancelled {
                     self?.dispatch(action: mapError(flowId, error), filePosition: filePosition)
                 }
