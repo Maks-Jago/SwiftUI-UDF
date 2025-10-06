@@ -29,4 +29,9 @@ public extension ProcessInfo {
         NSClassFromString("XCTestCase") != nil ||
         Bundle.allBundles.contains { $0.bundlePath.hasSuffix(".xctest") }
     }
+
+    @available(*, deprecated, renamed: "isRunningTests", message: "use `isRunningTests` instead of xcTest")
+    var xcTest: Bool {
+        environment["XCTestConfigurationFilePath"] != nil
+    }
 }
