@@ -11,7 +11,7 @@
 
 import Foundation
 
-final class StoreOperation: AsynchronousOperation {
+final class StoreOperation: AsynchronousOperation, @unchecked Sendable {
     var priority: Priority
     var closure: () async -> Void
     var task: Task<Void, Never>? = nil
