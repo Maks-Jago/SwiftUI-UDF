@@ -57,13 +57,9 @@ import Testing
         #expect(success)
 
         await store.dispatch(Actions._OnContainerDidUnLoad(containerType: ItemsContainer.self, id: .init(value: 1)))
-        await sleep()
-
         #expect(await store.state.itemsForm.reducers.count == 1)
 
         await store.dispatch(Actions._OnContainerDidUnLoad(containerType: ItemsContainer.self, id: .init(value: 1)))
-        await sleep()
-
         #expect(await store.state.itemsForm.reducers.count == 1)
 
         await store.dispatch(Actions._OnContainerDidUnLoad(containerType: ItemsContainer.self, id: .init(value: 1)))

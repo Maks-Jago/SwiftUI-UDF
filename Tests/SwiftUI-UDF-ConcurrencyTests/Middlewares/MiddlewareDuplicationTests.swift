@@ -41,8 +41,6 @@ import Testing
         })
 
         await store.dispatch(TestAction())
-        await waitForCondition { await store.state.testForm.reduceCallCount == 1 }
-        await sleep()
 
         let middlewaresCount = await store.state.testForm.reduceCallCount
         #expect(middlewaresCount == 1, "Middleware should only be added once")

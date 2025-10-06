@@ -546,8 +546,6 @@ private extension Actions {
         success = await waitForCondition { await store.state.testForm.counter == 1 }
         #expect(success)
 
-        await sleep() // wait a little for middleware reactivation
-
         // And: Actions are dispatched after reactivation
         let message3 = "Reactivated Message"
         await store.dispatch(Actions.SendMessage(message: message3, id: TestFlow.id))
@@ -645,7 +643,6 @@ private extension Actions {
 
         // When: Actions are dispatched that would normally be handled
         await store.dispatch(Actions.SendMessage(message: "test"))
-        await sleep()
 
         // Then: State should remain unchanged since no custom logic is implemented
         let state = await store.state

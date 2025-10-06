@@ -3,7 +3,7 @@ import SwiftUI
 import Testing
 import UDFSwiftTesting
 
-@Suite struct DialogQueueTests {
+@Suite(.serialized) struct DialogQueueTests {
     // MARK: - Test Helpers
     private func createToastDialog(_ message: String, duration: TimeInterval = 2.0) -> DialogType {
         let config = ToastConfiguration(defaultDuration: duration)
