@@ -154,6 +154,7 @@ public extension Container {
     /// The body of the container view. Connects the `ContainerComponent` with the `ContainerState` using a `ConnectedContainer`.
     var body: some View {
         ConnectedContainer<ContainerComponent, ContainerState>(
+            store: store,
             map: map,
             scope: scope(for:),
             onContainerAppear: onContainerAppear,

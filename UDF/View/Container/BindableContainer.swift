@@ -57,6 +57,7 @@ public extension BindableContainer {
     /// passing in the container's type, identifier, state mapping, scope, lifecycle events, and hooks.
     var body: some View {
         ConnectedContainer<ContainerComponent, ContainerState>(
+            store: store,
             containerType: Self.self,
             containerId: { self.id },
             map: map,
