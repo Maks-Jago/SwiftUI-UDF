@@ -108,9 +108,7 @@ private extension Actions {
         await store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.title, value: "title4"))
         
         // Wait for middleware to process and set nested.number to 2
-        var success = await waitForCondition {
-            await store.state.testForm.nested.number == 2
-        }
+        var success = await store.state.testForm.nested.number == 2
         #expect(success)
 
         formTitle = await store.state.testForm.title
@@ -119,9 +117,7 @@ private extension Actions {
         await store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.title, value: "title5"))
         
         await store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.title, value: "title6"))
-        success = await waitForCondition {
-            await store.state.testForm.title == "title6"
-        }
+        success = await store.state.testForm.title == "title6"
         #expect(success)
     }
 }
