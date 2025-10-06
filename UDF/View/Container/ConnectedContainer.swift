@@ -151,7 +151,7 @@ struct ConnectedContainer<C: Component, State: AppReducer>: View {
                 useHooks: useHooks
             )
         )
-        self._containerState = .init(wrappedValue: .init(store: EnvironmentStore<State>.global, scope: scope))
+        self._containerState = .init(wrappedValue: .init(store: store, scope: scope))
     }
 
     /// The main view body that renders the component and attaches lifecycle events.
