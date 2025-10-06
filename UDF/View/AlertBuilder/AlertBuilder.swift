@@ -148,23 +148,10 @@ public enum AlertBuilder {
                 let content = DialogContent(title: title(), message: message())
                 return DialogCustomType.custom(content: content, style: .alert)
             case .customActions(let title, let text, let actions):
-                // Convert AlertActions to DialogActions
-                let alertActions = actions()
-                
                 let content = DialogContent(
                     title: title(),
                     message: text(),
-                    actions: {
-                        var dialogActions: [any DialogAction] = []
-                        
-                        for action in alertActions {
-                            if let button = action as? AlertButton {
-                                dialogActions.append(DialogButton(title: button.title, action: button.action))
-                            } else if let textField = action as? AlertTextField {
-                                dialogActions.append(DialogTextField(title: textField.title, text: textField.text))
-                            }
-                        }
-                    }
+                    actions: actions
                 )
                 return DialogCustomType.custom(content: content, style: .alert)
             }
