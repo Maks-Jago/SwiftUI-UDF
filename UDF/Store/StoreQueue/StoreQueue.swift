@@ -13,7 +13,7 @@ import Foundation
 
 /// A class that provides a serial queue for store operations, ensuring that only one operation
 /// is executed at a time.
-final class StoreQueue: OperationQueue {
+final class StoreQueue: OperationQueue, @unchecked Sendable {
     /// Initializes a new `StoreQueue` with a maximum concurrency of one and a user-interactive quality of service.
     override init() {
         super.init()

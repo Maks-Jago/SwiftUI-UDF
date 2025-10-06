@@ -31,7 +31,7 @@ public extension Effects {
         }
 
         /// A private subscription class that manages location updates.
-        private final class LocationSubscription<S: Subscriber>: NSObject, CLLocationManagerDelegate,
+        private final class LocationSubscription<S: Subscriber>: NSObject, @unchecked Sendable, CLLocationManagerDelegate,
             Subscription where S.Input == any Action
         {
             var subscriber: S?

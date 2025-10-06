@@ -11,7 +11,7 @@
 
 import Foundation
 
-final class DelayedOperation: AsynchronousOperation {
+final class DelayedOperation: AsynchronousOperation, @unchecked Sendable {
     var priority: StoreOperation.Priority
     private let delay: Delay
     var task: Task<Void, Never>? = nil

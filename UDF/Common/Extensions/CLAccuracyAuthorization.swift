@@ -12,7 +12,7 @@
 import enum CoreLocation.CLAccuracyAuthorization
 import Foundation
 
-extension CLAccuracyAuthorization: CustomDebugStringConvertible {
+extension CLAccuracyAuthorization: @retroactive CustomDebugStringConvertible {
     /// Provides a custom debug description for the `CLAccuracyAuthorization` enumeration.
     ///
     /// - Returns: A `String` describing the accuracy authorization level.
