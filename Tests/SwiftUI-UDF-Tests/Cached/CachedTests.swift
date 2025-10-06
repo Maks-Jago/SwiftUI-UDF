@@ -7,14 +7,15 @@
 
 import OrderedCollections
 @testable import UDF
-import UDFXCTest
-import XCTest
+import UDFSwiftTesting
+import Testing
 
 private extension Actions {
     struct ResetCache: Action {}
 }
 
-class CachedTests: XCTestCase {
+@Suite(.serialized)
+struct CachedTests {
     struct Item: Equatable, Codable, Identifiable {
         struct ID: Hashable, Codable, Equatable {
             var value: Int
@@ -28,13 +29,13 @@ class CachedTests: XCTestCase {
     }
 
     struct NestedForm: Form {
-        @Cached(key: "items", defaultValue: .init())
+        @Cached(key: "cached_test_items", defaultValue: .init())
         var items: OrderedSet<Item.ID>
 
-        @Cached(key: "selected_item", defaultValue: nil)
+        @Cached(key: "cached_test_selected_item", defaultValue: nil)
         var selectedItem: Item.ID?
 
-        @Cached(key: "items_by_id", defaultValue: [:])
+        @Cached(key: "cached_test_items_by_id", defaultValue: [:])
         var byId: [Item.ID: Item]
 
         mutating func reduce(_ action: some Action) {
@@ -57,77 +58,74 @@ class CachedTests: XCTestCase {
         }
     }
 
-    func testItemsCaching() async {
-        var store = await XCTestStore(initial: AppState())
-
-        let items = (0 ... 3).map { Item(id: .init(value: $0)) }
-        await store.dispatch(Actions.DidLoadItems(items: items, id: "items"))
-
-        var isEmpty = await store.state.nestedForm.items.isEmpty
-        XCTAssertFalse(isEmpty)
-
-        var count = await store.state.nestedForm.items.count
-        XCTAssertEqual(count, 4)
-
-        await fulfill(description: "waiting for cache syncing", sleep: 1.5)
-
-        store = await .init(initial: AppState())
-        isEmpty = await store.state.nestedForm.items.isEmpty
-
-        XCTAssertFalse(isEmpty)
-        count = await store.state.nestedForm.items.count
-
-        XCTAssertEqual(count, 4)
-    }
-
-    func testResetCache() async {
-        let store = await XCTestStore(initial: AppState())
-        let items = (0 ... 3).map { Item(id: .init(value: $0)) }
-        await store.dispatch(Actions.DidLoadItems(items: items, id: "items"))
-
-        var isEmpty = await store.state.nestedForm.items.isEmpty
-        XCTAssertFalse(isEmpty)
-
-        let count = await store.state.nestedForm.items.count
-        XCTAssertEqual(count, 4)
-
-        await fulfill(description: "waiting for cache syncing", sleep: 1.5)
+    @Test func itemsCaching() async {
+        var store = await TestStore(initial: AppState())
         await store.dispatch(Actions.ResetCache())
 
-        isEmpty = await store.state.nestedForm.items.isEmpty
-        XCTAssertTrue(isEmpty)
+        await sleep(1.1) // Wait for cache sync interval (default 1.0s) to complete
+
+        var success = await waitForCondition { await store.state.nestedForm.items.isEmpty }
+        #expect(success)
+
+        let items = (0 ... 3).map { Item(id: .init(value: $0)) }
+        await store.dispatch(Actions.DidLoadItems(items: items, id: "items"))
+
+        success = await waitForCondition { await !store.state.nestedForm.items.isEmpty }
+        #expect(success)
+
+        success = await waitForCondition { await store.state.nestedForm.items.count == 4 }
+        #expect(success)
+
+        await sleep(1.1) // Wait for cache sync interval (default 1.0s) to complete
+
+        store = await TestStore(initial: AppState())
+
+        success = await waitForCondition { await !store.state.nestedForm.items.isEmpty }
+        #expect(success)
+        #expect(await store.state.nestedForm.items.count == 4)
+
+        await store.dispatch(Actions.ResetCache())
+
+        await sleep(1.1) // Wait for cache sync interval (default 1.0s) to complete
+
+        success = await waitForCondition { await store.state.nestedForm.items.isEmpty }
+        #expect(success)
     }
 
-    func testSingleObjectCaching() async {
-        let store = await XCTestStore(initial: AppState())
+    @Test func singleObjectCaching() async {
+        let store = await TestStore(initial: AppState())
+        await store.dispatch(Actions.ResetCache())
 
-        var selectedItem = await store.state.nestedForm.selectedItem
-        XCTAssertNil(selectedItem)
+        await sleep(1.1) // Wait for cache sync interval (default 1.0s) to complete
+
+        var success = await waitForCondition { await store.state.nestedForm.selectedItem == nil }
+        #expect(success)
 
         await store.dispatch(Actions.UpdateFormField(keyPath: \NestedForm.selectedItem, value: .init(value: 1)))
-
-        selectedItem = await store.state.nestedForm.selectedItem
-        XCTAssertNotNil(selectedItem)
+        success = await waitForCondition { await store.state.nestedForm.selectedItem != nil }
+        #expect(success)
 
         await store.dispatch(Actions.ResetCache())
-
-        selectedItem = await store.state.nestedForm.selectedItem
-        XCTAssertNil(selectedItem)
+        success = await waitForCondition { await store.state.nestedForm.selectedItem == nil }
+        #expect(success)
     }
 
-    func testRemoveItemFromCacheById() async throws {
-        let store = await XCTestStore(initial: AppState())
+    @Test func removeItemFromCacheById() async throws {
+        let store = await TestStore(initial: AppState())
         await store.dispatch(Actions.ResetCache())
+
+        await sleep(1.1) // Wait for cache sync interval (default 1.0s) to complete
+
+        var success = await waitForCondition { await store.state.nestedForm.byId.isEmpty }
+        #expect(success)
 
         let items = [Item(id: .init(value: 0))]
         await store.dispatch(Actions.DidLoadItems(items: items, id: "items"))
+        success = await waitForCondition { await !store.state.nestedForm.byId.isEmpty }
+        #expect(success)
 
-        var isEmpty = await store.state.nestedForm.byId.isEmpty
-        XCTAssertFalse(isEmpty)
-
-        try await store.dispatch(Actions.DeleteItem(item: XCTUnwrap(items.first)))
-        isEmpty = await store.state.nestedForm.byId.isEmpty
-
-        XCTAssertTrue(isEmpty)
+        try await store.dispatch(Actions.DeleteItem(item: #require(items.first)))
+        success = await waitForCondition { await store.state.nestedForm.byId.isEmpty }
+        #expect(success)
     }
 }

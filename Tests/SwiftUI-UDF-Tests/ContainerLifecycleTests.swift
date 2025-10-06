@@ -1,9 +1,10 @@
 
 import SwiftUI
 @testable import UDF
-import XCTest
+import Testing
+import UDFSwiftTesting
 
-final class ContainerLifecycleTests: XCTestCase {
+@Suite struct ContainerLifecycleTests {
     struct AppState: AppReducer {
         var userData = UserData()
     }
@@ -27,21 +28,19 @@ final class ContainerLifecycleTests: XCTestCase {
         }
     }
 
-    func test_ContainerLifecycle() async {
+    @Test func containerLifecycle() async {
         let store = EnvironmentStore(initial: AppState(), logger: .consoleDebug)
         let rootContainer = RootContainer()
 
-        var window: PlatformWindow? = await PlatformWindow.render(container: rootContainer)
+        var window: PlatformWindow? = await PlatformWindow.render(view: rootContainer)
         await window?.redraw()
-
-        await fulfill(description: "waiting for rendering", sleep: 1)
-        XCTAssertTrue(store.state.userData.didLoad)
+        var success = await waitForCondition { store.state.userData.didLoad }
+        #expect(success)
 
         await window?.release()
         window = nil
-
-        await fulfill(description: "waiting for rendering", sleep: 1)
-        XCTAssertTrue(store.state.userData.didUnload)
+        success = await waitForCondition { store.state.userData.didUnload }
+        #expect(success)
     }
 }
 

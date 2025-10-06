@@ -1,9 +1,10 @@
 
 import SwiftUI
 @testable import UDF
-import XCTest
+import Testing
+import UDFSwiftTesting
 
-final class ContainerHookTests: XCTestCase {
+@Suite(.serialized) struct ContainerHookTests {
     private struct TestStoreLogger: ActionLogger {
         var actionFilters: [ActionFilter] = [VerboseActionFilter()]
         var actionDescriptor: ActionDescriptor = StringDescribingActionDescriptor()
@@ -25,355 +26,325 @@ final class ContainerHookTests: XCTestCase {
         var callbacksCount: Int = 0
     }
 
-    func test_OneTimeHook() async throws {
+    @Test func oneTimeHook() async throws {
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
         let rootContainer = RootContainer()
+        let window = await PlatformWindow.render(view: rootContainer)
 
-        let window = await PlatformWindow.render(container: rootContainer)
-
-        XCTAssertEqual(store.state.hookForm.triggerValue, "")
+        #expect(store.state.hookForm.triggerValue == "")
         await window.redraw()
 
-        await fulfill(description: "waiting for rendering", sleep: 0.1)
-        store.$state.hookForm.triggerValue.wrappedValue = "1"
+        store.dispatch(Actions.UpdateFormField<HookForm>(keyPath: \HookForm.triggerValue, value: "1"))
 
-        await fulfill(description: "waiting for dispatch", sleep: 0.2)
-        XCTAssertEqual(store.state.hookForm.triggerValue, "2")
+        let success = await waitForCondition { store.state.hookForm.triggerValue == "2" }
+        #expect(success)
     }
 
-    func test_OneTimeHook_NotCalledAgainOnRedraw() async throws {
+    @Test func oneTimeHook_NotCalledAgainOnRedraw() async throws {
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
         let rootContainer = RootContainer()
+        let window = await PlatformWindow.render(view: rootContainer)
 
-        let window = await PlatformWindow.render(container: rootContainer)
-
-        XCTAssertEqual(store.state.hookForm.triggerValue, "")
+        #expect(store.state.hookForm.triggerValue == "")
         await window.redraw()
-
-        await fulfill(description: "waiting for rendering", sleep: 0.1)
 
         // Set triggerValue to "1" to activate the one-time hook
-        store.$state.hookForm.triggerValue.wrappedValue = "1"
+        store.dispatch(Actions.UpdateFormField<HookForm>(keyPath: \HookForm.triggerValue, value: "1"))
 
-        await fulfill(description: "waiting for hook execution", sleep: 0.2)
-        XCTAssertEqual(store.state.hookForm.triggerValue, "2")
+        let success = await waitForCondition { store.state.hookForm.triggerValue == "2" }
+        #expect(success)
 
         // Change the state to cause a redraw
-        store.$state.hookForm.triggerValue.wrappedValue = "3"
-        await fulfill(description: "waiting for redraw", sleep: 0.1)
+        store.dispatch(Actions.UpdateFormField<HookForm>(keyPath: \HookForm.triggerValue, value: "3"))
+        await sleep()
 
-        XCTAssertEqual(store.state.hookForm.triggerValue, "3")
+        #expect(store.state.hookForm.triggerValue == "3")
 
         // Set triggerValue back to "1" to test if the one-time hook fires again
-        store.$state.hookForm.triggerValue.wrappedValue = "1"
-        await fulfill(description: "waiting for hook execution", sleep: 0.2)
+        store.dispatch(Actions.UpdateFormField<HookForm>(keyPath: \HookForm.triggerValue, value: "1"))
+        await sleep()
 
         // The triggerValue should remain "1" because the one-time hook should not fire again
-        XCTAssertEqual(store.state.hookForm.triggerValue, "1")
+        #expect(store.state.hookForm.triggerValue == "1")
     }
 
-    func test_DefaultHook_CalledCorrectNumberOfTimes() async throws {
+    @Test func defaultHook_CalledCorrectNumberOfTimes() async throws {
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
         let rootContainer = RootContainer()
+        let window = await PlatformWindow.render(view: rootContainer)
 
-        let window = await PlatformWindow.render(container: rootContainer)
-
-        XCTAssertEqual(store.state.hookForm.triggerValue, "")
+        #expect(store.state.hookForm.triggerValue == "")
         await window.redraw()
 
-        await fulfill(description: "waiting for rendering", sleep: 0.1)
-
         // Reset the hook call counter
-        store.$state.hookForm.callbacksCount.wrappedValue = 0
+        store.dispatch(Actions.UpdateFormField<HookForm>(keyPath: \HookForm.callbacksCount, value: 0))
 
         // Define how many times to trigger the condition
         let triggerCount = 5
 
         for _ in 1 ... triggerCount {
             // Set triggerValue to "3" to meet the hook's condition
-            store.$state.hookForm.triggerValue.wrappedValue = "3"
-
-            await fulfill(description: "waiting for hook execution", sleep: 0.2)
+            store.dispatch(Actions.UpdateFormField<HookForm>(keyPath: \HookForm.triggerValue, value: "3"))
+            await waitForCondition { store.$state.hookForm.triggerValue.wrappedValue == "3" }
 
             // Reset triggerValue to allow the condition to be met again
-            store.$state.hookForm.triggerValue.wrappedValue = ""
-            await fulfill(description: "waiting for reset", sleep: 0.2)
+            store.dispatch(Actions.UpdateFormField<HookForm>(keyPath: \HookForm.triggerValue, value: ""))
+            await waitForCondition { store.$state.hookForm.triggerValue.wrappedValue == "" }
         }
 
         // Assert that the hook was called the expected number of times
-        XCTAssertEqual(store.state.hookForm.callbacksCount, triggerCount)
+        #expect(store.state.hookForm.callbacksCount == triggerCount)
     }
 
-    func test_HooksPersistAcrossContainers() async throws {
+    @Test func oneTimeHooksRecreatedWithNewContainers() async throws {
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
 
         // Create and use the first container
         let rootContainer = RootContainer()
-        var window = await PlatformWindow.render(container: rootContainer)
+        var window = await PlatformWindow.render(view: rootContainer)
 
-        XCTAssertEqual(store.state.hookForm.triggerValue, "")
+        #expect(store.state.hookForm.triggerValue == "")
         await window.redraw()
-
-        await fulfill(description: "waiting for rendering", sleep: 0.1)
 
         // Activate the one-time hook
-        store.$state.hookForm.triggerValue.wrappedValue = "1"
+        store.dispatch(Actions.UpdateFormField<HookForm>(keyPath: \HookForm.triggerValue, value: "1"))
 
-        await fulfill(description: "waiting for hook execution", sleep: 0.2)
-        XCTAssertEqual(store.state.hookForm.triggerValue, "2")
+        var success = await waitForCondition { store.state.hookForm.triggerValue == "2" }
+        #expect(success)
 
         // Reset triggerValue for further testing
-        store.$state.hookForm.triggerValue.wrappedValue = ""
-        await fulfill(description: "waiting for rendering", sleep: 0.1)
-        XCTAssertEqual(store.state.hookForm.triggerValue, "")
+        store.dispatch(Actions.UpdateFormField<HookForm>(keyPath: \HookForm.triggerValue, value: ""))
+        success = await waitForCondition { store.state.hookForm.triggerValue == "" }
+        #expect(success)
 
         // Attempt to trigger the one-time hook again
-        store.$state.hookForm.triggerValue.wrappedValue = "1"
-        await fulfill(description: "waiting for hook execution", sleep: 0.2)
+        store.dispatch(Actions.UpdateFormField<HookForm>(keyPath: \HookForm.triggerValue, value: "1"))
+        success = await waitForCondition { store.state.hookForm.triggerValue == "1" }
+        #expect(success)
 
         // The one-time hook should not fire again, so triggerValue should remain "1"
-        XCTAssertEqual(store.state.hookForm.triggerValue, "1", "One-time hook should not fire again")
+        await sleep()
+        #expect(store.state.hookForm.triggerValue == "1", "One-time hook should not fire again")
 
         let newRootContainer = RootContainer()
-        window = await PlatformWindow.render(container: newRootContainer)
+        window = await PlatformWindow.render(view: newRootContainer)
 
-        XCTAssertEqual(store.state.hookForm.triggerValue, "1") // triggerValue from previous step
+        #expect(store.state.hookForm.triggerValue == "1") // triggerValue from previous step
         await window.redraw()
 
-        await fulfill(description: "waiting for rendering", sleep: 0.1)
-
-        // Since hooks are persistent, the one-time hook will not fire again
-        // So triggerValue should remain "1"
-        await fulfill(description: "waiting for hook execution", sleep: 0.2)
-        XCTAssertEqual(store.state.hookForm.triggerValue, "2", "One-time hook should not fire again in new container")
+        // One-time hooks are recreated with each new container instance
+        // So the hook will fire again when the condition is met in the new container
+        success = await waitForCondition { store.state.hookForm.triggerValue == "2" }
+        #expect(success)
     }
 
-    func test_HookFiresWhenConditionAlreadyTrueOnContainerAppear() async throws {
+    @Test func hookFiresWhenConditionAlreadyTrueOnContainerAppear() async throws {
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
 
         // Set the trigger value BEFORE creating the container
         // This simulates the scenario where the condition is already true
-        store.$state.hookForm.triggerValue.wrappedValue = "1"
-
-        await fulfill(description: "waiting for settings initial value", sleep: 0.1)
-
-        XCTAssertEqual(store.state.hookForm.triggerValue, "1")
+        store.dispatch(Actions.UpdateFormField<HookForm>(keyPath: \HookForm.triggerValue, value: "1"))
+        var success = await waitForCondition { store.state.hookForm.triggerValue == "1" }
+        #expect(success)
 
         // Now create the container - the hook condition is already satisfied
         let rootContainer = RootContainer()
-        let window = await PlatformWindow.render(container: rootContainer)
+        let window = await PlatformWindow.render(view: rootContainer)
 
         await window.redraw()
-        await fulfill(description: "waiting for hook execution", sleep: 0.1)
 
         // The hook should have fired even though the condition was already true
         // when the container appeared, changing "1" to "2"
-        XCTAssertEqual(
-            store.state.hookForm.triggerValue,
-            "2",
-            "Hook should fire at least once even if condition was already true when container appeared"
-        )
+        success = await waitForCondition { store.state.hookForm.triggerValue == "2" }
+        #expect(success, "Hook should fire at least once even if condition was already true when container appeared")
     }
 
-    func test_removeHook() async throws {
+    @Test func removeHook() async throws {
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
         let rootContainer = RemovableHookContainer()
 
-        let window = await PlatformWindow.render(container: rootContainer)
+        let window = await PlatformWindow.render(view: rootContainer)
         await window.redraw()
 
-        await fulfill(description: "waiting for rendering", sleep: 0.1)
-
         // Trigger the hook that removes itself
-        store.$state.hookForm.triggerValue.wrappedValue = "remove"
-        await fulfill(description: "waiting for hook execution", sleep: 0.2)
-
-        XCTAssertEqual(store.state.hookForm.callbacksCount, 1)
+        store.dispatch(Actions.UpdateFormField<HookForm>(keyPath: \HookForm.triggerValue, value: "remove"))
+        let success = await waitForCondition { store.state.hookForm.callbacksCount == 1 }
+        #expect(success)
 
         // Try to trigger again - hook should be removed and not fire
-        store.$state.hookForm.triggerValue.wrappedValue = ""
-        await fulfill(description: "waiting for reset", sleep: 0.2)
+        store.dispatch(Actions.UpdateFormField<HookForm>(keyPath: \HookForm.triggerValue, value: ""))
+        await sleep()
 
-        store.$state.hookForm.triggerValue.wrappedValue = "remove"
-        await fulfill(description: "waiting for hook execution", sleep: 0.2)
+        store.dispatch(Actions.UpdateFormField<HookForm>(keyPath: \HookForm.triggerValue, value: "remove"))
+        await sleep()
 
-        XCTAssertEqual(store.state.hookForm.callbacksCount, 1, "Hook should not fire after being removed")
+        #expect(store.state.hookForm.callbacksCount == 1, "Hook should not fire after being removed")
     }
 
-    func test_HookWithAlwaysFalseCondition() async throws {
+    @Test func hookWithAlwaysFalseCondition() async throws {
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
         let rootContainer = AlwaysFalseHookContainer()
 
-        let window = await PlatformWindow.render(container: rootContainer)
+        let window = await PlatformWindow.render(view: rootContainer)
         await window.redraw()
 
-        await fulfill(description: "waiting for rendering", sleep: 0.1)
-
         // Change state multiple times
-        store.$state.hookForm.triggerValue.wrappedValue = "1"
-        await fulfill(description: "waiting for state change", sleep: 0.2)
+        store.dispatch(Actions.UpdateFormField<HookForm>(keyPath: \HookForm.triggerValue, value: "1"))
+        await sleep()
 
-        store.$state.hookForm.triggerValue.wrappedValue = "2"
-        await fulfill(description: "waiting for state change", sleep: 0.2)
+        store.dispatch(Actions.UpdateFormField<HookForm>(keyPath: \HookForm.triggerValue, value: "2"))
+        await sleep()
 
         // Hook should never fire, so callbacksCount should remain 0
-        XCTAssertEqual(store.state.hookForm.callbacksCount, 0)
+        #expect(store.state.hookForm.callbacksCount == 0)
     }
 
-    func test_MultipleHooksWithDifferentConditions() async throws {
+    @Test func multipleHooksWithDifferentConditions() async throws {
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
         let rootContainer = MultipleHooksContainer()
 
-        let window = await PlatformWindow.render(container: rootContainer)
+        let window = await PlatformWindow.render(view: rootContainer)
         await window.redraw()
 
-        await fulfill(description: "waiting for rendering", sleep: 0.1)
-
         // Reset counters
-        store.$state.hookForm.callbacksCount.wrappedValue = 0
+        store.dispatch(Actions.UpdateFormField<HookForm>(keyPath: \HookForm.callbacksCount, value: 0))
 
         // Trigger first hook condition
-        store.$state.hookForm.triggerValue.wrappedValue = "first"
-        await fulfill(description: "waiting for first hook", sleep: 0.2)
-
-        XCTAssertEqual(store.state.hookForm.callbacksCount, 1)
+        store.dispatch(Actions.UpdateFormField<HookForm>(keyPath: \HookForm.triggerValue, value: "first"))
+        var success = await waitForCondition { store.state.hookForm.callbacksCount == 1 }
+        #expect(success)
 
         // Reset and trigger second hook condition
-        store.$state.hookForm.triggerValue.wrappedValue = ""
-        store.$state.hookForm.callbacksCount.wrappedValue = 0
-        await fulfill(description: "waiting for reset", sleep: 0.2)
+        store.dispatch(Actions.UpdateFormField<HookForm>(keyPath: \HookForm.triggerValue, value: ""))
+        store.dispatch(Actions.UpdateFormField<HookForm>(keyPath: \HookForm.callbacksCount, value: 0))
+        await sleep()
 
-        store.$state.hookForm.triggerValue.wrappedValue = "second"
-        await fulfill(description: "waiting for second hook", sleep: 0.2)
-
-        XCTAssertEqual(store.state.hookForm.callbacksCount, 10) // Second hook adds 10
+        store.dispatch(Actions.UpdateFormField<HookForm>(keyPath: \HookForm.triggerValue, value: "second"))
+        success = await waitForCondition { store.state.hookForm.callbacksCount == 10 }
+        #expect(success) // Second hook adds 10
     }
 
-    func test_HookWithComplexCondition() async throws {
+    @Test func hookWithComplexCondition() async throws {
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
         let rootContainer = ComplexConditionHookContainer()
 
-        let window = await PlatformWindow.render(container: rootContainer)
+        let window = await PlatformWindow.render(view: rootContainer)
         await window.redraw()
 
-        await fulfill(description: "waiting for rendering", sleep: 0.1)
-
         // Reset counters
-        store.$state.hookForm.callbacksCount.wrappedValue = 0
+        store.dispatch(Actions.UpdateFormField<HookForm>(keyPath: \HookForm.callbacksCount, value: 0))
 
         // Test condition that checks both triggerValue and callbacksCount
-        store.$state.hookForm.triggerValue.wrappedValue = "complex"
-        store.$state.hookForm.callbacksCount.wrappedValue = 5
-        await fulfill(description: "waiting for hook execution", sleep: 0.2)
+        store.dispatch(Actions.UpdateFormField<HookForm>(keyPath: \HookForm.triggerValue, value: "complex"))
+        store.dispatch(Actions.UpdateFormField<HookForm>(keyPath: \HookForm.callbacksCount, value: 5))
 
         // Hook should have fired and incremented callbacksCount
-        XCTAssertEqual(store.state.hookForm.callbacksCount, 6)
+        let success = await waitForCondition { store.state.hookForm.callbacksCount == 6 }
+        #expect(success)
     }
 
-    func test_HookFiresOnlyOnConditionTransition() async throws {
+    @Test func hookFiresOnlyOnConditionTransition() async throws {
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
         let rootContainer = TransitionTestContainer()
 
-        let window = await PlatformWindow.render(container: rootContainer)
+        let window = await PlatformWindow.render(view: rootContainer)
         await window.redraw()
 
-        await fulfill(description: "waiting for rendering", sleep: 0.1)
-
         // Start with condition false, then true
-        store.$state.hookForm.triggerValue.wrappedValue = "false"
-        store.$state.hookForm.callbacksCount.wrappedValue = 0
-        await fulfill(description: "waiting for state change", sleep: 0.2)
+        store.dispatch(Actions.UpdateFormField<HookForm>(keyPath: \HookForm.triggerValue, value: "false"))
+        store.dispatch(Actions.UpdateFormField<HookForm>(keyPath: \HookForm.callbacksCount, value: 0))
 
-        store.$state.hookForm.triggerValue.wrappedValue = "true"
-        await fulfill(description: "waiting for hook execution", sleep: 0.2)
-
-        XCTAssertEqual(store.state.hookForm.callbacksCount, 1)
+        store.dispatch(Actions.UpdateFormField<HookForm>(keyPath: \HookForm.triggerValue, value: "true"))
+        var success = await waitForCondition { store.state.hookForm.callbacksCount == 1 }
+        #expect(success)
 
         // Keep condition true - hook should not fire again
-        store.$state.hookForm.triggerValue.wrappedValue = "true"
-        await fulfill(description: "waiting for state change", sleep: 0.2)
+        store.dispatch(Actions.UpdateFormField<HookForm>(keyPath: \HookForm.triggerValue, value: "true"))
+        await sleep()
 
-        XCTAssertEqual(store.state.hookForm.callbacksCount, 1, "Hook should not fire when condition remains true")
+        #expect(store.state.hookForm.callbacksCount == 1, "Hook should not fire when condition remains true")
 
         // Change to false, then true again - hook should fire
-        store.$state.hookForm.triggerValue.wrappedValue = "false"
-        await fulfill(description: "waiting for state change", sleep: 0.2)
+        store.dispatch(Actions.UpdateFormField<HookForm>(keyPath: \HookForm.triggerValue, value: "false"))
+        success = await waitForCondition { store.state.hookForm.triggerValue == "false" }
+        #expect(success)
 
-        store.$state.hookForm.triggerValue.wrappedValue = "true"
-        await fulfill(description: "waiting for hook execution", sleep: 0.2)
+        store.dispatch(Actions.UpdateFormField<HookForm>(keyPath: \HookForm.triggerValue, value: "true"))
+        success = await waitForCondition { store.state.hookForm.triggerValue == "true" }
+        #expect(success)
 
-        XCTAssertEqual(store.state.hookForm.callbacksCount, 2, "Hook should fire on false->true transition")
+        success = await waitForCondition { store.state.hookForm.callbacksCount == 2 }
+        #expect(success, "Hook should fire on false->true transition")
     }
 
-    func test_HookWithNilConditionCheck() async throws {
+    @Test
+    func hookWithNilConditionCheck() async throws {
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
         let rootContainer = NilSafeHookContainer()
 
-        let window = await PlatformWindow.render(container: rootContainer)
+        let window = await PlatformWindow.render(view: rootContainer)
         await window.redraw()
 
-        await fulfill(description: "waiting for rendering", sleep: 0.1)
-
         // This tests hooks that might deal with optional values safely
-        store.$state.hookForm.triggerValue.wrappedValue = ""
-        await fulfill(description: "waiting for state change", sleep: 0.2)
+        store.dispatch(Actions.UpdateFormField<HookForm>(keyPath: \HookForm.triggerValue, value: ""))
+        var success = await waitForCondition { store.state.hookForm.triggerValue.isEmpty }
+        #expect(success)
 
-        store.$state.hookForm.triggerValue.wrappedValue = "valid"
-        await fulfill(description: "waiting for hook execution", sleep: 0.2)
+        store.dispatch(Actions.UpdateFormField<HookForm>(keyPath: \HookForm.triggerValue, value: "valid"))
+        success = await waitForCondition { store.state.hookForm.triggerValue == "valid" }
+        #expect(success)
 
-        XCTAssertEqual(store.state.hookForm.callbacksCount, 1)
+        success = await waitForCondition { store.state.hookForm.callbacksCount == 1 }
+        #expect(success)
     }
 
-    func test_HookWithStateRollback() async throws {
+    @Test func hookWithStateRollback() async throws {
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
         let rootContainer = RollbackHookContainer()
 
-        let window = await PlatformWindow.render(container: rootContainer)
+        let window = await PlatformWindow.render(view: rootContainer)
         await window.redraw()
 
-        await fulfill(description: "waiting for rendering", sleep: 0.1)
-
         // Set up initial state
-        store.$state.hookForm.triggerValue.wrappedValue = "initial"
-        store.$state.hookForm.callbacksCount.wrappedValue = 5
-        await fulfill(description: "waiting for initial state", sleep: 0.2)
+        store.dispatch(Actions.UpdateFormField<HookForm>(keyPath: \HookForm.triggerValue, value: "initial"))
+        store.dispatch(Actions.UpdateFormField<HookForm>(keyPath: \HookForm.callbacksCount, value: 5))
 
         // Trigger rollback condition
-        store.$state.hookForm.triggerValue.wrappedValue = "rollback"
-        await fulfill(description: "waiting for rollback hook", sleep: 0.2)
+        store.dispatch(Actions.UpdateFormField<HookForm>(keyPath: \HookForm.triggerValue, value: "rollback"))
 
         // Hook should have reset the counter
-        XCTAssertEqual(store.state.hookForm.callbacksCount, 0)
-        XCTAssertEqual(store.state.hookForm.triggerValue, "reset")
+        let success = await waitForCondition {
+            store.state.hookForm.callbacksCount == 0 &&
+            store.state.hookForm.triggerValue == "reset"
+        }
+        #expect(success)
     }
 
-    func test_ConditionalHookActivation() async throws {
+    @Test func conditionalHookActivation() async throws {
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
         let rootContainer = ConditionalHookContainer()
 
-        let window = await PlatformWindow.render(container: rootContainer)
+        let window = await PlatformWindow.render(view: rootContainer)
         await window.redraw()
 
-        await fulfill(description: "waiting for rendering", sleep: 0.1)
-
         // Reset counters
-        store.$state.hookForm.callbacksCount.wrappedValue = 0
+        store.dispatch(Actions.UpdateFormField<HookForm>(keyPath: \HookForm.callbacksCount, value: 0))
 
         // Only trigger when callbacksCount is even
-        store.$state.hookForm.callbacksCount.wrappedValue = 2
-        store.$state.hookForm.triggerValue.wrappedValue = "trigger"
-        await fulfill(description: "waiting for hook execution", sleep: 0.2)
-
-        XCTAssertEqual(store.state.hookForm.callbacksCount, 3) // 2 + 1
+        store.dispatch(Actions.UpdateFormField<HookForm>(keyPath: \HookForm.callbacksCount, value: 2))
+        store.dispatch(Actions.UpdateFormField<HookForm>(keyPath: \HookForm.triggerValue, value: "trigger"))
+        var success = await waitForCondition { store.state.hookForm.callbacksCount == 3 } // 2 + 1
+        #expect(success)
 
         // Reset triggerValue and try with odd number
-        store.$state.hookForm.triggerValue.wrappedValue = ""
-        await fulfill(description: "waiting for reset", sleep: 0.2)
+        store.dispatch(Actions.UpdateFormField<HookForm>(keyPath: \HookForm.triggerValue, value: ""))
+        success = await waitForCondition { store.state.hookForm.triggerValue.isEmpty }
+        #expect(success)
 
-        store.$state.hookForm.triggerValue.wrappedValue = "trigger"
-        await fulfill(description: "waiting for hook execution", sleep: 0.2)
+        store.dispatch(Actions.UpdateFormField<HookForm>(keyPath: \HookForm.triggerValue, value: "trigger"))
+        await sleep()
 
-        XCTAssertEqual(store.state.hookForm.callbacksCount, 3, "Hook should not fire when callbacksCount is odd")
+        #expect(store.state.hookForm.callbacksCount == 3, "Hook should not fire when callbacksCount is odd")
     }
 }
 
@@ -520,8 +491,8 @@ extension ContainerHookTests {
             Hook.hook(id: "RollbackHook") { state in
                 state.hookForm.triggerValue == "rollback"
             } block: { store in
-                store.$state.hookForm.callbacksCount.wrappedValue = 0
-                store.$state.hookForm.triggerValue.wrappedValue = "reset"
+                store.dispatch(Actions.UpdateFormField<HookForm>(keyPath: \HookForm.callbacksCount, value: 0))
+                store.dispatch(Actions.UpdateFormField<HookForm>(keyPath: \HookForm.triggerValue, value: "reset"))
             }
         }
     }
@@ -561,7 +532,7 @@ extension ContainerHookTests {
             Hook.oneTimeHook(id: "OneTimeHook") { state in
                 state.hookForm.triggerValue == "1"
             } block: { store in
-                store.$state.hookForm.triggerValue.wrappedValue = "2"
+                store.dispatch(Actions.UpdateFormField<HookForm>(keyPath: \HookForm.triggerValue, value: "2"))
             }
 
             Hook.hook(id: "DefaultHook") { state in

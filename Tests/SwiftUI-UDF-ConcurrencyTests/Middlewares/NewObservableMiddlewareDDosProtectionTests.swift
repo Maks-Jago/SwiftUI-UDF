@@ -1,6 +1,7 @@
 import Combine
 @testable import UDF
-import XCTest
+import UDFSwiftTesting
+import Testing
 
 private extension Actions {
     struct SendMessage: Action {
@@ -9,7 +10,7 @@ private extension Actions {
     }
 }
 
-final class NewObservableMiddlewareDDosProtectionTests: XCTestCase {
+@Suite struct NewObservableMiddlewareDDosProtectionTests {
     struct AppState: AppReducer {
         var testForm = TestForm()
         var testFlow = TestFlow()
@@ -92,33 +93,31 @@ final class NewObservableMiddlewareDDosProtectionTests: XCTestCase {
         }
     }
 
-    func testObservableMiddlewareDDDos() async {
-        let store = await XCTestStore(initial: AppState())
+    @Test func observableMiddlewareDDDos() async {
+        let store = await TestStore(initial: AppState())
 
         await store.subscribe(SendMessageMiddleware.self)
-        await store.wait()
 
         var formTitle = await store.state.testForm.title
-        XCTAssertTrue(formTitle.isEmpty)
+        #expect(formTitle.isEmpty)
 
         await store.dispatch(Actions.SendMessage(message: "Flow message 1", id: TestFlow.id))
         await store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.title, value: "title"))
         await store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.title, value: "title2"))
         await store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.title, value: "title3"))
         await store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.title, value: "title4"))
-        await store.wait()
-
-        let numberValue = await store.state.testForm.nested.number
-        XCTAssertEqual(numberValue, 2)
+        
+        // Wait for middleware to process and set nested.number to 2
+        var success = await store.state.testForm.nested.number == 2
+        #expect(success)
 
         formTitle = await store.state.testForm.title
-        XCTAssertEqual(formTitle, "title4")
+        #expect(formTitle == "title4")
 
         await store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.title, value: "title5"))
+        
         await store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.title, value: "title6"))
-        await store.wait()
-
-        formTitle = await store.state.testForm.title
-        XCTAssertEqual(formTitle, "title6")
+        success = await store.state.testForm.title == "title6"
+        #expect(success)
     }
 }

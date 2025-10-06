@@ -15,8 +15,8 @@ let package = Package(
             targets: ["UDF"]
         ),
         .library(
-            name: "UDFXCTest",
-            targets: ["UDFXCTest"]
+            name: "UDFSwiftTesting",
+            targets: ["UDFSwiftTesting"]
         ),
     ],
     dependencies: [
@@ -34,24 +34,24 @@ let package = Package(
         ),
 
         .target(
-            name: "UDFXCTest",
+            name: "UDFSwiftTesting",
             dependencies: [
                 .target(name: "UDF"),
             ],
-            path: "UDFXCTest"
+            path: "UDFSwiftTesting"
         ),
 
         .testTarget(
             name: "SwiftUI-UDF-Tests",
             dependencies: [
-                .target(name: "UDFXCTest"),
+                .target(name: "UDFSwiftTesting"),
             ]
         ),
 
         .testTarget(
             name: "SwiftUI-UDF-ConcurrencyTests",
             dependencies: [
-                .target(name: "UDFXCTest"),
+                .target(name: "UDFSwiftTesting"),
             ]
         ),
     ]

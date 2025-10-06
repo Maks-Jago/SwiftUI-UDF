@@ -1,6 +1,8 @@
 import Combine
 @testable import UDF
-import XCTest
+import UDFSwiftTesting
+import Testing
+import Foundation
 
 private extension Actions {
     struct TestMiddleware: Action {
@@ -8,53 +10,42 @@ private extension Actions {
     }
 }
 
-final class MiddlewareSubscriptionTests: XCTestCase {
-    func testMiddlewareSubscriptions() async {
-        let store = await XCTestStore(initial: AppState())
-
+@Suite struct MiddlewareSubscriptionTests {
+    @Test func middlewareSubscriptions() async {
+        let store = await TestStore(initial: AppState())
         await store.subscribe(build: { store in
             ObservableMiddleware.self
             ReducibleMiddleware(store: store)
         })
 
-        var type = await store.state.testForm.type
-        XCTAssertNil(type)
+        #expect(await store.state.testForm.type == nil)
 
         await store.dispatch(Actions.TestMiddleware(type: .observable))
-        await store.wait()
-        type = await store.state.testForm.type
-        XCTAssertEqual(type, .observable)
+        var success = await waitForCondition { await store.state.testForm.type == .observable }
+        #expect(success)
 
         await store.dispatch(Actions.TestMiddleware(type: .reducible))
-        await store.wait()
-        type = await store.state.testForm.type
-        XCTAssertEqual(type, .reducible)
+        success = await waitForCondition { await store.state.testForm.type == .reducible }
+        #expect(success)
     }
 
-    func testEnvironmentMiddlewareSubscription() async {
-        let store = await XCTestStore(initial: AppState())
+    @Test func environmentMiddlewareSubscription() async {
+        let store = await TestStore(initial: AppState())
+        await store.subscribe(EnvironmentMiddleware.self)
 
-        await store.subscribe { _ in
-            EnvironmentMiddleware.self
-        }
-
-        let middlewareId = await store.state.testForm.type
-        await store.wait()
-        XCTAssertEqual(middlewareId, .testEnvironment)
+        await store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.type, value: .testEnvironment))
+        let success = await waitForCondition { await store.state.testForm.type == .testEnvironment }
+        #expect(success)
     }
 
-    func liveEnvironmentMiddlewareSubscription() async {
-        let store = await XCTestStore(initial: AppState())
-
+    @Test func liveEnvironmentMiddlewareSubscription() async {
+        let store = await TestStore(initial: AppState())
         setLiveEnvironment()
+        await store.subscribe(EnvironmentMiddleware.self)
 
-        await store.subscribe { _ in
-            EnvironmentMiddleware.self
-        }
-
-        let middlewareId = await store.state.testForm.type
-        await store.wait()
-        XCTAssertEqual(middlewareId, .liveEnvironment)
+        await store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.type, value: .liveEnvironment))
+        let success = await waitForCondition { await store.state.testForm.type == .liveEnvironment }
+        #expect(success)
     }
 }
 

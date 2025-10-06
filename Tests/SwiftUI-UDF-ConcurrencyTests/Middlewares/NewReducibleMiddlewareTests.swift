@@ -1,7 +1,8 @@
 
 import Combine
 @testable import UDF
-import XCTest
+import UDFSwiftTesting
+import Testing
 
 private extension Actions {
     struct SendMessage: Action {
@@ -9,7 +10,7 @@ private extension Actions {
     }
 }
 
-final class NewReducibleMiddlewareTests: XCTestCase {
+@Suite struct NewReducibleMiddlewareTests {
     struct AppState: AppReducer {
         var testForm = TestForm()
     }
@@ -59,17 +60,14 @@ final class NewReducibleMiddlewareTests: XCTestCase {
         }
     }
 
-    func testReducibleMiddleware() async {
-        let store = await XCTestStore(initial: AppState())
+    @Test func reducibleMiddleware() async {
+        let store = await TestStore(initial: AppState())
         await store.subscribe(SendMessageMiddleware.self)
+        #expect(await store.state.testForm.title.isEmpty)
 
-        var formTitle = await store.state.testForm.title
-        XCTAssertTrue(formTitle.isEmpty)
-
-        await store.dispatch(Actions.SendMessage(message: "Message 1"))
-        await store.wait()
-
-        formTitle = await store.state.testForm.title
-        XCTAssertEqual(formTitle, "Message 1")
+        let message = "Message 1"
+        await store.dispatch(Actions.SendMessage(message: message))
+        let success = await waitForCondition { await store.state.testForm.title == message }
+        #expect(success)
     }
 }

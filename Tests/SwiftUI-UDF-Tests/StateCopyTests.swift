@@ -6,9 +6,10 @@
 //
 
 @testable import UDF
-import XCTest
+import UDFSwiftTesting
+import Testing
 
-final class StateCopyTests: XCTestCase {
+@Suite struct StateCopyTests {
     private struct ConsoleLogger: ActionLogger {
         var actionFilters: [ActionFilter] = [VerboseActionFilter()]
         var actionDescriptor: ActionDescriptor = StringDescribingActionDescriptor()
@@ -41,11 +42,10 @@ final class StateCopyTests: XCTestCase {
         }
     }
 
-    func testStateCopying() async {
-        let store = await XCTestStore(initial: AppState())
+    @Test func stateCopying() async {
+        let store = await TestStore(initial: AppState())
         await store.dispatch(Actions.UpdateFormField(keyPath: \SomeForm.item, value: .init(text: "new item text")))
-
-        let item = await store.state.someForm.item
-        XCTAssertEqual(item.text, "new item text")
+        let success = await waitForCondition { await store.state.someForm.item.text ==  "new item text"}
+        #expect(success)
     }
 }

@@ -3,10 +3,10 @@ import Combine
 import CoreLocation
 import SwiftUI
 @testable import UDF
-import UDFXCTest
-import XCTest
+import UDFSwiftTesting
+import Testing
 
-final class NestedReducerTests: XCTestCase {
+@Suite struct NestedReducerTests {
     struct AppState: AppReducer {
         var nested: NestedReducer = .init()
     }
@@ -64,15 +64,18 @@ final class NestedReducerTests: XCTestCase {
 
     var cancellation: AnyCancellable? = nil
 
-    func testAppState() async {
-        let store = await XCTestStore(initial: AppState())
+    @Test func appState() async {
+        let store = await TestStore(initial: AppState())
+
         await store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.title, value: "temp"))
+        var success = await waitForCondition { await store.state.nested.testForm.title == "temp" }
+        #expect(success)
+
         await store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.title, value: "temp_21"))
+        success = await waitForCondition { await store.state.nested.testForm.title == "temp_21" }
+        #expect(success)
 
-        let title = await store.state.nested.testForm.title
-
-        XCTAssertEqual(title, "temp_21")
-
-        await fulfill(description: "locationFlow must be in `requestPermissions` case", sleep: 1)
+        // TODO: This is the original code and just fulfill here. For what?
+        // await fulfill(description: "locationFlow must be in `requestPermissions` case", sleep: 1)
     }
 }

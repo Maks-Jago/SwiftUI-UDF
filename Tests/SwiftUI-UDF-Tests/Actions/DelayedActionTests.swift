@@ -1,9 +1,9 @@
 
 @testable import UDF
-import UDFXCTest
-import XCTest
+import UDFSwiftTesting
+import Testing
 
-final class DelayedActionTests: XCTestCase {
+@Suite struct DelayedActionTests {
     private struct TestStoreLogger: ActionLogger {
         var actionFilters: [ActionFilter] = [VerboseActionFilter()]
         var actionDescriptor: ActionDescriptor = StringDescribingActionDescriptor()
@@ -25,81 +25,93 @@ final class DelayedActionTests: XCTestCase {
         var count: Int = 0
     }
 
-    func test_WhenActionHasDelay_DataShouldBeUpdatedAfterDelay() async throws {
+    @Test func whenActionHasDelay_DataShouldBeUpdatedAfterDelay() async throws {
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
 
-        store.dispatch(Actions.UpdateFormField(keyPath: \DataForm.title, value: "delayed title").with(delay: 1))
-        store.dispatch(Actions.UpdateFormField(keyPath: \DataForm.title, value: "updated title"))
-        await fulfill(description: "waiting for delayed action", sleep: 0.1)
+        let delayedTitle = "delayed title1"
+        let updatedTitle = "updated title"
+        store.dispatch(Actions.UpdateFormField(keyPath: \DataForm.title, value: delayedTitle).with(delay: 1))
+        store.dispatch(Actions.UpdateFormField(keyPath: \DataForm.title, value: updatedTitle))
+        var success = await waitForCondition { store.state.dataForm.title == updatedTitle }
+        #expect(success)
 
-        XCTAssertEqual(store.state.dataForm.title, "updated title")
-        await fulfill(description: "waiting for delayed action", sleep: 1)
-
-        XCTAssertEqual(store.state.dataForm.title, "delayed title")
+        success = await waitForCondition { store.state.dataForm.title == delayedTitle }
+        #expect(success)
     }
 
-    func test_WhenActionsHaveDelayInGroup_DataShouldBeUpdatedAfterDelay() async throws {
+    @Test func whenActionsHaveDelayInGroup_DataShouldBeUpdatedAfterDelay() async throws {
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
 
+        let delayedTitle = "delayed title2"
+        let count = 1
         store.dispatch(
             ActionGroup {
-                Actions.UpdateFormField(keyPath: \DataForm.title, value: "delayed title")
+                Actions.UpdateFormField(keyPath: \DataForm.title, value: delayedTitle)
                     .with(delay: 1)
 
-                Actions.UpdateFormField(keyPath: \DataForm.count, value: 1)
+                Actions.UpdateFormField(keyPath: \DataForm.count, value: count)
                     .with(delay: 2)
             }
         )
 
-        XCTAssertTrue(store.state.dataForm.title.isEmpty)
-        await fulfill(description: "waiting for delayed action", sleep: 1.1)
+        #expect(store.state.dataForm.title.isEmpty)
 
-        XCTAssertEqual(store.state.dataForm.title, "delayed title")
-        await fulfill(description: "waiting for delayed action", sleep: 1)
+        var success = await waitForCondition { store.state.dataForm.title == delayedTitle }
+        #expect(success)
+        #expect(store.state.dataForm.count == 0)
 
-        XCTAssertEqual(store.state.dataForm.count, 1)
+        success = await waitForCondition { store.state.dataForm.count == count }
+        #expect(success)
     }
 
-    func test_WhenActionGroupHasDelay_DataShouldBeUpdatedAfterDelay() async throws {
+    @Test func whenActionGroupHasDelay_DataShouldBeUpdatedAfterDelay() async throws {
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
 
+        let delayedTitle = "delayed title3"
+        let count = 1
         store.dispatch(
             ActionGroup {
-                Actions.UpdateFormField(keyPath: \DataForm.title, value: "delayed title")
-                Actions.UpdateFormField(keyPath: \DataForm.count, value: 1)
+                Actions.UpdateFormField(keyPath: \DataForm.title, value: delayedTitle)
+                Actions.UpdateFormField(keyPath: \DataForm.count, value: count)
             }
             .with(delay: 1)
         )
 
-        XCTAssertTrue(store.state.dataForm.title.isEmpty)
-        await fulfill(description: "waiting for delayed action", sleep: 1.1)
+        #expect(store.state.dataForm.title.isEmpty)
 
-        XCTAssertEqual(store.state.dataForm.title, "delayed title")
-        XCTAssertEqual(store.state.dataForm.count, 1)
+        var success = await waitForCondition { store.state.dataForm.title == delayedTitle }
+        #expect(success)
+
+        success = await waitForCondition { store.state.dataForm.count == count }
+        #expect(success)
     }
 
-    func test_WhenSomeActionInGroupHasDelay_OnlyThatActionIsDelayed() async throws {
+    @Test func whenSomeActionInGroupHasDelay_OnlyThatActionIsDelayed() async throws {
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
 
+        let delayedTitle = "delayed title4"
+        let count = 1
         store.dispatch(
             ActionGroup {
-                Actions.UpdateFormField(keyPath: \DataForm.title, value: "delayed title")
+                Actions.UpdateFormField(keyPath: \DataForm.title, value: delayedTitle)
                     .with(delay: 1)
 
-                Actions.UpdateFormField(keyPath: \DataForm.count, value: 1)
+                Actions.UpdateFormField(keyPath: \DataForm.count, value: count)
             }
         )
 
-        XCTAssertEqual(store.state.dataForm.count, 0)
-        XCTAssertTrue(store.state.dataForm.title.isEmpty)
-        await fulfill(description: "waiting for delayed action", sleep: 0.1)
+        #expect(store.state.dataForm.count == 0)
+        #expect(store.state.dataForm.title.isEmpty)
 
-        XCTAssertEqual(store.state.dataForm.count, 1)
-        await fulfill(description: "waiting for delayed action", sleep: 1)
-        XCTAssertEqual(store.state.dataForm.title, "delayed title")
+        var success = await waitForCondition { store.state.dataForm.count == count }
+        #expect(success)
+        #expect(store.state.dataForm.title.isEmpty)
+
+        success = await waitForCondition { store.state.dataForm.title == delayedTitle }
+        #expect(success)
     }
 
-    func test_DelayedActionsDDOS() async throws {
+    @Test func delayedActionsDDOS() async throws {
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
 
         store.dispatch(Actions.UpdateFormField(keyPath: \DataForm.count, value: 1).with(delay: 1))
@@ -108,21 +120,21 @@ final class DelayedActionTests: XCTestCase {
         store.dispatch(Actions.UpdateFormField(keyPath: \DataForm.count, value: 4).with(delay: 4))
         store.dispatch(Actions.UpdateFormField(keyPath: \DataForm.count, value: 5).with(delay: 5))
 
-        XCTAssertEqual(store.state.dataForm.count, 0)
-        await fulfill(description: "waiting for delayed action", sleep: 1.1)
+        #expect(store.state.dataForm.count == 0)
 
-        XCTAssertEqual(store.state.dataForm.count, 1)
-        await fulfill(description: "waiting for delayed action", sleep: 1.1)
+        var success = await waitForCondition { store.state.dataForm.count == 1 }
+        #expect(success)
 
-        XCTAssertEqual(store.state.dataForm.count, 2)
-        await fulfill(description: "waiting for delayed action", sleep: 1.1)
+        success = await waitForCondition { store.state.dataForm.count == 2 }
+        #expect(success)
 
-        XCTAssertEqual(store.state.dataForm.count, 3)
-        await fulfill(description: "waiting for delayed action", sleep: 1.1)
+        success = await waitForCondition { store.state.dataForm.count == 3 }
+        #expect(success)
 
-        XCTAssertEqual(store.state.dataForm.count, 4)
-        await fulfill(description: "waiting for delayed action", sleep: 1.1)
+        success = await waitForCondition { store.state.dataForm.count == 4 }
+        #expect(success)
 
-        XCTAssertEqual(store.state.dataForm.count, 5)
+        success = await waitForCondition { store.state.dataForm.count == 5 }
+        #expect(success)
     }
 }

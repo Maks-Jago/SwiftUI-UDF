@@ -1,8 +1,9 @@
 import SwiftUI
 @testable import UDF
-import XCTest
+import Testing
+import UDFSwiftTesting
 
-final class ContainerWithAppStateAsScopeTests: XCTestCase, @unchecked Sendable {
+@Suite struct ContainerWithAppStateAsScopeTests {
     @propertyWrapper
     final class Box<Value> {
         private var box: Value
@@ -43,60 +44,67 @@ final class ContainerWithAppStateAsScopeTests: XCTestCase, @unchecked Sendable {
     }
 
     #if os(iOS)
-    @MainActor func test_rootComponentRendering() async {
-            let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
-            let rootContainer = RootContainer()
-            let window = await PlatformWindow.render(container: rootContainer)
+    @Test 
+    @MainActor func rootComponentRendering() async {
+        let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
 
-            XCTAssertEqual(rootContainer.renderingNumber, 0)
-            await fulfill(description: "waiting for first rendering", sleep: 1)
-            XCTAssertEqual(rootContainer.renderingNumber, 1)
+        let rootContainer = RootContainer()
+        let window = await PlatformWindow.render(view: rootContainer.with(store: store))
 
-            store.dispatch(Actions.UpdateFormField(keyPath: \PlainForm.title, value: "title 1"))
-            await fulfill(description: "waiting for rendering", sleep: 1)
+        #expect(rootContainer.renderingNumber == 0)
+        var success = await waitForMainActorCondition { rootContainer.renderingNumber == 1 }
+        #expect(success)
 
-            window.redraw()
-            await fulfill(description: "waiting for rendering", sleep: 1)
-            XCTAssertEqual(rootContainer.renderingNumber, 2)
+        let title1 = "title 1"
+        store.dispatch(Actions.UpdateFormField(keyPath: \PlainForm.title, value: title1))
+        await waitForMainActorCondition { store.state.plainForm.title == title1 }
 
-            store.dispatch(Actions.UpdateFormField(keyPath: \UserData.isUserLoggedIn, value: true))
-            await fulfill(description: "waiting for rendering", sleep: 1)
+        window.redraw()
+        success = await waitForMainActorCondition { rootContainer.renderingNumber == 2 }
+        #expect(success)
 
-            window.redraw()
-            await fulfill(description: "waiting for rendering", sleep: 1)
-            XCTAssertEqual(rootContainer.renderingNumber, 3)
+        store.dispatch(Actions.UpdateFormField(keyPath: \UserData.isUserLoggedIn, value: true))
+        await waitForMainActorCondition { store.state.userData.isUserLoggedIn }
 
-            store.dispatch(Actions.UpdateFormField(keyPath: \UserData.isUserLoggedIn, value: false))
-            await fulfill(description: "waiting for rendering", sleep: 1)
+        window.redraw()
+        success = await waitForMainActorCondition { rootContainer.renderingNumber == 3 }
+        #expect(success)
 
-            window.redraw()
-            await fulfill(description: "waiting for rendering", sleep: 1)
-            XCTAssertEqual(rootContainer.renderingNumber, 4)
+        store.dispatch(Actions.UpdateFormField(keyPath: \UserData.isUserLoggedIn, value: false))
+        await waitForMainActorCondition { !store.state.userData.isUserLoggedIn }
 
-            store.dispatch(Actions.UpdateFormField(keyPath: \PlainForm.title, value: "title 2"))
-            await fulfill(description: "waiting for rendering", sleep: 1)
+        window.redraw()
+        success = await waitForMainActorCondition { rootContainer.renderingNumber == 4 }
+        #expect(success)
 
-            window.redraw()
-            await fulfill(description: "waiting for rendering", sleep: 1)
-            XCTAssertEqual(rootContainer.renderingNumber, 5)
-        }
+        let title2 = "title 2"
+        store.dispatch(Actions.UpdateFormField(keyPath: \PlainForm.title, value: title2))
+        await waitForMainActorCondition { store.state.plainForm.title == title2 }
 
-        @MainActor func test_noneScope() async {
-            let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
-            let noneScopeContainer = NoneScopeContainer()
-            let window = await PlatformWindow.render(container: noneScopeContainer)
+        window.redraw()
+        success = await waitForMainActorCondition { rootContainer.renderingNumber == 5 }
+        #expect(success)
+    }
 
-            XCTAssertEqual(noneScopeContainer.renderingNumber, 0)
-            await fulfill(description: "waiting for first rendering", sleep: 1)
-            XCTAssertEqual(noneScopeContainer.renderingNumber, 1)
+    @Test
+    @MainActor func noneScope() async {
+        let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
 
-            store.dispatch(Actions.UpdateFormField(keyPath: \PlainForm.title, value: "title 1"))
-            await fulfill(description: "waiting for rendering", sleep: 1)
+        let noneScopeContainer = NoneScopeContainer()
+        let window = await PlatformWindow.render(view: noneScopeContainer.with(store: store))
 
-            window.redraw()
-            XCTAssertEqual(noneScopeContainer.renderingNumber, 1)
-        }
-    #endif
+        #expect(noneScopeContainer.renderingNumber == 0)
+        let success = await waitForMainActorCondition { noneScopeContainer.renderingNumber == 1 }
+        #expect(success)
+
+        let title1 = "title 1"
+        store.dispatch(Actions.UpdateFormField(keyPath: \PlainForm.title, value: title1))
+        await waitForMainActorCondition { store.state.plainForm.title == title1 }
+
+        window.redraw()
+        #expect(noneScopeContainer.renderingNumber == 1)
+    }
+#endif
 }
 
 // MARK: - RootContainer

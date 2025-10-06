@@ -1,14 +1,15 @@
 
 import Combine
 @testable import UDF
-import UDFXCTest
-import XCTest
+import UDFSwiftTesting
+import Testing
+import Foundation
 
 private extension Actions {
     struct StartLoading: Action {}
 }
 
-final class MiddlewareMapErrorTests: XCTestCase {
+@Suite struct MiddlewareMapErrorTests {
     struct AppState: AppReducer {
         var errorForm = ErrorForm()
 
@@ -72,14 +73,12 @@ final class MiddlewareMapErrorTests: XCTestCase {
         }
     }
 
-    func testMapError() async {
-        let store = await XCTestStore(initial: AppState())
+    @Test func mapError() async {
+        let store = await TestStore(initial: AppState())
         await store.subscribe(LoadingMiddleware.self)
 
         await store.dispatch(Actions.StartLoading())
-        await store.wait()
-
-        let statusCode = await store.state.errorForm.errorStatusCode
-        XCTAssertEqual(statusCode, 400)
+        let success = await waitForCondition { await store.state.errorForm.errorStatusCode == 400 }
+        #expect(success)
     }
 }

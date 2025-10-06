@@ -7,10 +7,10 @@
 
 import SwiftUI
 @testable import UDF
-import UDFXCTest
-import XCTest
+import UDFSwiftTesting
+import Testing
 
-final class BindableContainerLifecycleTests: XCTestCase {
+@Suite struct BindableContainerLifecycleTests {
     struct Item: Identifiable {
         struct ID: Hashable {
             var value: Int
@@ -26,27 +26,23 @@ final class BindableContainerLifecycleTests: XCTestCase {
         fileprivate var itemsForm
     }
 
-    func test_BindableContainerLifecycle() async throws {
+    @Test func bindableContainerLifecycle() async throws {
         let store = EnvironmentStore(initial: AppState(), loggers: [])
 
         let itemId = Item.ID(value: 1)
         let itemsContainer = ItemsContainer(id: itemId)
-        var window: PlatformWindow? = await PlatformWindow.render(container: itemsContainer)
+        var window: PlatformWindow? = await PlatformWindow.render(view: itemsContainer)
 
-        await fulfill(description: "waiting for rendering", sleep: 1)
         await window?.redraw()
-        await fulfill(description: "waiting for rendering", sleep: 1)
 
-        var form: ItemsForm? = store.state.itemsForm[itemId]
-        _ = try XCTUnwrap(form)
+        var success = await waitForCondition { store.state.itemsForm[itemId] != nil }
+        #expect(success)
 
         window = nil
-        await fulfill(description: "waiting for rendering", sleep: 1)
         await window?.redraw()
-        await fulfill(description: "waiting for rendering", sleep: 1)
 
-        form = store.state.itemsForm[itemId]
-        XCTAssertNil(form)
+        success = await waitForCondition { store.state.itemsForm[itemId] == nil }
+        #expect(success)
     }
 }
 

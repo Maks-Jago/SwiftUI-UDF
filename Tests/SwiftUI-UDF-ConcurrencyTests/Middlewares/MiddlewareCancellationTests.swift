@@ -1,9 +1,10 @@
 import Combine
 @testable import UDF
-import UDFXCTest
-import XCTest
+import UDFSwiftTesting
+import Testing
+import Foundation
 
-final class MiddlewareCancellationTests: XCTestCase {
+@Suite struct MiddlewareCancellationTests {
     struct AppState: AppReducer {
         var middlewareFlow = MiddlewareFlow()
         var runForm = RunForm()
@@ -55,53 +56,45 @@ final class MiddlewareCancellationTests: XCTestCase {
         }
     }
 
-    func testObservableMiddlewareCancellation() async {
-        let store = await XCTestStore(initial: AppState())
-        await store.subscribe(ObservableMiddlewareToCancel.self)
+    @Test func observableMiddlewareCancellation() async {
+        let store = await TestStore(initial: AppState())
+        await store.subscribe(ObservableMiddlewareToCancel.self, environment: ObservableMiddlewareToCancel.Environment())
+
         await store.dispatch(Actions.Loading())
+        var success = await waitForCondition { await store.state.middlewareFlow == .loading }
+        #expect(success)
 
-        var middlewareFlow = await store.state.middlewareFlow
-
-        XCTAssertEqual(middlewareFlow, .loading)
         await store.dispatch(Actions.CancelLoading())
-        await store.wait()
-
-        middlewareFlow = await store.state.middlewareFlow
-        XCTAssertEqual(middlewareFlow, .didCancel)
+        success = await waitForCondition { await store.state.middlewareFlow == .didCancel }
+        #expect(success)
     }
 
-    func testObservableRunMiddlewareToCancel() async {
-        let store = await XCTestStore(initial: AppState())
-        await store.subscribe(ObservableRunMiddlewareToCancel.self)
+    @Test func observableRunMiddlewareToCancel() async {
+        let store = await TestStore(initial: AppState())
+        await store.subscribe(ObservableRunMiddlewareToCancel.self, environment: ObservableRunMiddlewareToCancel.Environment())
+
         await store.dispatch(Actions.Loading())
+        var success = await waitForCondition { await store.state.middlewareFlow == .loading }
+        #expect(success)
 
-        var middlewareFlow = await store.state.middlewareFlow
-
-        XCTAssertEqual(middlewareFlow, .loading)
-        await fulfill(description: "Wait for dispatch action", sleep: 2)
         await store.dispatch(Actions.CancelLoading())
-        await store.wait()
-
-        middlewareFlow = await store.state.middlewareFlow
-        XCTAssertEqual(middlewareFlow, .didCancel)
+        success = await waitForCondition { await store.state.middlewareFlow == .didCancel }
+        #expect(success)
     }
 
-    func testReducibleMiddlewareToCancel() async {
-        let store = await XCTestStore(initial: AppState())
-        await store.subscribe(ReducibleMiddlewareToCancel.self)
-        await store.dispatch(Actions.Loading())
+    @Test func reducibleMiddlewareToCancel() async {
+        let store = await TestStore(initial: AppState())
+        await store.subscribe(ReducibleMiddlewareToCancel.self, environment: ReducibleMiddlewareToCancel.Environment())
 
-        var middlewareFlow = await store.state.middlewareFlow
-        XCTAssertEqual(middlewareFlow, .loading)
+        await store.dispatch(Actions.Loading())
+        var success = await waitForCondition { await store.state.middlewareFlow == .loading }
+        #expect(success)
 
         await store.dispatch(Actions.CancelLoading())
-        await store.wait()
+        success = await waitForCondition { await store.state.middlewareFlow == .didCancel }
 
-        middlewareFlow = await store.state.middlewareFlow
-        let messagesCount = await store.state.runForm.messagesCount
-
-        XCTAssertEqual(messagesCount, 0)
-        XCTAssertEqual(middlewareFlow, .didCancel)
+        #expect(await store.state.runForm.messagesCount == 0)
+        #expect(success)
     }
 }
 

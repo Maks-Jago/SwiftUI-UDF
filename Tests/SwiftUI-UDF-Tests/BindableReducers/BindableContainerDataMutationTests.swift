@@ -1,10 +1,10 @@
 
 import SwiftUI
 @testable import UDF
-import UDFXCTest
-import XCTest
+import UDFSwiftTesting
+import Testing
 
-final class BindableContainerDataMutationTests: XCTestCase {
+@Suite struct BindableContainerDataMutationTests {
     struct Item: Hashable, Identifiable {
         struct ID: Hashable {
             var value: Int
@@ -59,30 +59,26 @@ final class BindableContainerDataMutationTests: XCTestCase {
         fileprivate var itemsFlow
     }
 
-    func test_WhenMutateBindableForm_OnleConcreteInstanceOfBindableFormShouldBeUpdated() async throws {
-        let store = await XCTestStore(initial: AppState())
-
-        var bindedReducersFormCount = try await XCTUnwrapAsync(await store.state.itemsForm).reducers.count
-        XCTAssertEqual(bindedReducersFormCount, 0)
-
-        var bindedReducersFlowCount = try await XCTUnwrapAsync(await store.state.itemsFlow).reducers.count
-        XCTAssertEqual(bindedReducersFlowCount, 0)
+    @Test func whenMutateBindableForm_OnleConcreteInstanceOfBindableFormShouldBeUpdated() async throws {
+        let store = await TestStore(initial: AppState())
+        #expect(await store.state.itemsForm.reducers.count == 0)
+        #expect(await store.state.itemsFlow.reducers.count == 0)
 
         await store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 1)))
         await store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 2)))
 
-        bindedReducersFormCount = try await XCTUnwrapAsync(await store.state.itemsForm).reducers.count
-        XCTAssertEqual(bindedReducersFormCount, 2)
+        var success = await waitForCondition { await store.state.itemsForm.reducers.count == 2 }
+        #expect(success)
 
-        bindedReducersFlowCount = try await XCTUnwrapAsync(await store.state.itemsFlow).reducers.count
-        XCTAssertEqual(bindedReducersFlowCount, 2)
+        success = await waitForCondition { await store.state.itemsFlow.reducers.count == 2 }
+        #expect(success)
 
         await store.dispatch(
             Actions.UpdateFormField(keyPath: \ItemsForm.item, value: .init(value: 2))
                 .binded(to: ItemsContainer.self, by: .init(value: 2))
         )
-
-        _ = try await XCTUnwrapAsync(await store.state.itemsForm[.init(value: 2)]?.item)
+        success = await waitForCondition { await store.state.itemsForm[Item.ID(value: 2)]?.item != nil }
+        #expect(success)
 
         await store.dispatch(
             Actions.DidLoadItems(
@@ -91,22 +87,21 @@ final class BindableContainerDataMutationTests: XCTestCase {
             )
             .binded(to: ItemsContainer.self, by: .init(value: 2))
         )
-
-        let itemsCount = try await XCTUnwrapAsync(await store.state.itemsForm[.init(value: 2)]).paginator.items.count
-        XCTAssertEqual(itemsCount, 2)
+        success = await waitForCondition {
+            await store.state.itemsForm[Item.ID(value: 2)]?.paginator.items.count == 2
+        }
+        #expect(success)
     }
 
-    func test_WhenBindableActionDispatched_StorageShouldReceiveOriginalAction() async throws {
-        let store = await XCTestStore(initial: AppState())
-
-        var bindedReducersFormCount = try await XCTUnwrapAsync(await store.state.itemsForm).reducers.count
-        XCTAssertEqual(bindedReducersFormCount, 0)
+    @Test func whenBindableActionDispatched_StorageShouldReceiveOriginalAction() async throws {
+        let store = await TestStore(initial: AppState())
+        #expect(await store.state.itemsForm.reducers.count == 0)
 
         await store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 1)))
         await store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 2)))
 
-        bindedReducersFormCount = try await XCTUnwrapAsync(await store.state.itemsForm).reducers.count
-        XCTAssertEqual(bindedReducersFormCount, 2)
+        var success = await waitForCondition { await store.state.itemsForm.reducers.count == 2 }
+        #expect(success)
 
         let items = [Item(id: .init(value: 1)), Item(id: .init(value: 2))]
 
@@ -114,15 +109,14 @@ final class BindableContainerDataMutationTests: XCTestCase {
             Actions.DidLoadItems(items: items, id: ItemsFlow.id)
                 .binded(to: ItemsContainer.self, by: Item.ID(value: 1))
         )
+        success = await waitForCondition { await !store.state.allItems.byId.isEmpty }
+        #expect(success)
 
-        let allItems = await store.state.allItems.byId
-        XCTAssertFalse(allItems.isEmpty)
+        let itemsForm1 = try await #require(store.state.itemsForm[Item.ID(value: 1)])
+        #expect(!itemsForm1.paginator.items.isEmpty)
 
-        let itemsForm1 = try await XCTUnwrapAsync(await store.state.itemsForm[.init(value: 1)])
-        XCTAssertFalse(itemsForm1.paginator.items.isEmpty)
-
-        let itemsForm2 = try await XCTUnwrapAsync(await store.state.itemsForm[.init(value: 2)])
-        XCTAssertTrue(itemsForm2.paginator.items.isEmpty)
+        let itemsForm2 = try await #require(store.state.itemsForm[Item.ID(value: 2)])
+        #expect(itemsForm2.paginator.items.isEmpty)
     }
 }
 
