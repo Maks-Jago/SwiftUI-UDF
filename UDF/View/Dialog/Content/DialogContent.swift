@@ -290,9 +290,8 @@ public struct DialogContent<Icon: View, CustomContent: View>: Equatable, Sendabl
         lhs.message == rhs.message &&
         lhs.actions.count == rhs.actions.count &&
         zip(lhs.actions, rhs.actions).allSatisfy { lhsAction, rhsAction in
-            // Compare actions by their hash values and types
-            lhsAction.hashValue == rhsAction.hashValue &&
-            type(of: lhsAction) == type(of: rhsAction)
+            // Compare actions by their hash values
+            lhsAction.hashValue == rhsAction.hashValue
         }
     }
 }
