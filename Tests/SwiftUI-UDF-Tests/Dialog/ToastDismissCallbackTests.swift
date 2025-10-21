@@ -1,8 +1,8 @@
 import SwiftUI
 @testable import UDF
-import XCTest
+import Testing
 
-final class ToastDismissCallbackTests: XCTestCase {
+@Suite(.serialized) struct ToastDismissCallbackTests {
 
     private class CallbackTracker: @unchecked Sendable {
         var executed = false
@@ -10,23 +10,23 @@ final class ToastDismissCallbackTests: XCTestCase {
 
     // MARK: - ToastConfiguration Tests
 
-    func test_ToastConfiguration_DefaultOnAutoDismiss_IsNil() {
+    @Test func test_ToastConfiguration_DefaultOnAutoDismiss_IsNil() {
         let config = ToastConfiguration()
-        XCTAssertNil(config.onAutoDismiss)
+        #expect(config.onAutoDismiss == nil)
     }
 
-    func test_ToastConfiguration_WithOnAutoDismiss_StoresCallback() {
+    @Test func test_ToastConfiguration_WithOnAutoDismiss_StoresCallback() {
         let tracker = CallbackTracker()
         let config = ToastConfiguration(onAutoDismiss: { tracker.executed = true })
 
-        XCTAssertNotNil(config.onAutoDismiss)
+        #expect(config.onAutoDismiss != nil)
 
         // Test callback execution
         config.onAutoDismiss?()
-        XCTAssertTrue(tracker.executed)
+        #expect(tracker.executed)
     }
 
-    func test_ToastConfiguration_Equatable_WithCallbacks() {
+    @Test func test_ToastConfiguration_Equatable_WithCallbacks() {
         let config1 = ToastConfiguration(onAutoDismiss: { })
         let config2 = ToastConfiguration(onAutoDismiss: { })
         let config3 = ToastConfiguration(onAutoDismiss: nil)
@@ -34,23 +34,23 @@ final class ToastDismissCallbackTests: XCTestCase {
 
         // Configurations with callbacks should be considered equal if other properties match
         // (we only check if callback is nil or not, not the actual callback)
-        XCTAssertEqual(config1, config2)
-        XCTAssertEqual(config3, config4)
-        XCTAssertNotEqual(config1, config3)
+        #expect(config1 == config2)
+        #expect(config3 == config4)
+        #expect(config1 != config3)
     }
 
-    func test_ToastConfiguration_Hashable_WithCallbacks() {
+    @Test func test_ToastConfiguration_Hashable_WithCallbacks() {
         let config1 = ToastConfiguration(onAutoDismiss: { })
         let config2 = ToastConfiguration(onAutoDismiss: nil)
 
         // Should be able to hash configurations with callbacks
         let set: Set<ToastConfiguration> = [config1, config2]
-        XCTAssertEqual(set.count, 2)
+        #expect(set.count == 2)
     }
 
     // MARK: - DialogRegistration Tests
 
-    func test_DialogRegistry_RegisterToast_WithOnAutoDismiss() {
+    @Test func test_DialogRegistry_RegisterToast_WithOnAutoDismiss() {
         let testID = "test-toast-callback"
         let tracker = CallbackTracker()
 
@@ -65,26 +65,26 @@ final class ToastDismissCallbackTests: XCTestCase {
 
         // Retrieve the registered toast
         let retrievedDialog = DialogRegistry.get(id: testID)
-        XCTAssertNotNil(retrievedDialog)
+        #expect(retrievedDialog != nil)
 
         // Verify it has the callback in configuration
         if let customType = retrievedDialog as? DialogCustomType<EmptyView, EmptyView>,
            case .custom(_, let style) = customType,
            case .toast(let config) = style {
-            XCTAssertNotNil(config.onAutoDismiss)
+            #expect(config.onAutoDismiss != nil)
 
             // Test callback execution
             config.onAutoDismiss?()
-            XCTAssertTrue(tracker.executed)
+            #expect(tracker.executed)
         } else {
-            XCTFail("Retrieved dialog should be DialogCustomType with toast style")
+            #expect(Bool(false), "Retrieved dialog should be DialogCustomType with toast style")
         }
 
         // Clean up
         DialogRegistry.unregister(id: testID)
     }
 
-    func test_DialogRegistry_RegisterToast_WithoutOnAutoDismiss() {
+    @Test func test_DialogRegistry_RegisterToast_WithoutOnAutoDismiss() {
         let testID = "test-toast-no-callback"
 
         // Register toast without callback
@@ -97,9 +97,9 @@ final class ToastDismissCallbackTests: XCTestCase {
         if let customType = retrievedDialog as? DialogCustomType<EmptyView, EmptyView>,
            case .custom(_, let style) = customType,
            case .toast(let config) = style {
-            XCTAssertNil(config.onAutoDismiss)
+            #expect(config.onAutoDismiss == nil)
         } else {
-            XCTFail("Retrieved dialog should be DialogCustomType with toast style")
+            #expect(Bool(false), "Retrieved dialog should be DialogCustomType with toast style")
         }
 
         // Clean up
@@ -109,7 +109,7 @@ final class ToastDismissCallbackTests: XCTestCase {
     // MARK: - ToastQueueManager Tests
 
     @MainActor
-    func test_ToastQueueManager_ExecutesCallbackOnAutoDismiss() async {
+    @Test func test_ToastQueueManager_ExecutesCallbackOnAutoDismiss() async {
         let queueManager = ToastQueueManager()
         let tracker = CallbackTracker()
 
@@ -123,17 +123,17 @@ final class ToastDismissCallbackTests: XCTestCase {
         queueManager.enqueue(toast)
 
         // Verify toast is visible
-        XCTAssertEqual(queueManager.visibleToasts.count, 1)
+        #expect(queueManager.visibleToasts.count == 1)
 
         // Wait for auto-dismiss
         try? await Task.sleep(nanoseconds: 200_000_000) // 0.2 seconds
 
         // Verify callback was executed
-        XCTAssertTrue(tracker.executed)
+        #expect(tracker.executed)
     }
 
     @MainActor
-    func test_ToastQueueManager_ManualDismiss_DoesNotExecuteCallback() {
+    @Test func test_ToastQueueManager_ManualDismiss_DoesNotExecuteCallback() {
         let queueManager = ToastQueueManager()
         let tracker = CallbackTracker()
 
@@ -148,20 +148,20 @@ final class ToastDismissCallbackTests: XCTestCase {
 
         // Get the toast ID for manual dismissal
         let toastId = queueManager.visibleToasts.first?.id
-        XCTAssertNotNil(toastId)
+        #expect(toastId != nil)
 
         // Manually dismiss the toast
         queueManager.dismiss(toastId!)
 
         // Callback should NOT be executed for manual dismissal
-        XCTAssertFalse(tracker.executed)
+        #expect(!tracker.executed)
 
         // Toast should be removed
-        XCTAssertEqual(queueManager.visibleToasts.count, 0)
+        #expect(queueManager.visibleToasts.count == 0)
     }
 
     @MainActor
-    func test_ToastQueueManager_NoCallbackForZeroDuration() async {
+    @Test func test_ToastQueueManager_NoCallbackForZeroDuration() async {
         let queueManager = ToastQueueManager()
         let tracker = CallbackTracker()
 
@@ -178,9 +178,9 @@ final class ToastDismissCallbackTests: XCTestCase {
         try? await Task.sleep(nanoseconds: 100_000_000) // 0.1 seconds
 
         // Verify callback was NOT executed (no auto-dismiss)
-        XCTAssertFalse(tracker.executed)
+        #expect(!tracker.executed)
 
         // Toast should still be visible
-        XCTAssertEqual(queueManager.visibleToasts.count, 1)
+        #expect(queueManager.visibleToasts.count == 1)
     }
 }

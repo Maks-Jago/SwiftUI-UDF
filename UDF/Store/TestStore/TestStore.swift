@@ -10,7 +10,7 @@ import SwiftUI
 import Testing
 
 @globalActor public actor TestStoreActor {
-    public private(set) static var shared = TestStoreActor()
+    public static let shared = TestStoreActor()
 }
 
 @TestStoreActor

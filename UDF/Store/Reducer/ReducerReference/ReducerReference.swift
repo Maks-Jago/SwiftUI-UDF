@@ -17,7 +17,7 @@ import SwiftUI
 /// `ReducerReference` is designed to enable dynamic access to nested reducers and bind properties to SwiftUI views.
 /// It uses `@dynamicMemberLookup` to provide a convenient syntax for accessing and modifying nested state in the reducer hierarchy.
 @dynamicMemberLookup
-public class ReducerReference<AppState: AppReducer, Reducer: Reducible> {
+public class ReducerReference<AppState: AppReducer, Reducer: Reducible>: @unchecked Sendable {
     /// The underlying reducer that this reference points to.
     private(set) var reducer: Reducer
 

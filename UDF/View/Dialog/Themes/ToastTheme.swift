@@ -175,7 +175,7 @@ public struct ToastTheme: Hashable, Sendable {
         hasher.combine(messageFont)
         hasher.combine(buttonFont)
         hasher.combine(cornerRadius)
-        hasher.combine(shadow)
+//        hasher.combine(shadow) //EXC_BAD_ACCESS
         hasher.combine(iconSize)
     }
 }
@@ -190,7 +190,7 @@ public extension ToastTheme {
     /// - Moderate corner radius (12pt) and subtle shadow
     /// - Balanced padding for good content spacing
     static let `default` = ToastTheme()
-    
+
     /// Vibrant theme with gradient colors for enhanced visual appeal.
     /// 
     /// Uses eye-catching gradient backgrounds for more dynamic presentation:
