@@ -521,14 +521,16 @@ private extension Actions {
         await store.dispatch(Actions.SendMessage(message: message1, id: TestFlow.id))
 
         // Then: Both reduce and observe should work
-        var success = await waitForCondition { await store.state.testForm.title == "Status: \(message1)" }
+        await store.wait()
+        var success = await store.state.testForm.title == "Status: \(message1)"
         #expect(success)
-        success = await waitForCondition { await store.state.testForm.description == "Reduced: \(message1)" }
+        
+        success = await store.state.testForm.description == "Reduced: \(message1)"
         #expect(success)
 
         // When: State changes to suspend the middleware (counter > 5)
         await store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.counter, value: 10))
-        success = await waitForCondition { await store.state.testForm.counter == 10 }
+        success = await store.state.testForm.counter == 10
         #expect(success)
 
         // And: Actions are dispatched while middleware is suspended
@@ -536,14 +538,18 @@ private extension Actions {
         await store.dispatch(Actions.SendMessage(message: message2, id: TestFlow.id))
 
         // Then: Neither reduce nor observe should work
-        success = await waitForCondition { await store.state.testForm.title != "Status: \(message2)" }
+        await store.wait()
+        success = await store.state.testForm.title != "Status: \(message2)"
         #expect(success)
-        success = await waitForCondition { await store.state.testForm.description != "Reduced: \(message2)" }
+
+        success = await store.state.testForm.description != "Reduced: \(message2)"
         #expect(success)
 
         // When: State changes to reactivate the middleware (counter <= 5)
         await store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.counter, value: 1))
-        success = await waitForCondition { await store.state.testForm.counter == 1 }
+        await store.wait()
+
+        success = await store.state.testForm.counter == 1
         #expect(success)
 
         // And: Actions are dispatched after reactivation
@@ -551,9 +557,11 @@ private extension Actions {
         await store.dispatch(Actions.SendMessage(message: message3, id: TestFlow.id))
 
         // Then: Both reduce and observe should work again
-        success = await waitForCondition { await store.state.testForm.title == "Status: \(message3)" }
+        await store.wait()
+        success = await store.state.testForm.title == "Status: \(message3)"
+
         #expect(success)
-        success = await waitForCondition { await store.state.testForm.description == "Reduced: \(message3)" }
+        success = await store.state.testForm.description == "Reduced: \(message3)"
         #expect(success)
     }
 
