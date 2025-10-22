@@ -62,7 +62,7 @@ struct CachedTests {
         var store = await TestStore(initial: AppState())
         await store.dispatch(Actions.ResetCache())
 
-        await sleep(1.1) // Wait for cache sync interval (default 1.0s) to complete
+        await sleep(for: 1.1) // Wait for cache sync interval (default 1.0s) to complete
 
         var success = await waitForCondition { await store.state.nestedForm.items.isEmpty }
         #expect(success)
@@ -76,7 +76,7 @@ struct CachedTests {
         success = await waitForCondition { await store.state.nestedForm.items.count == 4 }
         #expect(success)
 
-        await sleep(1.1) // Wait for cache sync interval (default 1.0s) to complete
+        await sleep(for: 1.1) // Wait for cache sync interval (default 1.0s) to complete
 
         store = await TestStore(initial: AppState())
 
@@ -86,7 +86,7 @@ struct CachedTests {
 
         await store.dispatch(Actions.ResetCache())
 
-        await sleep(1.1) // Wait for cache sync interval (default 1.0s) to complete
+        await sleep(for: 1.1) // Wait for cache sync interval (default 1.0s) to complete
 
         success = await waitForCondition { await store.state.nestedForm.items.isEmpty }
         #expect(success)
@@ -96,7 +96,7 @@ struct CachedTests {
         let store = await TestStore(initial: AppState())
         await store.dispatch(Actions.ResetCache())
 
-        await sleep(1.1) // Wait for cache sync interval (default 1.0s) to complete
+        await sleep(for: 1.1) // Wait for cache sync interval (default 1.0s) to complete
 
         var success = await waitForCondition { await store.state.nestedForm.selectedItem == nil }
         #expect(success)
@@ -114,7 +114,7 @@ struct CachedTests {
         let store = await TestStore(initial: AppState())
         await store.dispatch(Actions.ResetCache())
 
-        await sleep(1.1) // Wait for cache sync interval (default 1.0s) to complete
+        await sleep(for: 1.1) // Wait for cache sync interval (default 1.0s) to complete
 
         var success = await waitForCondition { await store.state.nestedForm.byId.isEmpty }
         #expect(success)

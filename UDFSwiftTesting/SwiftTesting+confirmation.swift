@@ -2,7 +2,7 @@
 import Testing
 import Foundation
 
-public func sleep(_ seconds: TimeInterval = 0.3) async {
+public func sleep(for seconds: TimeInterval = 0.3) async {
     let nanoseconds = UInt64(seconds * 1_000_000_000)
     try? await Task.sleep(nanoseconds: nanoseconds)
 }

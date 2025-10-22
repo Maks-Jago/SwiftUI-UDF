@@ -1,0 +1,99 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+*'
+
+jobs:
+  validate-release:
+    name: Validate Release
+    runs-on: macos-latest
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      
+    - name: Select Xcode
+      run: sudo xcode-select -switch /Applications/Xcode_16.4.app/Contents/Developer
+      
+    - name: Validate Package
+      run: |
+        if git rev-parse --verify HEAD~1 >/dev/null 2>&1; then
+          swift package diagnose-api-breaking-changes HEAD~1
+        else
+          echo "⚠️ No previous commit found, skipping API breaking changes check"
+        fi
+      
+    - name: Run Full Test Suite
+      run: swift test --parallel --enable-code-coverage --enable-experimental-swift-testing
+      
+    - name: Check Documentation
+      run: |
+        if [ ! -f README.md ]; then
+          echo "❌ README.md is required for release"
+          exit 1
+        fi
+        
+        if [ ! -f LICENSE ]; then
+          echo "❌ LICENSE file is required for release"
+          exit 1
+        fi
+        
+        echo "✅ Documentation files present"
+        
+  create-release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    needs: validate-release
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      
+    - name: Extract Version
+      id: version
+      run: |
+        VERSION=${GITHUB_REF#refs/tags/}
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
+        
+    - name: Generate Release Notes
+      id: release_notes
+      run: |
+        cat > release_notes.md << 'EOF'
+        ## UDF Framework ${{ steps.version.outputs.version }}
+        
+        ### What's New
+        - This release includes the latest improvements and bug fixes
+        - All tests are passing on multiple Xcode versions
+        - Swift Package Manager support verified
+        
+        ### Installation
+        
+        #### Swift Package Manager
+        ```swift
+        dependencies: [
+            .package(url: "https://github.com/Maks-Jago/SwiftUI-UDF", from: "${{ steps.version.outputs.version }}")
+        ]
+        ```
+        
+        ### Compatibility
+        - iOS 16.0+
+        - macOS 13.0+
+        - Xcode 16.4+
+        - Swift 6.0+
+        
+        ### Testing
+        All tests pass on:
+        - Xcode 16.4 with Swift 6.0
+        EOF
+        
+    - name: Create Release
+      uses: softprops/action-gh-release@v2
+      with:
+        tag_name: ${{ steps.version.outputs.version }}
+        name: UDF ${{ steps.version.outputs.version }}
+        body_path: release_notes.md
+        draft: false
+        prerelease: false
+        

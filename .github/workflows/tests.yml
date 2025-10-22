@@ -1,0 +1,54 @@
+name: Tests
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  test:
+    runs-on: macos-latest
+    
+    strategy:
+      matrix:
+        xcode: ['16.4']
+        
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      
+    - name: Select Xcode
+      run: sudo xcode-select -switch /Applications/Xcode_${{ matrix.xcode }}.app/Contents/Developer
+      
+    - name: Show Xcode version
+      run: xcodebuild -version
+      
+    - name: Show Swift version  
+      run: swift --version
+      
+    - name: Cache Swift PM
+      uses: actions/cache@v4
+      with:
+        path: .build
+        key: ${{ runner.os }}-spm-${{ hashFiles('**/Package.resolved') }}
+        restore-keys: |
+          ${{ runner.os }}-spm-
+          
+    - name: Build
+      run: swift build
+      
+    - name: Run Tests
+      run: swift test --parallel --enable-experimental-swift-testing
+      
+    - name: Generate Test Report
+      if: always()
+      run: |
+        swift test --parallel --enable-code-coverage --enable-experimental-swift-testing 2>&1 | tee test-output.log || true
+        
+    - name: Upload Test Results
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: test-results-xcode-${{ matrix.xcode }}
+        path: test-output.log

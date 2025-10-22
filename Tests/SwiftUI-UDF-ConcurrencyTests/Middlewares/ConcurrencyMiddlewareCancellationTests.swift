@@ -113,7 +113,7 @@ private extension ConcurrencyMiddlewareCancellationTests {
 
         struct SomeEffect: ConcurrencyEffect {
             func task(flowId: AnyHashable) async throws -> any UDF.Action {
-                try await Task.sleep(nanoseconds: 1_000_000_000) // 1 second
+                await sleep(for: 1)
 
                 try Task.checkCancellation()
 

@@ -1,0 +1,65 @@
+name: CI
+
+on:
+  push:
+    branches: [ 1.x.x, main, develop, 'feature/**' ]
+  pull_request:
+    branches: [ 1.x.x ]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  testing:
+    name: Run all tests
+    runs-on: macos-15
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        xcode: ['16.4']
+        
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      
+    - name: Select Xcode ${{ matrix.xcode }}
+      run: sudo xcode-select -switch /Applications/Xcode_${{ matrix.xcode }}.app/Contents/Developer
+      
+    - name: Show versions
+      run: |
+        xcodebuild -version
+        swift --version
+        
+    - name: Cache Swift PM
+      uses: actions/cache@v4
+      with:
+        path: .build
+        key: ${{ runner.os }}-xcode${{ matrix.xcode }}-spm-${{ hashFiles('**/Package.resolved') }}
+        restore-keys: |
+          ${{ runner.os }}-xcode${{ matrix.xcode }}-spm-
+          
+    - name: Resolve Package Dependencies
+      run: swift package resolve
+      
+    - name: Build Debug
+      run: swift build -c debug
+      
+    - name: Run Tests
+      run: |
+        swift test \
+          --build-path .build
+        
+  validate-package:
+    name: Validate Package
+    runs-on: macos-15
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      
+    - name: Validate Package
+      run: |
+        swift package describe
+        

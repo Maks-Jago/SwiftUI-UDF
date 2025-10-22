@@ -10,6 +10,7 @@
 //===----------------------------------------------------------------------===//
 
 import Foundation
+import Testing
 
 public extension ProcessInfo {
     /// A computed property that checks if the current process is running within a test environment.
@@ -24,7 +25,7 @@ public extension ProcessInfo {
     /// }
     /// ```
     var isRunningTests: Bool {
-        NSClassFromString("Testing.Test") != nil ||
+        Test.current != nil ||
         environment["XCTestConfigurationFilePath"] != nil ||
         NSClassFromString("XCTestCase") != nil ||
         Bundle.allBundles.contains { $0.bundlePath.hasSuffix(".xctest") }
