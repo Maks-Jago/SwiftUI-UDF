@@ -11,8 +11,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  test-swift-package:
-    name: Test Swift Package
+  testing:
+    name: Run all tests
     runs-on: macos-15
     
     strategy:
@@ -46,30 +46,10 @@ jobs:
     - name: Build Debug
       run: swift build -c debug
       
-    # - name: Build Release  
-    #   run: swift build -c release
-      
     - name: Run Tests
       run: |
         swift test \
           --build-path .build
-
-    # - name: Generate Code Coverage
-    #   if: matrix.xcode == '16.4'
-    #   run: |
-    #     xcrun llvm-cov export \
-    #       .build/arm64-apple-macosx/debug/SwiftUI-UDFPackageTests.xctest/Contents/MacOS/SwiftUI-UDFPackageTests \
-    #       --format="lcov" \
-    #       --instr-profile .build/debug/codecov/default.profdata \
-    #       > coverage.lcov
-          
-    # - name: Upload Coverage to Codecov
-    #   if: matrix.xcode == '16.4'
-    #   uses: codecov/codecov-action@v4
-    #   with:
-    #     file: coverage.lcov
-    #     token: ${{ secrets.CODECOV_TOKEN }}
-    #     fail_ci_if_error: false
         
   validate-package:
     name: Validate Package
