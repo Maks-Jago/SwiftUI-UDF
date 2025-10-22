@@ -1,10 +1,10 @@
 name: CI
 
 on:
-  push:
-    branches: [ 1.x.x, main, develop, 'feature/**' ]
+  # push:
+  #   branches: [ 1.x.x, main, develop, 'feature/**' ]
   pull_request:
-    branches: [ 1.x.x, main, develop ]
+    branches: [ 1.x.x ]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -13,7 +13,7 @@ concurrency:
 jobs:
   test-swift-package:
     name: Test Swift Package
-    runs-on: macos-latest
+    runs-on: macos-15
     
     strategy:
       fail-fast: false
@@ -53,8 +53,6 @@ jobs:
       run: |
         swift test \
           --parallel \
-          # --enable-code-coverage \
-          # --enable-experimental-swift-testing \
           --build-path .build
           
     # - name: Generate Code Coverage
@@ -76,7 +74,7 @@ jobs:
         
   validate-package:
     name: Validate Package
-    runs-on: macos-latest
+    runs-on: macos-15
     
     steps:
     - name: Checkout
