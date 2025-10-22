@@ -1,6 +1,7 @@
 import SwiftUI
 @testable import UDF
 import Testing
+import UDFSwiftTesting
 
 @Suite(.serialized) struct ToastDismissCallbackTests {
 
@@ -126,7 +127,7 @@ import Testing
         #expect(queueManager.visibleToasts.count == 1)
 
         // Wait for auto-dismiss
-        try? await Task.sleep(nanoseconds: 200_000_000) // 0.2 seconds
+        await sleep(for: 0.3)
 
         // Verify callback was executed
         #expect(tracker.executed)

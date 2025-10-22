@@ -426,7 +426,7 @@ import UDFSwiftTesting
         queueManager.enqueue(toast)
 
         // Wait for auto-dismiss
-        await sleep(0.15)
+        await sleep(for: 0.15)
 
         #expect(callbackExecuted, "onAutoDismiss callback should be executed")
         #expect(queueManager.visibleToasts.count == 0, "Toast should be dismissed")
@@ -497,7 +497,7 @@ import UDFSwiftTesting
         #expect(queueManager.queuedToasts.count == 1)
 
         // Wait for both toasts to auto-dismiss
-        await sleep(0.5)
+        await sleep(for: 0.5)
 
         #expect(callback1Executed, "First toast callback should execute")
         #expect(callback2Executed, "Second toast callback should execute after first is dismissed")
@@ -545,7 +545,7 @@ import UDFSwiftTesting
         #expect(queueManager.queuedToasts.count == 0)
 
         // Wait for both toasts to auto-dismiss
-        await sleep(0.2)
+        await sleep(for: 0.2)
 
         #expect(callback1Executed, "First toast callback should execute")
         #expect(callback2Executed, "Second toast callback should execute")

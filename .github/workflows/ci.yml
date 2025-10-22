@@ -52,9 +52,8 @@ jobs:
     - name: Run Tests
       run: |
         swift test \
-          --parallel \
           --build-path .build
-          
+
     # - name: Generate Code Coverage
     #   if: matrix.xcode == '16.4'
     #   run: |
