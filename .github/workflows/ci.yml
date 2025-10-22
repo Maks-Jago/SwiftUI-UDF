@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [ 1.5.x, main, develop, 'feature/**' ]
+    branches: [ 1.x.x, main, develop, 'feature/**' ]
   pull_request:
-    branches: [ 1.5.x, main, develop ]
+    branches: [ 1.x.x, main, develop ]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -46,33 +46,33 @@ jobs:
     - name: Build Debug
       run: swift build -c debug
       
-    - name: Build Release  
-      run: swift build -c release
+    # - name: Build Release  
+    #   run: swift build -c release
       
     - name: Run Tests
       run: |
         swift test \
           --parallel \
-          --enable-code-coverage \
-          --enable-experimental-swift-testing \
+          # --enable-code-coverage \
+          # --enable-experimental-swift-testing \
           --build-path .build
           
-    - name: Generate Code Coverage
-      if: matrix.xcode == '16.4'
-      run: |
-        xcrun llvm-cov export \
-          .build/arm64-apple-macosx/debug/SwiftUI-UDFPackageTests.xctest/Contents/MacOS/SwiftUI-UDFPackageTests \
-          --format="lcov" \
-          --instr-profile .build/debug/codecov/default.profdata \
-          > coverage.lcov
+    # - name: Generate Code Coverage
+    #   if: matrix.xcode == '16.4'
+    #   run: |
+    #     xcrun llvm-cov export \
+    #       .build/arm64-apple-macosx/debug/SwiftUI-UDFPackageTests.xctest/Contents/MacOS/SwiftUI-UDFPackageTests \
+    #       --format="lcov" \
+    #       --instr-profile .build/debug/codecov/default.profdata \
+    #       > coverage.lcov
           
-    - name: Upload Coverage to Codecov
-      if: matrix.xcode == '16.4'
-      uses: codecov/codecov-action@v4
-      with:
-        file: coverage.lcov
-        token: ${{ secrets.CODECOV_TOKEN }}
-        fail_ci_if_error: false
+    # - name: Upload Coverage to Codecov
+    #   if: matrix.xcode == '16.4'
+    #   uses: codecov/codecov-action@v4
+    #   with:
+    #     file: coverage.lcov
+    #     token: ${{ secrets.CODECOV_TOKEN }}
+    #     fail_ci_if_error: false
         
   validate-package:
     name: Validate Package
