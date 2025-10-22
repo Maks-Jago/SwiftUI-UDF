@@ -48,16 +48,16 @@ import SwiftUI
 ///     }
 /// }
 /// ```
-public protocol BindableContainer: Container, Identifiable {}
+public protocol BindableContainer: Container, Identifiable where ID: Sendable {}
 
 public extension BindableContainer {
     /// The main view body that connects the container to the state using `ConnectedContainer`.
     ///
     /// This default implementation creates a `ConnectedContainer` for the `BindableContainer`,
     /// passing in the container's type, identifier, state mapping, scope, lifecycle events, and hooks.
-    @MainActor
     var body: some View {
         ConnectedContainer<ContainerComponent, ContainerState>(
+            store: store,
             containerType: Self.self,
             containerId: { self.id },
             map: map,

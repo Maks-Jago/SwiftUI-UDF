@@ -21,7 +21,7 @@ import Foundation
 public final class BindableReducerReference<AppState: AppReducer, BindedContainer: BindableContainer, Reducer: Reducible>: ReducerReference<
 AppState,
     BindableReducer<BindedContainer, Reducer>
-> where BindedContainer.ID: Sendable {
+>, @unchecked Sendable where BindedContainer.ID: Sendable {
     /// Initializes a new `BindableReducerReference` with the specified `BindableReducer` and action dispatcher.
     ///
     /// - Parameters:

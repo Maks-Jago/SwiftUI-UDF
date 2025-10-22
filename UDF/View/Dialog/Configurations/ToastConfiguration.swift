@@ -111,14 +111,31 @@ public struct ToastConfiguration: Hashable, Sendable {
     /// Also affects icon positioning relative to the text content.
     /// - Default: .leading (left-aligned)
     public var textAlignment: HorizontalAlignment
+
+    /// Callback executed when the toast dismisses automatically due to its timer expiring.
+    ///
+    /// This callback is only triggered for timer-based auto-dismissal and not for
+    /// manual dismissal via gestures or user interaction. It allows the client code
+    /// to react to toast lifetime completion.
+    ///
+    /// ## Usage:
+    /// ```swift
+    /// ToastConfiguration(
+    ///     defaultDuration: 3.0,
+    ///     onAutoDismiss: {
+    ///         print("Toast automatically dismissed after timer")
+    ///     }
+    /// )
+    /// ```
+    public var onAutoDismiss: (@Sendable () -> Void)?
     
     // MARK: - Initializer
     
     /// Creates a new toast configuration with the specified parameters.
-    /// 
+    ///
     /// All parameters have sensible defaults that work well for most use cases.
     /// You only need to specify the parameters you want to customize.
-    /// 
+    ///
     /// - Parameters:
     ///   - theme: The visual theme for toast appearance. Defaults to `.default`.
     ///   - position: Where toasts appear on screen. Defaults to `.top`.
@@ -131,6 +148,7 @@ public struct ToastConfiguration: Hashable, Sendable {
     ///   - maxWidth: Maximum toast width constraint. Defaults to 600.
     ///   - horizontalPadding: Horizontal screen padding. Defaults to 16.
     ///   - textAlignment: Text alignment within toasts. Defaults to .leading.
+    ///   - onAutoDismiss: Callback for auto-dismiss events. Defaults to nil.
     /// 
     /// ## Example:
     /// ```swift
@@ -152,7 +170,8 @@ public struct ToastConfiguration: Hashable, Sendable {
         transition: AnyTransition? = nil,
         maxWidth: CGFloat = .infinity,
         horizontalPadding: CGFloat = 16,
-        textAlignment: HorizontalAlignment = .leading
+        textAlignment: HorizontalAlignment = .leading,
+        onAutoDismiss: (@Sendable () -> Void)? = nil
     ) {
         self.theme = theme
         self.position = position
@@ -186,6 +205,7 @@ public struct ToastConfiguration: Hashable, Sendable {
         self.maxWidth = maxWidth
         self.horizontalPadding = horizontalPadding
         self.textAlignment = textAlignment
+        self.onAutoDismiss = onAutoDismiss
     }
     
     // MARK: - Equatable Implementation
@@ -197,7 +217,8 @@ public struct ToastConfiguration: Hashable, Sendable {
         lhs.swipeToDismiss == rhs.swipeToDismiss &&
         lhs.maxWidth == rhs.maxWidth &&
         lhs.horizontalPadding == rhs.horizontalPadding &&
-        lhs.textAlignment == rhs.textAlignment
+        lhs.textAlignment == rhs.textAlignment &&
+        (lhs.onAutoDismiss == nil) == (rhs.onAutoDismiss == nil)
     }
     
     // MARK: - Hashable Implementation
@@ -209,6 +230,7 @@ public struct ToastConfiguration: Hashable, Sendable {
         hasher.combine(swipeToDismiss)
         hasher.combine(maxWidth)
         hasher.combine(horizontalPadding)
+        hasher.combine(onAutoDismiss != nil)
     }
 }
 

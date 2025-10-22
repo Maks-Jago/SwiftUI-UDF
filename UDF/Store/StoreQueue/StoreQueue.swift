@@ -13,7 +13,7 @@ import Foundation
 
 /// A class that provides a serial queue for store operations, ensuring that only one operation
 /// is executed at a time.
-final class StoreQueue: OperationQueue {
+final class StoreQueue: OperationQueue, @unchecked Sendable {
     /// Initializes a new `StoreQueue` with a maximum concurrency of one and a user-interactive quality of service.
     override init() {
         super.init()
@@ -26,7 +26,7 @@ final class StoreQueue: OperationQueue {
 /// An abstract base class representing an asynchronous operation.
 /// This class manages the operation's execution state and allows subclasses to define
 /// custom asynchronous work.
-class AsynchronousOperation: Operation {
+class AsynchronousOperation: Operation, @unchecked Sendable {
     /// Indicates that the operation is asynchronous.
     override var isAsynchronous: Bool {
         true

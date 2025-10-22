@@ -92,7 +92,7 @@ public struct DialogTextField: DialogAction {
     /// This creates an internal text field implementation that handles debouncing
     /// and proper integration with the dialog system.
     public var body: some View {
-        #if os(iOS)
+    #if os(iOS)
         DialogTextFieldInternal(
             title: title,
             text: text,
@@ -100,14 +100,14 @@ public struct DialogTextField: DialogAction {
             submitLabel: submitLabel,
             initialValue: initialValue
         )
-        #else
+    #else
         DialogTextFieldInternal(
             title: title,
             text: text,
             submitLabel: submitLabel,
             initialValue: initialValue
         )
-        #endif
+    #endif
     }
 }
 

@@ -12,7 +12,7 @@
 import enum CoreLocation.CLAuthorizationStatus
 import Foundation
 
-extension CLAuthorizationStatus: CustomDebugStringConvertible {
+extension CLAuthorizationStatus: @retroactive CustomDebugStringConvertible {
     /// Provides a custom debug description for the `CLAuthorizationStatus` enumeration.
     ///
     /// - Returns: A `String` describing the authorization status.

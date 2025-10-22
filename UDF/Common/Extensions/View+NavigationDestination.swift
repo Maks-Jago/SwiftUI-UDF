@@ -54,7 +54,7 @@ private extension Binding {
     /// Converts an optional binding to a boolean binding that indicates whether the value is present.
     ///
     /// - Returns: A boolean binding that is `true` if the wrapped value is not `nil`, and `false` otherwise.
-    func isPresented<T>() -> Binding<Bool> where Value == T? {
+    func isPresented<T: Sendable>() -> Binding<Bool> where Value == T? {
         Binding<Bool>(
             get: {
                 switch self.wrappedValue {

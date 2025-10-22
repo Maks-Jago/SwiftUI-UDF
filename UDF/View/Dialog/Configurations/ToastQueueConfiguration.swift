@@ -487,19 +487,24 @@ private extension ToastQueueManager {
         }
 
         guard duration > 0 else { return }
-        
+
         let task = Task { @MainActor in
             try? await Task.sleep(nanoseconds: UInt64(duration * 1_000_000_000))
             if !Task.isCancelled {
-                // Trigger the dismiss callback first (this updates DialogStatus)
+                // Call the onAutoDismiss callback from configuration (if present)
+                if case .toast(let config) = displayInfo.toast.style {
+                    config.onAutoDismiss?()
+                }
+
+                // Trigger the dismiss callback second (this updates DialogStatus)
                 onToastDismiss?(displayInfo.id)
-                
+
                 withAnimation(animation) {
                     dismiss(displayInfo.id)
                 }
             }
         }
-        
+
         dismissTasks[displayInfo.id] = task
     }
     

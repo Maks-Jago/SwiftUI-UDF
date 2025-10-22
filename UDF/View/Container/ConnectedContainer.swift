@@ -78,7 +78,7 @@ struct ConnectedContainer<C: Component, State: AppReducer>: View {
     ///   - onContainerDidUnload: A closure executed when the container is unloaded.
     ///   - useHooks: A closure that provides an array of hooks to use within the container.
     init(
-        store: EnvironmentStore<State> = .global,
+        store: EnvironmentStore<State>,
         map: @escaping (EnvironmentStore<State>) -> C.Props,
         scope: @escaping @Sendable (State) -> Scope,
         onContainerAppear: @escaping @MainActor (EnvironmentStore<State>) -> Void,
@@ -115,7 +115,7 @@ struct ConnectedContainer<C: Component, State: AppReducer>: View {
     ///   - onContainerDidUnload: A closure executed when the container is unloaded.
     ///   - useHooks: A closure that provides an array of hooks to use within the container.
     init<BindedContainer: BindableContainer>(
-        store: EnvironmentStore<State> = .global,
+        store: EnvironmentStore<State>,
         containerType: BindedContainer.Type,
         containerId: @escaping () -> BindedContainer.ID,
         map: @escaping (EnvironmentStore<State>) -> C.Props,
@@ -151,7 +151,7 @@ struct ConnectedContainer<C: Component, State: AppReducer>: View {
                 useHooks: useHooks
             )
         )
-        self._containerState = .init(wrappedValue: .init(store: EnvironmentStore<State>.global, scope: scope))
+        self._containerState = .init(wrappedValue: .init(store: store, scope: scope))
     }
 
     /// The main view body that renders the component and attaches lifecycle events.
