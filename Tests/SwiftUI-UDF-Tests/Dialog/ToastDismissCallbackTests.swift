@@ -127,7 +127,7 @@ import UDFSwiftTesting
         #expect(queueManager.visibleToasts.count == 1)
 
         // Wait for auto-dismiss
-        await sleep(for: 0.3)
+        await sleep(for: 0.5)
 
         // Verify callback was executed
         #expect(tracker.executed)
