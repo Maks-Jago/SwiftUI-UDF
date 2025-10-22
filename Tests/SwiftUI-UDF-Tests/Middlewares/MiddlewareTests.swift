@@ -37,7 +37,7 @@ private extension Actions {
     }
 }
 
-@Suite struct MiddlewareTests {
+@Suite(.serialized) struct MiddlewareTests {
     struct AppState: AppReducer {
         var testForm = TestForm()
         var testFlow = TestFlow()
