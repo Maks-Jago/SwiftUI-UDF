@@ -64,7 +64,9 @@ final class ContainerHooks<State: AppReducer>: @unchecked Sendable {
         self.store = store
         self.buildHooks = hooks
         self.subscriptionKey = store.add { [weak self] oldState, newState, _ in
-            self?.checkHooks(oldState: .init(oldState), newState: .init(newState))
+            Task.detached { @MainActor in
+                self?.checkHooks(oldState: .init(oldState), newState: .init(newState))
+            }
         }
     }
 
@@ -73,7 +75,9 @@ final class ContainerHooks<State: AppReducer>: @unchecked Sendable {
         self.hooks = Dictionary(uniqueKeysWithValues: buildHooks().map { ($0.id, $0) })
 
         // Trigger initial hook check to ensure hooks fire at least once
-        checkInitialHooks()
+        Task.detached { @MainActor [weak self] in
+            self?.checkInitialHooks()
+        }
     }
 
     /// Checks each hook's condition against the old and new state, triggering the hook if necessary.
@@ -81,6 +85,7 @@ final class ContainerHooks<State: AppReducer>: @unchecked Sendable {
     /// - Parameters:
     ///   - oldState: The previous state wrapped in a `Box`.
     ///   - newState: The current state wrapped in a `Box`.
+    @MainActor
     private func checkHooks(oldState: Box<State>, newState: Box<State>) {
         var hooksToRemove: [AnyHashable] = []
 
@@ -103,6 +108,7 @@ final class ContainerHooks<State: AppReducer>: @unchecked Sendable {
     }
 
     /// Checks hooks on initial container appearance, firing hooks if their condition is already true.
+    @MainActor
     private func checkInitialHooks() {
         guard let store else { return }
         let currentState = Box(store.state)
