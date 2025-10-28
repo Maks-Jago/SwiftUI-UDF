@@ -3,7 +3,7 @@
 import UDFSwiftTesting
 import Testing
 
-@Suite struct DelayedActionTests {
+@Suite(.serialized) struct DelayedActionTests {
     private struct TestStoreLogger: ActionLogger {
         var actionFilters: [ActionFilter] = [VerboseActionFilter()]
         var actionDescriptor: ActionDescriptor = StringDescribingActionDescriptor()
