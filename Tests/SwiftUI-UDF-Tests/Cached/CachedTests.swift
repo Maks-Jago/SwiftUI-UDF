@@ -64,23 +64,25 @@ struct CachedTests {
 
         await sleep(for: 1.1) // Wait for cache sync interval (default 1.0s) to complete
 
-        var success = await waitForCondition { await store.state.nestedForm.items.isEmpty }
+        var success = await store.state.nestedForm.items.isEmpty
         #expect(success)
 
         let items = (0 ... 3).map { Item(id: .init(value: $0)) }
         await store.dispatch(Actions.DidLoadItems(items: items, id: "items"))
 
-        success = await waitForCondition { await !store.state.nestedForm.items.isEmpty }
+        await sleep(for: 1.1) // Wait for cache sync interval (default 1.0s) to complete
+
+        success = await !store.state.nestedForm.items.isEmpty
         #expect(success)
 
-        success = await waitForCondition { await store.state.nestedForm.items.count == 4 }
+        success = await store.state.nestedForm.items.count == 4
         #expect(success)
 
         await sleep(for: 1.1) // Wait for cache sync interval (default 1.0s) to complete
 
         store = await TestStore(initial: AppState())
 
-        success = await waitForCondition { await !store.state.nestedForm.items.isEmpty }
+        success = await !store.state.nestedForm.items.isEmpty
         #expect(success)
         #expect(await store.state.nestedForm.items.count == 4)
 
@@ -88,7 +90,7 @@ struct CachedTests {
 
         await sleep(for: 1.1) // Wait for cache sync interval (default 1.0s) to complete
 
-        success = await waitForCondition { await store.state.nestedForm.items.isEmpty }
+        success = await store.state.nestedForm.items.isEmpty
         #expect(success)
     }
 
@@ -98,15 +100,15 @@ struct CachedTests {
 
         await sleep(for: 1.1) // Wait for cache sync interval (default 1.0s) to complete
 
-        var success = await waitForCondition { await store.state.nestedForm.selectedItem == nil }
+        var success = await store.state.nestedForm.selectedItem == nil
         #expect(success)
 
         await store.dispatch(Actions.UpdateFormField(keyPath: \NestedForm.selectedItem, value: .init(value: 1)))
-        success = await waitForCondition { await store.state.nestedForm.selectedItem != nil }
+        success = await store.state.nestedForm.selectedItem != nil
         #expect(success)
 
         await store.dispatch(Actions.ResetCache())
-        success = await waitForCondition { await store.state.nestedForm.selectedItem == nil }
+        success = await store.state.nestedForm.selectedItem == nil
         #expect(success)
     }
 
@@ -116,16 +118,16 @@ struct CachedTests {
 
         await sleep(for: 1.1) // Wait for cache sync interval (default 1.0s) to complete
 
-        var success = await waitForCondition { await store.state.nestedForm.byId.isEmpty }
+        var success = await store.state.nestedForm.byId.isEmpty
         #expect(success)
 
         let items = [Item(id: .init(value: 0))]
         await store.dispatch(Actions.DidLoadItems(items: items, id: "items"))
-        success = await waitForCondition { await !store.state.nestedForm.byId.isEmpty }
+        success = await !store.state.nestedForm.byId.isEmpty
         #expect(success)
 
         try await store.dispatch(Actions.DeleteItem(item: #require(items.first)))
-        success = await waitForCondition { await store.state.nestedForm.byId.isEmpty }
+        success = await store.state.nestedForm.byId.isEmpty
         #expect(success)
     }
 }

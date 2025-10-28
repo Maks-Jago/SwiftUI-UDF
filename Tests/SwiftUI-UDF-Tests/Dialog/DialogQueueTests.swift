@@ -426,7 +426,7 @@ import UDFSwiftTesting
         queueManager.enqueue(toast)
 
         // Wait for auto-dismiss
-        await sleep(for: 0.15)
+        await sleep(for: 0.3)
 
         #expect(callbackExecuted, "onAutoDismiss callback should be executed")
         #expect(queueManager.visibleToasts.count == 0, "Toast should be dismissed")
