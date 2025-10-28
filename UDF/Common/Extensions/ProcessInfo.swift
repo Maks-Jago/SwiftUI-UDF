@@ -24,10 +24,13 @@ public extension ProcessInfo {
     /// }
     /// ```
     var isRunningTests: Bool {
-        NSClassFromString("Testing.Test") != nil ||
-        environment["XCTestConfigurationFilePath"] != nil ||
-        NSClassFromString("XCTestCase") != nil ||
-        Bundle.allBundles.contains { $0.bundlePath.hasSuffix(".xctest") }
+        #if canImport(Testing)
+            return true
+        #elseif canImport(XCTest)
+            return true
+        #else
+            return environment["XCTestConfigurationFilePath"] != nil
+        #endif
     }
 
     @available(*, deprecated, renamed: "isRunningTests", message: "use `isRunningTests` instead of xcTest")
