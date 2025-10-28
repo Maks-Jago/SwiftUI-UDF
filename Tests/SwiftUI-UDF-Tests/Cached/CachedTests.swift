@@ -70,6 +70,8 @@ struct CachedTests {
         let items = (0 ... 3).map { Item(id: .init(value: $0)) }
         await store.dispatch(Actions.DidLoadItems(items: items, id: "items"))
 
+        await sleep(for: 1.1) // Wait for cache sync interval (default 1.0s) to complete
+
         success = await !store.state.nestedForm.items.isEmpty
         #expect(success)
 
