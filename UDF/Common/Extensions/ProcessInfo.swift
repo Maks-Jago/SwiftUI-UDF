@@ -48,7 +48,7 @@ public extension ProcessInfo {
         if environment["SWIFTPM_TESTS"] != nil { return true }
         if environment["SWIFT_PACKAGE_TESTS"] != nil { return true }
 
-        // Do NOT rely on generic CI envs (e.g., CI=true on GitHub Actions) — they fire for all jobs.
+        if environment["UNDER_TEST"] != nil { return true }
         return false
     }
 

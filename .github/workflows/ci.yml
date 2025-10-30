@@ -15,7 +15,7 @@ jobs:
     name: Run all tests
     runs-on: macos-15
     env:
-      CI: "1"
+      UNDER_TEST: "1"
     
     strategy:
       fail-fast: false
