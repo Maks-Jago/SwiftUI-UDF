@@ -24,7 +24,11 @@ public extension ProcessInfo {
     /// }
     /// ```
     var isRunningTests: Bool {
-        NSClassFromString("Testing.Test") != nil ||
+        if environment["IS_TESTING"] == "1" {
+            return true
+        }
+
+        return NSClassFromString("Testing.Test") != nil ||
         environment["XCTestConfigurationFilePath"] != nil ||
         NSClassFromString("XCTestCase") != nil ||
         Bundle.allBundles.contains { $0.bundlePath.hasSuffix(".xctest") }
