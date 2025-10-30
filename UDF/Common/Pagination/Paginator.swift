@@ -144,7 +144,7 @@ public struct Paginator<Item: Hashable & Identifiable & Sendable, FlowId: Hashab
     /// - Parameter action: The action to reduce the state with.
     public mutating func reduce(_ action: some Action) {
         switch action {
-        // Handle `DidLoadItems` action
+            // Handle `DidLoadItems` action
         case let action as Actions.DidLoadItems<Item> where action.id == flowId:
             isLoading = false // Stop the loading state since items have been loaded
 
@@ -157,6 +157,10 @@ public struct Paginator<Item: Hashable & Identifiable & Sendable, FlowId: Hashab
                     // Set the paginator's items to the newly loaded items
                     items = .init(action.items.map(\.id))
                 }
+
+            } else if case let .number(currentPage) = self.page, items.prefix(currentPage * perPage).count / perPage == currentPage {
+                items = OrderedSet(Array(items.prefix(max(currentPage - 1, initialPage) * perPage)) + action.items.map(\.id))
+
             } else {
                 // If not on the initial page, append the new items to the existing list
                 items.append(contentsOf: action.items.map(\.id))

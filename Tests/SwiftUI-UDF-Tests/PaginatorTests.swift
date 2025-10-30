@@ -9,8 +9,7 @@
 import UDFSwiftTesting
 import Testing
 
-@Suite 
-struct PaginatorTests {
+@Suite struct PaginatorTests {
     struct Item: Identifiable, Hashable, Codable {
         struct Id: Hashable, Codable {
             var value: Int
@@ -24,6 +23,24 @@ struct PaginatorTests {
             id = .init(value: .random(in: 0 ..< Int.max))
             title = "title \(id.value)"
             text = "text \(id.value)"
+        }
+
+        init(id: Id, title: String, text: String) {
+            self.id = id
+            self.title = title
+            self.text = text
+        }
+
+        init(id: Id) {
+            self.id = id
+            self.title = "title \(id.value)"
+            self.text = "text \(id.value)"
+        }
+
+        init(id: Int) {
+            self.id = .init(value: id)
+            self.title = "title \(id)"
+            self.text = "text \(id)"
         }
 
         static func fakeItems(count: Int) -> [Item] {
@@ -119,7 +136,7 @@ struct PaginatorTests {
         paginator.reduce(Actions.DidLoadItems(items: Item.fakeItems(count: 10), id: ItemFlow.id))
 
         #expect(paginator.page.pageNumber == 2)
-        #expect(paginator.items.count == 30)
+        #expect(paginator.items.count == 20)
     }
 
     @Test func paginatorLoadingFirstPage() throws {
@@ -182,5 +199,27 @@ struct PaginatorTests {
 
         let outOfBoundsResult = paginator.moveItem(fromIndex: items.count, toIndex: 0)
         #expect(!outOfBoundsResult)
+    }
+
+    @Test func deleteItem() {
+        var paginator = Paginator(Item.self, flowId: ItemFlow.id, perPage: 5)
+        let firsPageItems = [Item(id: 0), Item(id: 1), Item(id: 2), Item(id: 3), Item(id: 4)]
+
+        paginator.reduce(Actions.DidLoadItems(items: firsPageItems, id: ItemFlow.id))
+        #expect(paginator.page.pageNumber == 1)
+
+        paginator.reduce(Actions.LoadPage(pageNumber: 2, id: ItemFlow.id))
+        #expect(paginator.isLoading)
+
+        var secondPageItems = [Item(id: 5), Item(id: 6), Item(id: 7), Item(id: 8), Item(id: 9)]
+        paginator.reduce(Actions.DidLoadItems(items: secondPageItems, id: ItemFlow.id))
+        #expect(paginator.page.pageNumber == 2)
+
+        secondPageItems.remove(at: 1)
+        paginator.reduce(Actions.LoadPage(pageNumber: 2, id: ItemFlow.id))
+        paginator.reduce(Actions.DidLoadItems(items: secondPageItems, id: ItemFlow.id))
+
+        #expect(paginator.page.pageNumber == 2)
+        #expect(paginator.items.count == 9)
     }
 }
