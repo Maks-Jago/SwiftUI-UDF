@@ -12,7 +12,7 @@ import SwiftUI
 actor InternalStore<State: AppReducer>: Store {
     var state: State
 
-    let subject = SendableSubject<(State, State, Animation?), Never>()
+    nonisolated let subject = SendableSubject<(State, State, Animation?), Never>()
 
     var middlewares: OrderedSet<AnyMiddleware> = []
     private let storeQueue: StoreQueue = .init()
