@@ -26,7 +26,8 @@ public extension ProcessInfo {
     var isRunningTests: Bool {
         NSClassFromString("Testing.Test") != nil ||
         environment["XCTestConfigurationFilePath"] != nil ||
-        NSClassFromString("XCTestCase") != nil
+        NSClassFromString("XCTestCase") != nil ||
+        Bundle.allBundles.contains { $0.bundlePath.hasSuffix(".xctest") }
     }
 
     @available(*, deprecated, renamed: "isRunningTests", message: "use `isRunningTests` instead of xcTest")
