@@ -24,7 +24,7 @@ public extension ProcessInfo {
     /// }
     /// ```
     var isRunningTests: Bool {
-        if environment["IS_TESTING"] == "1" {
+        if environment["CI"] != nil {
             return true
         }
 

@@ -48,7 +48,6 @@ jobs:
       
     - name: Run Tests
       run: |
-        export IS_TESTING=1
         swift test \
           --build-path .build
         
