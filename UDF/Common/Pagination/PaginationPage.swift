@@ -12,13 +12,15 @@ import Foundation
 /// - `lastPage(Int)`: Represents the last page in the pagination process.
 public enum PaginationPage: Sendable {
     case number(Int)
+    case refreshPage(Int)
     case lastPage(Int)
 
     /// Returns the page number associated with the current case, whether it's a regular page or the last page.
     public var pageNumber: Int {
         switch self {
         case let .number(page),
-             let .lastPage(page):
+            let .refreshPage(page),
+            let .lastPage(page):
             page
         }
     }
@@ -26,7 +28,7 @@ public enum PaginationPage: Sendable {
 
 extension PaginationPage: Codable {
     enum CodingKeys: String, CodingKey {
-        case number, lastPage
+        case number, lastPage, refreshPage
     }
 
     /// Decodes a `PaginationPage` from a JSON representation.
@@ -40,6 +42,8 @@ extension PaginationPage: Codable {
             self = .number(pageNumber)
         } else if let pageNumber = try container.decodeIfPresent(Int.self, forKey: .lastPage) {
             self = .lastPage(pageNumber)
+        } else if let pageNumber = try container.decodeIfPresent(Int.self, forKey: .lastPage) {
+            self = .refreshPage(pageNumber)
         } else {
             self = .number(1)
         }
@@ -56,6 +60,9 @@ extension PaginationPage: Codable {
 
         case let .lastPage(pageNumber):
             try container.encode(pageNumber, forKey: .lastPage)
+
+        case let .refreshPage(pageNumber):
+            try container.encode(pageNumber, forKey: .refreshPage)
         }
     }
 }

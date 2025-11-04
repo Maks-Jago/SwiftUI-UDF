@@ -24,9 +24,6 @@ public struct Paginator<Item: Hashable & Identifiable & Sendable, FlowId: Hashab
     /// The number of items per page.
     public var perPage: Int
 
-    /// A flag to indicate whether to use a prefix for the first page.
-    public var usePrefixForFirstPage: Bool
-
     /// The initial page number.
     public var initialPage: Int
 
@@ -49,20 +46,18 @@ public struct Paginator<Item: Hashable & Identifiable & Sendable, FlowId: Hashab
     ///   - itemType: The type of the items.
     ///   - flowId: The Flow ID associated with this paginator.
     ///   - perPage: The number of items per page.
-    ///   - usePrefixForFirstPage: Indicates whether to use a prefix for the first page.
     ///   - initialPage: The initial page number.
-    public init(_ itemType: Item.Type, flowId: FlowId, perPage: Int, usePrefixForFirstPage: Bool = false, initialPage: Int = 1) {
+    public init(_ itemType: Item.Type, flowId: FlowId, perPage: Int, initialPage: Int = 1) {
         self.flowId = flowId
         self.perPage = perPage
-        self.usePrefixForFirstPage = usePrefixForFirstPage
         self.initialPage = initialPage
         self.page = .number(initialPage)
     }
 
     /// Disallowed initializer to prevent improper usage.
-    @available(*, deprecated, message: "Use `init(key:defaultValue:intervalToSync:storage)` instead.")
+    @available(*, deprecated, message: "use init(flowId:perPage:initialPage:) instead of init")
     public init() {
-        fatalError("use init(flowId:perPage:usePrefixForFirstPage:initialPage:) instead of init")
+        fatalError("use init(flowId:perPage:initialPage:) instead of init")
     }
 
     /// Sets the paginator's items.
@@ -148,47 +143,31 @@ public struct Paginator<Item: Hashable & Identifiable & Sendable, FlowId: Hashab
         case let action as Actions.DidLoadItems<Item> where action.id == flowId:
             isLoading = false // Stop the loading state since items have been loaded
 
-            // Check if the paginator is on the initial page
-            if case let .number(currentPage) = self.page, currentPage == initialPage {
-                // If the loaded items are empty and `usePrefixForFirstPage` is true, retain only the first `perPage` items
-                if action.items.isEmpty, usePrefixForFirstPage {
-                    items = OrderedSet(Array(items.prefix(perPage)))
-                } else {
-                    // Set the paginator's items to the newly loaded items
-                    items = .init(action.items.map(\.id))
-                }
-
-            } else if case let .number(currentPage) = self.page, items.prefix(currentPage * perPage).count / perPage == currentPage {
-                items = OrderedSet(Array(items.prefix(max(currentPage - 1, initialPage) * perPage)) + action.items.map(\.id))
-
+            if case let .refreshPage(currentPage) = self.page {
+                items = OrderedSet(Array(items.prefix(max(currentPage - 1, 0) * perPage)) + action.items.map(\.id))
             } else {
-                // If not on the initial page, append the new items to the existing list
                 items.append(contentsOf: action.items.map(\.id))
             }
 
-            // Check if the loaded items are fewer than `perPage`, indicating that there are no more pages to load
-            if action.items.isEmpty || action.items.count < perPage {
+            if action.items.isEmpty {
+                page = .lastPage(self.page.pageNumber - 1)
+            } else if action.items.count < perPage {
                 page = .lastPage(self.page.pageNumber)
             }
 
-        // Handle `LoadPage` action for the initial page
-        case let action as Actions.LoadPage where action.id == flowId && action.pageNumber == initialPage:
-            isLoading = true // Start loading state
-            page = .number(initialPage) // Reset the page to the initial page number
-
         // Handle `LoadPage` action for subsequent pages
         case let action as Actions.LoadPage where action.id == flowId:
-            guard case .number = self.page else {
-                return // Do nothing if the current page is not a numeric page
-            }
-
             // If the new page number is less than the current page, remove items after the new page to ensure consistency
             if action.pageNumber < self.page.pageNumber {
                 removeItems(after: action.pageNumber)
             }
 
             isLoading = true // Start loading state
-            page = .number(action.pageNumber) // Set the current page to the new page number
+            if action.pageNumber > page.pageNumber || action.pageNumber == initialPage && items.isEmpty {
+                page = .number(action.pageNumber)
+            } else {
+                page = .refreshPage(action.pageNumber)
+            }
 
         // Handle `Error` action
         case let action as Actions.Error where action.id == flowId:
