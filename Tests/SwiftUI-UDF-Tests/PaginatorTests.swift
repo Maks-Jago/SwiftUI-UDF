@@ -227,6 +227,33 @@ import Testing
         #expect(paginator.page.pageNumber == 2)
     }
 
+    @Test func resetRefreshStateAfterLoading() {
+        var paginator = Paginator(Item.self, flowId: ItemFlow.id, perPage: 5)
+        let firsPageItems = [Item(id: 0), Item(id: 1), Item(id: 2), Item(id: 3), Item(id: 4)]
+
+        paginator.reduce(Actions.LoadPage(pageNumber: 1, id: ItemFlow.id))
+        paginator.reduce(Actions.DidLoadItems(items: firsPageItems, id: ItemFlow.id))
+
+        switch paginator.page {
+        case .number(let pageNumber):
+            #expect(pageNumber == 1)
+
+        default:
+            #expect(Bool(false))
+        }
+
+        paginator.reduce(Actions.LoadPage(pageNumber: 1, id: ItemFlow.id))
+        paginator.reduce(Actions.DidLoadItems(items: firsPageItems, id: ItemFlow.id))
+
+        switch paginator.page {
+        case .number(let pageNumber):
+            #expect(pageNumber == 1)
+
+        default:
+            #expect(Bool(false))
+        }
+    }
+
     @Test func deleteItemFirstCase() {
         var paginator = Paginator(Item.self, flowId: ItemFlow.id, perPage: 5)
         let firsPageItems = [Item(id: 0), Item(id: 1), Item(id: 2), Item(id: 3), Item(id: 4)]
