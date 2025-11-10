@@ -149,10 +149,9 @@ public struct Paginator<Item: Hashable & Identifiable & Sendable, FlowId: Hashab
                 items.append(contentsOf: action.items.map(\.id))
             }
 
-//            if action.items.isEmpty {
-//                page = .lastPage(self.page.pageNumber - 1)
-//            } else
-            if action.items.count < perPage {
+            if action.items.isEmpty {
+                page = .lastPage(self.page.pageNumber - 1)
+            } else if action.items.count < perPage {
                 page = .lastPage(self.page.pageNumber)
             } else {
                 page = .number(self.page.pageNumber)

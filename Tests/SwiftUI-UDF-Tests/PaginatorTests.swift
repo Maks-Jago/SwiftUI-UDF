@@ -210,7 +210,7 @@ import Testing
 
         paginator.reduce(Actions.LoadPage(pageNumber: 2, id: ItemFlow.id))
         paginator.reduce(Actions.DidLoadItems(items: Array<Item>(), id: ItemFlow.id))
-        #expect(paginator.page.pageNumber == 2)
+        #expect(paginator.page.pageNumber == 1)
     }
 
     @Test func loadLastPageWithOneItem() {
