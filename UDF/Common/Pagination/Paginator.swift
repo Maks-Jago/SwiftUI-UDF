@@ -160,6 +160,10 @@ public struct Paginator<Item: Hashable & Identifiable & Sendable, FlowId: Hashab
         // Handle `LoadPage` action for subsequent pages
         case let action as Actions.LoadPage where action.id == flowId:
             // If the new page number is less than the current page, remove items after the new page to ensure consistency
+            if case .lastPage(let number) = self.page, action.pageNumber > number {
+                return //do nothing, we already at the last page
+            }
+
             if action.pageNumber < self.page.pageNumber {
                 removeItems(after: action.pageNumber)
             }
