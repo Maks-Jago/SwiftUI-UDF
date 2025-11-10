@@ -107,7 +107,7 @@ public extension Action {
         if let group = self as? ActionGroup {
             ActionGroup(internalActions: group._actions.map { oldAction in
                 InternalAction(
-                    oldAction.value.binded(to: containerType, by: id),
+                    oldAction.value.binded(to: containerType, by: id, fileName: fileName, functionName: functionName, lineNumber: lineNumber),
                     animation: oldAction.animation,
                     silent: oldAction.silent,
                     fileName: oldAction.fileName,
