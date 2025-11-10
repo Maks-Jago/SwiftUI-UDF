@@ -42,7 +42,7 @@ extension PaginationPage: Codable {
             self = .number(pageNumber)
         } else if let pageNumber = try container.decodeIfPresent(Int.self, forKey: .lastPage) {
             self = .lastPage(pageNumber)
-        } else if let pageNumber = try container.decodeIfPresent(Int.self, forKey: .lastPage) {
+        } else if let pageNumber = try container.decodeIfPresent(Int.self, forKey: .refreshPage) {
             self = .refreshPage(pageNumber)
         } else {
             self = .number(1)
