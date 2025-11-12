@@ -155,7 +155,7 @@ public typealias ObservableMiddleware<State: AppReducer> = Middleware<State>
 @available(*, deprecated, message: "Use Middleware instead.")
 public typealias ReducibleMiddleware<State: AppReducer> = Middleware<State>
 
-@available(*, deprecated, message: "Use BaseMiddleware instead.")
+@available(*, deprecated, message: "Use Middleware instead.")
 public typealias BaseObservableMiddleware<State: AppReducer> = Middleware<State>
-@available(*, deprecated, message: "Use BaseMiddleware instead.")
+@available(*, deprecated, message: "Use Middleware instead.")
 public typealias BaseReducibleMiddleware<State: AppReducer> = Middleware<State>
