@@ -150,7 +150,7 @@ public struct Paginator<Item: Hashable & Identifiable & Sendable, FlowId: Hashab
             }
 
             if action.items.isEmpty {
-                page = .lastPage(self.page.pageNumber - 1)
+                page = .lastPage(decreasedPageNumber())
             } else if action.items.count < perPage {
                 page = .lastPage(self.page.pageNumber)
             } else {
@@ -179,7 +179,7 @@ public struct Paginator<Item: Hashable & Identifiable & Sendable, FlowId: Hashab
         case let action as Actions.Error where action.id == flowId:
             // If an error occurs while loading a page beyond the initial page, revert to the previous page number
             if page.pageNumber > initialPage, isLoading {
-                page = .number(page.pageNumber - 1)
+                page = .number(decreasedPageNumber())
             }
 
             isLoading = false // Stop the loading state
@@ -196,6 +196,10 @@ public struct Paginator<Item: Hashable & Identifiable & Sendable, FlowId: Hashab
         default:
             break
         }
+    }
+
+    private func decreasedPageNumber() -> Int {
+        max(initialPage, self.page.pageNumber - 1)
     }
 }
 
