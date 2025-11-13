@@ -319,4 +319,24 @@ import Testing
         #expect(paginator.page.pageNumber == 1)
         #expect(paginator.items.count == 3)
     }
+
+    @Test func refreshInitialPageAfterItemDeletion() {
+        var paginator = Paginator(Item.self, flowId: ItemFlow.id, perPage: 5)
+        let firsPageItems = [Item(id: 0)]
+
+        paginator.reduce(Actions.LoadPage(pageNumber: 1, id: ItemFlow.id))
+        #expect(paginator.isLoading)
+
+        paginator.reduce(Actions.DidLoadItems(items: firsPageItems, id: ItemFlow.id))
+        #expect(paginator.page.pageNumber == 1)
+
+        paginator.reduce(Actions.LoadPage(pageNumber: 1, id: ItemFlow.id))
+        #expect(paginator.isLoading)
+        #expect(paginator.page.pageNumber == 1)
+
+        paginator.reduce(Actions.DidLoadItems(items: Array<Item>(), id: ItemFlow.id))
+        #expect(paginator.isLoading == false)
+        #expect(paginator.page.pageNumber == 1)
+        #expect(paginator.page == .lastPage(1))
+    }
 }
