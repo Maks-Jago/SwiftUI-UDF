@@ -47,6 +47,12 @@ import SwiftUI
 public final class GlobalRouter {
     private var routingPath: Binding<NavigationPath>
 
+    public var path: NavigationPath {
+        get {
+            routingPath.wrappedValue
+        }
+    }
+
     /// Initializes the global router with a given navigation path.
     ///
     /// - Parameter path: A binding to a `NavigationPath` used for navigation.
