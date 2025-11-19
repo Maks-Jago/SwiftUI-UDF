@@ -23,15 +23,14 @@ public extension Publishers {
     /// - Returns: An `AnyPublisher` that emits the isolated state of the store once.
     static func IsolatedState<State: AppReducer>(from store: any Store<State>) -> AnyPublisher<State, Never> {
         Deferred {
-            let subject = PassthroughSubject<State, Never>()
-            
-            Task.detached(priority: .high) { @Sendable in
-                let immutableState = await store.state
-                subject.send(immutableState)
-                subject.send(completion: .finished)
+            Future<State, Never> { promise in
+                nonisolated(unsafe) let promise = promise
+
+                Task.detached(priority: .high) { @Sendable in
+                    let immutableState = await store.state
+                    promise(.success(immutableState))
+                }
             }
-            
-            return subject.eraseToAnyPublisher()
         }
         .eraseToAnyPublisher()
     }
