@@ -26,7 +26,7 @@ public extension Publishers {
             Future<State, Never> { promise in
                 nonisolated(unsafe) let promise = promise
 
-                Task.detached(priority: .high) { @Sendable in
+                Task(priority: .high) { @Sendable in
                     let immutableState = await store.state
                     promise(.success(immutableState))
                 }
