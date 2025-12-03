@@ -49,7 +49,7 @@ actor InternalStore<State: AppReducer>: Store {
     func subscribe(_ middleware: some _Middleware<State>) async {
         middlewares.append(AnyMiddleware(middleware))
 
-        await initialNotify(middleware: middleware, state: Box(self.state))
+        await initialNotify(middleware: middleware, state: self.state)
     }
 
     func subscribe(_ middlewares: [any _Middleware<State>]) async {
@@ -61,9 +61,9 @@ actor InternalStore<State: AppReducer>: Store {
 
 // MARK: Help Methods
 private extension InternalStore {
-    func mutate(state: Box<State>, animation: Animation?) {
-        subject.send((state.value, self.state, animation))
-        self.state = state.value
+    func mutate(state: State, animation: Animation?) {
+        subject.send((state, self.state, animation))
+        self.state = state
     }
 
     func reduce(_ action: InternalAction) async {
@@ -77,21 +77,21 @@ private extension InternalStore {
         await notifyMiddlewares(unwrappedActions, oldState: reduceResult.oldState, newState: reduceResult.newState)
     }
 
-    func reduceActionsInReducers(actions: [InternalAction]) async -> (oldState: Box<State>, newState: Box<State>, mutated: Bool) {
-        var newState = Box(self.state)
-        let oldState = Box(self.state)
+    func reduceActionsInReducers(actions: [InternalAction]) async -> (oldState: State, newState: State, mutated: Bool) {
+        var newState = self.state
+        let oldState = self.state
         var mutated = false
 
         for unwrappedAction in actions {
             logDistributor.distribute(action: unwrappedAction)
 
             if let animation = unwrappedAction.animation {
-                if newState.value.reduce(unwrappedAction.value) {
+                if newState.reduce(unwrappedAction.value) {
                     mutate(state: newState, animation: animation)
                     await notifyMiddlewares([unwrappedAction], oldState: oldState, newState: newState)
                 }
             } else {
-                if newState.value.reduce(unwrappedAction.value) {
+                if newState.reduce(unwrappedAction.value) {
                     mutated = true
                 }
             }
@@ -137,10 +137,10 @@ private extension InternalStore {
 
 // MARK: Notify Methods
 private extension InternalStore {
-    func notifyMiddlewares(_ actions: [InternalAction], oldState: Box<State>, newState: Box<State>) async {
+    func notifyMiddlewares(_ actions: [InternalAction], oldState: State, newState: State) async {
         for anyMiddleware in middlewares {
             let middleware = anyMiddleware.middleware
-            
+
             switch middleware {
             case let middleware as any Middleware<State>:
                 await notify(middleware: middleware, actions: actions, oldState: oldState, newState: newState)
@@ -150,26 +150,26 @@ private extension InternalStore {
             }
         }
     }
-    
-    func notify<M: MiddlewareProtocol>(middleware: M, actions: [InternalAction], oldState: Box<State>, newState: Box<State>) async where M.State == State {
-        let status = middleware.status(for: newState.value)
+
+    func notify<M: MiddlewareProtocol>(middleware: M, actions: [InternalAction], oldState: State, newState: State) async where M.State == State {
+        let status = middleware.status(for: newState)
         await safetyCall(queue: middleware.queue) {
             if status == .suspend {
                 middleware.cancelAll()
             } else {
                 for action in actions {
-                    middleware.reduce(action.value, for: newState.value)
+                    middleware.reduce(action.value, for: newState)
                 }
             }
         }
-        
-        let oldScope = middleware.scope(for: oldState.value)
-        let newScope = middleware.scope(for: newState.value)
-        let oldStatus = middleware.status(for: oldState.value)
-        let newStatus = middleware.status(for: newState.value)
-        
+
+        let oldScope = middleware.scope(for: oldState)
+        let newScope = middleware.scope(for: newState)
+        let oldStatus = middleware.status(for: oldState)
+        let newStatus = middleware.status(for: newState)
+
         var callObserve = false
-        
+
         if oldStatus == .suspend, newStatus != oldStatus {
             callObserve = true
         } else if oldStatus != .suspend, newStatus == .suspend {
@@ -177,25 +177,23 @@ private extension InternalStore {
         } else if newStatus == .active {
             callObserve = !oldScope.isEqual(newScope)
         }
-        
+
         if callObserve {
-            let newStateValue = newState.value
             await safetyCall(queue: middleware.queue) {
-                middleware.observe(state: newStateValue)
+                middleware.observe(state: newState)
             }
         }
     }
 
-    func initialNotify(middleware: some _Middleware<State>, state: Box<State>) async {
-        let status = middleware.status(for: state.value)
+    func initialNotify(middleware: some _Middleware<State>, state: State) async {
+        let status = middleware.status(for: state)
         guard status == .active else {
             return
         }
-        
-        let stateValue = state.value
+
         await safetyCall(queue: middleware.queue) {
             if let unifiedMiddleware = middleware as? any Middleware<State> {
-                unifiedMiddleware.observe(state: stateValue)
+                unifiedMiddleware.observe(state: state)
             }
         }
     }
@@ -213,47 +211,6 @@ private func safetyCall(queue: DispatchQueue, block: @Sendable @escaping () -> V
                 block()
                 continuation.resume()
             }
-        }
-    }
-}
-
-final class Ref<T: Sendable>: @unchecked Sendable {
-    private let lock = NSLock()
-    private var _value: T
-    
-    var value: T {
-        get {
-            lock.lock()
-            defer { lock.unlock() }
-            return _value
-        }
-        set {
-            lock.lock()
-            defer { lock.unlock() }
-            _value = newValue
-        }
-    }
-    
-    init(value: T) {
-        self._value = value
-    }
-}
-
-struct Box<T: Sendable>: Sendable {
-    private var ref: Ref<T>
-    
-    init(_ value: T) {
-        ref = Ref(value: value)
-    }
-    
-    var value: T {
-        get { ref.value }
-        set {
-            guard isKnownUniquelyReferenced(&ref) else {
-                ref = Ref(value: newValue)
-                return
-            }
-            ref.value = newValue
         }
     }
 }
