@@ -142,7 +142,11 @@ public final class EnvironmentStore<State: AppReducer>: @unchecked Sendable {
     private func sinkSubject() {
         self.cancelation = store.subject.publisher
             .receive(on: DispatchQueue.main)
-            .sink { [unowned self] newState, oldState, animation in
+            .sink { [weak self] newState, oldState, animation in
+                guard let self else {
+                    return
+                }
+
                 self.state = newState
                 let coordinator = subscribersCoordinator
                 

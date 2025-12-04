@@ -260,9 +260,14 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
                     lineNumber: filePosition.lineNumber
                 )
             })
-            .flatMap { [unowned self] action in
+            .flatMap { [weak self] action in
+                guard let self else {
+                    return Empty<(state: State, action: any Action), Never>(completeImmediately: true)
+                        .eraseToAnyPublisher()
+                }
+
                 // Isolate the state to be used in the dispatch filter
-                Publishers.IsolatedState(from: self.store)
+                return Publishers.IsolatedState(from: self.store)
                     .map { state in
                         (state: state, action: action)
                     }
