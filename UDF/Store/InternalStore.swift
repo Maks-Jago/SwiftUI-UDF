@@ -74,7 +74,18 @@ private extension InternalStore {
             mutate(state: reduceResult.newState, animation: nil)
         }
 
-        await notifyMiddlewares(unwrappedActions, oldState: reduceResult.oldState, newState: reduceResult.newState)
+//        await notifyMiddlewares(unwrappedActions, oldState: reduceResult.oldState, newState: reduceResult.newState)
+        for anyMiddleware in middlewares {
+            let middleware = anyMiddleware.middleware
+
+            switch middleware {
+            case let middleware as any Middleware<State>:
+                await notify(middleware: middleware, actions: unwrappedActions, oldState: reduceResult.oldState, newState: reduceResult.newState)
+
+            default:
+                continue
+            }
+        }
     }
 
     func reduceActionsInReducers(actions: [InternalAction]) async -> (oldState: State, newState: State, mutated: Bool) {
