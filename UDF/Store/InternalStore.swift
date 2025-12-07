@@ -16,6 +16,7 @@ actor InternalStore<State: AppReducer>: Store {
 
     var middlewares: OrderedSet<AnyMiddleware> = []
     private let storeQueue: StoreQueue = .init()
+    private let delayQueue: DelayQueue = .init()
     private let logDistributor: LogDistributor
 
     init(initial state: State, loggers: [ActionLogger]) {
@@ -38,8 +39,14 @@ actor InternalStore<State: AppReducer>: Store {
 
             if let delay = internalAction.delay {
                 let delayedOperation = DelayedOperation(delay: delay, priority: .init(priority))
+                // Keep dependency between operations
                 storeOperation.addDependency(delayedOperation)
-                storeQueue.addOperations([delayedOperation, storeOperation], waitUntilFinished: false)
+
+                // Enqueue delay on a parallel delay queue
+                delayQueue.addOperation(delayedOperation)
+
+                // Enqueue the actual mutation on a strictly serial store queue
+                storeQueue.addOperation(storeOperation)
             } else {
                 storeQueue.addOperation(storeOperation)
             }
@@ -225,3 +232,4 @@ private func safetyCall(queue: DispatchQueue, block: @Sendable @escaping () -> V
         }
     }
 }
+
