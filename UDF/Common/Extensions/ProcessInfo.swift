@@ -36,8 +36,6 @@ public extension ProcessInfo {
         if environment["XCInjectBundle"] != nil { return true }
 
         if NSClassFromString("XCTestCase") != nil { return true }
-        if Bundle.allBundles.contains(where: { $0.bundlePath.hasSuffix(".xctest") }) { return true }
-        if Bundle.allFrameworks.contains(where: { $0.bundlePath.contains("/XCTest") }) { return true }
 
         // --- UI tests: the app-under-test is a separate process, so it won't have XCTest classes.
         // XCTest adds "-ui_testing" to launch arguments when running UI tests.
@@ -54,6 +52,6 @@ public extension ProcessInfo {
 
     @available(*, deprecated, renamed: "isRunningTests", message: "use `isRunningTests` instead of xcTest")
     var xcTest: Bool {
-        environment["XCTestConfigurationFilePath"] != nil
+        isRunningTests
     }
 }
