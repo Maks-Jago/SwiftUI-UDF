@@ -138,18 +138,18 @@ final class ContainerHooks<State: AppReducer>: @unchecked Sendable {
         hooks.removeValue(forKey: AnyHashable(id))
 
         if hooks.isEmpty {
-            store?.removePublisher(forKey: subscriptionKey)
+            store?.removeSubscriber(forKey: subscriptionKey)
         }
     }
 
     /// Removes all hooks and cancels the state subscription.
     func removeAllHooks() {
         hooks.removeAll()
-        store?.removePublisher(forKey: subscriptionKey)
+        store?.removeSubscriber(forKey: subscriptionKey)
     }
 
     /// Cleans up by removing the state subscription when the `ContainerHooks` instance is deallocated.
     deinit {
-        store?.removePublisher(forKey: subscriptionKey)
+        store?.removeSubscriber(forKey: subscriptionKey)
     }
 }

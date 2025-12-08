@@ -182,7 +182,7 @@ extension EnvironmentStore {
     /// Removes a state subscriber using its unique key.
     ///
     /// - Parameter key: The unique key of the subscriber to remove.
-    func removePublisher(forKey key: String) {
+    func removeSubscriber(forKey key: String) {
         let coordinator = subscribersCoordinator
         
         Task(priority: .high) {

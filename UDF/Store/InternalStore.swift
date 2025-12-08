@@ -14,7 +14,7 @@ actor InternalStore<State: AppReducer>: Store {
 
     nonisolated let subject = SendableSubject<(State, State, Animation?), Never>()
 
-    var middlewares: OrderedSet<AnyMiddleware> = []
+    private(set) var middlewares: OrderedSet<AnyMiddleware> = []
     private let storeQueue: StoreQueue = .init()
     private let delayQueue: DelayQueue = .init()
     private let logDistributor: LogDistributor
@@ -69,8 +69,9 @@ actor InternalStore<State: AppReducer>: Store {
 // MARK: Help Methods
 private extension InternalStore {
     func mutate(state: State, animation: Animation?) {
-        subject.send((state, self.state, animation))
+        let old = self.state
         self.state = state
+        subject.send((state, old, animation))
     }
 
     func reduce(_ action: InternalAction) async {
@@ -170,9 +171,14 @@ private extension InternalStore {
     }
 
     func notify<M: MiddlewareProtocol>(middleware: M, actions: [InternalAction], oldState: State, newState: State) async where M.State == State {
-        let status = middleware.status(for: newState)
+        let oldScope = middleware.scope(for: oldState)
+        let newScope = middleware.scope(for: newState)
+
+        let oldStatus = middleware.status(for: oldState)
+        let newStatus = middleware.status(for: newState)
+
         middleware.queue.async {
-            if status == .suspend {
+            if newStatus == .suspend {
                 middleware.cancelAll()
             } else {
                 for action in actions {
@@ -180,11 +186,6 @@ private extension InternalStore {
                 }
             }
         }
-
-        let oldScope = middleware.scope(for: oldState)
-        let newScope = middleware.scope(for: newState)
-        let oldStatus = middleware.status(for: oldState)
-        let newStatus = middleware.status(for: newState)
 
         var callObserve = false
 

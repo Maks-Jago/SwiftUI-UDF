@@ -72,6 +72,6 @@ final class ContainerState<State: AppReducer>: ObservableObject, @unchecked Send
 
     /// Cleans up the subscription when the `ContainerState` is deinitialized.
     deinit {
-        store?.removePublisher(forKey: subscriptionKey)
+        store?.removeSubscriber(forKey: subscriptionKey)
     }
 }

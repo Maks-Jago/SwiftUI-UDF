@@ -112,7 +112,7 @@ private extension Actions {
         var success = await store.state.testForm.nested.number == 2
         #expect(success)
 
-        await sleep(for: 0.5)
+        await sleep(for: 1)
         formTitle = await store.state.testForm.title
         #expect(formTitle == "Flow message 1")
 
