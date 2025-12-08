@@ -171,7 +171,7 @@ private extension InternalStore {
 
     func notify<M: MiddlewareProtocol>(middleware: M, actions: [InternalAction], oldState: State, newState: State) async where M.State == State {
         let status = middleware.status(for: newState)
-        await safetyCall(queue: middleware.queue) {
+        middleware.queue.async {
             if status == .suspend {
                 middleware.cancelAll()
             } else {
@@ -197,7 +197,7 @@ private extension InternalStore {
         }
 
         if callObserve {
-            await safetyCall(queue: middleware.queue) {
+            middleware.queue.async {
                 middleware.observe(state: newState)
             }
         }
@@ -209,27 +209,10 @@ private extension InternalStore {
             return
         }
 
-        await safetyCall(queue: middleware.queue) {
-            if let unifiedMiddleware = middleware as? any Middleware<State> {
+        if let unifiedMiddleware = middleware as? any Middleware<State> {
+            middleware.queue.async {
                 unifiedMiddleware.observe(state: state)
             }
         }
     }
 }
-
-private func safetyCall(queue: DispatchQueue, block: @Sendable @escaping () -> Void) async {
-    await withUnsafeContinuation { continuation in
-        if queue == .main {
-            queue.async {
-                block()
-                continuation.resume()
-            }
-        } else {
-            queue.sync {
-                block()
-                continuation.resume()
-            }
-        }
-    }
-}
-

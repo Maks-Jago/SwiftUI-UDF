@@ -108,11 +108,13 @@ private extension Actions {
         await store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.title, value: "title4"))
         
         // Wait for middleware to process and set nested.number to 2
+        await store.wait()
         var success = await store.state.testForm.nested.number == 2
         #expect(success)
 
+        await sleep(for: 0.5)
         formTitle = await store.state.testForm.title
-        #expect(formTitle == "title4")
+        #expect(formTitle == "Flow message 1")
 
         await store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.title, value: "title5"))
         
