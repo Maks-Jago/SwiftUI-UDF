@@ -26,6 +26,8 @@ public extension ProcessInfo {
     var isRunningTests: Bool {
         if environment["UNDER_TEST"] != nil { return true }
 
+        if environment["CI"] != nil { return true }
+
         // --- Swift Testing (Xcode 16+, Swift 6)
         if NSClassFromString("Testing.Test") != nil {
             return true

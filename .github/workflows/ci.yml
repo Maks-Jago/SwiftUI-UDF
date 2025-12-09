@@ -44,10 +44,7 @@ jobs:
           
     - name: Resolve Package Dependencies
       run: swift package resolve
-      
-    - name: Build Debug
-      run: swift build -c debug
-      
+            
     - name: Run Tests
       run: |
         swift test \
