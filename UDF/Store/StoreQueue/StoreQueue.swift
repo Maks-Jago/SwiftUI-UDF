@@ -24,15 +24,13 @@ final class StoreQueue: OperationQueue, @unchecked Sendable {
     }
 }
 
-/// A parallel queue dedicated to running delayed operations (timers, sleeps, etc.).
+/// A parallel queue dedicated to running delayed operations
 /// Keeping delays off the StoreQueue prevents blocking the mutation pipeline.
 final class DelayQueue: OperationQueue, @unchecked Sendable {
     override init() {
         super.init()
-        // Parallel; we don't want delays to occupy StoreQueue's single slot
         name = "DelayQueue"
         qualityOfService = .utility
-        // Leave default maxConcurrentOperationCount (system-managed parallelism)
     }
 }
 

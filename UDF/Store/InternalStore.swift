@@ -82,7 +82,6 @@ private extension InternalStore {
             mutate(state: reduceResult.newState, animation: nil)
         }
 
-//        await notifyMiddlewares(unwrappedActions, oldState: reduceResult.oldState, newState: reduceResult.newState)
         for anyMiddleware in middlewares {
             let middleware = anyMiddleware.middleware
 
