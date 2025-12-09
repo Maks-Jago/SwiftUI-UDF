@@ -52,16 +52,3 @@ jobs:
       run: |
         swift test \
           --build-path .build
-        
-  validate-package:
-    name: Validate Package
-    runs-on: macos-15
-    
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-      
-    - name: Validate Package
-      run: |
-        swift package describe
-        

@@ -24,6 +24,8 @@ public extension ProcessInfo {
     /// }
     /// ```
     var isRunningTests: Bool {
+        if environment["UNDER_TEST"] != nil { return true }
+
         // --- Swift Testing (Xcode 16+, Swift 6)
         if NSClassFromString("Testing.Test") != nil {
             return true
@@ -46,7 +48,6 @@ public extension ProcessInfo {
         if environment["SWIFTPM_TESTS"] != nil { return true }
         if environment["SWIFT_PACKAGE_TESTS"] != nil { return true }
 
-        if environment["UNDER_TEST"] != nil { return true }
         return false
     }
 
