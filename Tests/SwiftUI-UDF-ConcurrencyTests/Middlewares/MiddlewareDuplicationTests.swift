@@ -41,6 +41,7 @@ import Testing
         })
 
         await store.dispatch(TestAction())
+        await store.wait()
 
         let middlewaresCount = await store.state.testForm.reduceCallCount
         #expect(middlewaresCount == 1, "Middleware should only be added once")
