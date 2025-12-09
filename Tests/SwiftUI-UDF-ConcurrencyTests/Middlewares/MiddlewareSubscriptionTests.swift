@@ -40,7 +40,6 @@ private extension Actions {
 
     @Test func liveEnvironmentMiddlewareSubscription() async {
         let store = await TestStore(initial: AppState())
-        setLiveEnvironment()
         await store.subscribe(EnvironmentMiddleware.self)
 
         await store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.type, value: .liveEnvironment))
@@ -167,16 +166,4 @@ extension MiddlewareSubscriptionTests {
             }
         }
     }
-}
-
-private extension MiddlewareSubscriptionTests {
-    private func setLiveEnvironment() {
-        let original = class_getClassMethod(ProcessInfo.self, #selector(getter: ProcessInfo.processInfo))!
-        let swizzled = class_getClassMethod(ProcessInfo.self, #selector(ProcessInfo.isInTestEnvironment))!
-        method_exchangeImplementations(original, swizzled)
-    }
-}
-
-private extension ProcessInfo {
-    @objc class func isInTestEnvironment() -> Bool { false }
 }
