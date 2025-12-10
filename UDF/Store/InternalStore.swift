@@ -24,8 +24,8 @@ actor InternalStore<State: AppReducer>: Store {
         self.logDistributor = LogDistributor(loggers: loggers)
     }
 
-    func dispatch(_ internalAction: InternalAction) async {
-        await self.reduce(internalAction)
+    func dispatch(_ internalAction: InternalAction) {
+        self.reduce(internalAction)
     }
 
     nonisolated func dispatch(_ action: some Action, priority: ActionPriority, fileName: String, functionName: String, lineNumber: Int) {
@@ -56,7 +56,7 @@ actor InternalStore<State: AppReducer>: Store {
     func subscribe(_ middleware: some _Middleware<State>) async {
         middlewares.append(AnyMiddleware(middleware))
 
-        await initialNotify(middleware: middleware, state: self.state)
+        initialNotify(middleware: middleware, state: self.state)
     }
 
     func subscribe(_ middlewares: [any _Middleware<State>]) async {
@@ -74,20 +74,21 @@ private extension InternalStore {
         subject.send((state, old, animation))
     }
 
-    func reduce(_ action: InternalAction) async {
+    func reduce(_ action: InternalAction) {
         let unwrappedActions = action.unwrapActions()
-        let reduceResult = await reduceActionsInReducers(actions: unwrappedActions)
+        let reduceResult = reduceActionsInReducers(actions: unwrappedActions)
 
         if reduceResult.mutated {
             mutate(state: reduceResult.newState, animation: nil)
         }
 
-        for anyMiddleware in middlewares {
+        let middlewaresSnapshot = Array(self.middlewares)
+        for anyMiddleware in middlewaresSnapshot {
             let middleware = anyMiddleware.middleware
 
             switch middleware {
             case let middleware as any Middleware<State>:
-                await notify(middleware: middleware, actions: unwrappedActions, oldState: reduceResult.oldState, newState: reduceResult.newState)
+                notify(middleware: middleware, actions: unwrappedActions, oldState: reduceResult.oldState, newState: reduceResult.newState)
 
             default:
                 continue
@@ -95,7 +96,7 @@ private extension InternalStore {
         }
     }
 
-    func reduceActionsInReducers(actions: [InternalAction]) async -> (oldState: State, newState: State, mutated: Bool) {
+    func reduceActionsInReducers(actions: [InternalAction]) -> (oldState: State, newState: State, mutated: Bool) {
         var newState = self.state
         let oldState = self.state
         var mutated = false
@@ -106,7 +107,7 @@ private extension InternalStore {
             if let animation = unwrappedAction.animation {
                 if newState.reduce(unwrappedAction.value) {
                     mutate(state: newState, animation: animation)
-                    await notifyMiddlewares([unwrappedAction], oldState: oldState, newState: newState)
+                    notifyMiddlewares([unwrappedAction], oldState: oldState, newState: newState)
                 }
             } else {
                 if newState.reduce(unwrappedAction.value) {
@@ -155,13 +156,13 @@ private extension InternalStore {
 
 // MARK: Notify Methods
 private extension InternalStore {
-    func notifyMiddlewares(_ actions: [InternalAction], oldState: State, newState: State) async {
+    func notifyMiddlewares(_ actions: [InternalAction], oldState: State, newState: State) {
         for anyMiddleware in middlewares {
             let middleware = anyMiddleware.middleware
 
             switch middleware {
             case let middleware as any Middleware<State>:
-                await notify(middleware: middleware, actions: actions, oldState: oldState, newState: newState)
+                notify(middleware: middleware, actions: actions, oldState: oldState, newState: newState)
 
             default:
                 continue
@@ -169,7 +170,7 @@ private extension InternalStore {
         }
     }
 
-    func notify<M: MiddlewareProtocol>(middleware: M, actions: [InternalAction], oldState: State, newState: State) async where M.State == State {
+    func notify<M: MiddlewareProtocol>(middleware: M, actions: [InternalAction], oldState: State, newState: State) where M.State == State {
         let oldScope = middleware.scope(for: oldState)
         let newScope = middleware.scope(for: newState)
 
@@ -203,7 +204,7 @@ private extension InternalStore {
         }
     }
 
-    func initialNotify(middleware: some _Middleware<State>, state: State) async {
+    func initialNotify(middleware: some _Middleware<State>, state: State) {
         let status = middleware.status(for: state)
         guard status == .active else {
             return

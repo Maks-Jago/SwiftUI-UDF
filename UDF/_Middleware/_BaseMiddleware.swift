@@ -86,7 +86,10 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
 
     /// Cancels all ongoing tasks tracked in the `cancellations` dictionary.
     open func cancelAll() {
-        cancellations.keys.forEach { cancel(by: $0) }
+        let keys = Array(cancellations.keys)
+        for key in keys {
+            cancel(by: key)
+        }
     }
 
     // MARK: - Combine
