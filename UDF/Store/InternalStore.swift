@@ -35,6 +35,7 @@ actor InternalStore<State: AppReducer>: Store {
         for internalAction in internalActions {
             let storeOperation = StoreOperation(priority: .init(priority)) { [weak self] in
                 await self?.reduce(internalAction)
+                TestGroup.shared.leave()
             }
 
             if let delay = internalAction.delay {
@@ -177,6 +178,7 @@ private extension InternalStore {
         let oldStatus = middleware.status(for: oldState)
         let newStatus = middleware.status(for: newState)
 
+        TestGroup.shared.enter()
         middleware.queue.async {
             if newStatus == .suspend {
                 middleware.cancelAll()
@@ -185,6 +187,7 @@ private extension InternalStore {
                     middleware.reduce(action.value, for: newState)
                 }
             }
+            TestGroup.shared.leave()
         }
 
         var callObserve = false
@@ -198,8 +201,10 @@ private extension InternalStore {
         }
 
         if callObserve {
+            TestGroup.shared.enter()
             middleware.queue.async {
                 middleware.observe(state: newState)
+                TestGroup.shared.leave()
             }
         }
     }

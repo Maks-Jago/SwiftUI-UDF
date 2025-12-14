@@ -146,14 +146,7 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
             .handleEvents(receiveCancel: { [weak self] in
                 // Handle cancellation: Remove the task from cancellations and dispatch cancellation action
                 self?.cancellations[anyId] = nil
-                self?.store.dispatch(
-                    mapAction(Actions.DidCancelEffect(by: cancellation)),
-                    fileName: filePosition.fileName,
-                    functionName: filePosition.functionName,
-                    lineNumber: filePosition.lineNumber
-                )
-                // Signal Testing that this task has been cancelled
-                TestGroup.shared.leave()
+                self?.dispatch(action: mapAction(Actions.DidCancelEffect(by: cancellation)), filePosition: filePosition)
             })
             .sink(receiveCompletion: { [weak self] _ in
                 // Handle completion: Remove the task from cancellations and signal Testing
@@ -162,12 +155,9 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
             }, receiveValue: { [weak self] action in
                 // Handle receiving a value: Dispatch the action to the store
                 if self?.cancellations[anyId] != nil {
-                    self?.store.dispatch(
-                        mapAction(action),
-                        fileName: filePosition.fileName,
-                        functionName: filePosition.functionName,
-                        lineNumber: filePosition.lineNumber
-                    )
+                    self?.dispatch(action: mapAction(action), filePosition: filePosition)
+                } else {
+                    TestGroup.shared.leave()
                 }
             })
     }
@@ -256,12 +246,7 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
             .handleEvents(receiveCancel: { [weak self] in
                 // Handle cancellation: Remove the task from cancellations and dispatch cancellation action
                 self?.cancellations[anyId] = nil
-                self?.store.dispatch(
-                    mapAction(Actions.DidCancelEffect(by: cancellation)),
-                    fileName: filePosition.fileName,
-                    functionName: filePosition.functionName,
-                    lineNumber: filePosition.lineNumber
-                )
+                self?.dispatch(action: mapAction(Actions.DidCancelEffect(by: cancellation)), filePosition: filePosition)
             })
             .flatMap { [weak self] action in
                 guard let self else {
@@ -279,15 +264,13 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
             .sink(receiveCompletion: { [weak self] _ in
                 // Handle completion: Remove the task from cancellations
                 self?.cancellations[anyId] = nil
+                TestGroup.shared.leave()
             }, receiveValue: { [weak self] result in
                 // Dispatch the action if the cancellation token exists and the dispatch filter returns true
                 if self?.cancellations[anyId] != nil, dispatchFilter(result.state, result.action) {
-                    self?.store.dispatch(
-                        mapAction(result.action),
-                        fileName: filePosition.fileName,
-                        functionName: filePosition.functionName,
-                        lineNumber: filePosition.lineNumber
-                    )
+                    self?.dispatch(action: mapAction(result.action), filePosition: filePosition)
+                } else {
+                    TestGroup.shared.leave()
                 }
             })
     }
@@ -337,25 +320,18 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
             .handleEvents(receiveCancel: { [weak self] in
                 // Handle cancellation: Remove the task from cancellations and dispatch cancellation action
                 self?.cancellations[anyId] = nil
-                self?.store.dispatch(
-                    mapAction(Actions.DidCancelEffect(by: cancellation)),
-                    fileName: filePosition.fileName,
-                    functionName: filePosition.functionName,
-                    lineNumber: filePosition.lineNumber
-                )
+                self?.dispatch(action: mapAction(Actions.DidCancelEffect(by: cancellation)), filePosition: filePosition )
             })
             .sink(receiveCompletion: { [weak self] _ in
                 // Handle completion: Remove the task from cancellations
                 self?.cancellations[anyId] = nil
+                TestGroup.shared.leave()
             }, receiveValue: { [weak self] action in
                 // Dispatch the mapped action to the store if the effect is still active
                 if self?.cancellations[anyId] != nil {
-                    self?.store.dispatch(
-                        mapAction(action),
-                        fileName: filePosition.fileName,
-                        functionName: filePosition.functionName,
-                        lineNumber: filePosition.lineNumber
-                    )
+                    self?.dispatch(action: mapAction(action), filePosition: filePosition)
+                } else {
+                    TestGroup.shared.leave()
                 }
             })
     }
