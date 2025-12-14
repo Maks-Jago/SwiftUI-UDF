@@ -469,8 +469,7 @@ private extension Actions {
 
     /// Tests that Middleware correctly handles dynamic status changes
     /// store.state.testForm.title == 'Status: (message3)' failed in github actions
-    @Test
-    func middlewareStatusChanges() async {
+    @Test func middlewareStatusChanges() async {
         // Given: A middleware that changes status based on state conditions
         class StateBasedStatusMiddleware: Middleware<AppState>, @unchecked Sendable {
             struct Environment: Sendable {}

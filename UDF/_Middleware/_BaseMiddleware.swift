@@ -151,7 +151,6 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
             .sink(receiveCompletion: { [weak self] _ in
                 // Handle completion: Remove the task from cancellations and signal Testing
                 self?.cancellations[anyId] = nil
-                TestGroup.shared.leave()
             }, receiveValue: { [weak self] action in
                 // Handle receiving a value: Dispatch the action to the store
                 if self?.cancellations[anyId] != nil {
@@ -240,6 +239,7 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
         let filePosition = fileFunctionLine(effect, fileName: fileName, functionName: functionName, lineNumber: lineNumber)
 
         // Subscribe to the effect and store the cancellation token
+        TestGroup.shared.enter()
         cancellations[anyId] = effect
             .subscribe(on: queue)
             .receive(on: queue)
@@ -264,7 +264,6 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
             .sink(receiveCompletion: { [weak self] _ in
                 // Handle completion: Remove the task from cancellations
                 self?.cancellations[anyId] = nil
-                TestGroup.shared.leave()
             }, receiveValue: { [weak self] result in
                 // Dispatch the action if the cancellation token exists and the dispatch filter returns true
                 if self?.cancellations[anyId] != nil, dispatchFilter(result.state, result.action) {
@@ -313,6 +312,7 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
         // Capture file name, function name, and line number for debugging and logging purposes
         let filePosition = fileFunctionLine(effect, fileName: fileName, functionName: functionName, lineNumber: lineNumber)
 
+        TestGroup.shared.enter()
         // Subscribe to the effect and store the cancellation token
         cancellations[anyId] = effect
             .subscribe(on: queue) // Subscribe to the effect on the specified queue
@@ -325,7 +325,6 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
             .sink(receiveCompletion: { [weak self] _ in
                 // Handle completion: Remove the task from cancellations
                 self?.cancellations[anyId] = nil
-                TestGroup.shared.leave()
             }, receiveValue: { [weak self] action in
                 // Dispatch the mapped action to the store if the effect is still active
                 if self?.cancellations[anyId] != nil {
@@ -385,7 +384,7 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
     }
 
     private func dispatch(action: any Action, filePosition: FileFunctionLineDescription) {
-        queue.sync { [weak self] in
+        queue.async { [weak self] in
             self?.store.dispatch(
                 action,
                 fileName: filePosition.fileName,
@@ -471,3 +470,4 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
         cancellations[anyCancellationId] = task
     }
 }
+

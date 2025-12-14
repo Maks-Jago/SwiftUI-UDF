@@ -29,13 +29,12 @@ actor InternalStore<State: AppReducer>: Store {
     }
 
     nonisolated func dispatch(_ action: some Action, priority: ActionPriority, fileName: String, functionName: String, lineNumber: Int) {
-        TestGroup.shared.enter()
         let internalActions = prepareActionsToReduce(action, fileName: fileName, functionName: functionName, lineNumber: lineNumber)
 
         for internalAction in internalActions {
+            TestGroup.shared.enter()
             let storeOperation = StoreOperation(priority: .init(priority)) { [weak self] in
                 await self?.reduce(internalAction)
-                TestGroup.shared.leave()
             }
 
             if let delay = internalAction.delay {
