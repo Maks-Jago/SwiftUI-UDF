@@ -30,6 +30,7 @@ public final class TestGroup {
     }
 
     public func wait(
+        additionalSleepFor: TimeInterval = 0,
         fileName: String = #file,
         functionName: String = #function,
         lineNumber: Int = #line
@@ -45,6 +46,9 @@ public final class TestGroup {
                 if DispatchTime.now() >= deadline { break }
                 // Sleep briefly to avoid busy-waiting; this is test-only code
                 Thread.sleep(forTimeInterval: 0.001)
+            }
+            if additionalSleepFor > 0 {
+                Thread.sleep(forTimeInterval: additionalSleepFor)
             }
         }
     }

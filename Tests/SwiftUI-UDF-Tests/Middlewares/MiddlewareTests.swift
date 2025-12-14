@@ -520,7 +520,8 @@ private extension Actions {
         await store.dispatch(Actions.SendMessage(message: message1, id: TestFlow.id))
 
         // Then: Both reduce and observe should work
-        await store.wait()
+        await store.wait(additionalSleepFor: 0.2)
+
         var success = await store.state.testForm.title == "Status: \(message1)"
         #expect(success)
         
@@ -556,7 +557,8 @@ private extension Actions {
         await store.dispatch(Actions.SendMessage(message: message3, id: TestFlow.id))
 
         // Then: Both reduce and observe should work again
-        await store.wait()
+        await store.wait(additionalSleepFor: 0.2)
+
         success = await store.state.testForm.title == "Status: \(message3)"
 
         #expect(success)

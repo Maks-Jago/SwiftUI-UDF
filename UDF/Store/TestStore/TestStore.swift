@@ -61,8 +61,8 @@ public final class TestStore<State: AppReducer> {
         await store.dispatch(InternalAction(action, fileName: fileName, functionName: functionName, lineNumber: lineNumber))
     }
 
-    public func wait() {
-        TestGroup.shared.wait()
+    public func wait(additionalSleepFor: TimeInterval = 0) {
+        TestGroup.shared.wait(additionalSleepFor: additionalSleepFor)
     }
 }
 
