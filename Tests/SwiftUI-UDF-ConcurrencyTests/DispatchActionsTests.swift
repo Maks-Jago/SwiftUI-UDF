@@ -19,13 +19,13 @@ import UDFSwiftTesting
     }
 
     @Test func updateFormFieldDispatch() async {
-        let store = InternalStore(initial: AppState(), loggers: [])
+        let store = await TestStore(initial: AppState())
         let formTitle = await store.state.plainForm.title
         #expect(formTitle == "")
 
         let newFormTitle = "new form title"
-        store.dispatch(Actions.UpdateFormField(keyPath: \PlainForm.title, value: newFormTitle))
-        let success = await waitForCondition { await store.state.plainForm.title == newFormTitle}
+        await store.dispatch(Actions.UpdateFormField(keyPath: \PlainForm.title, value: newFormTitle))
+        let success = await store.state.plainForm.title == newFormTitle
         #expect(success)
     }
 

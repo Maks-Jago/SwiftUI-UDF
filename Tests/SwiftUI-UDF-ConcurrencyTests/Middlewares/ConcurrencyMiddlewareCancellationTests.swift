@@ -55,11 +55,13 @@ import Foundation
         await store.subscribe(ObservableMiddlewareToCancel.self, environment: ObservableMiddlewareToCancel.Environment(loadItems: { [] }))
 
         await store.dispatch(Actions.Loading())
-        var success = await waitForCondition { await store.state.middlewareFlow == .loading }
+        var success = await store.state.middlewareFlow == .loading
         #expect(success)
 
         await store.dispatch(Actions.CancelLoading())
-        success = await waitForCondition { await store.state.middlewareFlow == .didCancel }
+        await store.wait(additionalSleepFor: 0.1)
+
+        success = await store.state.middlewareFlow == .didCancel
         #expect(success)
     }
 }
@@ -113,7 +115,7 @@ private extension ConcurrencyMiddlewareCancellationTests {
 
         struct SomeEffect: ConcurrencyEffect {
             func task(flowId: AnyHashable) async throws -> any UDF.Action {
-                await sleep(for: 1)
+                await sleep(for: 0.2)
 
                 try Task.checkCancellation()
 

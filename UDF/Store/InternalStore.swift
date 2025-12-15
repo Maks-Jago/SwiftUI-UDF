@@ -26,14 +26,17 @@ actor InternalStore<State: AppReducer>: Store {
 
     func dispatch(_ internalAction: InternalAction) {
         self.reduce(internalAction)
+        TestGroup.instance(for: self).leave()
     }
 
     nonisolated func dispatch(_ action: some Action, priority: ActionPriority, fileName: String, functionName: String, lineNumber: Int) {
         let internalActions = prepareActionsToReduce(action, fileName: fileName, functionName: functionName, lineNumber: lineNumber)
 
         for internalAction in internalActions {
-            TestGroup.shared.enter()
-            let storeOperation = StoreOperation(priority: .init(priority)) { [weak self] in
+            let testGroupKey = TestGroup.enter(for: self)
+            let storeOperation = StoreOperation(priority: .init(priority)) {
+                TestGroup.instanceFor(key: testGroupKey).leave()
+            } closure: { [weak self] in
                 await self?.reduce(internalAction)
             }
 
@@ -177,7 +180,7 @@ private extension InternalStore {
         let oldStatus = middleware.status(for: oldState)
         let newStatus = middleware.status(for: newState)
 
-        TestGroup.shared.enter()
+        let testGroupKey = TestGroup.enter(for: self)
         middleware.queue.async {
             if newStatus == .suspend {
                 middleware.cancelAll()
@@ -186,7 +189,7 @@ private extension InternalStore {
                     middleware.reduce(action.value, for: newState)
                 }
             }
-            TestGroup.shared.leave()
+            TestGroup.instanceFor(key: testGroupKey).leave()
         }
 
         var callObserve = false
@@ -200,10 +203,10 @@ private extension InternalStore {
         }
 
         if callObserve {
-            TestGroup.shared.enter()
+            TestGroup.instanceFor(key: testGroupKey).enter()
             middleware.queue.async {
                 middleware.observe(state: newState)
-                TestGroup.shared.leave()
+                TestGroup.instanceFor(key: testGroupKey).leave()
             }
         }
     }

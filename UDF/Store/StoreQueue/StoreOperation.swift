@@ -15,12 +15,18 @@ final class StoreOperation: AsynchronousOperation, @unchecked Sendable {
     var priority: Priority
     var closure: () async -> Void
     var task: Task<Void, Never>? = nil
+    var deinitBlock: (() -> Void)?
 
-    init(priority: Priority, closure: @escaping () async -> Void) {
+    init(priority: Priority, deiinitBlock: (() -> Void)?, closure: @escaping () async -> Void) {
         self.priority = priority
         self.closure = closure
+        self.deinitBlock = deiinitBlock
         super.init()
         self.queuePriority = priority.queuePriority
+    }
+
+    deinit {
+        deinitBlock?()
     }
 
     override func main() {
@@ -33,7 +39,7 @@ final class StoreOperation: AsynchronousOperation, @unchecked Sendable {
     override func finish() {
         self.task = nil
         super.finish()
-        TestGroup.shared.leave()
+//        deinitBlock?()
     }
 
     override func cancel() {
