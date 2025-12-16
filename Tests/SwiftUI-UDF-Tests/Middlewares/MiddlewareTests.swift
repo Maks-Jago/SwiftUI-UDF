@@ -623,6 +623,7 @@ private extension Actions {
 
         // And: The middleware is immediately suspended (which should cancel ongoing effects)
         await store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.description, value: "cancel all"))
+        await store.wait()
 
         // Then: The delayed effect should have been cancelled before completion
         let success = await store.state.testForm.title.isEmpty

@@ -39,7 +39,6 @@ final class StoreOperation: AsynchronousOperation, @unchecked Sendable {
     override func finish() {
         self.task = nil
         super.finish()
-//        deinitBlock?()
     }
 
     override func cancel() {

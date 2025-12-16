@@ -5,7 +5,7 @@ import UDFSwiftTesting
 import Testing
 import Foundation
 
-@Suite struct MiddlewareCancellationTests {
+@Suite(.serialized) struct MiddlewareCancellationTests {
     struct AppState: AppReducer {
         var middlewareFlow = MiddlewareFlow()
         var runForm = RunForm()
@@ -93,15 +93,11 @@ import Foundation
         let store = await TestStore(initial: AppState())
         await store.subscribe(ReducibleMiddlewareToCancel.self, environment: ReducibleMiddlewareToCancel.Environment())
         await store.dispatch(Actions.Loading())
-        await store.wait()
-
-        var success = await store.state.middlewareFlow == .loading
+        var success = await waitForCondition { await store.state.middlewareFlow == .loading }
         #expect(success)
 
         await store.dispatch(Actions.CancelLoading())
-        await store.wait(additionalSleepFor: 0.1)
-
-        success = await store.state.middlewareFlow == .none
+        success = await waitForCondition { await store.state.middlewareFlow == .none }
         #expect(success)
     }
 }
