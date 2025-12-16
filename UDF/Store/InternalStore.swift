@@ -14,8 +14,9 @@ actor InternalStore<State: AppReducer>: Store {
 
     nonisolated let subject = SendableSubject<(State, State, Animation?), Never>()
 
-    var middlewares: OrderedSet<AnyMiddleware> = []
+    private(set) var middlewares: OrderedSet<AnyMiddleware> = []
     private let storeQueue: StoreQueue = .init()
+    private let delayQueue: DelayQueue = .init()
     private let logDistributor: LogDistributor
 
     init(initial state: State, loggers: [ActionLogger]) {
@@ -23,23 +24,32 @@ actor InternalStore<State: AppReducer>: Store {
         self.logDistributor = LogDistributor(loggers: loggers)
     }
 
-    func dispatch(_ internalAction: InternalAction) async {
-        await self.reduce(internalAction)
+    func dispatch(_ internalAction: InternalAction) {
+        self.reduce(internalAction)
+        TestGroup.instance(for: self).leave()
     }
 
     nonisolated func dispatch(_ action: some Action, priority: ActionPriority, fileName: String, functionName: String, lineNumber: Int) {
-        TestGroup.shared.enter()
         let internalActions = prepareActionsToReduce(action, fileName: fileName, functionName: functionName, lineNumber: lineNumber)
 
         for internalAction in internalActions {
-            let storeOperation = StoreOperation(priority: .init(priority)) { [weak self] in
+            let testGroupKey = TestGroup.enter(for: self)
+            let storeOperation = StoreOperation(priority: .init(priority)) {
+                TestGroup.instanceFor(key: testGroupKey).leave()
+            } closure: { [weak self] in
                 await self?.reduce(internalAction)
             }
 
             if let delay = internalAction.delay {
                 let delayedOperation = DelayedOperation(delay: delay, priority: .init(priority))
+                // Keep dependency between operations
                 storeOperation.addDependency(delayedOperation)
-                storeQueue.addOperations([delayedOperation, storeOperation], waitUntilFinished: false)
+
+                // Enqueue delay on a parallel delay queue
+                delayQueue.addOperation(delayedOperation)
+
+                // Enqueue the actual mutation on a strictly serial store queue
+                storeQueue.addOperation(storeOperation)
             } else {
                 storeQueue.addOperation(storeOperation)
             }
@@ -49,7 +59,7 @@ actor InternalStore<State: AppReducer>: Store {
     func subscribe(_ middleware: some _Middleware<State>) async {
         middlewares.append(AnyMiddleware(middleware))
 
-        await initialNotify(middleware: middleware, state: Box(self.state))
+        initialNotify(middleware: middleware, state: self.state)
     }
 
     func subscribe(_ middlewares: [any _Middleware<State>]) async {
@@ -61,37 +71,49 @@ actor InternalStore<State: AppReducer>: Store {
 
 // MARK: Help Methods
 private extension InternalStore {
-    func mutate(state: Box<State>, animation: Animation?) {
-        subject.send((state.value, self.state, animation))
-        self.state = state.value
+    func mutate(state: State, animation: Animation?) {
+        let old = self.state
+        self.state = state
+        subject.send((state, old, animation))
     }
 
-    func reduce(_ action: InternalAction) async {
+    func reduce(_ action: InternalAction) {
         let unwrappedActions = action.unwrapActions()
-        let reduceResult = await reduceActionsInReducers(actions: unwrappedActions)
+        let reduceResult = reduceActionsInReducers(actions: unwrappedActions)
 
         if reduceResult.mutated {
             mutate(state: reduceResult.newState, animation: nil)
         }
 
-        await notifyMiddlewares(unwrappedActions, oldState: reduceResult.oldState, newState: reduceResult.newState)
+        let middlewaresSnapshot = Array(self.middlewares)
+        for anyMiddleware in middlewaresSnapshot {
+            let middleware = anyMiddleware.middleware
+
+            switch middleware {
+            case let middleware as any Middleware<State>:
+                notify(middleware: middleware, actions: unwrappedActions, oldState: reduceResult.oldState, newState: reduceResult.newState)
+
+            default:
+                continue
+            }
+        }
     }
 
-    func reduceActionsInReducers(actions: [InternalAction]) async -> (oldState: Box<State>, newState: Box<State>, mutated: Bool) {
-        var newState = Box(self.state)
-        let oldState = Box(self.state)
+    func reduceActionsInReducers(actions: [InternalAction]) -> (oldState: State, newState: State, mutated: Bool) {
+        var newState = self.state
+        let oldState = self.state
         var mutated = false
 
         for unwrappedAction in actions {
             logDistributor.distribute(action: unwrappedAction)
 
             if let animation = unwrappedAction.animation {
-                if newState.value.reduce(unwrappedAction.value) {
+                if newState.reduce(unwrappedAction.value) {
                     mutate(state: newState, animation: animation)
-                    await notifyMiddlewares([unwrappedAction], oldState: oldState, newState: newState)
+                    notifyMiddlewares([unwrappedAction], oldState: oldState, newState: newState)
                 }
             } else {
-                if newState.value.reduce(unwrappedAction.value) {
+                if newState.reduce(unwrappedAction.value) {
                     mutated = true
                 }
             }
@@ -137,39 +159,41 @@ private extension InternalStore {
 
 // MARK: Notify Methods
 private extension InternalStore {
-    func notifyMiddlewares(_ actions: [InternalAction], oldState: Box<State>, newState: Box<State>) async {
+    func notifyMiddlewares(_ actions: [InternalAction], oldState: State, newState: State) {
         for anyMiddleware in middlewares {
             let middleware = anyMiddleware.middleware
-            
+
             switch middleware {
             case let middleware as any Middleware<State>:
-                await notify(middleware: middleware, actions: actions, oldState: oldState, newState: newState)
+                notify(middleware: middleware, actions: actions, oldState: oldState, newState: newState)
 
             default:
                 continue
             }
         }
     }
-    
-    func notify<M: MiddlewareProtocol>(middleware: M, actions: [InternalAction], oldState: Box<State>, newState: Box<State>) async where M.State == State {
-        let status = middleware.status(for: newState.value)
-        await safetyCall(queue: middleware.queue) {
-            if status == .suspend {
+
+    func notify<M: MiddlewareProtocol>(middleware: M, actions: [InternalAction], oldState: State, newState: State) where M.State == State {
+        let oldScope = middleware.scope(for: oldState)
+        let newScope = middleware.scope(for: newState)
+
+        let oldStatus = middleware.status(for: oldState)
+        let newStatus = middleware.status(for: newState)
+
+        let testGroupKey = TestGroup.enter(for: self)
+        middleware.queue.async {
+            if newStatus == .suspend {
                 middleware.cancelAll()
             } else {
                 for action in actions {
-                    middleware.reduce(action.value, for: newState.value)
+                    middleware.reduce(action.value, for: newState)
                 }
             }
+            TestGroup.instanceFor(key: testGroupKey).leave()
         }
-        
-        let oldScope = middleware.scope(for: oldState.value)
-        let newScope = middleware.scope(for: newState.value)
-        let oldStatus = middleware.status(for: oldState.value)
-        let newStatus = middleware.status(for: newState.value)
-        
+
         var callObserve = false
-        
+
         if oldStatus == .suspend, newStatus != oldStatus {
             callObserve = true
         } else if oldStatus != .suspend, newStatus == .suspend {
@@ -177,83 +201,26 @@ private extension InternalStore {
         } else if newStatus == .active {
             callObserve = !oldScope.isEqual(newScope)
         }
-        
+
         if callObserve {
-            let newStateValue = newState.value
-            await safetyCall(queue: middleware.queue) {
-                middleware.observe(state: newStateValue)
+            TestGroup.instanceFor(key: testGroupKey).enter()
+            middleware.queue.async {
+                middleware.observe(state: newState)
+                TestGroup.instanceFor(key: testGroupKey).leave()
             }
         }
     }
 
-    func initialNotify(middleware: some _Middleware<State>, state: Box<State>) async {
-        let status = middleware.status(for: state.value)
+    func initialNotify(middleware: some _Middleware<State>, state: State) {
+        let status = middleware.status(for: state)
         guard status == .active else {
             return
         }
-        
-        let stateValue = state.value
-        await safetyCall(queue: middleware.queue) {
-            if let unifiedMiddleware = middleware as? any Middleware<State> {
-                unifiedMiddleware.observe(state: stateValue)
-            }
-        }
-    }
-}
 
-private func safetyCall(queue: DispatchQueue, block: @Sendable @escaping () -> Void) async {
-    await withUnsafeContinuation { continuation in
-        if queue == .main {
-            queue.async {
-                block()
-                continuation.resume()
+        if let unifiedMiddleware = middleware as? any Middleware<State> {
+            middleware.queue.async {
+                unifiedMiddleware.observe(state: state)
             }
-        } else {
-            queue.sync {
-                block()
-                continuation.resume()
-            }
-        }
-    }
-}
-
-final class Ref<T: Sendable>: @unchecked Sendable {
-    private let lock = NSLock()
-    private var _value: T
-    
-    var value: T {
-        get {
-            lock.lock()
-            defer { lock.unlock() }
-            return _value
-        }
-        set {
-            lock.lock()
-            defer { lock.unlock() }
-            _value = newValue
-        }
-    }
-    
-    init(value: T) {
-        self._value = value
-    }
-}
-
-struct Box<T: Sendable>: Sendable {
-    private var ref: Ref<T>
-    
-    init(_ value: T) {
-        ref = Ref(value: value)
-    }
-    
-    var value: T {
-        get { ref.value }
-        set {
-            guard isKnownUniquelyReferenced(&ref) else {
-                ref = Ref(value: newValue)
-                return
-            }
-            ref.value = newValue
         }
     }
 }

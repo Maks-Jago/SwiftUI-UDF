@@ -21,11 +21,15 @@ private extension Actions {
         #expect(await store.state.testForm.type == nil)
 
         await store.dispatch(Actions.TestMiddleware(type: .observable))
-        var success = await waitForCondition { await store.state.testForm.type == .observable }
+        await store.wait()
+
+        var success = await store.state.testForm.type == .observable
         #expect(success)
 
         await store.dispatch(Actions.TestMiddleware(type: .reducible))
-        success = await waitForCondition { await store.state.testForm.type == .reducible }
+        await store.wait()
+
+        success = await store.state.testForm.type == .reducible
         #expect(success)
     }
 
@@ -34,17 +38,20 @@ private extension Actions {
         await store.subscribe(EnvironmentMiddleware.self)
 
         await store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.type, value: .testEnvironment))
-        let success = await waitForCondition { await store.state.testForm.type == .testEnvironment }
+        await store.wait()
+
+        let success = await store.state.testForm.type == .testEnvironment
         #expect(success)
     }
 
     @Test func liveEnvironmentMiddlewareSubscription() async {
         let store = await TestStore(initial: AppState())
-        setLiveEnvironment()
         await store.subscribe(EnvironmentMiddleware.self)
 
         await store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.type, value: .liveEnvironment))
-        let success = await waitForCondition { await store.state.testForm.type == .liveEnvironment }
+        await store.wait()
+
+        let success = await store.state.testForm.type == .liveEnvironment
         #expect(success)
     }
 }
@@ -136,17 +143,11 @@ extension MiddlewareSubscriptionTests {
 
     class EnvironmentMiddleware: Middleware<AppState>, @unchecked Sendable {
         static func buildLiveEnvironment(for store: some Store<AppState>) -> Environment {
-            store.dispatch(
-                Actions.UpdateFormField(keyPath: \TestForm.type, value: .liveEnvironment)
-            )
-            return Environment()
+            Environment()
         }
 
         static func buildTestEnvironment(for store: some Store<AppState>) -> Environment {
-            store.dispatch(
-                Actions.UpdateFormField(keyPath: \TestForm.type, value: .testEnvironment)
-            )
-            return Environment()
+            Environment()
         }
 
         var environment: Environment!
@@ -155,7 +156,8 @@ extension MiddlewareSubscriptionTests {
 
         func reduce(_ action: some Action, for state: AppState) {
             switch action {
-            case let action as Actions.TestMiddleware where action.type == .testEnvironment:
+            case let action as Actions.TestMiddleware:
+                store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.type, value: nil))
                 execute(
                     TestMiddlewareEffect(type: action.type)
                         .delay(duration: 0.2, queue: queue),
@@ -167,16 +169,4 @@ extension MiddlewareSubscriptionTests {
             }
         }
     }
-}
-
-private extension MiddlewareSubscriptionTests {
-    private func setLiveEnvironment() {
-        let original = class_getClassMethod(ProcessInfo.self, #selector(getter: ProcessInfo.processInfo))!
-        let swizzled = class_getClassMethod(ProcessInfo.self, #selector(ProcessInfo.isInTestEnvironment))!
-        method_exchangeImplementations(original, swizzled)
-    }
-}
-
-private extension ProcessInfo {
-    @objc class func isInTestEnvironment() -> Bool { false }
 }

@@ -17,9 +17,20 @@ final class StoreQueue: OperationQueue, @unchecked Sendable {
     /// Initializes a new `StoreQueue` with a maximum concurrency of one and a user-interactive quality of service.
     override init() {
         super.init()
-        maxConcurrentOperationCount = 2
+        // Strictly serial to guarantee single mutation at a time
+        maxConcurrentOperationCount = 1
         name = "StoreQueue"
         qualityOfService = .userInteractive
+    }
+}
+
+/// A parallel queue dedicated to running delayed operations
+/// Keeping delays off the StoreQueue prevents blocking the mutation pipeline.
+final class DelayQueue: OperationQueue, @unchecked Sendable {
+    override init() {
+        super.init()
+        name = "DelayQueue"
+        qualityOfService = .utility
     }
 }
 

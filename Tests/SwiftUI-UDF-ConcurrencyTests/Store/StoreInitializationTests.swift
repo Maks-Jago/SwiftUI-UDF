@@ -99,7 +99,7 @@ import UDFSwiftTesting
 
         await store.subscribe(middleware)
 
-        let success = await waitForCondition { await store.middlewares.count != 0 }
+        let success = await store.middlewares.count != 0
         #expect(success)
     }
 
@@ -121,7 +121,7 @@ import UDFSwiftTesting
 
         await store.subscribe(middleware)
 
-        let success = await waitForCondition { await store.middlewares.count != 0 }
+        let success = await store.middlewares.count != 0
         #expect(success)
     }
 }

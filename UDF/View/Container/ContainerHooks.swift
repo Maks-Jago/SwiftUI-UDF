@@ -37,8 +37,7 @@ import SwiftUI
 ///
 /// ## Methods:
 /// - `createHooks()`: Builds and stores hooks based on the provided closure.
-/// - `checkHooks(oldState:newState:)`: Checks the conditions of each hook against the old and new state, triggering and removing hooks as
-/// needed.
+/// - `checkHooks(oldState:newState:)`: Checks the conditions of each hook against the old and new state, triggering the hook if necessary.
 /// - `removeHook(by:)`: Removes a hook with a specific identifier.
 /// - `removeAllHooks()`: Removes all hooks and cancels the state subscription.
 /// - `deinit`: Cleans up by removing the state subscription when the `ContainerHooks` instance is deallocated.
@@ -65,7 +64,7 @@ final class ContainerHooks<State: AppReducer>: @unchecked Sendable {
         self.buildHooks = hooks
         self.subscriptionKey = store.add { [weak self] oldState, newState, _ in
             Task.detached { @MainActor in
-                self?.checkHooks(oldState: .init(oldState), newState: .init(newState))
+                self?.checkHooks(oldState: oldState, newState: newState)
             }
         }
     }
@@ -83,14 +82,14 @@ final class ContainerHooks<State: AppReducer>: @unchecked Sendable {
     /// Checks each hook's condition against the old and new state, triggering the hook if necessary.
     ///
     /// - Parameters:
-    ///   - oldState: The previous state wrapped in a `Box`.
-    ///   - newState: The current state wrapped in a `Box`.
+    ///   - oldState: The previous state.
+    ///   - newState: The current state.
     @MainActor
-    private func checkHooks(oldState: Box<State>, newState: Box<State>) {
+    private func checkHooks(oldState: State, newState: State) {
         var hooksToRemove: [AnyHashable] = []
 
         for (key, hook) in hooks {
-            if hook.condition(newState.value), !hook.condition(oldState.value), let store {
+            if hook.condition(newState), !hook.condition(oldState), let store {
                 hook.block(store)
 
                 switch hook.type {
@@ -111,11 +110,11 @@ final class ContainerHooks<State: AppReducer>: @unchecked Sendable {
     @MainActor
     private func checkInitialHooks() {
         guard let store else { return }
-        let currentState = Box(store.state)
+        let currentState = store.state
         var hooksToRemove: [AnyHashable] = []
 
         for (key, hook) in hooks {
-            if hook.condition(currentState.value) {
+            if hook.condition(currentState) {
                 hook.block(store)
 
                 switch hook.type {
@@ -139,18 +138,18 @@ final class ContainerHooks<State: AppReducer>: @unchecked Sendable {
         hooks.removeValue(forKey: AnyHashable(id))
 
         if hooks.isEmpty {
-            store?.removePublisher(forKey: subscriptionKey)
+            store?.removeSubscriber(forKey: subscriptionKey)
         }
     }
 
     /// Removes all hooks and cancels the state subscription.
     func removeAllHooks() {
         hooks.removeAll()
-        store?.removePublisher(forKey: subscriptionKey)
+        store?.removeSubscriber(forKey: subscriptionKey)
     }
 
     /// Cleans up by removing the state subscription when the `ContainerHooks` instance is deallocated.
     deinit {
-        store?.removePublisher(forKey: subscriptionKey)
+        store?.removeSubscriber(forKey: subscriptionKey)
     }
 }

@@ -142,7 +142,11 @@ public final class EnvironmentStore<State: AppReducer>: @unchecked Sendable {
     private func sinkSubject() {
         self.cancelation = store.subject.publisher
             .receive(on: DispatchQueue.main)
-            .sink { [unowned self] newState, oldState, animation in
+            .sink { [weak self] newState, oldState, animation in
+                guard let self else {
+                    return
+                }
+
                 self.state = newState
                 let coordinator = subscribersCoordinator
                 
@@ -178,7 +182,7 @@ extension EnvironmentStore {
     /// Removes a state subscriber using its unique key.
     ///
     /// - Parameter key: The unique key of the subscriber to remove.
-    func removePublisher(forKey key: String) {
+    func removeSubscriber(forKey key: String) {
         let coordinator = subscribersCoordinator
         
         Task(priority: .high) {

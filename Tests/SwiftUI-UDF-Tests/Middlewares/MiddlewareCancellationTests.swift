@@ -5,7 +5,7 @@ import UDFSwiftTesting
 import Testing
 import Foundation
 
-@Suite struct MiddlewareCancellationTests {
+@Suite(.serialized) struct MiddlewareCancellationTests {
     struct AppState: AppReducer {
         var middlewareFlow = MiddlewareFlow()
         var runForm = RunForm()
@@ -61,11 +61,13 @@ import Foundation
         let store = await TestStore(initial: AppState())
         await store.subscribe(ObservableMiddlewareToCancel.self, environment: ())
         await store.dispatch(Actions.Loading())
-        var success = await waitForCondition { await store.state.middlewareFlow == .loading }
+        var success = await store.state.middlewareFlow == .loading
         #expect(success)
 
         await store.dispatch(Actions.CancelLoading())
-        success = await waitForCondition { await store.state.middlewareFlow == .none }
+        await store.wait()
+
+        success = await store.state.middlewareFlow == .none
         #expect(success)
     }
 
@@ -73,14 +75,17 @@ import Foundation
         let store = await TestStore(initial: AppState())
         await store.subscribe(ObservableRunMiddlewareToCancel.self, environment: ObservableRunMiddlewareToCancel.Environment())
         await store.dispatch(Actions.Loading())
-        var success = await waitForCondition { await store.state.middlewareFlow == .loading }
+        var success = await store.state.middlewareFlow == .loading
         #expect(success)
 
-        success = await waitForCondition { await store.state.runForm.messagesCount > 0 }
+        await store.wait(additionalSleepFor: 1.1)
+        success = await store.state.runForm.messagesCount > 0
         #expect(success)
 
         await store.dispatch(Actions.CancelLoading())
-        success = await waitForCondition { await store.state.middlewareFlow == .none }
+        await store.wait(additionalSleepFor: 0.1)
+
+        success = await store.state.middlewareFlow == .none
         #expect(success)
     }
 

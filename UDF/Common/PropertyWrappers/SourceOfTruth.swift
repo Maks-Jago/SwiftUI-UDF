@@ -22,7 +22,7 @@ public final class SourceOfTruth<AppState: AppReducer> {
     public var wrappedValue: AppState
 
     /// A reference to the store that holds and manages the application state.
-    private unowned var store: Optional<any Store<AppState>>
+    private weak var store: Optional<any Store<AppState>>
 
     /// Initializes the `SourceOfTruth` with the given state and store.
     /// - Parameters:
@@ -43,8 +43,8 @@ public final class SourceOfTruth<AppState: AppReducer> {
         C: BindableContainer,
         R: Reducible
     >(dynamicMember keyPath: WritableKeyPath<AppState, BindableReducer<C, R>>) -> BindableReducerReference<AppState, C, R> {
-        BindableReducerReference(reducer: wrappedValue[keyPath: keyPath]) { [unowned store] action in
-            store?.dispatch(action, priority: .userInteractive)
+        BindableReducerReference(reducer: wrappedValue[keyPath: keyPath]) { [weak self] action in
+            self?.store?.dispatch(action, priority: .userInteractive)
         }
     }
 
@@ -52,8 +52,8 @@ public final class SourceOfTruth<AppState: AppReducer> {
     /// - Parameter keyPath: A key path to a `Reducer` in the application state.
     /// - Returns: A `ReducerReference` to the specified `Reducer`.
     public subscript<R: Reducible>(dynamicMember keyPath: KeyPath<AppState, R>) -> ReducerReference<AppState, R> {
-        ReducerReference(reducer: wrappedValue[keyPath: keyPath]) { [unowned store] action in
-            store?.dispatch(action, priority: .userInteractive)
+        ReducerReference(reducer: wrappedValue[keyPath: keyPath]) { [weak self] action in
+            self?.store?.dispatch(action, priority: .userInteractive)
         }
     }
 

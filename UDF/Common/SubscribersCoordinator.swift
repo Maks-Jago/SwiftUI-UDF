@@ -50,7 +50,7 @@ actor SubscribersCoordinator<T> {
     /// Retrieves all the subscribers currently stored in the coordinator.
     ///
     /// - Returns: A collection of all subscribers.
-    func allSubscibers() -> Dictionary<String, T>.Values {
-        subscribers.values
+    func allSubscibers() -> [Dictionary<String, T>.Value] {
+        Array(subscribers.values)
     }
 }

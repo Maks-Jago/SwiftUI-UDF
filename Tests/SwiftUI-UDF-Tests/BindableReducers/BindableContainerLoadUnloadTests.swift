@@ -25,11 +25,11 @@ import Testing
         #expect(await store.state.itemsForm.reducers.count == 0)
 
         await store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 1)))
-        var success = await waitForCondition { await store.state.itemsForm.reducers.count == 1 }
+        var success = await store.state.itemsForm.reducers.count == 1
         #expect(success)
 
         await store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 2)))
-        success = await waitForCondition { await store.state.itemsForm.reducers.count == 2 }
+        success = await store.state.itemsForm.reducers.count == 2
         #expect(success)
     }
 
@@ -38,11 +38,11 @@ import Testing
         #expect(await store.state.itemsForm.reducers.count == 0)
 
         await store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 1)))
-        var success = await waitForCondition { await store.state.itemsForm.reducers.count == 1 }
+        var success = await store.state.itemsForm.reducers.count == 1
         #expect(success)
 
         await store.dispatch(Actions._OnContainerDidUnLoad(containerType: ItemsContainer.self, id: .init(value: 1)))
-        success = await waitForCondition { await store.state.itemsForm.reducers.count == 0 }
+        success = await store.state.itemsForm.reducers.count == 0
         #expect(success)
     }
 
@@ -53,7 +53,7 @@ import Testing
         await store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 1)))
         await store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 1)))
         await store.dispatch(Actions._OnContainerDidLoad(containerType: ItemsContainer.self, id: .init(value: 1)))
-        var success = await waitForCondition { await store.state.itemsForm.reducers.count == 1 }
+        var success = await store.state.itemsForm.reducers.count == 1
         #expect(success)
 
         await store.dispatch(Actions._OnContainerDidUnLoad(containerType: ItemsContainer.self, id: .init(value: 1)))
@@ -63,7 +63,7 @@ import Testing
         #expect(await store.state.itemsForm.reducers.count == 1)
 
         await store.dispatch(Actions._OnContainerDidUnLoad(containerType: ItemsContainer.self, id: .init(value: 1)))
-        success = await waitForCondition { await store.state.itemsForm.reducers.count == 0 }
+        success = await store.state.itemsForm.reducers.count == 0
         #expect(success)
     }
 }

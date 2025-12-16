@@ -37,7 +37,7 @@ private extension Actions {
     }
 }
 
-@Suite(.serialized) struct MiddlewareTests {
+@Suite struct MiddlewareTests {
     struct AppState: AppReducer {
         var testForm = TestForm()
         var testFlow = TestFlow()
@@ -383,9 +383,10 @@ private extension Actions {
         // When: An action is dispatched that should be handled by reduce()
         let message = "Test Message"
         await store.dispatch(Actions.SendMessage(message: message))
+        await store.wait()
 
         // Then: The action should be processed and state updated accordingly
-        let success = await waitForCondition { await store.state.testForm.title == "Test: \(message)" }
+        let success = await store.state.testForm.title == "Test: \(message)"
         #expect(success)
     }
 
@@ -398,9 +399,10 @@ private extension Actions {
         // When: An action is dispatched that changes the observed state flow
         let message = "Flow Message"
         await store.dispatch(Actions.SendMessage(message: message, id: TestFlow.id))
+        await store.wait()
 
         // Then: The middleware should observe the state change and execute effects
-        let success = await waitForCondition { await store.state.testForm.description == "Test reaction: \(message)" }
+        let success = await store.state.testForm.description == "Test reaction: \(message)"
         #expect(success)
     }
 
@@ -413,16 +415,18 @@ private extension Actions {
         // When: An action is dispatched that should be handled by reduce()
         let taskId = "task123"
         await store.dispatch(Actions.CompleteTask(taskId: taskId))
+        await store.wait()
 
         // Then: The reduce method should process the action
-        var success = await waitForCondition { await store.state.testForm.title == "Test task: \(taskId)" }
+        var success = await store.state.testForm.title == "Test task: \(taskId)"
         #expect(success)
 
         // When: An action triggers a state change that should be observed
         await store.dispatch(Actions.StartTask(taskId: "flow_task", id: TaskFlow.id))
+        await store.wait()
 
         // Then: The observe method should react to the state change and auto-complete the task
-        success = await waitForCondition { await store.state.testForm.description == "Task completed: flow_task" }
+        success = await store.state.testForm.description == "Task completed: flow_task"
         #expect(success)
     }
 
@@ -461,16 +465,16 @@ private extension Actions {
 
         let message = "Multi Scope Message"
         await store.dispatch(Actions.SendMessage(message: message, id: TestFlow.id))
+        await store.wait()
 
         // Then: The middleware should observe the change and execute effects
-        let success = await waitForCondition { await store.state.testForm.title == "Multi: \(message)" }
+        let success = await store.state.testForm.title == "Multi: \(message)"
         #expect(success)
     }
 
     /// Tests that Middleware correctly handles dynamic status changes
     /// store.state.testForm.title == 'Status: (message3)' failed in github actions
-    @Test
-    func middlewareStatusChanges() async {
+    @Test func middlewareStatusChanges() async {
         // Given: A middleware that changes status based on state conditions
         class StateBasedStatusMiddleware: Middleware<AppState>, @unchecked Sendable {
             struct Environment: Sendable {}
@@ -519,9 +523,8 @@ private extension Actions {
         // When: Middleware is active (counter = 0) and actions are dispatched
         let message1 = "Active Message"
         await store.dispatch(Actions.SendMessage(message: message1, id: TestFlow.id))
-
-        // Then: Both reduce and observe should work
         await store.wait()
+
         var success = await store.state.testForm.title == "Status: \(message1)"
         #expect(success)
         
@@ -536,9 +539,8 @@ private extension Actions {
         // And: Actions are dispatched while middleware is suspended
         let message2 = "Suspended Message"
         await store.dispatch(Actions.SendMessage(message: message2, id: TestFlow.id))
-
-        // Then: Neither reduce nor observe should work
         await store.wait()
+
         success = await store.state.testForm.title != "Status: \(message2)"
         #expect(success)
 
@@ -558,6 +560,7 @@ private extension Actions {
 
         // Then: Both reduce and observe should work again
         await store.wait()
+
         success = await store.state.testForm.title == "Status: \(message3)"
 
         #expect(success)
@@ -576,9 +579,10 @@ private extension Actions {
 
         // And: The second observed flow (taskFlow) changes
         await store.dispatch(Actions.StartTask(taskId: "task1", id: TaskFlow.id))
+        await store.wait()
 
         // Then: The middleware should have observed both changes and executed effects
-        let success = await waitForCondition { await store.state.testForm.description == "Task completed: task1" }
+        let success = await store.state.testForm.description == "Task completed: task1"
         #expect(success)
     }
 
@@ -619,9 +623,10 @@ private extension Actions {
 
         // And: The middleware is immediately suspended (which should cancel ongoing effects)
         await store.dispatch(Actions.UpdateFormField(keyPath: \TestForm.description, value: "cancel all"))
+        await store.wait()
 
         // Then: The delayed effect should have been cancelled before completion
-        let success = await waitForCondition { await store.state.testForm.title.isEmpty }
+        let success = await store.state.testForm.title.isEmpty
         #expect(success)
     }
 

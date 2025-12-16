@@ -86,7 +86,10 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
 
     /// Cancels all ongoing tasks tracked in the `cancellations` dictionary.
     open func cancelAll() {
-        cancellations.keys.forEach { cancel(by: $0) }
+        let keys = Array(cancellations.keys)
+        for key in keys {
+            cancel(by: key)
+        }
     }
 
     // MARK: - Combine
@@ -134,7 +137,7 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
         let filePosition = fileFunctionLine(effect, fileName: fileName, functionName: functionName, lineNumber: lineNumber)
 
         // Registering for testing framework to wait for asynchronous code
-        TestGroup.shared.enter()
+        let testGroupKey = TestGroup.enter(for: store)
 
         // Subscribe to the effect and store the cancellation token
         cancellations[anyId] = effect
@@ -143,28 +146,17 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
             .handleEvents(receiveCancel: { [weak self] in
                 // Handle cancellation: Remove the task from cancellations and dispatch cancellation action
                 self?.cancellations[anyId] = nil
-                self?.store.dispatch(
-                    mapAction(Actions.DidCancelEffect(by: cancellation)),
-                    fileName: filePosition.fileName,
-                    functionName: filePosition.functionName,
-                    lineNumber: filePosition.lineNumber
-                )
-                // Signal Testing that this task has been cancelled
-                TestGroup.shared.leave()
+                self?.dispatch(action: mapAction(Actions.DidCancelEffect(by: cancellation)), filePosition: filePosition)
             })
             .sink(receiveCompletion: { [weak self] _ in
                 // Handle completion: Remove the task from cancellations and signal Testing
                 self?.cancellations[anyId] = nil
-                TestGroup.shared.leave()
             }, receiveValue: { [weak self] action in
                 // Handle receiving a value: Dispatch the action to the store
                 if self?.cancellations[anyId] != nil {
-                    self?.store.dispatch(
-                        mapAction(action),
-                        fileName: filePosition.fileName,
-                        functionName: filePosition.functionName,
-                        lineNumber: filePosition.lineNumber
-                    )
+                    self?.dispatch(action: mapAction(action), filePosition: filePosition)
+                } else {
+                    TestGroup.instanceFor(key: testGroupKey).leave()
                 }
             })
     }
@@ -245,6 +237,7 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
 
         // Capture file name, function name, and line number for debugging and logging purposes
         let filePosition = fileFunctionLine(effect, fileName: fileName, functionName: functionName, lineNumber: lineNumber)
+        let testGroupKey = TestGroup.instanceKey(store)
 
         // Subscribe to the effect and store the cancellation token
         cancellations[anyId] = effect
@@ -253,16 +246,16 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
             .handleEvents(receiveCancel: { [weak self] in
                 // Handle cancellation: Remove the task from cancellations and dispatch cancellation action
                 self?.cancellations[anyId] = nil
-                self?.store.dispatch(
-                    mapAction(Actions.DidCancelEffect(by: cancellation)),
-                    fileName: filePosition.fileName,
-                    functionName: filePosition.functionName,
-                    lineNumber: filePosition.lineNumber
-                )
+                self?.dispatch(action: mapAction(Actions.DidCancelEffect(by: cancellation)), filePosition: filePosition)
             })
-            .flatMap { [unowned self] action in
+            .flatMap { [weak self] action in
+                guard let self else {
+                    return Empty<(state: State, action: any Action), Never>(completeImmediately: true)
+                        .eraseToAnyPublisher()
+                }
+
                 // Isolate the state to be used in the dispatch filter
-                Publishers.IsolatedState(from: self.store)
+                return Publishers.IsolatedState(from: self.store)
                     .map { state in
                         (state: state, action: action)
                     }
@@ -271,15 +264,12 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
             .sink(receiveCompletion: { [weak self] _ in
                 // Handle completion: Remove the task from cancellations
                 self?.cancellations[anyId] = nil
+                TestGroup.instanceFor(key: testGroupKey).leave()
+
             }, receiveValue: { [weak self] result in
                 // Dispatch the action if the cancellation token exists and the dispatch filter returns true
                 if self?.cancellations[anyId] != nil, dispatchFilter(result.state, result.action) {
-                    self?.store.dispatch(
-                        mapAction(result.action),
-                        fileName: filePosition.fileName,
-                        functionName: filePosition.functionName,
-                        lineNumber: filePosition.lineNumber
-                    )
+                    self?.dispatch(action: mapAction(result.action), filePosition: filePosition)
                 }
             })
     }
@@ -321,6 +311,7 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
 
         // Capture file name, function name, and line number for debugging and logging purposes
         let filePosition = fileFunctionLine(effect, fileName: fileName, functionName: functionName, lineNumber: lineNumber)
+        let testGroupKey = TestGroup.instanceKey(store)
 
         // Subscribe to the effect and store the cancellation token
         cancellations[anyId] = effect
@@ -329,25 +320,18 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
             .handleEvents(receiveCancel: { [weak self] in
                 // Handle cancellation: Remove the task from cancellations and dispatch cancellation action
                 self?.cancellations[anyId] = nil
-                self?.store.dispatch(
-                    mapAction(Actions.DidCancelEffect(by: cancellation)),
-                    fileName: filePosition.fileName,
-                    functionName: filePosition.functionName,
-                    lineNumber: filePosition.lineNumber
-                )
+                self?.dispatch(action: mapAction(Actions.DidCancelEffect(by: cancellation)), filePosition: filePosition )
             })
             .sink(receiveCompletion: { [weak self] _ in
                 // Handle completion: Remove the task from cancellations
                 self?.cancellations[anyId] = nil
+                TestGroup.instanceFor(key: testGroupKey).leave()
+
             }, receiveValue: { [weak self] action in
                 // Dispatch the mapped action to the store if the effect is still active
                 if self?.cancellations[anyId] != nil {
-                    self?.store.dispatch(
-                        mapAction(action),
-                        fileName: filePosition.fileName,
-                        functionName: filePosition.functionName,
-                        lineNumber: filePosition.lineNumber
-                    )
+                    TestGroup.instanceFor(key: testGroupKey).enter()
+                    self?.dispatch(action: mapAction(action), filePosition: filePosition)
                 }
             })
     }
@@ -401,14 +385,16 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
     }
 
     private func dispatch(action: any Action, filePosition: FileFunctionLineDescription) {
-        queue.sync { [weak self] in
+        queue.async { [weak self] in
             self?.store.dispatch(
                 action,
                 fileName: filePosition.fileName,
                 functionName: filePosition.functionName,
                 lineNumber: filePosition.lineNumber
             )
-            TestGroup.shared.leave()
+            if let self {
+                TestGroup.instance(for: self.store).leave()
+            }
         }
     }
 
@@ -453,9 +439,9 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
 
         // Capture file name, function name, and line number for debugging and logging purposes
         let filePosition = fileFunctionLine(effect, fileName: fileName, functionName: functionName, lineNumber: lineNumber)
+        TestGroup.instance(for: store).enter()
 
         // Start the task and store the cancellation token
-        TestGroup.shared.enter()
         let task = Task { @Sendable [weak self] in
             do {
                 // Execute the effect's task, passing flowId
@@ -487,3 +473,4 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
         cancellations[anyCancellationId] = task
     }
 }
+
