@@ -29,7 +29,11 @@ public final class TestGroup: @unchecked Sendable {
     }
 
     static func instanceKey(_ store: any Store) -> String {
-        "\(ObjectIdentifier(store))"
+        if !ProcessInfo.processInfo.isRunningTests {
+            return "ignore"
+        }
+
+        return "\(ObjectIdentifier(store))"
     }
 
     public func enter(
