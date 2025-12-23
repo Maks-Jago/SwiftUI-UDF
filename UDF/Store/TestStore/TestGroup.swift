@@ -3,13 +3,22 @@ import os
 
 public final class TestGroup: @unchecked Sendable {
     private var counters: OSAllocatedUnfairLock<(inCount: Int, outCount: Int)> = .init(initialState: (0, 0))
+    private nonisolated(unsafe) static var shared = TestGroup()
 
     static func instance(for store: any Store) -> TestGroup {
+        guard ProcessInfo.processInfo.isRunningTests else {
+            return .shared
+        }
+
         let key = "\(ObjectIdentifier(store))"
         return instanceFor(key: key)
     }
 
     static func instanceFor(key: String) -> TestGroup {
+        guard ProcessInfo.processInfo.isRunningTests else {
+            return .shared
+        }
+
         let existing: TestGroup? = GlobalValue.optionalValue(forKey: key)
         if let group = existing {
             return group
@@ -20,7 +29,11 @@ public final class TestGroup: @unchecked Sendable {
     }
 
     static func instanceKey(_ store: any Store) -> String {
-        "\(ObjectIdentifier(store))"
+        guard ProcessInfo.processInfo.isRunningTests else {
+            return "ignore"
+        }
+
+        return "\(ObjectIdentifier(store))"
     }
 
     public func enter(
@@ -31,7 +44,7 @@ public final class TestGroup: @unchecked Sendable {
         if ProcessInfo.processInfo.isRunningTests {
             counters.withLock { counters in
                 counters.inCount &+= 1
-                print("TestGroup.enter (counters.inCount: \(counters.inCount), counters.outCount: \(counters.outCount)): \(fileName) \(functionName) \(lineNumber)")
+//                print("TestGroup.enter (counters.inCount: \(counters.inCount), counters.outCount: \(counters.outCount)): \(fileName) \(functionName) \(lineNumber)")
             }
         }
     }
@@ -42,6 +55,10 @@ public final class TestGroup: @unchecked Sendable {
         functionName: String = #function,
         lineNumber: Int = #line
     ) -> String {
+        guard ProcessInfo.processInfo.isRunningTests else {
+            return "ignore"
+        }
+
         instance(for: store).enter(fileName: fileName, functionName: functionName, lineNumber: lineNumber)
         return instanceKey(store)
     }
@@ -54,7 +71,7 @@ public final class TestGroup: @unchecked Sendable {
         if ProcessInfo.processInfo.isRunningTests {
             counters.withLock { counters in
                 counters.outCount &+= 1
-                print("TestGroup.leave (counters.inCount: \(counters.inCount), counters.outCount: \(counters.outCount)): \(fileName) \(functionName) \(lineNumber)")
+//                print("TestGroup.leave (counters.inCount: \(counters.inCount), counters.outCount: \(counters.outCount)): \(fileName) \(functionName) \(lineNumber)")
             }
         }
     }
@@ -82,8 +99,8 @@ public final class TestGroup: @unchecked Sendable {
                 Thread.sleep(forTimeInterval: additionalSleepFor)
             }
             //tmp
-            let results = counters.withLock { $0 }
-            print("TestGroup.wait (counters.inCount: \(results.inCount), counters.outCount: \(results.outCount)): \(fileName) \(functionName) \(lineNumber)")
+//            let results = counters.withLock { $0 }
+//            print("TestGroup.wait (counters.inCount: \(results.inCount), counters.outCount: \(results.outCount)): \(fileName) \(functionName) \(lineNumber)")
         }
     }
 }

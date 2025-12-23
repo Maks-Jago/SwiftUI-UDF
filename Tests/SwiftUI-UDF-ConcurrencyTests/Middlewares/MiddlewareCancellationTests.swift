@@ -80,7 +80,7 @@ import Foundation
         #expect(success)
 
         await store.dispatch(Actions.CancelLoading())
-        await store.wait()
+        await store.wait(additionalSleepFor: 0.1)
 
         success = await store.state.middlewareFlow == .didCancel
         #expect(success)
