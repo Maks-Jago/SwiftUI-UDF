@@ -3,13 +3,22 @@ import os
 
 public final class TestGroup: @unchecked Sendable {
     private var counters: OSAllocatedUnfairLock<(inCount: Int, outCount: Int)> = .init(initialState: (0, 0))
+    private nonisolated(unsafe) static var shared = TestGroup()
 
     static func instance(for store: any Store) -> TestGroup {
+        if !ProcessInfo.processInfo.isRunningTests {
+            return .shared
+        }
+
         let key = "\(ObjectIdentifier(store))"
         return instanceFor(key: key)
     }
 
     static func instanceFor(key: String) -> TestGroup {
+        if !ProcessInfo.processInfo.isRunningTests {
+            return .shared
+        }
+
         let existing: TestGroup? = GlobalValue.optionalValue(forKey: key)
         if let group = existing {
             return group
