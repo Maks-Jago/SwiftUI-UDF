@@ -33,19 +33,6 @@ public extension ProcessInfo {
         if environment["SWIFTPM_TESTS"] != nil { return true }
         if environment["SWIFT_PACKAGE_TESTS"] != nil { return true }
         if arguments.contains("-ui_testing") { return true }
-
-//        // --- Swift Testing (Xcode 16+, Swift 6)
-//        if NSClassFromString("Testing.Test") != nil {
-//            return true
-//        }
-
-        // --- XCTest (classic) signals present in the test host process
-//        if NSClassFromString("XCTestCase") != nil { return true }
-
-        // --- UI tests: the app-under-test is a separate process, so it won't have XCTest classes.
-        // XCTest adds "-ui_testing" to launch arguments when running UI tests.
-        // (Recommend adding it explicitly in your UITests: `app.launchArguments += ["-ui_testing"]`)
-
         return false
     }
 
