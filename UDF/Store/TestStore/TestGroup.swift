@@ -55,6 +55,10 @@ public final class TestGroup: @unchecked Sendable {
         functionName: String = #function,
         lineNumber: Int = #line
     ) -> String {
+        guard ProcessInfo.processInfo.isRunningTests else {
+            return "ignore"
+        }
+
         instance(for: store).enter(fileName: fileName, functionName: functionName, lineNumber: lineNumber)
         return instanceKey(store)
     }
