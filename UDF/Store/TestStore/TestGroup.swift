@@ -6,7 +6,7 @@ public final class TestGroup: @unchecked Sendable {
     private nonisolated(unsafe) static var shared = TestGroup()
 
     static func instance(for store: any Store) -> TestGroup {
-        if !ProcessInfo.processInfo.isRunningTests {
+        guard ProcessInfo.processInfo.isRunningTests else {
             return .shared
         }
 
@@ -15,7 +15,7 @@ public final class TestGroup: @unchecked Sendable {
     }
 
     static func instanceFor(key: String) -> TestGroup {
-        if !ProcessInfo.processInfo.isRunningTests {
+        guard ProcessInfo.processInfo.isRunningTests else {
             return .shared
         }
 
@@ -29,7 +29,7 @@ public final class TestGroup: @unchecked Sendable {
     }
 
     static func instanceKey(_ store: any Store) -> String {
-        if !ProcessInfo.processInfo.isRunningTests {
+        guard ProcessInfo.processInfo.isRunningTests else {
             return "ignore"
         }
 
@@ -44,7 +44,7 @@ public final class TestGroup: @unchecked Sendable {
         if ProcessInfo.processInfo.isRunningTests {
             counters.withLock { counters in
                 counters.inCount &+= 1
-                print("TestGroup.enter (counters.inCount: \(counters.inCount), counters.outCount: \(counters.outCount)): \(fileName) \(functionName) \(lineNumber)")
+//                print("TestGroup.enter (counters.inCount: \(counters.inCount), counters.outCount: \(counters.outCount)): \(fileName) \(functionName) \(lineNumber)")
             }
         }
     }
@@ -71,7 +71,7 @@ public final class TestGroup: @unchecked Sendable {
         if ProcessInfo.processInfo.isRunningTests {
             counters.withLock { counters in
                 counters.outCount &+= 1
-                print("TestGroup.leave (counters.inCount: \(counters.inCount), counters.outCount: \(counters.outCount)): \(fileName) \(functionName) \(lineNumber)")
+//                print("TestGroup.leave (counters.inCount: \(counters.inCount), counters.outCount: \(counters.outCount)): \(fileName) \(functionName) \(lineNumber)")
             }
         }
     }
@@ -99,8 +99,8 @@ public final class TestGroup: @unchecked Sendable {
                 Thread.sleep(forTimeInterval: additionalSleepFor)
             }
             //tmp
-            let results = counters.withLock { $0 }
-            print("TestGroup.wait (counters.inCount: \(results.inCount), counters.outCount: \(results.outCount)): \(fileName) \(functionName) \(lineNumber)")
+//            let results = counters.withLock { $0 }
+//            print("TestGroup.wait (counters.inCount: \(results.inCount), counters.outCount: \(results.outCount)): \(fileName) \(functionName) \(lineNumber)")
         }
     }
 }

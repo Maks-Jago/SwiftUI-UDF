@@ -23,8 +23,6 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
 
     /// The dispatch queue used to execute asynchronous operations.
     public var queue: DispatchQueue
-    private let queueKey = DispatchSpecificKey<UUID>()
-    private let queueToken = UUID()
 
     // MARK: - Initialization
 
@@ -36,7 +34,6 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
     public required init(store: some Store<State>, queue: DispatchQueue) {
         self.store = store
         self.queue = queue
-        self.queue.setSpecific(key: queueKey, value: queueToken)
     }
 
     // MARK: - Middleware Status
@@ -388,23 +385,14 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
     }
 
     private func dispatch(action: any Action, filePosition: FileFunctionLineDescription) {
-        if DispatchQueue.getSpecific(key: queueKey) == queueToken {
-            self.store.dispatch(
+        queue.async { [weak self] in
+            self?.store.dispatch(
                 action,
                 fileName: filePosition.fileName,
                 functionName: filePosition.functionName,
                 lineNumber: filePosition.lineNumber
             )
-            TestGroup.instance(for: self.store).leave()
-        } else {
-            queue.sync { [weak self] in
-                guard let self else { return }
-                self.store.dispatch(
-                    action,
-                    fileName: filePosition.fileName,
-                    functionName: filePosition.functionName,
-                    lineNumber: filePosition.lineNumber
-                )
+            if let self {
                 TestGroup.instance(for: self.store).leave()
             }
         }
