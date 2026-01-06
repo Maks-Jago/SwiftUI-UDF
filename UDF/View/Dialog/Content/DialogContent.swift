@@ -101,182 +101,607 @@ public struct DialogContent<Icon: View, CustomContent: View>: Equatable, Sendabl
     }
     
     // MARK: - Initializers
-    /// Creates dialog content with a title only.
+    /// Creates dialog content with a title only (plain value).
     ///
-    /// - Parameter title: The title of the dialog.
+    /// Use this overload when passing a literal or plain String expression for the title.
+    /// For a computed title, use the closure-based overload.
+    /// - Parameter title: The dialog title evaluated via @autoclosure.
     public init(title: @autoclosure @escaping @Sendable () -> String) where Icon == EmptyView, CustomContent == EmptyView {
-        self.title = title
-        self.message = { nil }
-        self.actions = []
-        self.customContentView = nil
-        self.iconView = nil
+        self.init(title: title)
     }
     
-    /// Creates dialog content with a title and message.
+    /// Creates dialog content with a title only (closure-based).
     ///
+    /// Use this overload when the title should be computed lazily at presentation time.
+    /// - Parameter title: A closure that returns the dialog title.
+    public init(title: @escaping @Sendable () -> String) where Icon == EmptyView, CustomContent == EmptyView {
+        self.init(
+            title: title,
+            message: { nil },
+            actions: [],
+            iconBuilder: nil,
+            customContentBuilder: nil
+        )
+    }
+    
+    /// Creates dialog content with a title and message (plain values).
+    ///
+    /// Use this overload when passing literal/plain values. For computed values,
+    /// use one of the closure-based overloads.
     /// - Parameters:
-    ///   - title: The title of the dialog.
-    ///   - message: An optional message for additional details.
+    ///   - title: The dialog title evaluated via @autoclosure.
+    ///   - message: The optional dialog message evaluated via @autoclosure.
     public init(title: @autoclosure @escaping @Sendable () -> String, message: @autoclosure @escaping @Sendable () -> String?) where Icon == EmptyView, CustomContent == EmptyView {
-        self.title = title
-        self.message = message
-        self.actions = []
-        self.customContentView = nil
-        self.iconView = nil
+        self.init(title: title, message: message)
     }
     
-    /// Creates dialog content with just a message.
+    /// Creates dialog content with a title (closure-based) and message (plain value).
     ///
-    /// This is a convenience initializer for simple dialogs that only need
-    /// to display a message without additional content or actions.
+    /// - Parameters:
+    ///   - title: A closure that returns the dialog title.
+    ///   - message: The optional dialog message evaluated via @autoclosure.
+    public init(title: @escaping @Sendable () -> String, message: @autoclosure @escaping @Sendable () -> String?) where Icon == EmptyView, CustomContent == EmptyView {
+        self.init(
+            title: title,
+            message: message,
+            actions: [],
+            iconBuilder: nil,
+            customContentBuilder: nil
+        )
+    }
+    
+    /// Creates dialog content with a title (plain value) and message (closure-based).
     ///
-    /// - Parameter message: The message to display.
+    /// - Parameters:
+    ///   - title: The dialog title evaluated via @autoclosure.
+    ///   - message: A closure that returns the optional dialog message.
+    public init(title: @autoclosure @escaping @Sendable () -> String, message: @escaping @Sendable () -> String?) where Icon == EmptyView, CustomContent == EmptyView {
+        self.init(
+            title: title,
+            message: message,
+            actions: [],
+            iconBuilder: nil,
+            customContentBuilder: nil
+        )
+    }
+
+    /// Creates dialog content with a title and message (both closure-based).
+    ///
+    /// - Parameters:
+    ///   - title: A closure that returns the dialog title.
+    ///   - message: A closure that returns the optional dialog message.
+    public init(title: @escaping @Sendable () -> String, message: @escaping @Sendable () -> String?) where Icon == EmptyView, CustomContent == EmptyView {
+        self.init(
+            title: title,
+            message: message,
+            actions: [],
+            iconBuilder: nil,
+            customContentBuilder: nil
+        )
+    }
+
+    /// Creates dialog content with just a message (plain value).
+    ///
+    /// The title is empty by default.
+    /// - Parameter message: The dialog message evaluated via @autoclosure.
     public init(_ message: @autoclosure @escaping @Sendable () -> String) where Icon == EmptyView, CustomContent == EmptyView {
-        self.title = { "" }
-        self.message = message
-        self.actions = []
-        self.customContentView = nil
-        self.iconView = nil
+        self.init(
+            title: { "" },
+            message: message,
+            actions: [],
+            iconBuilder: nil,
+            customContentBuilder: nil
+        )
     }
     
+    /// Creates dialog content with just a message (closure-based).
+    ///
+    /// The title is empty by default.
+    /// - Parameter message: A closure that returns the dialog message.
+    public init(_ message: @escaping @Sendable () -> String) where Icon == EmptyView, CustomContent == EmptyView {
+        self.init(
+            title: { "" },
+            message: message,
+            actions: [],
+            iconBuilder: nil,
+            customContentBuilder: nil
+        )
+    }
+    
+    /// Creates dialog content with a message (plain value) and actions.
+    ///
+    /// The title is empty by default.
+    /// - Parameters:
+    ///   - message: The dialog message evaluated via @autoclosure.
+    ///   - actions: A builder that produces dialog actions.
     public init(_ message: @autoclosure @escaping @Sendable () -> String, @DialogActionsBuilder actions: () -> [any DialogAction]) where Icon == EmptyView, CustomContent == EmptyView {
-        self.title = { "" }
-        self.message = message
-        self.actions = actions()
-        self.customContentView = nil
-        self.iconView = nil
+        self.init(
+            title: { "" },
+            message: message,
+            actions: actions(),
+            iconBuilder: nil,
+            customContentBuilder: nil
+        )
     }
     
-    /// Creates dialog content with a title and a custom icon.
+    /// Creates dialog content with a message (closure-based) and actions.
+    ///
+    /// The title is empty by default.
+    /// - Parameters:
+    ///   - message: A closure that returns the dialog message.
+    ///   - actions: A builder that produces dialog actions.
+    public init(_ message: @escaping @Sendable () -> String, @DialogActionsBuilder actions: () -> [any DialogAction]) where Icon == EmptyView, CustomContent == EmptyView {
+        self.init(
+            title: { "" },
+            message: message,
+            actions: actions(),
+            iconBuilder: nil,
+            customContentBuilder: nil
+        )
+    }
+    
+    /// Creates dialog content with a title (plain value) and a custom icon.
     ///
     /// - Parameters:
-    ///   - title: The title of the dialog.
-    ///   - icon: A custom icon to display with the dialog.
+    ///   - title: The dialog title evaluated via @autoclosure.
+    ///   - icon: A view builder that produces the icon view.
     public init(
         title: @autoclosure @escaping @Sendable () -> String,
         @ViewBuilder icon: @Sendable @escaping () -> Icon
     ) where CustomContent == EmptyView {
-        self.title = title
-        self.message = { nil }
-        self.actions = []
-        self.customContentView = nil
-        self.iconView = icon
+        self.init(
+            title: title,
+            message: { nil },
+            actions: [],
+            iconBuilder: icon,
+            customContentBuilder: nil
+        )
     }
     
-    /// Creates dialog content with a title, message and custom icon.
+    /// Creates dialog content with a title (closure-based) and a custom icon.
+    ///
+    /// - Parameters:
+    ///   - title: A closure that returns the dialog title.
+    ///   - icon: A view builder that produces the icon view.
+    public init(
+        title: @escaping @Sendable () -> String,
+        @ViewBuilder icon: @Sendable @escaping () -> Icon
+    ) where CustomContent == EmptyView {
+        self.init(
+            title: title,
+            message: { nil },
+            actions: [],
+            iconBuilder: icon,
+            customContentBuilder: nil
+        )
+    }
+    
+    /// Creates dialog content with a title (plain value), message (plain value) and custom icon.
+    ///
+    /// - Parameters:
+    ///   - title: The dialog title evaluated via @autoclosure.
+    ///   - message: The optional dialog message evaluated via @autoclosure.
+    ///   - icon: A view builder that produces the icon view.
     public init(
         title: @autoclosure @escaping @Sendable () -> String,
         message: @autoclosure @escaping @Sendable () -> String?,
         @ViewBuilder icon: @Sendable @escaping () -> Icon
     ) where CustomContent == EmptyView {
-        self.title = title
-        self.message = message
-        self.actions = []
-        self.customContentView = nil
-        self.iconView = icon
+        self.init(
+            title: title,
+            message: message,
+            actions: [],
+            iconBuilder: icon,
+            customContentBuilder: nil
+        )
     }
     
-    /// Creates dialog content with a title and actions.
+    /// Creates dialog content with a title (closure-based), message (plain value) and custom icon.
     ///
     /// - Parameters:
-    ///   - title: The title of the dialog.
-    ///   - actions: A closure that builds the dialog actions using `DialogActionsBuilder`.
+    ///   - title: A closure that returns the dialog title.
+    ///   - message: The optional dialog message evaluated via @autoclosure.
+    ///   - icon: A view builder that produces the icon view.
+    public init(
+        title: @escaping @Sendable () -> String,
+        message: @autoclosure @escaping @Sendable () -> String?,
+        @ViewBuilder icon: @Sendable @escaping () -> Icon
+    ) where CustomContent == EmptyView {
+        self.init(
+            title: title,
+            message: message,
+            actions: [],
+            iconBuilder: icon,
+            customContentBuilder: nil
+        )
+    }
+    
+    /// Creates dialog content with a title (plain value), message (closure-based) and custom icon.
+    ///
+    /// - Parameters:
+    ///   - title: The dialog title evaluated via @autoclosure.
+    ///   - message: A closure that returns the optional dialog message.
+    ///   - icon: A view builder that produces the icon view.
+    public init(
+        title: @autoclosure @escaping @Sendable () -> String,
+        message: @escaping @Sendable () -> String?,
+        @ViewBuilder icon: @Sendable @escaping () -> Icon
+    ) where CustomContent == EmptyView {
+        self.init(
+            title: title,
+            message: message,
+            actions: [],
+            iconBuilder: icon,
+            customContentBuilder: nil
+        )
+    }
+    
+    /// Creates dialog content with a title and message (both closure-based) and a custom icon.
+    ///
+    /// - Parameters:
+    ///   - title: A closure that returns the dialog title.
+    ///   - message: A closure that returns the optional dialog message.
+    ///   - icon: A view builder that produces the icon view.
+    public init(
+        title: @escaping @Sendable () -> String,
+        message: @escaping @Sendable () -> String?,
+        @ViewBuilder icon: @Sendable @escaping () -> Icon
+    ) where CustomContent == EmptyView {
+        self.init(
+            title: title,
+            message: message,
+            actions: [],
+            iconBuilder: icon,
+            customContentBuilder: nil
+        )
+    }
+    
+    /// Creates dialog content with a title (plain value) and actions.
+    ///
+    /// - Parameters:
+    ///   - title: The dialog title evaluated via @autoclosure.
+    ///   - actions: A builder that produces dialog actions.
     public init(
         title: @autoclosure @escaping @Sendable () -> String,
         @DialogActionsBuilder actions: () -> [any DialogAction]
     ) where Icon == EmptyView, CustomContent == EmptyView {
-        self.title = title
-        self.message = { nil }
-        self.actions = actions()
-        self.customContentView = nil
-        self.iconView = nil
+        self.init(
+            title: title,
+            message: { nil },
+            actions: actions(),
+            iconBuilder: nil,
+            customContentBuilder: nil
+        )
     }
     
-    /// Creates dialog content with a title, message, and actions.
+    /// Creates dialog content with a title (closure-based) and actions.
     ///
     /// - Parameters:
-    ///   - title: The title of the dialog.
-    ///   - message: An optional message for additional details.
-    ///   - actions: A closure that builds the dialog actions using `DialogActionsBuilder`.
+    ///   - title: A closure that returns the dialog title.
+    ///   - actions: A builder that produces dialog actions.
+    public init(
+        title: @escaping @Sendable () -> String,
+        @DialogActionsBuilder actions: () -> [any DialogAction]
+    ) where Icon == EmptyView, CustomContent == EmptyView {
+        self.init(
+            title: title,
+            message: { nil },
+            actions: actions(),
+            iconBuilder: nil,
+            customContentBuilder: nil
+        )
+    }
+    
+    /// Creates dialog content with a title (plain value), message (plain value), and actions.
+    ///
+    /// - Parameters:
+    ///   - title: The dialog title evaluated via @autoclosure.
+    ///   - message: The optional dialog message evaluated via @autoclosure.
+    ///   - actions: A builder that produces dialog actions.
     public init(
         title: @autoclosure @escaping @Sendable () -> String,
         message: @autoclosure @escaping @Sendable () -> String?,
         @DialogActionsBuilder actions: () -> [any DialogAction]
     ) where Icon == EmptyView, CustomContent == EmptyView {
-        self.title = title
-        self.message = message
-        self.actions = actions()
-        self.customContentView = nil
-        self.iconView = nil
+        self.init(
+            title: title,
+            message: message,
+            actions: actions(),
+            iconBuilder: nil,
+            customContentBuilder: nil
+        )
     }
     
-    /// Creates dialog content with a title, custom icon, and actions.
+    /// Creates dialog content with a title (plain value), message (closure-based), and actions.
+    ///
+    /// - Parameters:
+    ///   - title: The dialog title evaluated via @autoclosure.
+    ///   - message: A closure that returns the optional dialog message.
+    ///   - actions: A builder that produces dialog actions.
+    public init(
+        title: @autoclosure @escaping @Sendable () -> String,
+        message: @escaping @Sendable () -> String?,
+        @DialogActionsBuilder actions: () -> [any DialogAction]
+    ) where Icon == EmptyView, CustomContent == EmptyView {
+        self.init(
+            title: title,
+            message: message,
+            actions: actions(),
+            iconBuilder: nil,
+            customContentBuilder: nil
+        )
+    }
+
+    /// Creates dialog content with a title and message (both closure-based), and actions.
+    ///
+    /// - Parameters:
+    ///   - title: A closure that returns the dialog title.
+    ///   - message: A closure that returns the optional dialog message.
+    ///   - actions: A builder that produces dialog actions.
+    public init(
+        title: @escaping @Sendable () -> String,
+        message: @escaping @Sendable () -> String?,
+        @DialogActionsBuilder actions: () -> [any DialogAction]
+    ) where Icon == EmptyView, CustomContent == EmptyView {
+        self.init(
+            title: title,
+            message: message,
+            actions: actions(),
+            iconBuilder: nil,
+            customContentBuilder: nil
+        )
+    }
+    
+    /// Creates dialog content with a title (plain value), custom icon, and actions.
+    ///
+    /// - Parameters:
+    ///   - title: The dialog title evaluated via @autoclosure.
+    ///   - icon: A view builder that produces the icon view.
+    ///   - actions: A builder that produces dialog actions.
     public init(
         title: @autoclosure @escaping @Sendable () -> String,
         @ViewBuilder icon: @Sendable @escaping () -> Icon,
         @DialogActionsBuilder actions: () -> [any DialogAction]
     ) where CustomContent == EmptyView {
-        self.title = title
-        self.message = { nil }
-        self.actions = actions()
-        self.customContentView = nil
-        self.iconView = icon
+        self.init(
+            title: title,
+            message: { nil },
+            actions: actions(),
+            iconBuilder: icon,
+            customContentBuilder: nil
+        )
     }
     
-    /// Creates dialog content with a title, message, icon, and actions.
+    /// Creates dialog content with a title (closure-based), custom icon, and actions.
+    ///
+    /// - Parameters:
+    ///   - title: A closure that returns the dialog title.
+    ///   - icon: A view builder that produces the icon view.
+    ///   - actions: A builder that produces dialog actions.
+    public init(
+        title: @escaping @Sendable () -> String,
+        @ViewBuilder icon: @Sendable @escaping () -> Icon,
+        @DialogActionsBuilder actions: () -> [any DialogAction]
+    ) where CustomContent == EmptyView {
+        self.init(
+            title: title,
+            message: { nil },
+            actions: actions(),
+            iconBuilder: icon,
+            customContentBuilder: nil
+        )
+    }
+    
+    /// Creates dialog content with a title (plain value), message (plain value), custom icon, and actions.
+    ///
+    /// - Parameters:
+    ///   - title: The dialog title evaluated via @autoclosure.
+    ///   - message: The optional dialog message evaluated via @autoclosure.
+    ///   - icon: A view builder that produces the icon view.
+    ///   - actions: A builder that produces dialog actions.
     public init(
         title: @autoclosure @escaping @Sendable () -> String,
         message: @autoclosure @escaping @Sendable () -> String?,
         @ViewBuilder icon: @Sendable @escaping () -> Icon,
         @DialogActionsBuilder actions: () -> [any DialogAction]
     ) where CustomContent == EmptyView {
-        self.title = title
-        self.message = message
-        self.actions = actions()
-        self.customContentView = nil
-        self.iconView = icon
+        self.init(
+            title: title,
+            message: message,
+            actions: actions(),
+            iconBuilder: icon,
+            customContentBuilder: nil
+        )
     }
     
+    /// Creates dialog content with a title (closure-based), message (plain value), custom icon, and actions.
+    ///
+    /// - Parameters:
+    ///   - title: A closure that returns the dialog title.
+    ///   - message: The optional dialog message evaluated via @autoclosure.
+    ///   - icon: A view builder that produces the icon view.
+    ///   - actions: A builder that produces dialog actions.
+    public init(
+        title: @escaping @Sendable () -> String,
+        message: @autoclosure @escaping @Sendable () -> String?,
+        @ViewBuilder icon: @Sendable @escaping () -> Icon,
+        @DialogActionsBuilder actions: () -> [any DialogAction]
+    ) where CustomContent == EmptyView {
+        self.init(
+            title: title,
+            message: message,
+            actions: actions(),
+            iconBuilder: icon,
+            customContentBuilder: nil
+        )
+    }
+    
+    /// Creates dialog content with a title (plain value), message (closure-based), custom icon, and actions.
+    ///
+    /// - Parameters:
+    ///   - title: The dialog title evaluated via @autoclosure.
+    ///   - message: A closure that returns the optional dialog message.
+    ///   - icon: A view builder that produces the icon view.
+    ///   - actions: A builder that produces dialog actions.
+    public init(
+        title: @autoclosure @escaping @Sendable () -> String,
+        message: @escaping @Sendable () -> String?,
+        @ViewBuilder icon: @Sendable @escaping () -> Icon,
+        @DialogActionsBuilder actions: () -> [any DialogAction]
+    ) where CustomContent == EmptyView {
+        self.init(
+            title: title,
+            message: message,
+            actions: actions(),
+            iconBuilder: icon,
+            customContentBuilder: nil
+        )
+    }
+    
+    /// Creates dialog content with a title and message (both closure-based), custom icon, and actions.
+    ///
+    /// - Parameters:
+    ///   - title: A closure that returns the dialog title.
+    ///   - message: A closure that returns the optional dialog message.
+    ///   - icon: A view builder that produces the icon view.
+    ///   - actions: A builder that produces dialog actions.
+    public init(
+        title: @escaping @Sendable () -> String,
+        message: @escaping @Sendable () -> String?,
+        @ViewBuilder icon: @Sendable @escaping () -> Icon,
+        @DialogActionsBuilder actions: () -> [any DialogAction]
+    ) where CustomContent == EmptyView {
+        self.init(
+            title: title,
+            message: message,
+            actions: actions(),
+            iconBuilder: icon,
+            customContentBuilder: nil
+        )
+    }
+    
+    /// Creates dialog content with a title (plain value), message (plain value), image icon, and actions.
+    ///
+    /// - Parameters:
+    ///   - title: The dialog title evaluated via @autoclosure.
+    ///   - message: The optional dialog message evaluated via @autoclosure.
+    ///   - iconImage: An Image builder evaluated via @autoclosure.
+    ///   - actions: A builder that produces dialog actions.
     public init(
         title: @autoclosure @escaping @Sendable () -> String,
         message: @autoclosure @escaping @Sendable () -> String?,
         iconImage: @autoclosure @escaping @Sendable () -> Image,
         @DialogActionsBuilder actions: () -> [any DialogAction]
     ) where CustomContent == EmptyView, Icon == Image {
-        self.title = title
-        self.message = message
-        self.actions = actions()
-        self.customContentView = nil
-        self.iconView = iconImage
+        self.init(
+            title: title,
+            message: message,
+            actions: actions(),
+            iconBuilder: iconImage,
+            customContentBuilder: nil
+        )
     }
     
+    /// Creates dialog content with a title (closure-based), message (plain value), image icon, and actions.
+    ///
+    /// - Parameters:
+    ///   - title: A closure that returns the dialog title.
+    ///   - message: The optional dialog message evaluated via @autoclosure.
+    ///   - iconImage: An Image builder evaluated via @autoclosure.
+    ///   - actions: A builder that produces dialog actions.
+    public init(
+        title: @escaping @Sendable () -> String,
+        message: @autoclosure @escaping @Sendable () -> String?,
+        iconImage: @autoclosure @escaping @Sendable () -> Image,
+        @DialogActionsBuilder actions: () -> [any DialogAction]
+    ) where CustomContent == EmptyView, Icon == Image {
+        self.init(
+            title: title,
+            message: message,
+            actions: actions(),
+            iconBuilder: iconImage,
+            customContentBuilder: nil
+        )
+    }
+    
+    /// Creates dialog content with a title (plain value), image icon, and actions.
+    ///
+    /// - Parameters:
+    ///   - title: The dialog title evaluated via @autoclosure.
+    ///   - iconImage: An Image builder evaluated via @autoclosure.
+    ///   - actions: A builder that produces dialog actions.
     public init(
         title: @autoclosure @escaping @Sendable () -> String,
         iconImage: @autoclosure @escaping @Sendable () -> Image,
         @DialogActionsBuilder actions: () -> [any DialogAction]
     ) where CustomContent == EmptyView, Icon == Image {
-        self.title = title
-        self.message = { nil }
-        self.actions = actions()
-        self.customContentView = nil
-        self.iconView = iconImage
+        self.init(
+            title: title,
+            message: { nil },
+            actions: actions(),
+            iconBuilder: iconImage,
+            customContentBuilder: nil
+        )
     }
     
-    /// Creates dialog content with custom view using generic type.
+    /// Creates dialog content with a title (closure-based), image icon, and actions.
     ///
     /// - Parameters:
-    ///   - title: Optional title for accessibility
-    ///   - customContent: A view builder that creates the custom content
-    /// - Returns: DialogContent with generic custom view type
+    ///   - title: A closure that returns the dialog title.
+    ///   - iconImage: An Image builder evaluated via @autoclosure.
+    ///   - actions: A builder that produces dialog actions.
+    public init(
+        title: @escaping @Sendable () -> String,
+        iconImage: @autoclosure @escaping @Sendable () -> Image,
+        @DialogActionsBuilder actions: () -> [any DialogAction]
+    ) where CustomContent == EmptyView, Icon == Image {
+        self.init(
+            title: title,
+            message: { nil },
+            actions: actions(),
+            iconBuilder: iconImage,
+            customContentBuilder: nil
+        )
+    }
+    
+    /// Creates dialog content with custom SwiftUI content.
+    ///
+    /// When provided, the custom content replaces the standard title/message layout.
+    /// The title is used primarily for accessibility.
+    /// - Parameters:
+    ///   - title: The dialog title evaluated via @autoclosure. Defaults to an empty string.
+    ///   - customContent: A view builder that produces the custom content.
     public init(
         title: @autoclosure @escaping @Sendable () -> String = "",
         @ViewBuilder customContent: @Sendable @escaping () -> CustomContent
     ) where Icon == EmptyView {
-        self.title = title
-        self.message = { nil }
-        self.actions = []
-        self.customContentView = customContent
-        self.iconView = nil
+        self.init(
+            title: title,
+            message: { nil },
+            actions: [],
+            iconBuilder: nil,
+            customContentBuilder: customContent
+        )
+    }
+    
+    /// Creates dialog content with custom SwiftUI content (closure-based title).
+    ///
+    /// When provided, the custom content replaces the standard title/message layout.
+    /// The title is used primarily for accessibility.
+    /// - Parameters:
+    ///   - title: A closure that returns the dialog title.
+    ///   - customContent: A view builder that produces the custom content.
+    public init(
+        title: @escaping @Sendable () -> String,
+        @ViewBuilder customContent: @Sendable @escaping () -> CustomContent
+    ) where Icon == EmptyView {
+        self.init(
+            title: title,
+            message: { nil },
+            actions: [],
+            iconBuilder: nil,
+            customContentBuilder: customContent
+        )
     }
     
     // MARK: - Internal Initializers for Type Erasure
@@ -350,3 +775,4 @@ extension DialogContent {
         return AnyView(iconView())
     }
 }
+

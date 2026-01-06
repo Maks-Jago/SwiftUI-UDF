@@ -6,7 +6,7 @@ import SwiftUI
 
     // MARK: - Basic Builder Tests
     @Test func whenVoid_ActionGroupShouldBeEmpty() {
-        let content = DialogContent(title: { "" }, message: "") {
+        let content = DialogContent(title: "", message: "") {
             ()
         }
 
