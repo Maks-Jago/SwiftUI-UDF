@@ -706,11 +706,20 @@ public struct DialogContent<Icon: View, CustomContent: View>: Equatable, Sendabl
     
     // MARK: - Internal Initializers for Type Erasure
     
-    /// Internal initializer for type erasure - handles all combinations with optional builders.
+    /// Designated initializer used by all public overloads.
     ///
-    /// This initializer is designed specifically for the `eraseToAnyDialogContent()` method
-    /// and handles all possible combinations of icon and custom content.
-    internal init(
+    /// This initializer centralizes the setup of `DialogContent` to avoid duplication across
+    /// multiple convenience initializers. It accepts lazy providers for title and message,
+    /// an explicit array of actions, and optional builders for icon and custom content.
+    /// All values are stored as closures to support deferred evaluation at presentation time.
+    ///
+    /// - Parameters:
+    ///   - title: A closure that returns the dialog title. Evaluated lazily.
+    ///   - message: A closure that returns an optional message. Defaults to a provider returning `nil`.
+    ///   - actions: The actions to associate with this content. Defaults to an empty array.
+    ///   - iconBuilder: An optional view builder that produces the icon view. Defaults to `nil`.
+    ///   - customContentBuilder: An optional view builder that produces the custom content. Defaults to `nil`.
+    private init(
         title: @Sendable @escaping () -> String,
         message: @Sendable @escaping () -> String? = { nil },
         actions: [any DialogAction] = [],
