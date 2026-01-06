@@ -18,20 +18,21 @@ import SwiftUI
 /// more than a simple message string. It supports titles, optional messages, interactive
 /// actions, and completely custom SwiftUI views for maximum flexibility.
 ///
-/// This replaces the need for complex configurations and provides a unified content
-/// model that works across all dialog styles while supporting the rich custom
-/// content capabilities previously available in toast-specific implementations.
+/// The `title` and `message` are modeled as closures to allow dynamic resolution
+/// at presentation time (for example, for localization or state-dependent content).
+/// Convenience initializers using `@autoclosure` are provided so you can still
+/// pass plain strings ergonomically.
 ///
 /// ## Usage:
 /// ```swift
 /// // Simple content with just a title
-/// let content = DialogContent("Delete Item")
+/// let content = DialogContent(title: "Delete Item")
 ///
 /// // Content with title and message
-/// let content = DialogContent("Delete Item", message: "This cannot be undone")
+/// let content = DialogContent(title: "Delete Item", message: "This cannot be undone")
 ///
 /// // Content with title, message, and actions
-/// let content = DialogContent("Delete Item", message: "This cannot be undone") {
+/// let content = DialogContent(title: "Delete Item", message: "This cannot be undone") {
 ///     DialogButton.destructive("Delete") {
 ///         performDelete()
 ///     }
@@ -39,19 +40,19 @@ import SwiftUI
 /// }
 ///
 /// // Custom view content for rich toast dialogs
-/// let content = DialogContent(customView: AnyView(
+/// let content = DialogContent(customContent: {
 ///     VStack {
 ///         ProgressView()
 ///         Text("Uploading...")
 ///     }
-/// ))
+/// })
 /// ```
 public struct DialogContent<Icon: View, CustomContent: View>: Equatable, Sendable {
-    /// The title of the dialog content.
-    public let title: String
+    /// The title provider of the dialog content.
+    public let title: @Sendable () -> String
     
-    /// An optional message providing additional details.
-    public let message: String?
+    /// An optional message provider providing additional details.
+    public let message: @Sendable () -> String?
     
     /// The interactive actions available for this content.
     public let actions: [any DialogAction]
@@ -68,21 +69,6 @@ public struct DialogContent<Icon: View, CustomContent: View>: Equatable, Sendabl
     /// Supports various icon types including SF Symbols, custom images, and
     /// arbitrary SwiftUI views. When nil, the dialog system will use
     /// semantic defaults based on the dialog category.
-    ///
-    /// ## Examples:
-    /// ```swift
-    /// // Custom SF Symbol
-    /// DialogContent("Success", icon: .systemImage("party.popper.fill"))
-    ///
-    /// // Custom image
-    /// DialogContent("Welcome", icon: .image("company-logo"))
-    ///
-    /// // Custom view
-    /// DialogContent("Loading", icon: .view(AnyView(ProgressView())))
-    ///
-    /// // No icon (override semantic default)
-    /// DialogContent("Clean message", icon: .none)
-    /// ```
     public let iconView: (@Sendable () -> Icon)?
     
     // MARK: - Computed Properties
@@ -98,7 +84,10 @@ public struct DialogContent<Icon: View, CustomContent: View>: Equatable, Sendabl
     
     /// Whether this content has a message.
     public var hasMessage: Bool {
-        message != nil && !message!.isEmpty
+        if let msg = message() {
+            return !msg.isEmpty
+        }
+        return false
     }
     
     /// Whether this content uses a custom view instead of standard layout.
@@ -115,9 +104,9 @@ public struct DialogContent<Icon: View, CustomContent: View>: Equatable, Sendabl
     /// Creates dialog content with a title only.
     ///
     /// - Parameter title: The title of the dialog.
-    public init(title: String) where Icon == EmptyView, CustomContent == EmptyView {
+    public init(title: @autoclosure @escaping @Sendable () -> String) where Icon == EmptyView, CustomContent == EmptyView {
         self.title = title
-        self.message = nil
+        self.message = { nil }
         self.actions = []
         self.customContentView = nil
         self.iconView = nil
@@ -128,7 +117,7 @@ public struct DialogContent<Icon: View, CustomContent: View>: Equatable, Sendabl
     /// - Parameters:
     ///   - title: The title of the dialog.
     ///   - message: An optional message for additional details.
-    public init(title: String, message: String?) where Icon == EmptyView, CustomContent == EmptyView {
+    public init(title: @autoclosure @escaping @Sendable () -> String, message: @autoclosure @escaping @Sendable () -> String?) where Icon == EmptyView, CustomContent == EmptyView {
         self.title = title
         self.message = message
         self.actions = []
@@ -141,32 +130,43 @@ public struct DialogContent<Icon: View, CustomContent: View>: Equatable, Sendabl
     /// This is a convenience initializer for simple dialogs that only need
     /// to display a message without additional content or actions.
     ///
-    /// - Parameter message: The message to display (becomes the title).
-    public init(_ message: String) where Icon == EmptyView, CustomContent == EmptyView {
-        self.title = ""
+    /// - Parameter message: The message to display.
+    public init(_ message: @autoclosure @escaping @Sendable () -> String) where Icon == EmptyView, CustomContent == EmptyView {
+        self.title = { "" }
         self.message = message
         self.actions = []
         self.customContentView = nil
         self.iconView = nil
     }
     
-    public init(_ message: String, @DialogActionsBuilder actions: () -> [any DialogAction]) where Icon == EmptyView, CustomContent == EmptyView {
-        self.title = ""
+    public init(_ message: @autoclosure @escaping @Sendable () -> String, @DialogActionsBuilder actions: () -> [any DialogAction]) where Icon == EmptyView, CustomContent == EmptyView {
+        self.title = { "" }
         self.message = message
         self.actions = actions()
         self.customContentView = nil
         self.iconView = nil
     }
     
-    /// Creates dialog content with a title, message, and custom icon.
+    /// Creates dialog content with a title and a custom icon.
     ///
     /// - Parameters:
     ///   - title: The title of the dialog.
-    ///   - message: An optional message for additional details.
     ///   - icon: A custom icon to display with the dialog.
     public init(
-        title: String,
-        message: String? = nil,
+        title: @autoclosure @escaping @Sendable () -> String,
+        @ViewBuilder icon: @Sendable @escaping () -> Icon
+    ) where CustomContent == EmptyView {
+        self.title = title
+        self.message = { nil }
+        self.actions = []
+        self.customContentView = nil
+        self.iconView = icon
+    }
+    
+    /// Creates dialog content with a title, message and custom icon.
+    public init(
+        title: @autoclosure @escaping @Sendable () -> String,
+        message: @autoclosure @escaping @Sendable () -> String?,
         @ViewBuilder icon: @Sendable @escaping () -> Icon
     ) where CustomContent == EmptyView {
         self.title = title
@@ -182,11 +182,11 @@ public struct DialogContent<Icon: View, CustomContent: View>: Equatable, Sendabl
     ///   - title: The title of the dialog.
     ///   - actions: A closure that builds the dialog actions using `DialogActionsBuilder`.
     public init(
-        title: String,
+        title: @autoclosure @escaping @Sendable () -> String,
         @DialogActionsBuilder actions: () -> [any DialogAction]
     ) where Icon == EmptyView, CustomContent == EmptyView {
         self.title = title
-        self.message = nil
+        self.message = { nil }
         self.actions = actions()
         self.customContentView = nil
         self.iconView = nil
@@ -199,8 +199,8 @@ public struct DialogContent<Icon: View, CustomContent: View>: Equatable, Sendabl
     ///   - message: An optional message for additional details.
     ///   - actions: A closure that builds the dialog actions using `DialogActionsBuilder`.
     public init(
-        title: String,
-        message: String?,
+        title: @autoclosure @escaping @Sendable () -> String,
+        message: @autoclosure @escaping @Sendable () -> String?,
         @DialogActionsBuilder actions: () -> [any DialogAction]
     ) where Icon == EmptyView, CustomContent == EmptyView {
         self.title = title
@@ -210,16 +210,23 @@ public struct DialogContent<Icon: View, CustomContent: View>: Equatable, Sendabl
         self.iconView = nil
     }
     
-    /// Creates dialog content with a title, message, icon, and actions.
-    ///
-    /// - Parameters:
-    ///   - title: The title of the dialog.
-    ///   - message: An optional message for additional details.
-    ///   - icon: A custom icon to display with the dialog.
-    ///   - actions: A closure that builds the dialog actions using `DialogActionsBuilder`.
+    /// Creates dialog content with a title, custom icon, and actions.
     public init(
-        title: String,
-        message: String? = nil,
+        title: @autoclosure @escaping @Sendable () -> String,
+        @ViewBuilder icon: @Sendable @escaping () -> Icon,
+        @DialogActionsBuilder actions: () -> [any DialogAction]
+    ) where CustomContent == EmptyView {
+        self.title = title
+        self.message = { nil }
+        self.actions = actions()
+        self.customContentView = nil
+        self.iconView = icon
+    }
+    
+    /// Creates dialog content with a title, message, icon, and actions.
+    public init(
+        title: @autoclosure @escaping @Sendable () -> String,
+        message: @autoclosure @escaping @Sendable () -> String?,
         @ViewBuilder icon: @Sendable @escaping () -> Icon,
         @DialogActionsBuilder actions: () -> [any DialogAction]
     ) where CustomContent == EmptyView {
@@ -231,13 +238,25 @@ public struct DialogContent<Icon: View, CustomContent: View>: Equatable, Sendabl
     }
     
     public init(
-        title: String,
-        message: String? = nil,
+        title: @autoclosure @escaping @Sendable () -> String,
+        message: @autoclosure @escaping @Sendable () -> String?,
         iconImage: @autoclosure @escaping @Sendable () -> Image,
         @DialogActionsBuilder actions: () -> [any DialogAction]
     ) where CustomContent == EmptyView, Icon == Image {
         self.title = title
         self.message = message
+        self.actions = actions()
+        self.customContentView = nil
+        self.iconView = iconImage
+    }
+    
+    public init(
+        title: @autoclosure @escaping @Sendable () -> String,
+        iconImage: @autoclosure @escaping @Sendable () -> Image,
+        @DialogActionsBuilder actions: () -> [any DialogAction]
+    ) where CustomContent == EmptyView, Icon == Image {
+        self.title = title
+        self.message = { nil }
         self.actions = actions()
         self.customContentView = nil
         self.iconView = iconImage
@@ -250,11 +269,11 @@ public struct DialogContent<Icon: View, CustomContent: View>: Equatable, Sendabl
     ///   - customContent: A view builder that creates the custom content
     /// - Returns: DialogContent with generic custom view type
     public init(
-        title: String = "",
+        title: @autoclosure @escaping @Sendable () -> String = "",
         @ViewBuilder customContent: @Sendable @escaping () -> CustomContent
     ) where Icon == EmptyView {
         self.title = title
-        self.message = nil
+        self.message = { nil }
         self.actions = []
         self.customContentView = customContent
         self.iconView = nil
@@ -267,11 +286,11 @@ public struct DialogContent<Icon: View, CustomContent: View>: Equatable, Sendabl
     /// This initializer is designed specifically for the `eraseToAnyDialogContent()` method
     /// and handles all possible combinations of icon and custom content.
     internal init(
-        title: String,
-        message: String? = nil,
+        title: @Sendable @escaping () -> String,
+        message: @Sendable @escaping () -> String? = { nil },
         actions: [any DialogAction] = [],
         iconBuilder: (@Sendable () -> Icon)? = nil,
-        customContentBuilder: (@Sendable () -> CustomContent)? = nil,
+        customContentBuilder: (@Sendable () -> CustomContent)? = nil
     ) {
         self.title = title
         self.message = message
@@ -286,8 +305,8 @@ public struct DialogContent<Icon: View, CustomContent: View>: Equatable, Sendabl
     /// Note: Actions are compared by their hash values since they may contain closures
     /// that cannot be directly compared.
     public static func == (lhs: DialogContent, rhs: DialogContent) -> Bool {
-        lhs.title == rhs.title &&
-        lhs.message == rhs.message &&
+        lhs.title() == rhs.title() &&
+        lhs.message() == rhs.message() &&
         lhs.actions.count == rhs.actions.count &&
         zip(lhs.actions, rhs.actions).allSatisfy { lhsAction, rhsAction in
             // Compare actions by their hash values
@@ -299,8 +318,8 @@ public struct DialogContent<Icon: View, CustomContent: View>: Equatable, Sendabl
 // MARK: - Hashable Support
 extension DialogContent: Hashable {
     public func hash(into hasher: inout Hasher) {
-        hasher.combine(title)
-        hasher.combine(message)
+        hasher.combine(title())
+        hasher.combine(message())
         hasher.combine(actions.count)
         hasher.combine(hasCustomView)
         hasher.combine(hasIcon)
