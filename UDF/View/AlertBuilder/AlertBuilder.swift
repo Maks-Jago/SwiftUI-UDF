@@ -145,12 +145,19 @@ public enum AlertBuilder {
             case .message(let text):
                 return DialogType.info(message: text(), style: .alert)
             case .messageTitle(let title, let message):
-                let content = DialogContent(title: title(), message: message())
+                let titleSendableValue = SendableValue(title)
+                let messageSendableValue = SendableValue(message)
+                let content = DialogContent(
+                  title: titleSendableValue.getValue(),
+                  message: messageSendableValue.getValue()
+                )
                 return DialogCustomType.custom(content: content, style: .alert)
             case .customActions(let title, let text, let actions):
+                let titleSendableValue = SendableValue(title)
+                let messageSendableValue = SendableValue(text)
                 let content = DialogContent(
-                    title: title(),
-                    message: text(),
+                    title: titleSendableValue.getValue(),
+                    message: messageSendableValue.getValue(),
                     actions: actions
                 )
                 return DialogCustomType.custom(content: content, style: .alert)
@@ -177,11 +184,18 @@ public extension DialogStatus {
         case .message(let text):
             self = DialogStatus(info: text(), style: .alert)
         case .messageTitle(let title, let message):
-            let content = DialogContent(title: title(), message: message())
+            let titleSendableValue = SendableValue(title)
+            let messageSendableValue = SendableValue(message)
+            let content = DialogContent(
+              title: titleSendableValue.getValue(),
+              message: messageSendableValue.getValue()
+            )
             self = DialogStatus(dialog: DialogCustomType.custom(content: content, style: .alert))
         case .customActions(let title, let text, let actions):
+            let titleSendableValue = SendableValue(title)
+            let messageSendableValue = SendableValue(text)
             // Convert AlertActions to DialogActions
-            let content = DialogContent(title: title(), message: text()) {
+            let content = DialogContent(title: titleSendableValue.getValue(), message: messageSendableValue.getValue()) {
                 // Convert actions within the builder context
                 for action in actions() {
                     if let button = action as? DialogButton {
@@ -194,4 +208,17 @@ public extension DialogStatus {
             self = DialogStatus(dialog: DialogCustomType.custom(content: content, style: .alert))
         }
     }
+}
+
+fileprivate struct SendableValue<T>: @unchecked Sendable {
+  private let value: () -> T
+  
+  init(_ value: @escaping () -> T) {
+    self.value = value
+  }
+  
+  @Sendable
+  func getValue() -> T {
+    value()
+  }
 }
