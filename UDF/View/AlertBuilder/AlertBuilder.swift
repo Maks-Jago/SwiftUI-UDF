@@ -36,13 +36,13 @@ public enum AlertBuilder {
         
         /// Enum representing the different types of alerts.
         enum AlertType {
-            case validationError(text: () -> String)
-            case success(text: () -> String)
-            case failure(text: () -> String)
-            case message(text: () -> String)
-            case messageTitle(title: () -> String, message: () -> String)
-            
-            case customActions(title: () -> String, text: () -> String, actions: @Sendable () -> [any AlertAction])
+            case validationError(text: @Sendable () -> String)
+            case success(text: @Sendable () -> String)
+            case failure(text: @Sendable () -> String)
+            case message(text: @Sendable () -> String)
+            case messageTitle(title: @autoclosure @Sendable () -> String, message: @Sendable () -> String)
+
+            case customActions(title: @Sendable () -> String, text: @Sendable () -> String, actions: @Sendable () -> [any AlertAction])
         }
         
         // MARK: Initializers
@@ -52,7 +52,7 @@ public enum AlertBuilder {
         }
         
         /// Initializes a validation error alert style with a closure providing the text.
-        public init(validationError text: @escaping () -> String) {
+        public init(validationError text: @Sendable @escaping () -> String) {
             id = UUID()
             type = .validationError(text: text)
         }
@@ -63,7 +63,7 @@ public enum AlertBuilder {
         }
         
         /// Initializes a failure alert style with a closure providing the text.
-        public init(failure text: @escaping () -> String) {
+        public init(failure text: @Sendable @escaping () -> String) {
             id = UUID()
             type = .failure(text: text)
         }
@@ -74,7 +74,7 @@ public enum AlertBuilder {
         }
         
         /// Initializes a success alert style with a closure providing the text.
-        public init(success text: @escaping () -> String) {
+        public init(success text: @Sendable @escaping () -> String) {
             id = UUID()
             type = .success(text: text)
         }
@@ -85,20 +85,20 @@ public enum AlertBuilder {
         }
         
         /// Initializes a message alert style with a closure providing the text.
-        public init(message text: @escaping () -> String) {
+        public init(message text: @Sendable @escaping () -> String) {
             id = UUID()
             type = .message(text: text)
         }
         
         /// Initializes an alert style with a title and message.
         public init(title: String, message: String) {
-            self.init(title: { title }, message: { message })
+            self.init(title: { title }(), message: { message }())
         }
         
         /// Initializes an alert style with closures for title and message.
-        public init(title: @escaping () -> String, message: @escaping () -> String) {
+        public init(title: @autoclosure @Sendable @escaping () -> String, message: @Sendable @escaping () -> String) {
             id = UUID()
-            type = .messageTitle(title: title, message: message)
+            type = .messageTitle(title: title(), message: message)
         }
         
         /// Initializes a custom alert style with a title, text, and custom actions.
@@ -108,8 +108,8 @@ public enum AlertBuilder {
         
         /// Initializes a custom alert style with closures for title, text, and actions.
         public init(
-            title: @escaping () -> String,
-            text: @escaping () -> String,
+            title: @Sendable @escaping () -> String,
+            text: @Sendable @escaping () -> String,
             @DialogActionsBuilder actions: @Sendable @escaping () -> [any AlertAction]
         ) {
             id = UUID()

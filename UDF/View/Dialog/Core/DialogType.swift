@@ -52,14 +52,14 @@ public enum DialogCustomType<Icon: View, Content: View>: DialogTypeProtocol {
     public var title: String {
         switch self {
         case let .custom(content, _):
-            return content.title
+            return content.title()
         }
     }
 
     public var message: String? {
         switch self {
         case let .custom(content, _):
-            return content.message
+            return content.message()
         }
     }
 
