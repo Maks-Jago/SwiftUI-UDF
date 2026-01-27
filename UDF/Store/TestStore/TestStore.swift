@@ -107,3 +107,13 @@ public extension TestStore {
         type.init(store: store, environment: type.buildTestEnvironment(for: store))
     }
 }
+
+public extension TestStore {
+    func didLoad<C: BindableContainer>(_ containerType: C.Type, id: C.ID, fileName: String = #file, functionName: String = #function, lineNumber: Int = #line) async {
+        await self.dispatch(Actions._OnContainerDidLoad(containerType: containerType, id: id), fileName: fileName, functionName: functionName, lineNumber: lineNumber)
+    }
+    
+    func didUnload<C: BindableContainer>(_ containerType: C.Type, id: C.ID, fileName: String = #file, functionName: String = #function, lineNumber: Int = #line) async {
+        await self.dispatch(Actions._OnContainerDidUnLoad(containerType: containerType, id: id), fileName: fileName, functionName: functionName, lineNumber: lineNumber)
+    }
+}
