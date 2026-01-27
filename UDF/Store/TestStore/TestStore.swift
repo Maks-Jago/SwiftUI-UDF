@@ -109,11 +109,11 @@ public extension TestStore {
 }
 
 public extension TestStore {
-    func mount<C: BindableContainer>(_ containerType: C.Type, id: C.ID) async {
-        store.dispatch(Actions._OnContainerDidLoad(containerType: containerType, id: id))
+    func didLoad<C: BindableContainer>(_ containerType: C.Type, id: C.ID, fileName: String = #file, functionName: String = #function, lineNumber: Int = #line) async {
+        await self.dispatch(Actions._OnContainerDidLoad(containerType: containerType, id: id), fileName: fileName, functionName: functionName, lineNumber: lineNumber)
     }
     
-    func unmount<C: BindableContainer>(_ containerType: C.Type, id: C.ID) async {
-        store.dispatch(Actions._OnContainerDidUnLoad(containerType: containerType, id: id))
+    func didUnload<C: BindableContainer>(_ containerType: C.Type, id: C.ID, fileName: String = #file, functionName: String = #function, lineNumber: Int = #line) async {
+        await self.dispatch(Actions._OnContainerDidUnLoad(containerType: containerType, id: id), fileName: fileName, functionName: functionName, lineNumber: lineNumber)
     }
 }
