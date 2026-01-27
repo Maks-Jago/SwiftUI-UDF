@@ -107,3 +107,13 @@ public extension TestStore {
         type.init(store: store, environment: type.buildTestEnvironment(for: store))
     }
 }
+
+public extension TestStore {
+    func mount<C: BindableContainer>(_ containerType: C.Type, id: C.ID) async {
+        store.dispatch(Actions._OnContainerDidLoad(containerType: containerType, id: id))
+    }
+    
+    func unmount<C: BindableContainer>(_ containerType: C.Type, id: C.ID) async {
+        store.dispatch(Actions._OnContainerDidUnLoad(containerType: containerType, id: id))
+    }
+}
