@@ -26,7 +26,8 @@ import SwiftUI
 /// }
 /// ```
 public struct Toast: Dialog {
-    public let customType: DialogCustomType<AnyView, AnyView>
+    public let payload: DialogPayload
+    public let dialogStyle: DialogStyle
 
     /// Creates a Toast dynamically by building typical dialog components.
     ///
@@ -37,16 +38,7 @@ public struct Toast: Dialog {
         config: ToastConfiguration = .default,
         @ToastComponentBuilder _ content: () -> [DialogComponent]
     ) {
-        let parsed = DialogComponentParser.parse(content())
-        self.customType = DialogCustomType.custom(
-            content: .init(
-                title: parsed.title,
-                message: parsed.message,
-                actions: parsed.actions,
-                iconBuilder: parsed.icon,
-                customContentBuilder: parsed.customContentView
-            ),
-            style: .toast(config)
-        )
+        self.payload = DialogComponentParser.parse(content())
+        self.dialogStyle = .toast(config)
     }
 }

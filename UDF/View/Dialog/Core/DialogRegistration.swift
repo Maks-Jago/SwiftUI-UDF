@@ -91,6 +91,8 @@ public enum DialogRegistry {
     /// for the given identifier.
     ///
     /// The dialog is constructed lazily each time it is presented.
+    /// Since ``Dialog`` conforms directly to ``DialogTypeProtocol``, no intermediate
+    /// conversion is needed.
     ///
     /// ```swift
     /// DialogRegistration.register(id: MyDialogs.error) {
@@ -110,7 +112,7 @@ public enum DialogRegistry {
         dialog: @escaping @Sendable () -> D
     ) {
         queue.async(flags: .barrier) {
-            registry[AnyHashable(id)] = { dialog().customType }
+            registry[AnyHashable(id)] = { dialog() }
         }
     }
     

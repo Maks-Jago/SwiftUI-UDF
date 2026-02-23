@@ -28,7 +28,8 @@ import SwiftUI
 /// }
 /// ```
 public struct ConfirmationDialog: Dialog {
-    public let customType: DialogCustomType<AnyView, AnyView>
+    public let payload: DialogPayload
+    public let dialogStyle: DialogStyle
 
     /// Creates a ConfirmationDialog dynamically by building typical dialog components.
     ///
@@ -39,16 +40,7 @@ public struct ConfirmationDialog: Dialog {
         config: ConfirmationDialogConfiguration = .default,
         @ConfirmationDialogComponentBuilder _ content: () -> [DialogComponent]
     ) {
-        let parsed = DialogComponentParser.parse(content())
-        self.customType = DialogCustomType.custom(
-            content: .init(
-                title: parsed.title,
-                message: parsed.message,
-                actions: parsed.actions,
-                iconBuilder: nil,
-                customContentBuilder: nil
-            ),
-            style: .confirmationDialog(config)
-        )
+        self.payload = DialogComponentParser.parse(content())
+        self.dialogStyle = .confirmationDialog(config)
     }
 }

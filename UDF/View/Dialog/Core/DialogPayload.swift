@@ -19,7 +19,7 @@ import SwiftUI
 ///
 /// All properties are closures to support deferred evaluation at presentation time
 /// and to satisfy Swift 6 strict concurrency (`@Sendable`) requirements.
-public struct DialogPayload {
+public struct DialogPayload: Sendable {
     /// A closure returning the dialog title string. Defaults to an empty string.
     var title: @Sendable () -> String = { "" }
     

@@ -28,7 +28,8 @@ import SwiftUI
 /// }
 /// ```
 public struct Alert: Dialog {
-    public let customType: DialogCustomType<AnyView, AnyView>
+    public let payload: DialogPayload
+    public let dialogStyle: DialogStyle = .alert
 
     /// Creates an alert by evaluating the provided component builder.
     ///
@@ -36,16 +37,6 @@ public struct Alert: Dialog {
     public init(
         @AlertComponentBuilder _ content: () -> [DialogComponent]
     ) {
-        let parsed = DialogComponentParser.parse(content())
-        self.customType = DialogCustomType.custom(
-            content: .init(
-                title: parsed.title,
-                message: parsed.message,
-                actions: parsed.actions,
-                iconBuilder: nil,
-                customContentBuilder: nil
-            ),
-            style: .alert
-        )
+        self.payload = DialogComponentParser.parse(content())
     }
 }
