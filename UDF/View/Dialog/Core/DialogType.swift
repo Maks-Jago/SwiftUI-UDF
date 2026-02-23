@@ -260,3 +260,21 @@ public enum DialogCategory: String, CaseIterable, Sendable {
         }
     }
 }
+
+public extension DialogCustomType where Icon == AnyView, Content == AnyView {
+
+    static func custom(
+        @DialogComponentBuilder builder: () -> [DialogComponent],
+        style: DialogStyle
+    ) -> Self {
+
+        let dialogContent = DialogContent<AnyView, AnyView>(
+            components: builder()
+        )
+
+        return .custom(
+            content: dialogContent,
+            style: style
+        )
+    }
+}

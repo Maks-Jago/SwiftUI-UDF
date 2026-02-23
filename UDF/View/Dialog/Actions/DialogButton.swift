@@ -50,7 +50,7 @@ import SwiftUI
 /// ## Conformance:
 /// - Conforms to `DialogAction`, making it suitable for use in all dialog styles.
 /// - Conforms to `View`, allowing it to be used directly in SwiftUI view hierarchies.
-public struct DialogButton: DialogAction {
+public struct DialogButton: DialogAction, DialogComponent {
     /// The title text displayed on the button.
     public var title: String
     
