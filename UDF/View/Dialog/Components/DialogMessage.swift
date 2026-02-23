@@ -9,9 +9,22 @@
 //
 //===----------------------------------------------------------------------===//
 
+/// A dialog component representing the message body of a dialog.
+///
+/// `DialogMessage` is supported in all dialog types: ``Alert``, ``Toast``,
+/// and ``ConfirmationDialog``. If multiple `DialogMessage` components are
+/// provided, only the last one is used.
+///
+/// ```swift
+/// Toast {
+///     DialogMessage("Your changes have been saved.")
+/// }
+/// ```
 public struct DialogMessage: AlertComponent, ToastComponent, ConfirmationDialogComponent {
     let value: String
     
+    /// Creates a dialog message component.
+    /// - Parameter value: The message string to display.
     public init(_ value: String) {
         self.value = value
     }

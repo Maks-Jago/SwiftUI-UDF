@@ -87,6 +87,24 @@ public enum DialogRegistry {
         }
     }
     
+    /// Registers a type-safe ``Dialog`` (``Alert``, ``Toast``, or ``ConfirmationDialog``)
+    /// for the given identifier.
+    ///
+    /// The dialog is constructed lazily each time it is presented.
+    ///
+    /// ```swift
+    /// DialogRegistration.register(id: MyDialogs.error) {
+    ///     Alert {
+    ///         DialogTitle("Error")
+    ///         DialogMessage("Something went wrong.")
+    ///         DialogButton(title: "OK")
+    ///     }
+    /// }
+    /// ```
+    ///
+    /// - Parameters:
+    ///   - id: A unique, hashable identifier for this dialog.
+    ///   - dialog: A closure that returns a ``Dialog`` conforming value.
     public static func register<ID: Hashable & Sendable, D: Dialog>(
         id: ID,
         dialog: @escaping @Sendable () -> D

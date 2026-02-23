@@ -11,10 +11,19 @@
 
 import SwiftUI
 
-/// A helper parsing utility used internally by `Alert`, `Toast`, and `ConfirmationDialog`.
+/// A helper utility that converts an array of ``DialogComponent`` values into a ``DialogPayload``.
+///
+/// Used internally by ``Alert``, ``Toast``, and ``ConfirmationDialog`` to transform
+/// the result builder output into structured data suitable for ``DialogCustomType`` construction.
+///
+/// When multiple components of the same type are provided (e.g., two ``DialogTitle`` instances),
+/// the **last** one wins.
 package struct DialogComponentParser {
     
-    /// Parses an array of dialog components into a structured tuple of properties.
+    /// Parses an array of ``DialogComponent`` values into a ``DialogPayload``.
+    ///
+    /// - Parameter components: The flat array of components produced by a result builder.
+    /// - Returns: A ``DialogPayload`` containing the extracted title, message, actions, icon, and custom content.
     package static func parse(
         _ components: [DialogComponent]
     ) -> DialogPayload {

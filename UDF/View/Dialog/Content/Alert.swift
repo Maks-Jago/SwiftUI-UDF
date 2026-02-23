@@ -11,13 +11,28 @@
 
 import SwiftUI
 
-/// Defines an alert structure built logically using `AlertComponentBuilder`.
+/// A type-safe alert dialog built using ``AlertComponentBuilder``.
 ///
-/// Use `Alert` to declare traditional modal alerts.
+/// `Alert` supports ``DialogTitle``, ``DialogMessage``, and ``DialogAction`` components.
+/// Components like ``DialogIcon`` and ``DialogComponentContent`` are **not** supported
+/// and will produce a compile-time error if used.
+///
+/// ```swift
+/// DialogRegistration.register(id: MyDialogs.deleteConfirmation) {
+///     Alert {
+///         DialogTitle("Delete Item?")
+///         DialogMessage("This action cannot be undone.")
+///         DialogButton.destructive("Delete") { performDelete() }
+///         DialogButton.cancel("Cancel")
+///     }
+/// }
+/// ```
 public struct Alert: Dialog {
     public let customType: DialogCustomType<AnyView, AnyView>
 
-    /// Creates an Alert dynamically by building typical dialog components.
+    /// Creates an alert by evaluating the provided component builder.
+    ///
+    /// - Parameter content: A result builder closure producing ``AlertComponent`` values.
     public init(
         @AlertComponentBuilder _ content: () -> [DialogComponent]
     ) {

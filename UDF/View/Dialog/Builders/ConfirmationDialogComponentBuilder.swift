@@ -9,6 +9,20 @@
 //
 //===----------------------------------------------------------------------===//
 
+/// A result builder for constructing the component list of a ``ConfirmationDialog``.
+///
+/// Only types conforming to ``ConfirmationDialogComponent`` are accepted.
+/// Attempting to use unsupported components like ``DialogIcon`` or
+/// ``DialogComponentContent`` will produce a compile-time error with a descriptive message.
+///
+/// ```swift
+/// ConfirmationDialog {
+///     DialogTitle("Delete?")
+///     DialogMessage("This action cannot be undone.")
+///     DialogButton.destructive("Delete") { performDelete() }
+///     DialogButton.cancel("Cancel")
+/// }
+/// ```
 @resultBuilder
 public enum ConfirmationDialogComponentBuilder: DialogBuilder {
     public static func buildExpression(_ expression: some ConfirmationDialogComponent) -> [any DialogComponent] {
@@ -16,6 +30,7 @@ public enum ConfirmationDialogComponentBuilder: DialogBuilder {
     }
 }
 
+/// Compile-time restrictions for components that are not supported in confirmation dialogs.
 public extension ConfirmationDialogComponentBuilder {
     @available(*, unavailable, message: "DialogIcon is not supported in Confirmation Dialogs.")
     static func buildExpression(_ expression: DialogIcon) -> [any DialogComponent] { [] }

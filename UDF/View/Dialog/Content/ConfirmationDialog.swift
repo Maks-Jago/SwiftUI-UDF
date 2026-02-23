@@ -11,9 +11,22 @@
 
 import SwiftUI
 
-/// Defines a confirmation dialog structure built logically using `ConfirmationDialogComponentBuilder`.
+/// A type-safe confirmation dialog built using ``ConfirmationDialogComponentBuilder``.
 ///
-/// Use `ConfirmationDialog` to declare native confirmation dialogs supporting custom configurations.
+/// `ConfirmationDialog` supports ``DialogTitle``, ``DialogMessage``, and ``DialogAction``
+/// components. Components like ``DialogIcon`` and ``DialogComponentContent`` are **not**
+/// supported and will produce a compile-time error if used.
+///
+/// ```swift
+/// DialogRegistration.register(id: MyDialogs.logout) {
+///     ConfirmationDialog {
+///         DialogTitle("Log Out")
+///         DialogMessage("Are you sure you want to log out?")
+///         DialogButton.destructive("Log Out") { performLogout() }
+///         DialogButton.cancel("Cancel")
+///     }
+/// }
+/// ```
 public struct ConfirmationDialog: Dialog {
     public let customType: DialogCustomType<AnyView, AnyView>
 

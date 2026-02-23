@@ -12,6 +12,15 @@
 import Foundation
 import SwiftUI
 
+/// A base protocol providing common result builder methods for dialog component builders.
+///
+/// `DialogBuilder` abstracts the shared `buildBlock`, `buildEither`, `buildOptional`,
+/// `buildArray`, and other result builder methods so that concrete builders like
+/// ``AlertComponentBuilder``, ``ToastComponentBuilder``, and ``ConfirmationDialogComponentBuilder``
+/// only need to define their specific `buildExpression` overloads.
+///
+/// Conforming types inherit default implementations for all standard result builder
+/// control-flow methods (conditionals, optionals, loops, availability checks).
 public protocol DialogBuilder {
     static func buildEither(first component: [any DialogComponent]) -> [any DialogComponent]
     static func buildEither(second component: [any DialogComponent]) -> [any DialogComponent]
@@ -22,6 +31,7 @@ public protocol DialogBuilder {
     static func buildArray(_ components: [[any DialogComponent]]) -> [any DialogComponent]
 }
 
+/// Default implementations for all `DialogBuilder` result builder methods.
 public extension DialogBuilder {
     static func buildEither(first component: [any DialogComponent]) -> [any DialogComponent] {
         component

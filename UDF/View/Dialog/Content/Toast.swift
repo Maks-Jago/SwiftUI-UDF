@@ -11,9 +11,20 @@
 
 import SwiftUI
 
-/// Defines a toast structure built logically using `ToastComponentBuilder`.
+/// A type-safe toast dialog built using ``ToastComponentBuilder``.
 ///
-/// Use `Toast` to declare non-modal overlay toasts supporting custom configurations.
+/// `Toast` supports ``DialogMessage``, ``DialogIcon``, ``DialogComponentContent``,
+/// and ``DialogAction`` components. ``DialogTitle`` is **not** supported and will
+/// produce a compile-time error if used.
+///
+/// ```swift
+/// DialogRegistration.register(id: MyDialogs.savedToast) {
+///     Toast(config: .init(hapticFeedback: .success)) {
+///         DialogIcon { Image(systemName: "checkmark.circle.fill") }
+///         DialogMessage("Changes saved.")
+///     }
+/// }
+/// ```
 public struct Toast: Dialog {
     public let customType: DialogCustomType<AnyView, AnyView>
 
