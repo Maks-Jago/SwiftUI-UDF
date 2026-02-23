@@ -87,6 +87,15 @@ public enum DialogRegistry {
         }
     }
     
+    public static func register<ID: Hashable & Sendable, D: Dialog>(
+        id: ID,
+        dialog: @escaping @Sendable () -> D
+    ) {
+        queue.async(flags: .barrier) {
+            registry[AnyHashable(id)] = { dialog().customType }
+        }
+    }
+    
     /// Retrieves a registered dialog for the given identifier.
     ///
     /// This function is called internally by `DialogStatus.init(id:)` to

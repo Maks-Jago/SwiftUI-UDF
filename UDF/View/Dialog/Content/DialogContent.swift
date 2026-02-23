@@ -719,7 +719,7 @@ public struct DialogContent<Icon: View, CustomContent: View>: Equatable, Sendabl
     ///   - actions: The actions to associate with this content. Defaults to an empty array.
     ///   - iconBuilder: An optional view builder that produces the icon view. Defaults to `nil`.
     ///   - customContentBuilder: An optional view builder that produces the custom content. Defaults to `nil`.
-    private init(
+    init(
         title: @Sendable @escaping () -> String,
         message: @Sendable @escaping () -> String? = { nil },
         actions: [any DialogAction] = [],
