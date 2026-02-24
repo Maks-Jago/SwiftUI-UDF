@@ -27,8 +27,8 @@ public struct DialogPayload: Sendable {
     var actions: [any DialogAction] = []
     
     /// An optional closure returning the icon view. Only used by ``Toast``.
-    var icon: (@Sendable () -> AnyView)? = nil
+    var icon: (@MainActor () -> AnyView)? = nil
     
     /// An optional closure returning the custom content view. Only used by ``Toast``.
-    var customContentView: (@Sendable () -> AnyView)? = nil
+    var customContentView: (@MainActor () -> AnyView)? = nil
 }

@@ -21,9 +21,11 @@ public protocol DialogTypeProtocol: Sendable, IsEquatable, Hashable {
     var actions: [any DialogAction] { get }
     
     /// Returns the icon for this dialog as a type-erased AnyView
+    @MainActor
     func getIconView(theme: ToastTheme) -> AnyView?
     
     /// Returns the custom content view for this dialog as a type-erased AnyView
+    @MainActor
     func getCustomContentView() -> AnyView?
 }
 

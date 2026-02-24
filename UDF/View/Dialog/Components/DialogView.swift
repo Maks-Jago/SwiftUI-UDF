@@ -30,11 +30,13 @@ import SwiftUI
 /// }
 /// ```
 public struct DialogView: ToastComponent {
-    let value: @Sendable () -> AnyView
+    let value: @MainActor () -> AnyView
 
     /// Creates a dialog custom content component with a SwiftUI view.
     /// - Parameter content: A `@ViewBuilder` closure producing the custom content view.
-    public init<Content: View & Sendable>(@ViewBuilder _ content: @Sendable @escaping () -> Content) {
-        self.value = { @Sendable in AnyView(content()) }
+    public init<Content: View>(
+        @ViewBuilder _ content: @MainActor @escaping () -> Content
+    ) {
+        self.value = { AnyView(content()) }
     }
 }

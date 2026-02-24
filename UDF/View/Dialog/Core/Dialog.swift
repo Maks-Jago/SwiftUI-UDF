@@ -47,10 +47,12 @@ extension Dialog {
     public var actions: [any DialogAction] { payload.actions }
     public var category: DialogCategory { .custom }
 
+    @MainActor
     public func getIconView(theme: ToastTheme) -> AnyView? {
         payload.icon?()
     }
 
+    @MainActor
     public func getCustomContentView() -> AnyView? {
         payload.customContentView?()
     }
