@@ -14,7 +14,7 @@ import SwiftUI
 /// A type-safe confirmation dialog built using ``ConfirmationDialogComponentBuilder``.
 ///
 /// `ConfirmationDialog` supports ``DialogTitle``, ``DialogMessage``, and ``DialogAction``
-/// components. Components like ``DialogIcon`` and ``DialogComponentContent`` are **not**
+/// components. Components like ``DialogIcon`` and ``DialogView`` are **not**
 /// supported and will produce a compile-time error if used.
 ///
 /// ```swift

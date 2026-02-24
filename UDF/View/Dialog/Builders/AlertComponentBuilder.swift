@@ -12,7 +12,7 @@
 /// A result builder for constructing the component list of an ``Alert``.
 ///
 /// Only types conforming to ``AlertComponent`` are accepted. Attempting to use
-/// unsupported components like ``DialogIcon`` or ``DialogComponentContent`` will
+/// unsupported components like ``DialogIcon`` or ``DialogView`` will
 /// produce a compile-time error with a descriptive message.
 ///
 /// ```swift
@@ -34,6 +34,6 @@ public extension AlertComponentBuilder {
     @available(*, unavailable, message: "DialogIcon is not supported in Alerts.")
     static func buildExpression(_ expression: DialogIcon) -> [any DialogComponent] { [] }
 
-    @available(*, unavailable, message: "DialogComponentContent is not supported in Alerts.")
-    static func buildExpression(_ expression: DialogComponentContent) -> [any DialogComponent] { [] }
+    @available(*, unavailable, message: "DialogView is not supported in Alerts.")
+    static func buildExpression(_ expression: DialogView) -> [any DialogComponent] { [] }
 }

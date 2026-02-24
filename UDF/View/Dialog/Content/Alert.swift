@@ -14,7 +14,7 @@ import SwiftUI
 /// A type-safe alert dialog built using ``AlertComponentBuilder``.
 ///
 /// `Alert` supports ``DialogTitle``, ``DialogMessage``, and ``DialogAction`` components.
-/// Components like ``DialogIcon`` and ``DialogComponentContent`` are **not** supported
+/// Components like ``DialogIcon`` and ``DialogView`` are **not** supported
 /// and will produce a compile-time error if used.
 ///
 /// ```swift

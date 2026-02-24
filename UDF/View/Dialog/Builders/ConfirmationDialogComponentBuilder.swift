@@ -13,7 +13,7 @@
 ///
 /// Only types conforming to ``ConfirmationDialogComponent`` are accepted.
 /// Attempting to use unsupported components like ``DialogIcon`` or
-/// ``DialogComponentContent`` will produce a compile-time error with a descriptive message.
+/// ``DialogView`` will produce a compile-time error with a descriptive message.
 ///
 /// ```swift
 /// ConfirmationDialog {
@@ -35,6 +35,6 @@ public extension ConfirmationDialogComponentBuilder {
     @available(*, unavailable, message: "DialogIcon is not supported in Confirmation Dialogs.")
     static func buildExpression(_ expression: DialogIcon) -> [any DialogComponent] { [] }
 
-    @available(*, unavailable, message: "DialogComponentContent is not supported in Confirmation Dialogs.")
-    static func buildExpression(_ expression: DialogComponentContent) -> [any DialogComponent] { [] }
+    @available(*, unavailable, message: "DialogView is not supported in Confirmation Dialogs.")
+    static func buildExpression(_ expression: DialogView) -> [any DialogComponent] { [] }
 }

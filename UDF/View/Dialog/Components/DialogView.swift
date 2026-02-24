@@ -13,7 +13,7 @@ import SwiftUI
 
 /// A dialog component representing arbitrary custom SwiftUI content for a dialog.
 ///
-/// `DialogComponentContent` is only supported in ``Toast``. Attempting to use it
+/// `DialogView` is only supported in ``Toast``. Attempting to use it
 /// in an ``Alert`` or ``ConfirmationDialog`` will produce a compile-time error.
 ///
 /// Use this component when the standard title/message layout is insufficient
@@ -21,7 +21,7 @@ import SwiftUI
 ///
 /// ```swift
 /// Toast {
-///     DialogComponentContent {
+///     DialogView {
 ///         VStack {
 ///             ProgressView()
 ///             Text("Uploading...")
@@ -29,7 +29,7 @@ import SwiftUI
 ///     }
 /// }
 /// ```
-public struct DialogComponentContent: ToastComponent {
+public struct DialogView: ToastComponent {
     let value: @Sendable () -> AnyView
 
     /// Creates a dialog custom content component with a SwiftUI view.

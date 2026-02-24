@@ -42,7 +42,7 @@ package struct DialogComponentParser {
             case let iconComponent as DialogIcon:
                 payload.icon = iconComponent.value
                 
-            case let contentComponent as DialogComponentContent:
+            case let contentComponent as DialogView:
                 payload.customContentView = contentComponent.value
                 
             case let action as any DialogAction:

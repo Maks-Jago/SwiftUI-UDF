@@ -13,7 +13,7 @@ import SwiftUI
 
 /// A type-safe toast dialog built using ``ToastComponentBuilder``.
 ///
-/// `Toast` supports ``DialogMessage``, ``DialogIcon``, ``DialogComponentContent``,
+/// `Toast` supports ``DialogMessage``, ``DialogIcon``, ``DialogView``,
 /// and ``DialogAction`` components. ``DialogTitle`` is **not** supported and will
 /// produce a compile-time error if used.
 ///
