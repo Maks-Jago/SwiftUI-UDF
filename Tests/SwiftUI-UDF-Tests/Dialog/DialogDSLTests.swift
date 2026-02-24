@@ -13,7 +13,6 @@ import SwiftUI
 @testable import UDF
 import Testing
 
-@Suite("Dialog Built with DSL Tests")
 @MainActor
 struct DialogDSLTests {
     
@@ -264,5 +263,170 @@ struct DialogDSLTests {
         
         let textField = try #require(firstAction as? DialogTextField)
         #expect(textField.title == "Username")
+    }
+    
+    // MARK: - Dialog Protocol Conformance
+    
+    @Test("Dialog category is always .custom for DSL types")
+    func dialogCategoryIsAlwaysCustom() {
+        let alert = Alert {
+            DialogTitle("Title")
+        }
+        let toast = Toast {
+            DialogMessage("msg")
+        }
+        let confirmation = ConfirmationDialog {
+            DialogTitle("Title")
+        }
+        
+        #expect(alert.category == .custom)
+        #expect(toast.category == .custom)
+        #expect(confirmation.category == .custom)
+    }
+    
+    @Test("Alert without icon or custom view returns nil for view accessors")
+    func alertReturnsNilForIconAndCustomContent() {
+        let alert = Alert {
+            DialogTitle("Plain Alert")
+            DialogMessage("No icon here")
+        }
+        
+        #expect(alert.getIconView(theme: ToastTheme.vibrant) == nil)
+        #expect(alert.getCustomContentView() == nil)
+    }
+    
+    @Test("Two identical alerts are equal, two different alerts are not")
+    func dialogEquatableConformance() {
+        let alert1 = Alert {
+            DialogTitle("Same")
+            DialogMessage("Message")
+            DialogButton(title: "OK", action: {})
+        }
+        let alert2 = Alert {
+            DialogTitle("Same")
+            DialogMessage("Message")
+            DialogButton(title: "OK", action: {})
+        }
+        let alert3 = Alert {
+            DialogTitle("Different")
+        }
+        
+        #expect(alert1 == alert2)
+        #expect(alert1 != alert3)
+    }
+    
+    @Test("Equal alerts produce the same hash, different alerts produce different hashes")
+    func dialogHashableConformance() {
+        let alert1 = Alert {
+            DialogTitle("Title")
+            DialogMessage("Msg")
+        }
+        let alert2 = Alert {
+            DialogTitle("Title")
+            DialogMessage("Msg")
+        }
+        let alert3 = Alert {
+            DialogTitle("Other")
+        }
+        
+        #expect(alert1.hashValue == alert2.hashValue)
+        #expect(alert1.hashValue != alert3.hashValue)
+    }
+    
+    @Test("IsEquatable correctly compares same and different Dialog types")
+    func dialogIsEquatableConformance() {
+        let alert = Alert {
+            DialogTitle("Title")
+        }
+        let sameAlert = Alert {
+            DialogTitle("Title")
+        }
+        let toast = Toast {
+            DialogMessage("msg")
+        }
+        
+        #expect(alert.isEqual(sameAlert))
+        #expect(!alert.isEqual(toast))
+    }
+    
+    // MARK: - DialogStatus Integration
+    
+    @Test("DSL Alert can be stored and retrieved via DialogStatus using the registry")
+    func dialogStatusIntegrationWithDSLAlert() {
+        let id = 999
+        
+        DialogRegistry.register(id: id) {
+            Alert {
+                DialogTitle("Status Alert")
+                DialogMessage("Integration test")
+                DialogButton(title: "Got It", action: {})
+            }
+        }
+
+        let status = DialogStatus(id: id)
+
+        guard case .presented(let dialog) = status.status else {
+            Issue.record("Expected presented dialog")
+            return
+        }
+
+        #expect(dialog.title == "Status Alert")
+        #expect(dialog.message == "Integration test")
+        #expect(dialog.actions.count == 1)
+
+        guard case .alert = dialog.style else {
+            Issue.record("Expected alert style")
+            return
+        }
+    }
+    
+    @Test("DSL Toast can be stored and retrieved via DialogStatus using the registry")
+    func dialogStatusIntegrationWithDSLToast() {
+        let id = 998
+        
+        DialogRegistry.register(id: id) {
+            Toast(config: .init(theme: .vibrant, position: .bottom)) {
+                DialogMessage("Saved!")
+                DialogIcon { Image(systemName: "checkmark") }
+            }
+        }
+        
+        let status = DialogStatus(id: id)
+
+        guard case .presented(let dialog) = status.status else {
+            Issue.record("Expected presented dialog")
+            return
+        }
+
+        #expect(dialog.message == "Saved!")
+
+        guard case .toast(let config) = dialog.style else {
+            Issue.record("Expected toast style")
+            return
+        }
+
+        #expect(config.theme == .vibrant)
+        #expect(config.position == .bottom)
+    }
+    
+    @Test("Registering the same ID twice overwrites the previous dialog")
+    func registryOverwritesBehavior() {
+        let id = 777
+        
+        DialogRegistry.register(id: id) {
+            Alert {
+                DialogTitle("First")
+            }
+        }
+        
+        #expect(DialogRegistry.get(id: id)?.title == "First")
+        
+        DialogRegistry.register(id: id) {
+            Alert {
+                DialogTitle("Second")
+            }
+        }
+        
+        #expect(DialogRegistry.get(id: id)?.title == "Second")
     }
 }
