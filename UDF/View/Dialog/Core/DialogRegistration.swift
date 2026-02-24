@@ -78,6 +78,7 @@ public enum DialogRegistry {
     ///     )
     /// }
     /// ```
+    @available(*, deprecated, message: "Use the new ResultBuilder-based register(id:dialog:) with Alert, Toast, or ConfirmationDialog instead.")
     public static func register<ID: Hashable & Sendable>(
         id: ID,
         builder: @escaping @Sendable () -> any DialogTypeProtocol
@@ -225,6 +226,7 @@ public enum DialogRegistry {
     ///   - category: The dialog category (success, error, warning, info).
     ///   - message: The message to display.
     ///   - style: The dialog style (defaults to .alert).
+    @available(*, deprecated, message: "Use the new ResultBuilder-based register(id:dialog:) with Alert, Toast, or ConfirmationDialog instead.")
     public static func register<ID: Hashable & Sendable>(
         id: ID,
         category: DialogCategory,
@@ -289,6 +291,7 @@ public extension DialogRegistry {
     ///     print("Upload toast dismissed")
     /// }
     /// ```
+    @available(*, deprecated, message: "Use the new ResultBuilder-based register(id:dialog:) with Toast instead.")
     static func registerToast<ID: Hashable & Sendable>(
         id: ID,
         content: @escaping @Sendable () -> DialogContent<EmptyView, EmptyView>,
@@ -336,6 +339,7 @@ public extension DialogRegistry {
     ///     print("Download progress dismissed")
     /// }
     /// ```
+    @available(*, deprecated, message: "Use the new ResultBuilder-based register(id:dialog:) with Toast and DialogComponentContent instead.")
     static func registerCustomToast<ID: Hashable & Sendable, CustomContent: View>(
         id: ID,
         title: String,
