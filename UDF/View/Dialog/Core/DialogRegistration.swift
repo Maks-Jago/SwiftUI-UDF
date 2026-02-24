@@ -339,7 +339,7 @@ public extension DialogRegistry {
     ///     print("Download progress dismissed")
     /// }
     /// ```
-    @available(*, deprecated, message: "Use the new ResultBuilder-based register(id:dialog:) with Toast and DialogComponentContent instead.")
+    @available(*, deprecated, message: "Use the new ResultBuilder-based register(id:dialog:) with Toast and DialogView instead.")
     static func registerCustomToast<ID: Hashable & Sendable, CustomContent: View>(
         id: ID,
         title: String,
