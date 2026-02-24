@@ -1,4 +1,4 @@
-//===--- DialogComponent.swift --------------------------------------------===//
+//===--- DialogComponentProtocols.swift --------------------------------------------===//
 //
 // This source file is part of the UDF open source project
 //

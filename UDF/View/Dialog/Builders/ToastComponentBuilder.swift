@@ -32,4 +32,7 @@ public enum ToastComponentBuilder: DialogBuilder {
 public extension ToastComponentBuilder {
     @available(*, unavailable, message: "DialogTitle is not supported in Toasts. Use DialogMessage instead.")
     static func buildExpression(_ expression: DialogTitle) -> [any DialogComponent] { [] }
+
+    @available(*, unavailable, message: "DialogTextField is not supported in Toasts. Text fields are only available in AlertDialogs.")
+    static func buildExpression(_ expression: DialogTextField) -> [any DialogComponent] { [] }
 }

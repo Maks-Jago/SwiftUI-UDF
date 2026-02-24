@@ -16,7 +16,7 @@ import SwiftUI
 ///
 /// `DialogBuilder` abstracts the shared `buildBlock`, `buildEither`, `buildOptional`,
 /// `buildArray`, and other result builder methods so that concrete builders like
-/// ``AlertComponentBuilder``, ``ToastComponentBuilder``, and ``ConfirmationDialogComponentBuilder``
+/// ``AlertDialogComponentBuilder``, ``ToastComponentBuilder``, and ``ConfirmationDialogComponentBuilder``
 /// only need to define their specific `buildExpression` overloads.
 ///
 /// Conforming types inherit default implementations for all standard result builder

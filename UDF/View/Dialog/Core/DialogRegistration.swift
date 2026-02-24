@@ -91,9 +91,9 @@ public enum DialogRegistry {
     /// Registers a type-safe ``Dialog`` (``AlertDialog``, ``Toast``, or ``ConfirmationDialog``)
     /// for the given identifier.
     ///
-    /// The dialog is constructed lazily each time it is presented.
-    /// Since ``Dialog`` conforms directly to ``DialogTypeProtocol``, no intermediate
-    /// conversion is needed.
+    /// The `@MainActor` builder closure is evaluated eagerly at registration time
+    /// and the resulting ``Dialog`` value — which is `Sendable` — is captured and
+    /// stored in the registry for later retrieval.
     ///
     /// ```swift
     /// DialogRegistration.register(id: MyDialogs.error) {

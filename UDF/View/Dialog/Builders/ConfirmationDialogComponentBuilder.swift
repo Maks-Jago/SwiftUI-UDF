@@ -37,4 +37,7 @@ public extension ConfirmationDialogComponentBuilder {
 
     @available(*, unavailable, message: "DialogView is not supported in Confirmation Dialogs.")
     static func buildExpression(_ expression: DialogView) -> [any DialogComponent] { [] }
+
+    @available(*, unavailable, message: "DialogTextField is not supported in Confirmation Dialogs. Text fields are only available in AlertDialogs.")
+    static func buildExpression(_ expression: DialogTextField) -> [any DialogComponent] { [] }
 }

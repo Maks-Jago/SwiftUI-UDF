@@ -40,7 +40,7 @@ import SwiftUI
 ///     .textInputAutocapitalization(.words)
 ///     .submitLabel(.done)
 /// ```
-public struct DialogTextField: DialogAction, DialogComponent {
+public struct DialogTextField: DialogAction, AlertDialogComponent {
     /// The placeholder text for the text field.
     public var title: String
     
