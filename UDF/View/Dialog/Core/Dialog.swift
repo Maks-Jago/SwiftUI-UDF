@@ -13,7 +13,7 @@ import SwiftUI
 
 /// A protocol representing a type-safe dialog that can be registered with ``DialogRegistry``.
 ///
-/// Concrete conforming types — ``Alert``, ``Toast``, and ``ConfirmationDialog`` —
+/// Concrete conforming types — ``AlertDialog``, ``Toast``, and ``ConfirmationDialog`` —
 /// each use a dedicated result builder to ensure only valid components are accepted
 /// at compile time, producing clear error messages for unsupported usage.
 ///
@@ -28,7 +28,7 @@ import SwiftUI
 /// ## Conforming Types
 /// | Type                   | Builder                              | Style                  |
 /// |------------------------|--------------------------------------|------------------------|
-/// | ``Alert``              | ``AlertComponentBuilder``            | `.alert`               |
+/// | ``AlertDialog``         | ``AlertDialogComponentBuilder``      | `.alert`               |
 /// | ``Toast``              | ``ToastComponentBuilder``            | `.toast(config)`       |
 /// | ``ConfirmationDialog`` | ``ConfirmationDialogComponentBuilder``| `.confirmationDialog`  |
 public protocol Dialog: DialogTypeProtocol {

@@ -1,4 +1,4 @@
-//===--- Alert.swift -----------------------------------------------------===//
+//===--- DialogComponent.swift --------------------------------------------===//
 //
 // This source file is part of the UDF open source project
 //
@@ -16,11 +16,11 @@
 /// (or one of its sub-protocols) to participate in the DSL-based dialog construction.
 public protocol DialogComponent {}
 
-/// A component that is valid inside an ``Alert`` builder.
+/// A component that is valid inside an ``AlertDialog`` builder.
 ///
-/// Types conforming to this protocol can be used with ``AlertComponentBuilder``.
+/// Types conforming to this protocol can be used with ``AlertDialogComponentBuilder``.
 /// Supported components include ``DialogTitle``, ``DialogMessage``, and any ``DialogAction``.
-public protocol AlertComponent: DialogComponent {}
+public protocol AlertDialogComponent: DialogComponent {}
 
 /// A component that is valid inside a ``Toast`` builder.
 ///

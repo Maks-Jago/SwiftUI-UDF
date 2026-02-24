@@ -14,7 +14,7 @@ import SwiftUI
 /// A dialog component representing arbitrary custom SwiftUI content for a dialog.
 ///
 /// `DialogView` is only supported in ``Toast``. Attempting to use it
-/// in an ``Alert`` or ``ConfirmationDialog`` will produce a compile-time error.
+/// in an ``AlertDialog`` or ``ConfirmationDialog`` will produce a compile-time error.
 ///
 /// Use this component when the standard title/message layout is insufficient
 /// and you need a fully custom view inside the toast.

@@ -78,7 +78,7 @@ public enum DialogRegistry {
     ///     )
     /// }
     /// ```
-    @available(*, deprecated, message: "Use the new ResultBuilder-based register(id:dialog:) with Alert, Toast, or ConfirmationDialog instead.")
+    @available(*, deprecated, message: "Use the new ResultBuilder-based register(id:dialog:) with AlertDialog, Toast, or ConfirmationDialog instead.")
     public static func register<ID: Hashable & Sendable>(
         id: ID,
         builder: @escaping @Sendable () -> any DialogTypeProtocol
@@ -88,7 +88,7 @@ public enum DialogRegistry {
         }
     }
     
-    /// Registers a type-safe ``Dialog`` (``Alert``, ``Toast``, or ``ConfirmationDialog``)
+    /// Registers a type-safe ``Dialog`` (``AlertDialog``, ``Toast``, or ``ConfirmationDialog``)
     /// for the given identifier.
     ///
     /// The dialog is constructed lazily each time it is presented.
@@ -97,7 +97,7 @@ public enum DialogRegistry {
     ///
     /// ```swift
     /// DialogRegistration.register(id: MyDialogs.error) {
-    ///     Alert {
+    ///     AlertDialog {
     ///         DialogTitle("Error")
     ///         DialogMessage("Something went wrong.")
     ///         DialogButton(title: "OK")
@@ -226,7 +226,7 @@ public enum DialogRegistry {
     ///   - category: The dialog category (success, error, warning, info).
     ///   - message: The message to display.
     ///   - style: The dialog style (defaults to .alert).
-    @available(*, deprecated, message: "Use the new ResultBuilder-based register(id:dialog:) with Alert, Toast, or ConfirmationDialog instead.")
+    @available(*, deprecated, message: "Use the new ResultBuilder-based register(id:dialog:) with AlertDialog, Toast, or ConfirmationDialog instead.")
     public static func register<ID: Hashable & Sendable>(
         id: ID,
         category: DialogCategory,

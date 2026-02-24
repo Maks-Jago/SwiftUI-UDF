@@ -14,7 +14,7 @@ import SwiftUI
 /// A dialog component representing a custom icon view for a dialog.
 ///
 /// `DialogIcon` is only supported in ``Toast``. Attempting to use it in an
-/// ``Alert`` or ``ConfirmationDialog`` will produce a compile-time error.
+/// ``AlertDialog`` or ``ConfirmationDialog`` will produce a compile-time error.
 ///
 /// ```swift
 /// Toast {

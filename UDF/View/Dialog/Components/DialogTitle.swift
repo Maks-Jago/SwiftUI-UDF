@@ -11,16 +11,16 @@
 
 /// A dialog component representing the title text of a dialog.
 ///
-/// `DialogTitle` is supported in ``Alert`` and ``ConfirmationDialog``, but **not** in ``Toast``.
+/// `DialogTitle` is supported in ``AlertDialog`` and ``ConfirmationDialog``, but **not** in ``Toast``.
 /// If multiple `DialogTitle` components are provided, only the last one is used.
 ///
 /// ```swift
-/// Alert {
+/// AlertDialog {
 ///     DialogTitle("Delete Item")
 ///     DialogMessage("This cannot be undone.")
 /// }
 /// ```
-public struct DialogTitle: AlertComponent, ConfirmationDialogComponent {
+public struct DialogTitle: AlertDialogComponent, ConfirmationDialogComponent {
     let value: String
     
     /// Creates a dialog title component.

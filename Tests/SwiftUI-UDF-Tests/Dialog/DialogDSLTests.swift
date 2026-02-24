@@ -20,16 +20,16 @@ struct DialogDSLTests {
         DialogRegistry.clearAll()
     }
 
-    @Test("Alert builder creates correct payload and applies properties")
+    @Test("AlertDialog builder creates correct payload and applies properties")
     func alertBuilderAppliesPropertiesCorrectly() {
-        let alert = Alert {
-            DialogTitle("My Alert Title")
+        let alert = AlertDialog {
+            DialogTitle("My AlertDialog Title")
             DialogMessage("An error occurred during the process.")
             DialogButton(title: "Retry", action: {})
             DialogButton(title: "Cancel", role: .cancel, action: {})
         }
 
-        #expect(alert.title == "My Alert Title")
+        #expect(alert.title == "My AlertDialog Title")
         #expect(alert.message == "An error occurred during the process.")
         #expect(alert.actions.count == 2)
         
@@ -48,7 +48,7 @@ struct DialogDSLTests {
 
     @Test("Multiple instances of the same component type resolve to the last one")
     func componentOverwriteResolvesToLatest() {
-        let alert = Alert {
+        let alert = AlertDialog {
             DialogTitle("First Title")
             DialogMessage("First Message")
             
@@ -65,7 +65,7 @@ struct DialogDSLTests {
 
     @Test("All supplied buttons are preserved correctly")
     func multipleActionsAreAppendedCorrectly() {
-        let alert = Alert {
+        let alert = AlertDialog {
             DialogButton(title: "Button 1", action: {})
             DialogButton(title: "Button 2", action: {})
             DialogButton(title: "Button 3", action: {})
@@ -84,7 +84,7 @@ struct DialogDSLTests {
         let includeMessage = false
         let includeCancelButton = true
         
-        let alert = Alert {
+        let alert = AlertDialog {
             DialogTitle("Optional Test")
             if includeMessage {
                 DialogMessage("This should not be included")
@@ -162,15 +162,15 @@ struct DialogDSLTests {
         let id = 123
         
         DialogRegistry.register(id: id) {
-            Alert {
-                DialogTitle("Dynamic Registry Alert")
+            AlertDialog {
+                DialogTitle("Dynamic Registry AlertDialog")
                 DialogButton(title: "Dismiss", action: {})
             }
         }
         
         let retrieved = DialogRegistry.get(id: id)
         #expect(retrieved != nil)
-        #expect(retrieved?.title == "Dynamic Registry Alert")
+        #expect(retrieved?.title == "Dynamic Registry AlertDialog")
         #expect(retrieved?.actions.count == 1)
         
         if let dialog = retrieved {
@@ -184,7 +184,7 @@ struct DialogDSLTests {
 
     @Test("Empty builder produces a valid but empty payload")
     func emptyBuilderProducesEmptyPayload() {
-        let alert = Alert { }
+        let alert = AlertDialog { }
         
         #expect(alert.title == "")
         #expect(alert.message == nil)
@@ -208,7 +208,7 @@ struct DialogDSLTests {
         let successTitle = "Success"
         let successMessage = "Everything is fine."
         
-        let alert = Alert {
+        let alert = AlertDialog {
             if isError {
                 DialogTitle(errorTitle)
                 DialogMessage(errorMessage)
@@ -228,7 +228,7 @@ struct DialogDSLTests {
     func forLoopBuildArray() {
         let dynamicButtons = ["Option 1", "Option 2", "Option 3"]
         
-        let alert = Alert {
+        let alert = AlertDialog {
             DialogTitle("Choose an Option")
             for buttonTitle in dynamicButtons {
                 DialogButton(title: buttonTitle, action: {})
@@ -250,7 +250,7 @@ struct DialogDSLTests {
     func dialogTextFieldSupport() throws {
         let textBinding = Binding.constant("")
         
-        let alert = Alert {
+        let alert = AlertDialog {
             DialogTitle("Enter Details")
             DialogTextField(title: "Username", text: textBinding)
             DialogButton(title: "Submit", action: {})
@@ -269,7 +269,7 @@ struct DialogDSLTests {
     
     @Test("Dialog category is always .custom for DSL types")
     func dialogCategoryIsAlwaysCustom() {
-        let alert = Alert {
+        let alert = AlertDialog {
             DialogTitle("Title")
         }
         let toast = Toast {
@@ -284,10 +284,10 @@ struct DialogDSLTests {
         #expect(confirmation.category == .custom)
     }
     
-    @Test("Alert without icon or custom view returns nil for view accessors")
+    @Test("AlertDialog without icon or custom view returns nil for view accessors")
     func alertReturnsNilForIconAndCustomContent() {
-        let alert = Alert {
-            DialogTitle("Plain Alert")
+        let alert = AlertDialog {
+            DialogTitle("Plain AlertDialog")
             DialogMessage("No icon here")
         }
         
@@ -297,17 +297,17 @@ struct DialogDSLTests {
     
     @Test("Two identical alerts are equal, two different alerts are not")
     func dialogEquatableConformance() {
-        let alert1 = Alert {
+        let alert1 = AlertDialog {
             DialogTitle("Same")
             DialogMessage("Message")
             DialogButton(title: "OK", action: {})
         }
-        let alert2 = Alert {
+        let alert2 = AlertDialog {
             DialogTitle("Same")
             DialogMessage("Message")
             DialogButton(title: "OK", action: {})
         }
-        let alert3 = Alert {
+        let alert3 = AlertDialog {
             DialogTitle("Different")
         }
         
@@ -317,15 +317,15 @@ struct DialogDSLTests {
     
     @Test("Equal alerts produce the same hash, different alerts produce different hashes")
     func dialogHashableConformance() {
-        let alert1 = Alert {
+        let alert1 = AlertDialog {
             DialogTitle("Title")
             DialogMessage("Msg")
         }
-        let alert2 = Alert {
+        let alert2 = AlertDialog {
             DialogTitle("Title")
             DialogMessage("Msg")
         }
-        let alert3 = Alert {
+        let alert3 = AlertDialog {
             DialogTitle("Other")
         }
         
@@ -335,29 +335,29 @@ struct DialogDSLTests {
     
     @Test("IsEquatable correctly compares same and different Dialog types")
     func dialogIsEquatableConformance() {
-        let alert = Alert {
+        let alert = AlertDialog {
             DialogTitle("Title")
         }
-        let sameAlert = Alert {
+        let sameAlertDialog = AlertDialog {
             DialogTitle("Title")
         }
         let toast = Toast {
             DialogMessage("msg")
         }
         
-        #expect(alert.isEqual(sameAlert))
+        #expect(alert.isEqual(sameAlertDialog))
         #expect(!alert.isEqual(toast))
     }
     
     // MARK: - DialogStatus Integration
     
-    @Test("DSL Alert can be stored and retrieved via DialogStatus using the registry")
-    func dialogStatusIntegrationWithDSLAlert() {
+    @Test("DSL AlertDialog can be stored and retrieved via DialogStatus using the registry")
+    func dialogStatusIntegrationWithDSLAlertDialog() {
         let id = 999
         
         DialogRegistry.register(id: id) {
-            Alert {
-                DialogTitle("Status Alert")
+            AlertDialog {
+                DialogTitle("Status AlertDialog")
                 DialogMessage("Integration test")
                 DialogButton(title: "Got It", action: {})
             }
@@ -370,7 +370,7 @@ struct DialogDSLTests {
             return
         }
 
-        #expect(dialog.title == "Status Alert")
+        #expect(dialog.title == "Status AlertDialog")
         #expect(dialog.message == "Integration test")
         #expect(dialog.actions.count == 1)
 
@@ -414,7 +414,7 @@ struct DialogDSLTests {
         let id = 777
         
         DialogRegistry.register(id: id) {
-            Alert {
+            AlertDialog {
                 DialogTitle("First")
             }
         }
@@ -422,7 +422,7 @@ struct DialogDSLTests {
         #expect(DialogRegistry.get(id: id)?.title == "First")
         
         DialogRegistry.register(id: id) {
-            Alert {
+            AlertDialog {
                 DialogTitle("Second")
             }
         }

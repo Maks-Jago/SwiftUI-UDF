@@ -1,4 +1,4 @@
-//===--- DialogComponentParser.swift ---------------------------------===//
+//===--- DialogPayload.swift --------------------------------------------===//
 //
 // This source file is part of the UDF open source project
 //
@@ -14,7 +14,7 @@ import SwiftUI
 /// An intermediate data structure holding parsed dialog component values.
 ///
 /// `DialogPayload` is produced by ``DialogComponentParser`` and consumed
-/// by ``Alert``, ``Toast``, and ``ConfirmationDialog`` to construct
+/// by ``AlertDialog``, ``Toast``, and ``ConfirmationDialog`` to construct
 /// the final ``DialogCustomType`` for presentation.
 public struct DialogPayload: Sendable {
     /// A closure returning the dialog title string. Defaults to an empty string.

@@ -1,4 +1,4 @@
-//===--- Alert.swift -----------------------------------------------------===//
+//===--- AlertDialog.swift ---------------------------------------------------===//
 //
 // This source file is part of the UDF open source project
 //
@@ -11,15 +11,15 @@
 
 import SwiftUI
 
-/// A type-safe alert dialog built using ``AlertComponentBuilder``.
+/// A type-safe alert dialog built using ``AlertDialogComponentBuilder``.
 ///
-/// `Alert` supports ``DialogTitle``, ``DialogMessage``, and ``DialogAction`` components.
+/// `AlertDialog` supports ``DialogTitle``, ``DialogMessage``, and ``DialogAction`` components.
 /// Components like ``DialogIcon`` and ``DialogView`` are **not** supported
 /// and will produce a compile-time error if used.
 ///
 /// ```swift
 /// DialogRegistration.register(id: MyDialogs.deleteConfirmation) {
-///     Alert {
+///     AlertDialog {
 ///         DialogTitle("Delete Item?")
 ///         DialogMessage("This action cannot be undone.")
 ///         DialogButton.destructive("Delete") { performDelete() }
@@ -27,16 +27,16 @@ import SwiftUI
 ///     }
 /// }
 /// ```
-public struct Alert: Dialog {
+public struct AlertDialog: Dialog {
     public let payload: DialogPayload
     public let dialogStyle: DialogStyle = .alert
 
-    /// Creates an alert by evaluating the provided component builder.
+    /// Creates an alert dialog by evaluating the provided component builder.
     ///
-    /// - Parameter content: A result builder closure producing ``AlertComponent`` values.
+    /// - Parameter content: A result builder closure producing ``AlertDialogComponent`` values.
     @MainActor
     public init(
-        @AlertComponentBuilder _ content: @MainActor () -> [DialogComponent]
+        @AlertDialogComponentBuilder _ content: @MainActor () -> [DialogComponent]
     ) {
         self.payload = DialogComponentParser.parse(content())
     }
