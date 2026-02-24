@@ -107,12 +107,14 @@ public enum DialogRegistry {
     /// - Parameters:
     ///   - id: A unique, hashable identifier for this dialog.
     ///   - dialog: A closure that returns a ``Dialog`` conforming value.
+    @MainActor
     public static func register<ID: Hashable & Sendable, D: Dialog>(
         id: ID,
-        dialog: @escaping @Sendable () -> D
+        dialog: @escaping @Sendable @MainActor () -> D
     ) {
+        let dialog = dialog()
         queue.async(flags: .barrier) {
-            registry[AnyHashable(id)] = { dialog() }
+            registry[AnyHashable(id)] = { dialog }
         }
     }
     

@@ -34,8 +34,9 @@ public struct Alert: Dialog {
     /// Creates an alert by evaluating the provided component builder.
     ///
     /// - Parameter content: A result builder closure producing ``AlertComponent`` values.
+    @MainActor
     public init(
-        @AlertComponentBuilder _ content: () -> [DialogComponent]
+        @AlertComponentBuilder _ content: @MainActor () -> [DialogComponent]
     ) {
         self.payload = DialogComponentParser.parse(content())
     }

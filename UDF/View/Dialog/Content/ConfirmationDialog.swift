@@ -36,9 +36,10 @@ public struct ConfirmationDialog: Dialog {
     /// - Parameters:
     ///   - config: A `ConfirmationDialogConfiguration` used to customize the presentation.
     ///   - content: The dialog components making up the confirmation dialog.
+    @MainActor
     public init(
         config: ConfirmationDialogConfiguration = .default,
-        @ConfirmationDialogComponentBuilder _ content: () -> [DialogComponent]
+        @ConfirmationDialogComponentBuilder _ content: @MainActor () -> [DialogComponent]
     ) {
         self.payload = DialogComponentParser.parse(content())
         self.dialogStyle = .confirmationDialog(config)

@@ -61,7 +61,7 @@ public struct DialogButton: DialogAction, DialogComponent {
     public var disabled: Bool = false
     
     /// The action to execute when the button is tapped.
-    public nonisolated(unsafe) var action: () -> Void
+    public var action: @MainActor () -> Void
     
     // MARK: - Equatable Implementation
     /// Checks if two `DialogButton` instances are equal by comparing their title, role, and disabled state.
@@ -89,10 +89,10 @@ public struct DialogButton: DialogAction, DialogComponent {
     ///   - title: The title of the button.
     ///   - role: The button role. Defaults to nil.
     ///   - action: A closure to execute when the button is tapped. Defaults to an empty closure.
-    nonisolated public init(
+    public init(
         title: String,
         role: ButtonRole? = nil,
-        action: @escaping () -> Void = {}
+        action: @MainActor @escaping () -> Void = {}
     ) {
         self.title = title
         self.role = role
@@ -180,7 +180,7 @@ public extension DialogAction where Self == DialogButton {
     ///     print("OK tapped")
     /// }
     /// ```
-    nonisolated static func `default`(_ title: String, action: @escaping () -> Void = {}) -> Self {
+    static func `default`(_ title: String, action: @MainActor @escaping () -> Void = {}) -> Self {
         DialogButton(title: title, action: action)
     }
     
@@ -197,7 +197,7 @@ public extension DialogAction where Self == DialogButton {
     ///     print("Cancelled")
     /// }
     /// ```
-    nonisolated static func cancel(_ title: String, action: @escaping () -> Void = {}) -> Self {
+    static func cancel(_ title: String, action: @MainActor @escaping () -> Void = {}) -> Self {
         DialogButton(title: title, action: action)
             .role(.cancel)
     }
@@ -215,7 +215,7 @@ public extension DialogAction where Self == DialogButton {
     ///     performDelete()
     /// }
     /// ```
-    nonisolated static func destructive(_ title: String, action: @escaping () -> Void = {}) -> Self {
+    static func destructive(_ title: String, action: @MainActor @escaping () -> Void = {}) -> Self {
         DialogButton(title: title, action: action)
             .role(.destructive)
     }
