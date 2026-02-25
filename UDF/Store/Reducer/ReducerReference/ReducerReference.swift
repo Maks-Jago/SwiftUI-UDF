@@ -78,11 +78,80 @@ public extension ReducerReference where Reducer: Form {
     ///
     /// - Parameter keyPath: A writable key path to a property of the reducer.
     /// - Returns: A `Binding` that allows the property to be directly modified in SwiftUI.
-    subscript<T: Equatable>(dynamicMember keyPath: WritableKeyPath<Reducer, T>) -> Binding<T> {
+    subscript<T: Equatable & Sendable>(dynamicMember keyPath: WritableKeyPath<Reducer, T>) -> Binding<T> {
         Binding(
             get: { self.reducer[keyPath: keyPath] },
             set: { value in
                 self.dispatcher(Actions.UpdateFormField(keyPath: keyPath, value: value))
+            }
+        )
+    }
+
+    /// Creates a binding for a form field property with dispatch modifiers applied.
+    ///
+    /// Use this method when you need to customize how the `UpdateFormField` action is dispatched,
+    /// such as adding an animation, silencing the dispatch, or adding a delay.
+    ///
+    /// This replaces the need for manually constructing a `Binding` with custom get/set closures:
+    /// ```swift
+    /// // Before:
+    /// Binding(
+    ///     get: { store.state.someForm.value },
+    ///     set: { store.dispatch(Actions.UpdateFormField(keyPath: \.value, value: $0)).with(animation: .linear) }
+    /// )
+    ///
+    /// // After:
+    /// store.$state.someForm.bind(\.value, with: .animation(.linear))
+    /// ```
+    ///
+    /// - Parameters:
+    ///   - keyPath: A writable key path to a property of the form.
+    ///   - modifiers: One or more `BindingModifier` values to apply to the dispatched action.
+    /// - Returns: A `Binding` whose setter dispatches an `UpdateFormField` action with the specified modifiers.
+    func bind<T: Equatable & Sendable>(
+        _ keyPath: WritableKeyPath<Reducer, T>,
+        with modifiers: BindingModifier...
+    ) -> Binding<T> {
+        bind(keyPath, modifiers: modifiers)
+    }
+
+    /// Creates a binding for a form field property with an array of dispatch modifiers applied.
+    ///
+    /// - Parameters:
+    ///   - keyPath: A writable key path to a property of the form.
+    ///   - modifiers: An array of `BindingModifier` values to apply to the dispatched action.
+    /// - Returns: A `Binding` whose setter dispatches an `UpdateFormField` action with the specified modifiers.
+    func bind<T: Equatable & Sendable>(
+        _ keyPath: WritableKeyPath<Reducer, T>,
+        modifiers: [BindingModifier]
+    ) -> Binding<T> {
+        Binding(
+            get: { self.reducer[keyPath: keyPath] },
+            set: { value in
+                let baseAction = Actions.UpdateFormField(keyPath: keyPath, value: value)
+
+                var animation: Animation? = nil
+                var delay: Delay? = nil
+                var silent = false
+
+                for modifier in modifiers {
+                    switch modifier {
+                    case .animation(let anim):
+                        animation = anim
+                    case .silenced:
+                        silent = true
+                    case .delay(let interval):
+                        delay = Delay(interval)
+                    }
+                }
+
+                let internalAction = InternalAction(
+                    baseAction,
+                    animation: animation,
+                    silent: silent,
+                    delay: delay
+                )
+                self.dispatcher(ActionGroup(internalActions: [internalAction]))
             }
         )
     }
