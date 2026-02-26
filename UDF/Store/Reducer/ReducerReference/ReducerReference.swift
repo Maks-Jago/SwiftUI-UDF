@@ -109,8 +109,8 @@ public extension ReducerReference where Reducer: Form {
         FormValueReference(
             keyPath: keyPath,
             reducer: reducer,
-            dispatcher: { action in
-                self.dispatcher(action)
+            dispatcher: { [weak self] action in
+                self?.dispatcher(action)
             }
         )
     }
