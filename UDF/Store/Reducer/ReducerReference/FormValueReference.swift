@@ -50,10 +50,10 @@ public struct FormValueReference<Reducer: Form, Value: Equatable & Sendable>: Se
     }
 
     /// The key path to the form field within the reducer.
-    public let keyPath: WritableKeyPath<Reducer, Value>
+    private let keyPath: WritableKeyPath<Reducer, Value>
 
     /// The reducer instance that contains the form field.
-    public let reducer: Reducer
+    private let reducer: Reducer
 
     /// A closure that handles the dispatching of actions.
     private let dispatcher: @Sendable (any Action) -> Void
@@ -91,7 +91,7 @@ public struct FormValueReference<Reducer: Form, Value: Equatable & Sendable>: Se
     /// Dispatches an action through the associated store.
     ///
     /// - Parameter action: The action to dispatch.
-    public func dispatch(_ action: some Action) {
+    private func dispatch(_ action: some Action) {
         dispatcher(action)
     }
 
