@@ -1,8 +1,8 @@
-//===--- ReducerValueReference.swift ----------------------------===//
+//===--- FormValueReference.swift --------------------------------===//
 //
 // This source file is part of the UDF open source project
 //
-// Copyright (c) 2024 You are launched
+// Copyright (c) 2026 You are launched
 // Licensed under Apache License v2.0
 //
 // See https://opensource.org/licenses/Apache License v2.0 for license information
@@ -12,51 +12,55 @@
 import Foundation
 import SwiftUI
 
-/// A lightweight wrapper that pairs a read-only value with the ability to dispatch actions
-/// and create modified bindings.
+/// A reference that pairs a form field's key path and its containing reducer with a dispatch closure,
+/// enabling both value access and modified binding creation.
 ///
-/// `ReducerValueReference` is obtained through `@dynamicMemberLookup` on a `ReducerReference`
-/// when the reducer conforms to `Form`. It provides direct access to a form field's current value
-/// while also carrying the dispatch closure, enabling you to read the value and dispatch actions
-/// derived from it.
+/// `FormValueReference` is obtained through `@dynamicMemberLookup` on a `ReducerReference`
+/// when the reducer conforms to `Form`. It allows you to:
+/// - Read the current value of a form field via the stored `reducer` and `keyPath`.
+/// - Dispatch arbitrary actions through the associated store.
+/// - Create `Binding<Value>` instances with dispatch modifiers (`.with(animation:)`, `.with(delay:)`, `.silent()`).
 ///
-/// Additionally, it supports creating `Binding<Value>` instances with dispatch modifiers
-/// (animation, delay, silencing) via the `.with(...)` and `.silenced()` methods:
+/// Swift disambiguates between `Binding<T>` and `FormValueReference<Reducer, T>` based on the
+/// expected type at the call site.
+///
+/// ## Usage
 ///
 /// ```swift
-/// // Get a value reference
-/// let nameRef: ReducerValueReference<String> = store.$state.profileForm.name
+/// // Obtain a FormValueReference to a specific form field
+/// let nameRef: FormValueReference<ProfileForm, String> = store.$state.profileForm.name
 ///
 /// // Read the current value
-/// let currentName = nameRef.value
+/// let currentName = nameRef.reducer[keyPath: nameRef.keyPath]
 ///
-/// // Dispatch actions using the value
-/// nameRef.dispatch(Actions.SubmitProfile(name: nameRef.value))
+/// // Dispatch actions
+/// nameRef.dispatch(Actions.SubmitProfile(name: currentName))
 ///
 /// // Create a Binding with animation
-/// let animatedBinding: Binding<String> = store.$state.profileForm.name.with(animation: .linear)
+/// TextField("Name", text: store.$state.profileForm.name.with(animation: .linear))
 ///
-/// // Create a Binding with multiple modifiers
-/// let customBinding = store.$state.profileForm.name.with(.animation(.easeIn), .delay(0.3))
+/// // Create a Binding with delay
+/// TextField("Search", text: store.$state.searchForm.query.with(delay: 0.3))
+///
+/// // Create a silent Binding
+/// TextField("Token", text: store.$state.settingsForm.apiToken.silent())
 /// ```
-///
-/// Swift disambiguates between `Binding<T>`, `WritableKeyPath<Reducer, T>`, and
-/// `ReducerValueReference<T>` based on the type annotation at the call site.
-public final class ReducerValueReference<Reducer: Form, Value: Equatable & Sendable>: @unchecked Sendable {
-    /// The current value of the form field.
+public final class FormValueReference<Reducer: Form, Value: Equatable & Sendable>: @unchecked Sendable {
+    /// The key path to the form field within the reducer.
     public let keyPath: WritableKeyPath<Reducer, Value>
-    
+
+    /// The reducer instance that contains the form field.
     public let reducer: Reducer
 
     /// A closure that handles the dispatching of actions.
     private let dispatcher: (any Action) -> Void
 
-    /// Initializes a new `ReducerValueReference` with the specified value, dispatcher, and action factory.
+    /// Initializes a new `FormValueReference` with the specified key path, reducer, and dispatcher.
     ///
     /// - Parameters:
-    ///   - value: The current value of the form field.
+    ///   - keyPath: The key path to the form field within the reducer.
+    ///   - reducer: The reducer instance that contains the form field.
     ///   - dispatcher: A closure to handle action dispatching.
-    ///   - makeUpdateAction: A closure that creates the appropriate update action for a given new value.
     init(
         keyPath: WritableKeyPath<Reducer, Value>,
         reducer: Reducer,
@@ -78,6 +82,9 @@ public final class ReducerValueReference<Reducer: Form, Value: Equatable & Senda
 
     /// Creates a `Binding` with the specified animation applied to the dispatched update action.
     ///
+    /// When the binding's value changes, an `UpdateFormField` action is dispatched with the specified
+    /// animation modifier.
+    ///
     /// ```swift
     /// TextField("Name", text: store.$state.profileForm.name.with(animation: .linear))
     /// ```
@@ -94,11 +101,14 @@ public final class ReducerValueReference<Reducer: Form, Value: Equatable & Senda
 
     /// Creates a `Binding` with the specified delay applied to the dispatched update action.
     ///
+    /// When the binding's value changes, an `UpdateFormField` action is dispatched after the specified
+    /// time interval.
+    ///
     /// ```swift
     /// TextField("Search", text: store.$state.searchForm.query.with(delay: 0.3))
     /// ```
     ///
-    /// - Parameter delay: The time interval to delay the dispatch.
+    /// - Parameter interval: The time interval to delay the dispatch.
     /// - Returns: A `Binding` whose setter dispatches the update action after the specified delay.
     public func with(delay interval: TimeInterval) -> Binding<Value> {
         Binding {
@@ -110,8 +120,11 @@ public final class ReducerValueReference<Reducer: Form, Value: Equatable & Senda
 
     /// Creates a `Binding` whose dispatched update action is silenced (suppresses logging).
     ///
+    /// When the binding's value changes, an `UpdateFormField` action is dispatched silently,
+    /// meaning it will not appear in action logs.
+    ///
     /// ```swift
-    /// TextField("Token", text: store.$state.settingsForm.apiToken.silenced())
+    /// TextField("Token", text: store.$state.settingsForm.apiToken.silent())
     /// ```
     ///
     /// - Returns: A `Binding` whose setter dispatches the update action silently.

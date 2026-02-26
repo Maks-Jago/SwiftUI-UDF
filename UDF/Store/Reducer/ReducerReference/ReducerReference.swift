@@ -87,22 +87,26 @@ public extension ReducerReference where Reducer: Form {
         )
     }
     
-    /// Provides dynamic access to a form field as a `ReducerValueReference`, combining the field's
-    /// current value with the dispatch closure.
+    /// Provides dynamic access to a form field as a ``FormValueReference``, combining the field's
+    /// key path and reducer with the dispatch closure.
     ///
-    /// Swift disambiguates this subscript from `Binding<T>` and `WritableKeyPath<Reducer, T>` based
-    /// on the expected type at the call site.
+    /// Swift disambiguates this subscript from `Binding<T>` based on the expected type at the call site.
+    /// Use ``FormValueReference`` when you need both access to the value and the ability to dispatch
+    /// actions, or when you want to create a `Binding` with modifiers (animation, delay, silencing).
     ///
     /// ```swift
-    /// let nameRef: ReducerValueReference<String> = store.$state.profileForm.name
-    /// let currentName = nameRef.value
-    /// nameRef.dispatch(Actions.SubmitProfile(name: nameRef.value))
+    /// // As a typed variable
+    /// let nameRef: FormValueReference<ProfileForm, String> = store.$state.profileForm.name
+    /// nameRef.dispatch(Actions.SubmitProfile(name: nameRef.reducer[keyPath: nameRef.keyPath]))
+    ///
+    /// // Chained to create a modified Binding
+    /// TextField("Name", text: store.$state.profileForm.name.with(animation: .linear))
     /// ```
     ///
     /// - Parameter keyPath: A writable key path to a property of the form.
-    /// - Returns: A `ReducerValueReference` wrapping the field's current value and the dispatcher.
-    subscript<T: Equatable & Sendable>(dynamicMember keyPath: WritableKeyPath<Reducer, T>) -> ReducerValueReference<Reducer ,T> {
-        ReducerValueReference(
+    /// - Returns: A ``FormValueReference`` wrapping the field's key path, reducer, and dispatcher.
+    subscript<T: Equatable & Sendable>(dynamicMember keyPath: WritableKeyPath<Reducer, T>) -> FormValueReference<Reducer, T> {
+        FormValueReference(
             keyPath: keyPath,
             reducer: reducer,
             dispatcher: { action in
