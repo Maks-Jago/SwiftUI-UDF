@@ -13,16 +13,16 @@ import Foundation
 import SwiftUI
 
 /// A reference that pairs a form field's key path and its containing reducer with a dispatch closure,
-/// enabling both value access and modified binding creation.
+/// enabling both value access and chained binding creation with modifiers.
 ///
 /// `FormValueReference` is obtained through `@dynamicMemberLookup` on a `ReducerReference`
 /// when the reducer conforms to `Form`. It allows you to:
 /// - Read the current value of a form field via the stored `reducer` and `keyPath`.
 /// - Dispatch arbitrary actions through the associated store.
-/// - Create `Binding<Value>` instances with dispatch modifiers (`.with(animation:)`, `.with(delay:)`, `.silent()`).
+/// - Create `Binding<Value>` instances with chained dispatch modifiers (`.with(animation:)`, `.with(delay:)`, `.silent()`).
 ///
-/// Swift disambiguates between `Binding<T>` and `FormValueReference<Reducer, T>` based on the
-/// expected type at the call site.
+/// Swift disambiguates between `Binding<Value>` and `FormValueReference<Reducer, Value>` based on the
+/// expected type at the call site, allowing for a seamless chaining experience.
 ///
 /// ## Usage
 ///
@@ -39,19 +39,16 @@ import SwiftUI
 /// // Create a Binding with animation
 /// TextField("Name", text: store.$state.profileForm.name.with(animation: .linear))
 ///
-/// // Create a Binding with delay
-/// TextField("Search", text: store.$state.searchForm.query.with(delay: 0.3))
-///
-/// // Create a silent Binding
-/// TextField("Token", text: store.$state.settingsForm.apiToken.silent())
+/// // Create a Binding with chained modifiers
+/// TextField("Search", text: store.$state.searchForm.query.with(delay: 0.3).with(animation: .default).silent())
 /// ```
-public final class FormValueReference<Reducer: Form, Value: Equatable & Sendable>: @unchecked Sendable {
-    private enum Modifier {
+public struct FormValueReference<Reducer: Form, Value: Equatable & Sendable>: Sendable {
+    private enum Modifier: Sendable {
         case animation(Animation?)
         case delay(TimeInterval)
         case silent
     }
-    
+
     /// The key path to the form field within the reducer.
     public let keyPath: WritableKeyPath<Reducer, Value>
 
@@ -59,9 +56,10 @@ public final class FormValueReference<Reducer: Form, Value: Equatable & Sendable
     public let reducer: Reducer
 
     /// A closure that handles the dispatching of actions.
-    private let dispatcher: (any Action) -> Void
-    
-    private var actionModifiers: [FormValueReference.Modifier] = []
+    private let dispatcher: @Sendable (any Action) -> Void
+
+    /// An array of modifiers to apply to the dispatched action.
+    private let modifiers: [Modifier]
 
     /// Initializes a new `FormValueReference` with the specified key path, reducer, and dispatcher.
     ///
@@ -72,11 +70,22 @@ public final class FormValueReference<Reducer: Form, Value: Equatable & Sendable
     init(
         keyPath: WritableKeyPath<Reducer, Value>,
         reducer: Reducer,
-        dispatcher: @escaping (any Action) -> Void
+        dispatcher: @escaping @Sendable (any Action) -> Void
+    ) {
+        self.init(keyPath: keyPath, reducer: reducer, dispatcher: dispatcher, modifiers: [])
+    }
+
+    /// Internal initializer for creating a reference with accumulated modifiers.
+    private init(
+        keyPath: WritableKeyPath<Reducer, Value>,
+        reducer: Reducer,
+        dispatcher: @escaping @Sendable (any Action) -> Void,
+        modifiers: [Modifier]
     ) {
         self.keyPath = keyPath
         self.reducer = reducer
         self.dispatcher = dispatcher
+        self.modifiers = modifiers
     }
 
     /// Dispatches an action through the associated store.
@@ -86,124 +95,77 @@ public final class FormValueReference<Reducer: Form, Value: Equatable & Sendable
         dispatcher(action)
     }
 
-    // MARK: - Binding with Modifiers
+    // MARK: - Chained Modifiers
+
+    /// Adds an animation modifier to the reference.
+    ///
+    /// - Parameter animation: The animation to apply to the dispatched update action.
+    /// - Returns: A new `FormValueReference` with the animation modifier appended.
+    public func with(animation: Animation?) -> Self {
+        appended(modifier: .animation(animation))
+    }
+
+    /// Adds a delay modifier to the reference.
+    ///
+    /// - Parameter interval: The time interval to delay the dispatch.
+    /// - Returns: A new `FormValueReference` with the delay modifier appended.
+    public func with(delay interval: TimeInterval) -> Self {
+        appended(modifier: .delay(interval))
+    }
+
+    /// Adds a silent modifier to the reference, suppressing action logging.
+    ///
+    /// - Returns: A new `FormValueReference` with the silent modifier appended.
+    public func silent() -> Self {
+        appended(modifier: .silent)
+    }
+
+    // MARK: - Binding Conversion
 
     /// Creates a `Binding` with the specified animation applied to the dispatched update action.
     ///
-    /// When the binding's value changes, an `UpdateFormField` action is dispatched with the specified
-    /// animation modifier.
-    ///
-    /// ```swift
-    /// TextField("Name", text: store.$state.profileForm.name.with(animation: .linear))
-    /// ```
-    ///
     /// - Parameter animation: The animation to apply when the binding value changes.
-    /// - Returns: A `Binding` whose setter dispatches the update action wrapped with the specified animation.
+    /// - Returns: A `Binding` whose setter dispatches the update action with all accumulated modifiers and the new animation.
     public func with(animation: Animation?) -> Binding<Value> {
-        Binding {
-            self.reducer[keyPath: self.keyPath]
-        } set: { [weak self] value in
-            guard let self else { return }
-                
-            var action: any Action = Actions.UpdateFormField(keyPath: keyPath, value: value)
-            
-            for modifier in actionModifiers {
-                switch modifier {
-                case .animation(let anim):
-                    action = action.with(animation: anim)
-                case .delay(let timeInterval):
-                    action = action.with(delay: timeInterval)
-                case .silent:
-                    action = action.silent()
-                }
-            }
-            
-            self.dispatcher(action.with(animation: animation))
-        }
-    }
-    
-    public func with(animation: Animation?) -> Self {
-        let reference = self
-        reference.actionModifiers.append(.animation(animation))
-        return reference
+        with(animation: animation).asBinding()
     }
 
     /// Creates a `Binding` with the specified delay applied to the dispatched update action.
     ///
-    /// When the binding's value changes, an `UpdateFormField` action is dispatched after the specified
-    /// time interval.
-    ///
-    /// ```swift
-    /// TextField("Search", text: store.$state.searchForm.query.with(delay: 0.3))
-    /// ```
-    ///
     /// - Parameter interval: The time interval to delay the dispatch.
-    /// - Returns: A `Binding` whose setter dispatches the update action after the specified delay.
+    /// - Returns: A `Binding` whose setter dispatches the update action with all accumulated modifiers and the new delay.
     public func with(delay interval: TimeInterval) -> Binding<Value> {
-        Binding {
-            self.reducer[keyPath: self.keyPath]
-        } set: { [weak self] value in
-            guard let self else { return }
-                
-            var action: any Action = Actions.UpdateFormField(keyPath: keyPath, value: value)
-            
-            for modifier in actionModifiers {
-                switch modifier {
-                case .animation(let anim):
-                    action = action.with(animation: anim)
-                case .delay(let timeInterval):
-                    action = action.with(delay: timeInterval)
-                case .silent:
-                    action = action.silent()
-                }
-            }
-            
-            self.dispatcher(action.with(delay: interval))
-        }
-    }
-    
-    public func with(delay interval: TimeInterval) -> Self {
-        let reference = self
-        reference.actionModifiers.append(.delay(interval))
-        return reference
+        with(delay: interval).asBinding()
     }
 
     /// Creates a `Binding` whose dispatched update action is silenced (suppresses logging).
     ///
-    /// When the binding's value changes, an `UpdateFormField` action is dispatched silently,
-    /// meaning it will not appear in action logs.
-    ///
-    /// ```swift
-    /// TextField("Token", text: store.$state.settingsForm.apiToken.silent())
-    /// ```
-    ///
-    /// - Returns: A `Binding` whose setter dispatches the update action silently.
+    /// - Returns: A `Binding` whose setter dispatches the update action with all accumulated modifiers and the silent modifier.
     public func silent() -> Binding<Value> {
+        silent().asBinding()
+    }
+
+    // MARK: - Private Helpers
+
+    /// Returns a new reference with the specified modifier appended to the current list.
+    private func appended(modifier: Modifier) -> Self {
+        .init(keyPath: keyPath, reducer: reducer, dispatcher: dispatcher, modifiers: modifiers + [modifier])
+    }
+
+    /// Converts the reference and its accumulated modifiers into a SwiftUI `Binding`.
+    private func asBinding() -> Binding<Value> {
         Binding {
             self.reducer[keyPath: self.keyPath]
-        } set: { [weak self] value in
-            guard let self else { return }
-                
-            var action: any Action = Actions.UpdateFormField(keyPath: keyPath, value: value)
-            
-            for modifier in actionModifiers {
+        } set: { value in
+            let baseAction = Actions.UpdateFormField(keyPath: self.keyPath, value: value)
+            let modifiedAction = self.modifiers.reduce(baseAction as any Action) { action, modifier in
                 switch modifier {
-                case .animation(let anim):
-                    action = action.with(animation: anim)
-                case .delay(let timeInterval):
-                    action = action.with(delay: timeInterval)
-                case .silent:
-                    action = action.silent()
+                case .animation(let anim): return action.with(animation: anim)
+                case .delay(let interval): return action.with(delay: interval)
+                case .silent: return action.silent()
                 }
             }
-            
-            self.dispatcher(action.silent())
+            self.dispatcher(modifiedAction)
         }
-    }
-    
-    public func silent() -> Self {
-        let reference = self
-        reference.actionModifiers.append(.silent)
-        return reference
     }
 }
