@@ -11,6 +11,7 @@ private extension Actions {
 }
 
 extension DialogType {
+    @MainActor
     static func dialogWithAction(_ action: @Sendable @escaping () -> Void) -> DialogCustomType<EmptyView, EmptyView> {
         DialogCustomType.custom(
             content: DialogContent(
@@ -25,6 +26,7 @@ extension DialogType {
         )
     }
 
+    @MainActor
     static func toastWithAction(_ action: @Sendable @escaping () -> Void) -> DialogCustomType<EmptyView, EmptyView> {
         DialogCustomType.custom(
             content: DialogContent(
@@ -110,10 +112,14 @@ extension DialogType {
         let store = await TestStore(initial: AppState())
         #expect(await store.state.form.dialog.status == .dismissed)
 
-        DialogRegistry.register(id: FormWithDialog.DialogId.dialogWithAction) {
+        let dialogWithAction = await MainActor.run {
             DialogType.dialogWithAction {
                 print("Custom dialog action")
             }
+        }
+        
+        DialogRegistry.register(id: FormWithDialog.DialogId.dialogWithAction) {
+            dialogWithAction
         }
 
         await store.dispatch(Actions.PresentDialogWithAction())
@@ -183,10 +189,14 @@ extension DialogType {
         let store = await TestStore(initial: AppState())
         #expect(await store.state.form.dialog.status == .dismissed)
 
-        DialogRegistry.register(id: FormWithDialog.DialogId.toastDialog) {
+        let toastWithAction = await MainActor.run {
             DialogType.toastWithAction {
                 print("Toast action executed")
             }
+        }
+        
+        DialogRegistry.register(id: FormWithDialog.DialogId.toastDialog) {
+            toastWithAction
         }
 
         await store.dispatch(Actions.PresentToastDialog())
@@ -256,7 +266,9 @@ extension DialogType {
 
             // Check custom view
             #expect(!(dialogType is DialogType))
-            #expect(dialogType.getCustomContentView() != nil)
+            await MainActor.run {
+                #expect(dialogType.getCustomContentView() != nil)
+            }
         } else {
             Issue.record("Expected custom dialog with custom view")
         }
@@ -285,6 +297,7 @@ extension DialogType {
     }
 
     // MARK: - Complex Content Tests
+    @MainActor
     @Test func customDialogWithContent() {
         let dialog = DialogStatus(style: .alert) {
             DialogContent(title: "Custom Title", message: "Custom message", actions: {
@@ -307,6 +320,7 @@ extension DialogType {
         }
     }
 
+    @MainActor
     @Test func toastWithContentAndActions() {
         let dialog = DialogStatus(style: .toast()) {
             DialogContent(title: "Toast Title", message: "Toast message", actions: {
