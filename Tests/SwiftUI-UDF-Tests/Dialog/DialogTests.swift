@@ -237,18 +237,18 @@ extension DialogType {
         #expect(success)
 
         // Verify it's a toast with custom view
-        if case .presented(let dialogProtocol) = await store.state.form.dialog.status {
+        if case .presented(let dialogType) = await store.state.form.dialog.status {
             // Check style is toast
-            if case .toast(let config) = dialogProtocol.style {
+            if case .toast(let config) = dialogType.style {
                 #expect(config.position == .center)
             } else {
                 Issue.record("Expected toast style")
             }
 
             // Check custom view
-            #expect(!(dialogProtocol is DialogType))
+            #expect(!(dialogType is DialogType))
             await MainActor.run {
-                #expect(dialogProtocol.getCustomContentView() != nil)
+                #expect(dialogType.getCustomContentView() != nil)
             }
         } else {
             Issue.record("Expected custom dialog with custom view")

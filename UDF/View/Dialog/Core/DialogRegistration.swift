@@ -12,6 +12,7 @@
 import Foundation
 import SwiftUI
 
+/// Legacy typealias for the dialog component namespace.
 @available(*, deprecated, renamed: "Dialog")
 public typealias DialogRegistry = Dialog
 
@@ -30,7 +31,7 @@ public typealias DialogRegistry = Dialog
 /// ## Usage:
 /// ```swift
 /// // Register a dialog
-/// DialogRegistry.register(id: "networkError") {
+/// Dialog.register(id: "networkError") {
 ///     .error("No internet connection", style: .alert)
 /// }
 /// 
@@ -38,7 +39,7 @@ public typealias DialogRegistry = Dialog
 /// dialog = .init(id: "networkError")
 ///
 /// // Check if registered
-/// if DialogRegistry.isRegistered(id: "networkError") {
+/// if Dialog.isRegistered(id: "networkError") {
 ///     // Use it
 /// }
 /// ```
@@ -71,7 +72,7 @@ enum _DialogRegistry {
     ///
     /// ## Example:
     /// ```swift
-    /// DialogRegistry.register(id: "deleteConfirmation") {
+    /// Dialog.register(id: "deleteConfirmation") {
     ///     DialogCustomType.custom(
     ///         content: DialogContent("Delete Item", message: "This cannot be undone") {
     ///             DialogButton.destructive("Delete") { performDelete() }
@@ -91,6 +92,14 @@ enum _DialogRegistry {
         }
     }
     
+    /// Registers a convenient standard dialog factory for a given identifier.
+    ///
+    /// This registration overload is optimized for standard ``DialogType`` instances
+    /// representing simple `.success`, `.error`, `.warning`, or `.info` states.
+    ///
+    /// - Parameters:
+    ///   - id: A unique identifier for the dialog. Can be any Hashable type.
+    ///   - builder: A closure that returns a standard ``DialogType`` when called.
     public static func register<ID: Hashable & Sendable>(
         id: ID,
         builder: @escaping @Sendable () -> DialogType
@@ -108,7 +117,7 @@ enum _DialogRegistry {
     /// stored in the registry for later retrieval.
     ///
     /// ```swift
-    /// DialogRegistration.register(id: MyDialogs.error) {
+    /// Dialog.register(id: MyDialogs.error) {
     ///     AlertDialog {
     ///         DialogTitle("Error")
     ///         DialogMessage("Something went wrong.")
@@ -155,7 +164,7 @@ enum _DialogRegistry {
     ///
     /// ## Example:
     /// ```swift
-    /// if DialogRegistry.isRegistered(id: "networkError") {
+    /// if Dialog.isRegistered(id: "networkError") {
     ///     dialog = .init(id: "networkError")
     /// } else {
     ///     dialog = .init(error: "Unknown error occurred")
@@ -176,7 +185,7 @@ enum _DialogRegistry {
     ///
     /// ## Example:
     /// ```swift
-    /// DialogRegistry.unregister(id: "temporaryPromotion")
+    /// Dialog.unregister(id: "temporaryPromotion")
     /// ```
     public static func unregister<ID: Hashable & Sendable>(id: ID) {
         queue.async(flags: .barrier) {
@@ -196,7 +205,7 @@ enum _DialogRegistry {
     /// ## Example:
     /// ```swift
     /// // In test teardown
-    /// DialogRegistry.clearAll()
+    /// Dialog.clearAll()
     /// ```
     public static func clearAll() {
         queue.async(flags: .barrier) {
@@ -265,7 +274,7 @@ enum _DialogRegistry {
 
 // MARK: - ToastRegistry Extension
 
-/// Toast-specific registration extensions for `DialogRegistry`.
+/// Toast-specific registration extensions for `_DialogRegistry`.
 ///
 /// This extension provides convenient methods for registering toast dialogs
 /// with common configurations and patterns. Toasts are non-modal dialogs
@@ -286,7 +295,7 @@ extension _DialogRegistry {
     ///
     /// ## Example:
     /// ```swift
-    /// DialogRegistry.registerToast(id: "uploadProgress") {
+    /// Dialog.registerToast(id: "uploadProgress") {
     ///     DialogContent(
     ///         title: "Uploading File",
     ///         actions: {
@@ -341,7 +350,7 @@ extension _DialogRegistry {
     ///
     /// ## Example:
     /// ```swift
-    /// DialogRegistry.registerCustomToast(id: "downloadProgress", title: "Downloading") {
+    /// Dialog.registerCustomToast(id: "downloadProgress", title: "Downloading") {
     ///     VStack(spacing: 8) {
     ///         ProgressView(value: downloadProgress)
     ///         Text("\(Int(downloadProgress * 100))% complete")

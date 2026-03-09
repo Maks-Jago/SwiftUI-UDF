@@ -11,13 +11,13 @@
 
 import SwiftUI
 
-/// A protocol representing a type-safe dialog that can be registered with ``DialogRegistry``.
+/// A protocol representing a type-safe dialog that can be registered with ``Dialog``.
 ///
 /// Concrete conforming types — ``AlertDialog``, ``Toast``, and ``ConfirmationDialog`` —
 /// each use a dedicated result builder to ensure only valid components are accepted
 /// at compile time, producing clear error messages for unsupported usage.
 ///
-/// `Dialog` extends ``DialogTypeProtocol`` directly, meaning each conforming type
+/// `DialogProtocol` extends ``DialogTypeProtocol`` directly, meaning each conforming type
 /// is a first-class dialog type that the presentation layer can consume without
 /// any intermediate conversion through `DialogCustomType` or `DialogContent`.
 ///
