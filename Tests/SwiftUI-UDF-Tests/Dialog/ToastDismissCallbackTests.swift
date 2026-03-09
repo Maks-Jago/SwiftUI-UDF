@@ -51,6 +51,7 @@ import UDFSwiftTesting
 
     // MARK: - DialogRegistration Tests
 
+    @MainActor
     @Test func test_DialogRegistry_RegisterToast_WithOnAutoDismiss() {
         let testID = "test-toast-callback"
         let tracker = CallbackTracker()
@@ -65,7 +66,7 @@ import UDFSwiftTesting
         }
 
         // Retrieve the registered toast
-        let retrievedDialog = DialogRegistry.get(id: testID)
+        let retrievedDialog = _DialogRegistry.get(id: testID)
         #expect(retrievedDialog != nil)
 
         // Verify it has the callback in configuration
@@ -82,9 +83,10 @@ import UDFSwiftTesting
         }
 
         // Clean up
-        DialogRegistry.unregister(id: testID)
+        Dialog.unregister(id: testID)
     }
 
+    @MainActor
     @Test func test_DialogRegistry_RegisterToast_WithoutOnAutoDismiss() {
         let testID = "test-toast-no-callback"
 
@@ -94,7 +96,7 @@ import UDFSwiftTesting
         }
 
         // Retrieve and verify no callback
-        let retrievedDialog = DialogRegistry.get(id: testID)
+        let retrievedDialog = _DialogRegistry.get(id: testID)
         if let customType = retrievedDialog as? DialogCustomType<EmptyView, EmptyView>,
            case .custom(_, let style) = customType,
            case .toast(let config) = style {
@@ -104,7 +106,7 @@ import UDFSwiftTesting
         }
 
         // Clean up
-        DialogRegistry.unregister(id: testID)
+        Dialog.unregister(id: testID)
     }
 
     // MARK: - ToastQueueManager Tests
@@ -118,8 +120,10 @@ import UDFSwiftTesting
             defaultDuration: 0.1,
             onAutoDismiss: { tracker.executed = true }
         )
-        let content = DialogContent("Test Toast")
-        let toast = DialogCustomType.custom(content: content, style: .toast(config))
+        
+        let toast = Toast(config: config) {
+            DialogMessage("Test Toast")
+        }
 
         queueManager.enqueue(toast)
 
@@ -142,8 +146,9 @@ import UDFSwiftTesting
             defaultDuration: 10.0, // Long duration
             onAutoDismiss: { tracker.executed = true }
         )
-        let content = DialogContent("Test Toast")
-        let toast = DialogCustomType.custom(content: content, style: .toast(config))
+        let toast = Toast(config: config) {
+            DialogMessage("Test Toast")
+        }
 
         queueManager.enqueue(toast)
 
@@ -170,8 +175,9 @@ import UDFSwiftTesting
             defaultDuration: 0, // No auto-dismiss
             onAutoDismiss: { tracker.executed = true }
         )
-        let content = DialogContent("Persistent Toast")
-        let toast = DialogCustomType.custom(content: content, style: .toast(config))
+        let toast = Toast(config: config) {
+            DialogMessage("Test Toast")
+        }
 
         queueManager.enqueue(toast)
 

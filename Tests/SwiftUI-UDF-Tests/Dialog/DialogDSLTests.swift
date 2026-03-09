@@ -161,14 +161,14 @@ struct DialogDSLTests {
     func dynamicDialogRegistrationUsesDSL() {
         let id = 123
         
-        DialogRegistry.register(id: id) {
+        Dialog.register(id: id) {
             AlertDialog {
                 DialogTitle("Dynamic Registry AlertDialog")
                 DialogButton(title: "Dismiss", action: {})
             }
         }
         
-        let retrieved = DialogRegistry.get(id: id)
+        let retrieved = _DialogRegistry.get(id: id)
         #expect(retrieved != nil)
         #expect(retrieved?.title == "Dynamic Registry AlertDialog")
         #expect(retrieved?.actions.count == 1)
@@ -413,20 +413,20 @@ struct DialogDSLTests {
     func registryOverwritesBehavior() {
         let id = 777
         
-        DialogRegistry.register(id: id) {
+        Dialog.register(id: id) {
             AlertDialog {
                 DialogTitle("First")
             }
         }
         
-        #expect(DialogRegistry.get(id: id)?.title == "First")
+        #expect(_DialogRegistry.get(id: id)?.title == "First")
         
-        DialogRegistry.register(id: id) {
+        Dialog.register(id: id) {
             AlertDialog {
                 DialogTitle("Second")
             }
         }
         
-        #expect(DialogRegistry.get(id: id)?.title == "Second")
+        #expect(_DialogRegistry.get(id: id)?.title == "Second")
     }
 }

@@ -14,12 +14,11 @@ import SwiftUI
 /// A namespace for dialog registration and management.
 public enum Dialog {}
 
-// MARK: Registration
+// MARK: - Registration
 public extension Dialog {
-    @available(*, deprecated, message: "Use the new ResultBuilder-based register(id:dialog:) with AlertDialog, Toast, or ConfirmationDialog instead.")
     static func register<ID: Hashable & Sendable>(
         id: ID,
-        builder: @escaping @Sendable () -> any DialogTypeProtocol
+        builder: @escaping @Sendable () -> DialogType
     ) {
         _DialogRegistry.register(id: id, builder: builder)
     }
@@ -51,7 +50,10 @@ public extension Dialog {
     static func identifiers() -> [AnyHashable] {
         _DialogRegistry.identifiers()
     }
-    
+}
+
+// MARK: - Legacy
+public extension Dialog {
     @available(*, deprecated, message: "Use the new ResultBuilder-based register(id:dialog:) with AlertDialog, Toast, or ConfirmationDialog instead.")
     static func register<ID: Hashable & Sendable>(
         id: ID,

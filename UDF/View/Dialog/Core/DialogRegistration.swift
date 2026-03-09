@@ -91,6 +91,15 @@ enum _DialogRegistry {
         }
     }
     
+    public static func register<ID: Hashable & Sendable>(
+        id: ID,
+        builder: @escaping @Sendable () -> DialogType
+    ) {
+        queue.async(flags: .barrier) {
+            registry[AnyHashable(id)] = builder
+        }
+    }
+    
     /// Registers a type-safe ``Dialog`` (``AlertDialog``, ``Toast``, or ``ConfirmationDialog``)
     /// for the given identifier.
     ///
