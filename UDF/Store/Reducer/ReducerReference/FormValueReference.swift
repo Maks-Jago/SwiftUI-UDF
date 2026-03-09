@@ -42,7 +42,7 @@ import SwiftUI
 /// // Create a Binding with chained modifiers
 /// TextField("Search", text: store.$state.searchForm.query.with(delay: 0.3).with(animation: .default).silent())
 /// ```
-public struct FormValueReference<Reducer: Form, Value: Equatable & Sendable>: Sendable {
+public struct FormValueReference<Reducer: Form, Value: Equatable & Sendable>: @unchecked Sendable {
     private enum Modifier: Sendable {
         case animation(Animation?)
         case delay(TimeInterval)
@@ -56,7 +56,7 @@ public struct FormValueReference<Reducer: Form, Value: Equatable & Sendable>: Se
     private let reducer: Reducer
 
     /// A closure that handles the dispatching of actions.
-    private let dispatcher: @Sendable (any Action) -> Void
+    private let dispatcher: (any Action) -> Void
 
     /// An array of modifiers to apply to the dispatched action.
     private var modifiers: [Modifier]
@@ -70,7 +70,7 @@ public struct FormValueReference<Reducer: Form, Value: Equatable & Sendable>: Se
     init(
         keyPath: WritableKeyPath<Reducer, Value>,
         reducer: Reducer,
-        dispatcher: @escaping @Sendable (any Action) -> Void
+        dispatcher: @escaping (any Action) -> Void
     ) {
         self.init(keyPath: keyPath, reducer: reducer, dispatcher: dispatcher, modifiers: [])
     }
@@ -79,7 +79,7 @@ public struct FormValueReference<Reducer: Form, Value: Equatable & Sendable>: Se
     private init(
         keyPath: WritableKeyPath<Reducer, Value>,
         reducer: Reducer,
-        dispatcher: @escaping @Sendable (any Action) -> Void,
+        dispatcher: @escaping (any Action) -> Void,
         modifiers: [Modifier]
     ) {
         self.keyPath = keyPath
