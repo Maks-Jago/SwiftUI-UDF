@@ -59,7 +59,7 @@ public struct FormValueReference<Reducer: Form, Value: Equatable & Sendable>: Se
     private let dispatcher: @Sendable (any Action) -> Void
 
     /// An array of modifiers to apply to the dispatched action.
-    private let modifiers: [Modifier]
+    private var modifiers: [Modifier]
 
     /// Initializes a new `FormValueReference` with the specified key path, reducer, and dispatcher.
     ///
@@ -102,7 +102,7 @@ public struct FormValueReference<Reducer: Form, Value: Equatable & Sendable>: Se
     /// - Parameter animation: The animation to apply to the dispatched update action.
     /// - Returns: A new `FormValueReference` with the animation modifier appended.
     public func with(animation: Animation?) -> Self {
-        appended(modifier: .animation(animation))
+        append(modifier: .animation(animation))
     }
 
     /// Adds a delay modifier to the reference.
@@ -110,14 +110,14 @@ public struct FormValueReference<Reducer: Form, Value: Equatable & Sendable>: Se
     /// - Parameter interval: The time interval to delay the dispatch.
     /// - Returns: A new `FormValueReference` with the delay modifier appended.
     public func with(delay interval: TimeInterval) -> Self {
-        appended(modifier: .delay(interval))
+        append(modifier: .delay(interval))
     }
 
     /// Adds a silent modifier to the reference, suppressing action logging.
     ///
     /// - Returns: A new `FormValueReference` with the silent modifier appended.
     public func silent() -> Self {
-        appended(modifier: .silent)
+        append(modifier: .silent)
     }
 
     // MARK: - Binding Conversion
@@ -148,8 +148,10 @@ public struct FormValueReference<Reducer: Form, Value: Equatable & Sendable>: Se
     // MARK: - Private Helpers
 
     /// Returns a new reference with the specified modifier appended to the current list.
-    private func appended(modifier: Modifier) -> Self {
-        .init(keyPath: keyPath, reducer: reducer, dispatcher: dispatcher, modifiers: modifiers + [modifier])
+    private func append(modifier: Modifier) -> Self {
+        var copy = self
+        copy.modifiers.append(modifier)
+        return copy
     }
 
     /// Converts the reference and its accumulated modifiers into a SwiftUI `Binding`.
