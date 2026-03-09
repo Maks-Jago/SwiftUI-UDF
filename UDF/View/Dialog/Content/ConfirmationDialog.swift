@@ -27,7 +27,7 @@ import SwiftUI
 ///     }
 /// }
 /// ```
-public struct ConfirmationDialog: Dialog {
+public struct ConfirmationDialog: DialogProtocol {
     public let payload: DialogPayload
     public let dialogStyle: DialogStyle
 

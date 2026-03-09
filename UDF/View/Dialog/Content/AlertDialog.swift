@@ -27,7 +27,7 @@ import SwiftUI
 ///     }
 /// }
 /// ```
-public struct AlertDialog: Dialog {
+public struct AlertDialog: DialogProtocol {
     public let payload: DialogPayload
     public let dialogStyle: DialogStyle = .alert
 

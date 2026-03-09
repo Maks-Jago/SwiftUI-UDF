@@ -12,6 +12,9 @@
 import Foundation
 import SwiftUI
 
+@available(*, deprecated, renamed: "Dialog")
+public typealias DialogRegistry = Dialog
+
 /// Registration system for reusable dialogs.
 ///
 /// The dialog registration system allows you to pre-define dialogs
@@ -39,7 +42,7 @@ import SwiftUI
 ///     // Use it
 /// }
 /// ```
-public enum DialogRegistry {
+enum _DialogRegistry {
     
     // MARK: - Private Storage
     
@@ -109,7 +112,7 @@ public enum DialogRegistry {
     ///   - id: A unique, hashable identifier for this dialog.
     ///   - dialog: A closure that returns a ``Dialog`` conforming value.
     @MainActor
-    public static func register<ID: Hashable & Sendable, D: Dialog>(
+    public static func register<ID: Hashable & Sendable, D: DialogProtocol>(
         id: ID,
         dialog: @escaping @Sendable @MainActor () -> D
     ) {
@@ -258,7 +261,7 @@ public enum DialogRegistry {
 /// This extension provides convenient methods for registering toast dialogs
 /// with common configurations and patterns. Toasts are non-modal dialogs
 /// that appear as overlay notifications.
-public extension DialogRegistry {
+extension _DialogRegistry {
     
     /// Registers a toast dialog with custom content and configuration.
     ///

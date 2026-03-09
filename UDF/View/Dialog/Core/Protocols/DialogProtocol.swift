@@ -1,4 +1,4 @@
-//===--- Dialog.swift ----------------------------------------------------===//
+//===--- DialogProtocol.swift ----------------------------------------------------===//
 //
 // This source file is part of the UDF open source project
 //
@@ -31,7 +31,7 @@ import SwiftUI
 /// | ``AlertDialog``         | ``AlertDialogComponentBuilder``      | `.alert`               |
 /// | ``Toast``              | ``ToastComponentBuilder``            | `.toast(config)`       |
 /// | ``ConfirmationDialog`` | ``ConfirmationDialogComponentBuilder``| `.confirmationDialog`  |
-public protocol Dialog: DialogTypeProtocol {
+public protocol DialogProtocol: DialogTypeProtocol {
     /// The parsed dialog components produced by the result builder.
     var payload: DialogPayload { get }
 
@@ -40,7 +40,7 @@ public protocol Dialog: DialogTypeProtocol {
 }
 
 // MARK: - Default DialogTypeProtocol conformance
-extension Dialog {
+extension DialogProtocol {
     public var style: DialogStyle { dialogStyle }
     public var title: String { payload.title() }
     public var message: String? { payload.message() }
@@ -59,7 +59,7 @@ extension Dialog {
 }
 
 // MARK: - Equatable & Hashable
-extension Dialog {
+extension DialogProtocol {
     public static func == (lhs: Self, rhs: Self) -> Bool {
         lhs.title == rhs.title &&
         lhs.message == rhs.message &&
