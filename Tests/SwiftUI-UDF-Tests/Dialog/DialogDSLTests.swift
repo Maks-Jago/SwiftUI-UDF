@@ -13,12 +13,9 @@ import SwiftUI
 @testable import UDF
 import Testing
 
+// MARK: - DSL Tests
 @MainActor
-struct DialogDSLTests {
-    
-    init() {
-        DialogRegistry.clearAll()
-    }
+extension DialogTests {
 
     @Test("AlertDialog builder creates correct payload and applies properties")
     func alertBuilderAppliesPropertiesCorrectly() {

@@ -106,6 +106,7 @@ extension DialogType {
                 print("Custom dialog action")
             }
         }
+        await waitForCondition { Dialog.isRegistered(id: FormWithDialog.DialogId.dialogWithAction) }
 
         await store.dispatch(Actions.PresentDialogWithAction())
         let success = await waitForCondition { await store.state.form.dialog.status != .dismissed }
@@ -179,6 +180,7 @@ extension DialogType {
                 print("Toast action executed")
             }
         }
+        await waitForCondition { Dialog.isRegistered(id: FormWithDialog.DialogId.toastDialog) }
 
         await store.dispatch(Actions.PresentToastDialog())
         let success = await waitForCondition { await store.state.form.dialog.status != .dismissed }
@@ -202,6 +204,7 @@ extension DialogType {
         await Dialog.register(id: FormWithDialog.DialogId.customToastWithIcon) {
             DialogType.customToastWithIcon()
         }
+        await waitForCondition { Dialog.isRegistered(id: FormWithDialog.DialogId.customToastWithIcon) }
 
         await store.dispatch(Actions.PresentCustomToastWithIcon())
         let success = await waitForCondition { await store.state.form.dialog.status != .dismissed }
@@ -231,6 +234,7 @@ extension DialogType {
         await Dialog.register(id: FormWithDialog.DialogId.customViewToast) {
             DialogType.customViewToast()
         }
+        await waitForCondition { Dialog.isRegistered(id: FormWithDialog.DialogId.customViewToast) }
 
         await store.dispatch(Actions.PresentCustomViewToast())
         let success = await waitForCondition { await store.state.form.dialog.status != .dismissed }
@@ -351,6 +355,7 @@ extension DialogType {
                 DialogMessage("This toast should be manually dismissed")
             }
         }
+        await waitForCondition { Dialog.isRegistered(id: FormWithDialog.DialogId.toastDialog) }
         
         // Present the toast
         await store.dispatch(Actions.PresentToastDialog())
@@ -375,6 +380,7 @@ extension DialogType {
                 DialogMessage("This toast should not auto-dismiss")
             }
         }
+        await waitForCondition { Dialog.isRegistered(id: FormWithDialog.DialogId.toastDialog) }
         
         // Present the toast
         await store.dispatch(Actions.PresentToastDialog())
