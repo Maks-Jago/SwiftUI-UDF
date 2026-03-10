@@ -606,7 +606,7 @@ private extension Actions {
                 case let action as Actions.CompleteTask:
                     // Add delay to simulate async work that can be cancelled
                     execute(
-                        DelayedUpdateEffect(title: "Completed: \(action.taskId)", delay: 0.1),
+                        DelayedUpdateEffect(title: "Completed: \(action.taskId)", delay: 0.5),
                         cancellation: "delayed_task"
                     )
                 default:

@@ -52,7 +52,7 @@ import UDFSwiftTesting
     // MARK: - DialogRegistration Tests
 
     @MainActor
-    @Test func test_DialogRegistry_RegisterToast_WithOnAutoDismiss() {
+    @Test func test_DialogRegistry_RegisterToast_WithOnAutoDismiss() async {
         let testID = "test-toast-callback"
         let tracker = CallbackTracker()
 
@@ -64,6 +64,9 @@ import UDFSwiftTesting
         } onAutoDismiss: {
             tracker.executed = true
         }
+
+        // Wait for async barrier write to complete
+        await waitForMainActorCondition { Dialog.isRegistered(id: testID) }
 
         // Retrieve the registered toast
         let retrievedDialog = _DialogRegistry.get(id: testID)
