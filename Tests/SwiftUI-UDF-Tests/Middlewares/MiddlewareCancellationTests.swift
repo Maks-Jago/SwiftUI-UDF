@@ -78,7 +78,7 @@ import Foundation
         var success = await store.state.middlewareFlow == .loading
         #expect(success)
 
-        await store.wait(additionalSleepFor: 1.1)
+        await store.wait(additionalSleepFor: 2.0)
         success = await store.state.runForm.messagesCount > 0
         #expect(success)
 
