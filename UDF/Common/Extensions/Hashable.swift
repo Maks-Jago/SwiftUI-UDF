@@ -34,37 +34,3 @@ public extension Hashable {
         AnyHashable(lhs) == rhs
     }
 }
-
-public extension Hashable {
-    /// Compares an optional `AnyHashable` instance with a `Hashable` instance.
-    ///
-    /// - Parameters:
-    ///   - lhs: An optional `AnyHashable` instance.
-    ///   - rhs: The `Hashable` instance.
-    /// - Returns: A Boolean value indicating whether the two values are equal.
-    static func == (lhs: AnyHashable?, rhs: Self) -> Bool {
-        switch lhs {
-        case let .some(value):
-            value == rhs
-        default:
-            false
-        }
-    }
-}
-
-public extension Hashable {
-    /// Compares a `Hashable` instance with an optional `AnyHashable` instance.
-    ///
-    /// - Parameters:
-    ///   - lhs: The `Hashable` instance.
-    ///   - rhs: An optional `AnyHashable` instance.
-    /// - Returns: A Boolean value indicating whether the two values are equal.
-    static func == (lhs: Self, rhs: AnyHashable?) -> Bool {
-        switch rhs {
-        case let .some(value):
-            lhs == value
-        default:
-            false
-        }
-    }
-}
