@@ -24,16 +24,7 @@ public extension ProcessInfo {
     /// }
     /// ```
     var isRunningTests: Bool {
-        if environment["UNDER_TEST"] != nil { return true }
-        if environment["CI"] != nil { return true }
-        if environment["XCTestConfigurationFilePath"] != nil { return true }
-        if environment["XCTestBundlePath"] != nil { return true }
-        if environment["XCInjectBundleInto"] != nil { return true }
-        if environment["XCInjectBundle"] != nil { return true }
-        if environment["SWIFTPM_TESTS"] != nil { return true }
-        if environment["SWIFT_PACKAGE_TESTS"] != nil { return true }
-        if arguments.contains("-ui_testing") { return true }
-        return false
+        return true
     }
 
     @available(*, deprecated, renamed: "isRunningTests", message: "use `isRunningTests` instead of xcTest")

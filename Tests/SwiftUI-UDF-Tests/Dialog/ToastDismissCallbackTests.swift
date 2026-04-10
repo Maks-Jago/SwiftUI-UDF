@@ -5,9 +5,6 @@ import UDFSwiftTesting
 
 @Suite(.serialized) struct ToastDismissCallbackTests {
 
-    private class CallbackTracker: @unchecked Sendable {
-        var executed = false
-    }
 
     // MARK: - ToastConfiguration Tests
 
@@ -16,15 +13,15 @@ import UDFSwiftTesting
         #expect(config.onAutoDismiss == nil)
     }
 
-    @Test func test_ToastConfiguration_WithOnAutoDismiss_StoresCallback() {
-        let tracker = CallbackTracker()
-        let config = ToastConfiguration(onAutoDismiss: { tracker.executed = true })
+    @Test func test_ToastConfiguration_WithOnAutoDismiss_StoresCallback() async {
+        await confirmation("callback fired") { confirm in
+            let config = ToastConfiguration(onAutoDismiss: { confirm() })
 
-        #expect(config.onAutoDismiss != nil)
+            #expect(config.onAutoDismiss != nil)
 
-        // Test callback execution
-        config.onAutoDismiss?()
-        #expect(tracker.executed)
+            // Test callback execution
+            config.onAutoDismiss?()
+        }
     }
 
     @Test func test_ToastConfiguration_Equatable_WithCallbacks() {
@@ -51,34 +48,34 @@ import UDFSwiftTesting
 
     // MARK: - DialogRegistration Tests
 
-    @Test func test_DialogRegistry_RegisterToast_WithOnAutoDismiss() {
+    @Test func test_DialogRegistry_RegisterToast_WithOnAutoDismiss() async {
         let testID = "test-toast-callback"
-        let tracker = CallbackTracker()
 
-        // Register toast with callback
-        DialogRegistry.registerToast(id: testID) {
-            DialogContent("Test Toast with Callback")
-        } configuration: {
-            ToastConfiguration(defaultDuration: 0.1)
-        } onAutoDismiss: {
-            tracker.executed = true
-        }
+        await confirmation("callback fired") { confirm in
+            // Register toast with callback
+            DialogRegistry.registerToast(id: testID) {
+                DialogContent("Test Toast with Callback")
+            } configuration: {
+                ToastConfiguration(defaultDuration: 0.1)
+            } onAutoDismiss: {
+                confirm()
+            }
 
-        // Retrieve the registered toast
-        let retrievedDialog = DialogRegistry.get(id: testID)
-        #expect(retrievedDialog != nil)
+            // Retrieve the registered toast
+            let retrievedDialog = DialogRegistry.get(id: testID)
+            #expect(retrievedDialog != nil)
 
-        // Verify it has the callback in configuration
-        if let customType = retrievedDialog as? DialogCustomType<EmptyView, EmptyView>,
-           case .custom(_, let style) = customType,
-           case .toast(let config) = style {
-            #expect(config.onAutoDismiss != nil)
+            // Verify it has the callback in configuration
+            if let customType = retrievedDialog as? DialogCustomType<EmptyView, EmptyView>,
+               case .custom(_, let style) = customType,
+               case .toast(let config) = style {
+                #expect(config.onAutoDismiss != nil)
 
-            // Test callback execution
-            config.onAutoDismiss?()
-            #expect(tracker.executed)
-        } else {
-            #expect(Bool(false), "Retrieved dialog should be DialogCustomType with toast style")
+                // Test callback execution
+                config.onAutoDismiss?()
+            } else {
+                #expect(Bool(false), "Retrieved dialog should be DialogCustomType with toast style")
+            }
         }
 
         // Clean up
@@ -112,50 +109,49 @@ import UDFSwiftTesting
     @MainActor
     @Test func test_ToastQueueManager_ExecutesCallbackOnAutoDismiss() async {
         let queueManager = ToastQueueManager()
-        let tracker = CallbackTracker()
 
-        let config = ToastConfiguration(
-            defaultDuration: 0.1,
-            onAutoDismiss: { tracker.executed = true }
-        )
-        let content = DialogContent("Test Toast")
-        let toast = DialogCustomType.custom(content: content, style: .toast(config))
+        await confirmation("callback fired") { confirm in
+            let config = ToastConfiguration(
+                defaultDuration: 0.1,
+                onAutoDismiss: { confirm() }
+            )
+            let content = DialogContent("Test Toast")
+            let toast = DialogCustomType.custom(content: content, style: .toast(config))
 
-        queueManager.enqueue(toast)
+            queueManager.enqueue(toast)
 
-        // Verify toast is visible
-        #expect(queueManager.visibleToasts.count == 1)
+            // Verify toast is visible
+            #expect(queueManager.visibleToasts.count == 1)
 
-        // Wait for auto-dismiss
-        await sleep(for: 0.5)
-
-        // Verify callback was executed
-        #expect(tracker.executed)
+            // Wait for auto-dismiss
+            await sleep(for: 0.5)
+        }
     }
 
     @MainActor
-    @Test func test_ToastQueueManager_ManualDismiss_DoesNotExecuteCallback() {
+    @Test func test_ToastQueueManager_ManualDismiss_DoesNotExecuteCallback() async {
         let queueManager = ToastQueueManager()
-        let tracker = CallbackTracker()
 
-        let config = ToastConfiguration(
-            defaultDuration: 10.0, // Long duration
-            onAutoDismiss: { tracker.executed = true }
-        )
-        let content = DialogContent("Test Toast")
-        let toast = DialogCustomType.custom(content: content, style: .toast(config))
+        await confirmation("callback fired", expectedCount: 0) { confirm in
+            let config = ToastConfiguration(
+                defaultDuration: 10.0, // Long duration
+                onAutoDismiss: { confirm() }
+            )
+            let content = DialogContent("Test Toast")
+            let toast = DialogCustomType.custom(content: content, style: .toast(config))
 
-        queueManager.enqueue(toast)
+            queueManager.enqueue(toast)
 
-        // Get the toast ID for manual dismissal
-        let toastId = queueManager.visibleToasts.first?.id
-        #expect(toastId != nil)
+            // Get the toast ID for manual dismissal
+            let toastId = queueManager.visibleToasts.first?.id
+            #expect(toastId != nil)
 
-        // Manually dismiss the toast
-        queueManager.dismiss(toastId!)
+            // Manually dismiss the toast
+            queueManager.dismiss(toastId!)
 
-        // Callback should NOT be executed for manual dismissal
-        #expect(!tracker.executed)
+            // Wait a bit to ensure it doesn't fire
+            await sleep(for: 0.2)
+        }
 
         // Toast should be removed
         #expect(queueManager.visibleToasts.count == 0)
@@ -164,22 +160,20 @@ import UDFSwiftTesting
     @MainActor
     @Test func test_ToastQueueManager_NoCallbackForZeroDuration() async {
         let queueManager = ToastQueueManager()
-        let tracker = CallbackTracker()
 
-        let config = ToastConfiguration(
-            defaultDuration: 0, // No auto-dismiss
-            onAutoDismiss: { tracker.executed = true }
-        )
-        let content = DialogContent("Persistent Toast")
-        let toast = DialogCustomType.custom(content: content, style: .toast(config))
+        await confirmation("callback fired", expectedCount: 0) { confirm in
+            let config = ToastConfiguration(
+                defaultDuration: 0, // No auto-dismiss
+                onAutoDismiss: { confirm() }
+            )
+            let content = DialogContent("Persistent Toast")
+            let toast = DialogCustomType.custom(content: content, style: .toast(config))
 
-        queueManager.enqueue(toast)
+            queueManager.enqueue(toast)
 
-        // Wait to ensure no auto-dismiss happens
-        try? await Task.sleep(nanoseconds: 100_000_000) // 0.1 seconds
-
-        // Verify callback was NOT executed (no auto-dismiss)
-        #expect(!tracker.executed)
+            // Wait to ensure no auto-dismiss happens
+            await sleep(for: 0.1)
+        }
 
         // Toast should still be visible
         #expect(queueManager.visibleToasts.count == 1)

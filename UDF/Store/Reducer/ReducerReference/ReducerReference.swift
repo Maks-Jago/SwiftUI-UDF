@@ -71,6 +71,10 @@ public class ReducerReference<AppState: AppReducer, Reducer: Reducible>: @unchec
 // MARK: - Extensions for Forms
 
 public extension ReducerReference where Reducer: Form {
+    private struct SendableWritableKeyPath<Root, Value>: @unchecked Sendable {
+        let value: WritableKeyPath<Root, Value>
+    }
+
     /// Binds a property of the referenced reducer to a SwiftUI view using a key path.
     ///
     /// This allows direct binding of form fields to SwiftUI views. When the bound property is updated, an `UpdateFormField` action is
@@ -78,11 +82,13 @@ public extension ReducerReference where Reducer: Form {
     ///
     /// - Parameter keyPath: A writable key path to a property of the reducer.
     /// - Returns: A `Binding` that allows the property to be directly modified in SwiftUI.
-    subscript<T: Equatable>(dynamicMember keyPath: WritableKeyPath<Reducer, T>) -> Binding<T> {
-        Binding(
-            get: { self.reducer[keyPath: keyPath] },
+    subscript<T: Equatable & Sendable>(dynamicMember keyPath: WritableKeyPath<Reducer, T>) -> Binding<T> {
+        let sendableKeyPath = SendableWritableKeyPath(value: keyPath)
+
+        return Binding(
+            get: { self.reducer[keyPath: sendableKeyPath.value] },
             set: { value in
-                self.dispatcher(Actions.UpdateFormField(keyPath: keyPath, value: value))
+                self.dispatcher(Actions.UpdateFormField(keyPath: sendableKeyPath.value, value: value))
             }
         )
     }
