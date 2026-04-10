@@ -5,6 +5,18 @@ import UDFSwiftTesting
 
 @Suite(.serialized) struct DialogQueueTests {
     // MARK: - Test Helpers
+    private actor CallbackProbe {
+        private var executed = false
+
+        func markExecuted() {
+            executed = true
+        }
+
+        func isExecuted() -> Bool {
+            executed
+        }
+    }
+
     private func createToastDialog(_ message: String, duration: TimeInterval = 2.0) -> DialogType {
         let config = ToastConfiguration(defaultDuration: duration)
         return DialogType.info(message: message, style: .toast(config))
@@ -410,13 +422,13 @@ import UDFSwiftTesting
     @MainActor
     func test_QueueManager_AutoDismissCallback_ExecutedOnTimerExpiry() async {
         let queueManager = ToastQueueManager()
-        var callbackExecuted = false
+        let callbackProbe = CallbackProbe()
 
         let config = ToastConfiguration(
             defaultDuration: 0.1, // Very short duration
             onAutoDismiss: {
-                Task { @MainActor in
-                    callbackExecuted = true
+                Task {
+                    await callbackProbe.markExecuted()
                 }
             }
         )
@@ -428,21 +440,21 @@ import UDFSwiftTesting
         // Wait for auto-dismiss
         await sleep(for: 0.3)
 
-        #expect(callbackExecuted, "onAutoDismiss callback should be executed")
+        #expect(await callbackProbe.isExecuted(), "onAutoDismiss callback should be executed")
         #expect(queueManager.visibleToasts.count == 0, "Toast should be dismissed")
     }
 
     @Test
     @MainActor
-    func test_QueueManager_AutoDismissCallback_NotExecutedOnManualDismiss() {
+    func test_QueueManager_AutoDismissCallback_NotExecutedOnManualDismiss() async {
         let queueManager = ToastQueueManager()
-        var callbackExecuted = false
+        let callbackProbe = CallbackProbe()
 
         let config = ToastConfiguration(
             defaultDuration: 10.0, // Long duration to prevent auto-dismiss
             onAutoDismiss: {
-                Task { @MainActor in
-                    callbackExecuted = true
+                Task {
+                    await callbackProbe.markExecuted()
                 }
             }
         )
@@ -456,7 +468,7 @@ import UDFSwiftTesting
             queueManager.dismiss(toastId)
         }
 
-        #expect(!callbackExecuted, "onAutoDismiss callback should NOT be executed on manual dismiss")
+        #expect(!(await callbackProbe.isExecuted()), "onAutoDismiss callback should NOT be executed on manual dismiss")
         #expect(queueManager.visibleToasts.count == 0, "Toast should be dismissed")
     }
 
@@ -466,22 +478,22 @@ import UDFSwiftTesting
         let config = ToastQueueConfiguration(displayMode: .sequential)
         let queueManager = ToastQueueManager(configuration: config)
 
-        var callback1Executed = false
-        var callback2Executed = false
+        let callback1Probe = CallbackProbe()
+        let callback2Probe = CallbackProbe()
 
         let toast1Config = ToastConfiguration(
             defaultDuration: 0.1,
             onAutoDismiss: {
-                Task { @MainActor in
-                    callback1Executed = true
+                Task {
+                    await callback1Probe.markExecuted()
                 }
             }
         )
         let toast2Config = ToastConfiguration(
             defaultDuration: 0.1,
             onAutoDismiss: {
-                Task { @MainActor in
-                    callback2Executed = true
+                Task {
+                    await callback2Probe.markExecuted()
                 }
             }
         )
@@ -499,8 +511,8 @@ import UDFSwiftTesting
         // Wait for both toasts to auto-dismiss
         await sleep(for: 0.5)
 
-        #expect(callback1Executed, "First toast callback should execute")
-        #expect(callback2Executed, "Second toast callback should execute after first is dismissed")
+        #expect(await callback1Probe.isExecuted(), "First toast callback should execute")
+        #expect(await callback2Probe.isExecuted(), "Second toast callback should execute after first is dismissed")
         #expect(queueManager.visibleToasts.count == 0)
         #expect(queueManager.queuedToasts.count == 0)
     }
@@ -514,22 +526,22 @@ import UDFSwiftTesting
         )
         let queueManager = ToastQueueManager(configuration: config)
 
-        var callback1Executed = false
-        var callback2Executed = false
+        let callback1Probe = CallbackProbe()
+        let callback2Probe = CallbackProbe()
 
         let toast1Config = ToastConfiguration(
             defaultDuration: 0.1,
             onAutoDismiss: {
-                Task { @MainActor in
-                    callback1Executed = true
+                Task {
+                    await callback1Probe.markExecuted()
                 }
             }
         )
         let toast2Config = ToastConfiguration(
             defaultDuration: 0.1,
             onAutoDismiss: {
-                Task { @MainActor in
-                    callback2Executed = true
+                Task {
+                    await callback2Probe.markExecuted()
                 }
             }
         )
@@ -547,8 +559,8 @@ import UDFSwiftTesting
         // Wait for both toasts to auto-dismiss
         await sleep(for: 0.2)
 
-        #expect(callback1Executed, "First toast callback should execute")
-        #expect(callback2Executed, "Second toast callback should execute")
+        #expect(await callback1Probe.isExecuted(), "First toast callback should execute")
+        #expect(await callback2Probe.isExecuted(), "Second toast callback should execute")
         #expect(queueManager.visibleToasts.count == 0)
     }
 }
