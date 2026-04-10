@@ -78,12 +78,44 @@ public enum DialogRegistry {
     ///     )
     /// }
     /// ```
+    @available(*, deprecated, message: "Use the new ResultBuilder-based register(id:dialog:) with AlertDialog, Toast, or ConfirmationDialog instead.")
     public static func register<ID: Hashable & Sendable>(
         id: ID,
         builder: @escaping @Sendable () -> any DialogTypeProtocol
     ) {
         queue.async(flags: .barrier) {
             registry[AnyHashable(id)] = builder
+        }
+    }
+    
+    /// Registers a type-safe ``Dialog`` (``AlertDialog``, ``Toast``, or ``ConfirmationDialog``)
+    /// for the given identifier.
+    ///
+    /// The `@MainActor` builder closure is evaluated eagerly at registration time
+    /// and the resulting ``Dialog`` value — which is `Sendable` — is captured and
+    /// stored in the registry for later retrieval.
+    ///
+    /// ```swift
+    /// DialogRegistration.register(id: MyDialogs.error) {
+    ///     AlertDialog {
+    ///         DialogTitle("Error")
+    ///         DialogMessage("Something went wrong.")
+    ///         DialogButton(title: "OK")
+    ///     }
+    /// }
+    /// ```
+    ///
+    /// - Parameters:
+    ///   - id: A unique, hashable identifier for this dialog.
+    ///   - dialog: A closure that returns a ``Dialog`` conforming value.
+    @MainActor
+    public static func register<ID: Hashable & Sendable, D: Dialog>(
+        id: ID,
+        dialog: @escaping @Sendable @MainActor () -> D
+    ) {
+        let dialog = dialog()
+        queue.async(flags: .barrier) {
+            registry[AnyHashable(id)] = { dialog }
         }
     }
     
@@ -194,6 +226,7 @@ public enum DialogRegistry {
     ///   - category: The dialog category (success, error, warning, info).
     ///   - message: The message to display.
     ///   - style: The dialog style (defaults to .alert).
+    @available(*, deprecated, message: "Use the new ResultBuilder-based register(id:dialog:) with AlertDialog, Toast, or ConfirmationDialog instead.")
     public static func register<ID: Hashable & Sendable>(
         id: ID,
         category: DialogCategory,
@@ -258,6 +291,7 @@ public extension DialogRegistry {
     ///     print("Upload toast dismissed")
     /// }
     /// ```
+    @available(*, deprecated, message: "Use the new ResultBuilder-based register(id:dialog:) with Toast instead.")
     static func registerToast<ID: Hashable & Sendable>(
         id: ID,
         content: @escaping @Sendable () -> DialogContent<EmptyView, EmptyView>,
@@ -305,6 +339,7 @@ public extension DialogRegistry {
     ///     print("Download progress dismissed")
     /// }
     /// ```
+    @available(*, deprecated, message: "Use the new ResultBuilder-based register(id:dialog:) with Toast and DialogView instead.")
     static func registerCustomToast<ID: Hashable & Sendable, CustomContent: View>(
         id: ID,
         title: String,
