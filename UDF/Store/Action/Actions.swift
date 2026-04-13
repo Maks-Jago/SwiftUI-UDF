@@ -506,7 +506,7 @@ public extension Actions {
     /// `DidLoadItems` is an action that represents multiple items being loaded.
     struct DidLoadItems<M: Equatable & Sendable>: Action, CustomStringConvertible {
         public static func == (lhs: Actions.DidLoadItems<M>, rhs: Actions.DidLoadItems<M>) -> Bool {
-            areEqual(lhs.items, rhs.items) && areEqual(lhs.id, rhs.id) && areEqual(lhs.shortDescription, rhs.shortDescription)
+            areEqual(lhs.items, rhs.items) && areEqual(lhs.id, rhs.id)
         }
 
         /// The list of items that were loaded.
@@ -644,7 +644,7 @@ public extension Actions {
     /// `DidLoadNestedItems` is an action that represents multiple nested items being loaded.
     struct DidLoadNestedItems<ParentId: Hashable & Sendable, Nested: Equatable & Sendable>: Action, CustomStringConvertible {
         public static func == (lhs: Actions.DidLoadNestedItems<ParentId, Nested>, rhs: Actions.DidLoadNestedItems<ParentId, Nested>) -> Bool {
-            areEqual(lhs.items, rhs.items) && areEqual(lhs.id, rhs.id) && areEqual(lhs.shortDescription, rhs.shortDescription) && areEqual(lhs.parentId, rhs.parentId)
+            areEqual(lhs.items, rhs.items) && areEqual(lhs.id, rhs.id) && areEqual(lhs.parentId, rhs.parentId)
         }
 
         /// The nested items that were loaded.
@@ -698,7 +698,7 @@ public extension Actions {
     /// `DidLoadNestedByParents` is an action representing the loading of nested items grouped by their parent identifiers.
     struct DidLoadNestedByParents<ParentId: Hashable & Sendable, Nested: Equatable & Sendable>: Action, CustomStringConvertible {
         public static func == (lhs: Actions.DidLoadNestedByParents<ParentId, Nested>, rhs: Actions.DidLoadNestedByParents<ParentId, Nested>) -> Bool {
-            areEqual(lhs.dictionary, rhs.dictionary) && areEqual(lhs.id, rhs.id) && areEqual(lhs.shortDescription, rhs.shortDescription)
+            areEqual(lhs.dictionary, rhs.dictionary) && areEqual(lhs.id, rhs.id)
         }
 
         /// A dictionary mapping parent identifiers to their corresponding nested items.
