@@ -78,12 +78,38 @@ public extension ReducerReference where Reducer: Form {
     ///
     /// - Parameter keyPath: A writable key path to a property of the reducer.
     /// - Returns: A `Binding` that allows the property to be directly modified in SwiftUI.
-    subscript<T: Equatable>(dynamicMember keyPath: WritableKeyPath<Reducer, T>) -> Binding<T> {
+    subscript<T: Equatable & Sendable>(dynamicMember keyPath: WritableKeyPath<Reducer, T>) -> Binding<T> {
         Binding(
             get: { self.reducer[keyPath: keyPath] },
             set: { value in
                 self.dispatcher(Actions.UpdateFormField(keyPath: keyPath, value: value))
             }
+        )
+    }
+    
+    /// Provides dynamic access to a form field as a ``FormValueReference``, combining the field's
+    /// key path and reducer with the dispatch closure.
+    ///
+    /// Swift disambiguates this subscript from `Binding<T>` based on the expected type at the call site.
+    /// Use ``FormValueReference`` when you need both access to the value and the ability to dispatch
+    /// actions, or when you want to create a `Binding` with modifiers (animation, delay, silencing).
+    ///
+    /// ```swift
+    /// // As a typed variable
+    /// let nameRef: FormValueReference<ProfileForm, String> = store.$state.profileForm.name
+    /// nameRef.dispatch(Actions.SubmitProfile(name: nameRef.reducer[keyPath: nameRef.keyPath]))
+    ///
+    /// // Chained to create a modified Binding
+    /// TextField("Name", text: store.$state.profileForm.name.with(animation: .linear))
+    /// ```
+    ///
+    /// - Parameter keyPath: A writable key path to a property of the form.
+    /// - Returns: A ``FormValueReference`` wrapping the field's key path, reducer, and dispatcher.
+    subscript<T: Equatable & Sendable>(dynamicMember keyPath: WritableKeyPath<Reducer, T>) -> FormValueReference<Reducer, T> {
+        FormValueReference(
+            keyPath: keyPath,
+            reducer: reducer,
+            dispatcher: dispatcher
         )
     }
 }
