@@ -43,16 +43,14 @@ extension DialogType {
     static func customViewToast() -> Toast {
         Toast(config: .init(position: .center)) {
             DialogView {
-                AnyView(
-                    VStack {
-                        Image(systemName: "checkmark.circle.fill")
-                            .font(.largeTitle)
-                            .foregroundColor(.green)
-                        Text("Custom View Toast")
-                            .font(.headline)
-                    }
-                    .padding()
-                )
+                VStack {
+                    Image(systemName: "checkmark.circle.fill")
+                        .font(.largeTitle)
+                        .foregroundColor(.green)
+                    Text("Custom View Toast")
+                        .font(.headline)
+                }
+                .padding()
             }
         }
     }
