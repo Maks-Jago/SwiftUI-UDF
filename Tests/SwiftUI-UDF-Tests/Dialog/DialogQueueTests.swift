@@ -5,18 +5,6 @@ import UDFSwiftTesting
 
 @Suite(.serialized) struct DialogQueueTests {
     // MARK: - Test Helpers
-    private actor CallbackProbe {
-        private var executed = false
-
-        func markExecuted() {
-            executed = true
-        }
-
-        func isExecuted() -> Bool {
-            executed
-        }
-    }
-
     private func createToastDialog(_ message: String, duration: TimeInterval = 2.0) -> DialogType {
         let config = ToastConfiguration(defaultDuration: duration)
         return DialogType.info(message: message, style: .toast(config))
@@ -422,25 +410,23 @@ import UDFSwiftTesting
     @MainActor
     func test_QueueManager_AutoDismissCallback_ExecutedOnTimerExpiry() async {
         let queueManager = ToastQueueManager()
-        let callbackProbe = CallbackProbe()
 
-        let config = ToastConfiguration(
-            defaultDuration: 0.1, // Very short duration
-            onAutoDismiss: {
-                Task {
-                    await callbackProbe.markExecuted()
+        await confirmation("onAutoDismiss callback should be executed") { onAutoDismissConfirmation in
+            let config = ToastConfiguration(
+                defaultDuration: 0.1, // Very short duration
+                onAutoDismiss: {
+                    onAutoDismissConfirmation()
                 }
-            }
-        )
-        let content = DialogContent("Test Toast")
-        let toast = DialogCustomType.custom(content: content, style: .toast(config))
+            )
+            let content = DialogContent("Test Toast")
+            let toast = DialogCustomType.custom(content: content, style: .toast(config))
 
-        queueManager.enqueue(toast)
+            queueManager.enqueue(toast)
 
-        // Wait for auto-dismiss
-        await sleep(for: 0.3)
+            // Wait for auto-dismiss
+            await sleep(for: 0.3)
+        }
 
-        #expect(await callbackProbe.isExecuted(), "onAutoDismiss callback should be executed")
         #expect(queueManager.visibleToasts.count == 0, "Toast should be dismissed")
     }
 
@@ -448,27 +434,28 @@ import UDFSwiftTesting
     @MainActor
     func test_QueueManager_AutoDismissCallback_NotExecutedOnManualDismiss() async {
         let queueManager = ToastQueueManager()
-        let callbackProbe = CallbackProbe()
 
-        let config = ToastConfiguration(
-            defaultDuration: 10.0, // Long duration to prevent auto-dismiss
-            onAutoDismiss: {
-                Task {
-                    await callbackProbe.markExecuted()
+        await confirmation(
+            "onAutoDismiss callback should NOT be executed on manual dismiss",
+            expectedCount: 0...0
+        ) { onAutoDismissConfirmation in
+            let config = ToastConfiguration(
+                defaultDuration: 10.0, // Long duration to prevent auto-dismiss
+                onAutoDismiss: {
+                    onAutoDismissConfirmation()
                 }
+            )
+            let content = DialogContent("Test Toast")
+            let toast = DialogCustomType.custom(content: content, style: .toast(config))
+
+            queueManager.enqueue(toast)
+
+            // Manually dismiss
+            if let toastId = queueManager.visibleToasts.first?.id {
+                queueManager.dismiss(toastId)
             }
-        )
-        let content = DialogContent("Test Toast")
-        let toast = DialogCustomType.custom(content: content, style: .toast(config))
-
-        queueManager.enqueue(toast)
-
-        // Manually dismiss
-        if let toastId = queueManager.visibleToasts.first?.id {
-            queueManager.dismiss(toastId)
         }
 
-        #expect(!(await callbackProbe.isExecuted()), "onAutoDismiss callback should NOT be executed on manual dismiss")
         #expect(queueManager.visibleToasts.count == 0, "Toast should be dismissed")
     }
 
@@ -478,41 +465,36 @@ import UDFSwiftTesting
         let config = ToastQueueConfiguration(displayMode: .sequential)
         let queueManager = ToastQueueManager(configuration: config)
 
-        let callback1Probe = CallbackProbe()
-        let callback2Probe = CallbackProbe()
+        await confirmation("First toast callback should execute") { firstToastConfirmation in
+            await confirmation("Second toast callback should execute after first is dismissed") { secondToastConfirmation in
+                let toast1Config = ToastConfiguration(
+                    defaultDuration: 0.1,
+                    onAutoDismiss: {
+                        firstToastConfirmation()
+                    }
+                )
+                let toast2Config = ToastConfiguration(
+                    defaultDuration: 0.1,
+                    onAutoDismiss: {
+                        secondToastConfirmation()
+                    }
+                )
 
-        let toast1Config = ToastConfiguration(
-            defaultDuration: 0.1,
-            onAutoDismiss: {
-                Task {
-                    await callback1Probe.markExecuted()
-                }
+                let toast1 = DialogCustomType.custom(content: DialogContent("Toast 1"), style: .toast(toast1Config))
+                let toast2 = DialogCustomType.custom(content: DialogContent("Toast 2"), style: .toast(toast2Config))
+
+                queueManager.enqueue(toast1)
+                queueManager.enqueue(toast2)
+
+                // In sequential mode, only first toast should be visible initially
+                #expect(queueManager.visibleToasts.count == 1)
+                #expect(queueManager.queuedToasts.count == 1)
+
+                // Wait for both toasts to auto-dismiss
+                await sleep(for: 0.5)
             }
-        )
-        let toast2Config = ToastConfiguration(
-            defaultDuration: 0.1,
-            onAutoDismiss: {
-                Task {
-                    await callback2Probe.markExecuted()
-                }
-            }
-        )
+        }
 
-        let toast1 = DialogCustomType.custom(content: DialogContent("Toast 1"), style: .toast(toast1Config))
-        let toast2 = DialogCustomType.custom(content: DialogContent("Toast 2"), style: .toast(toast2Config))
-
-        queueManager.enqueue(toast1)
-        queueManager.enqueue(toast2)
-
-        // In sequential mode, only first toast should be visible initially
-        #expect(queueManager.visibleToasts.count == 1)
-        #expect(queueManager.queuedToasts.count == 1)
-
-        // Wait for both toasts to auto-dismiss
-        await sleep(for: 0.5)
-
-        #expect(await callback1Probe.isExecuted(), "First toast callback should execute")
-        #expect(await callback2Probe.isExecuted(), "Second toast callback should execute after first is dismissed")
         #expect(queueManager.visibleToasts.count == 0)
         #expect(queueManager.queuedToasts.count == 0)
     }
@@ -526,41 +508,36 @@ import UDFSwiftTesting
         )
         let queueManager = ToastQueueManager(configuration: config)
 
-        let callback1Probe = CallbackProbe()
-        let callback2Probe = CallbackProbe()
+        await confirmation("First toast callback should execute") { firstToastConfirmation in
+            await confirmation("Second toast callback should execute") { secondToastConfirmation in
+                let toast1Config = ToastConfiguration(
+                    defaultDuration: 0.1,
+                    onAutoDismiss: {
+                        firstToastConfirmation()
+                    }
+                )
+                let toast2Config = ToastConfiguration(
+                    defaultDuration: 0.1,
+                    onAutoDismiss: {
+                        secondToastConfirmation()
+                    }
+                )
 
-        let toast1Config = ToastConfiguration(
-            defaultDuration: 0.1,
-            onAutoDismiss: {
-                Task {
-                    await callback1Probe.markExecuted()
-                }
+                let toast1 = DialogCustomType.custom(content: DialogContent("Toast 1"), style: .toast(toast1Config))
+                let toast2 = DialogCustomType.custom(content: DialogContent("Toast 2"), style: .toast(toast2Config))
+
+                queueManager.enqueue(toast1)
+                queueManager.enqueue(toast2)
+
+                // In stacked mode, both toasts should be visible
+                #expect(queueManager.visibleToasts.count == 2)
+                #expect(queueManager.queuedToasts.count == 0)
+
+                // Wait for both toasts to auto-dismiss
+                await sleep(for: 0.2)
             }
-        )
-        let toast2Config = ToastConfiguration(
-            defaultDuration: 0.1,
-            onAutoDismiss: {
-                Task {
-                    await callback2Probe.markExecuted()
-                }
-            }
-        )
+        }
 
-        let toast1 = DialogCustomType.custom(content: DialogContent("Toast 1"), style: .toast(toast1Config))
-        let toast2 = DialogCustomType.custom(content: DialogContent("Toast 2"), style: .toast(toast2Config))
-
-        queueManager.enqueue(toast1)
-        queueManager.enqueue(toast2)
-
-        // In stacked mode, both toasts should be visible
-        #expect(queueManager.visibleToasts.count == 2)
-        #expect(queueManager.queuedToasts.count == 0)
-
-        // Wait for both toasts to auto-dismiss
-        await sleep(for: 0.2)
-
-        #expect(await callback1Probe.isExecuted(), "First toast callback should execute")
-        #expect(await callback2Probe.isExecuted(), "Second toast callback should execute")
         #expect(queueManager.visibleToasts.count == 0)
     }
 }
