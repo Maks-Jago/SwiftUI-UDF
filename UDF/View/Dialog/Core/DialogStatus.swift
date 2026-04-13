@@ -268,7 +268,7 @@ public struct DialogStatus: Equatable, Identifiable, Sendable {
     /// dialog = .init(id: "networkError")
     /// ```
     public init(id: some Hashable) {
-        if let dialog = DialogRegistry.get(id: id) {
+        if let dialog = _DialogRegistry.get(id: id) {
             self = .init(dialog: dialog)
         } else {
             self = .dismissed

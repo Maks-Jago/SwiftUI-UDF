@@ -25,7 +25,7 @@ import SwiftUI
 ///     }
 /// }
 /// ```
-public struct Toast: Dialog {
+public struct Toast: DialogProtocol {
     public let payload: DialogPayload
     public let dialogStyle: DialogStyle
 

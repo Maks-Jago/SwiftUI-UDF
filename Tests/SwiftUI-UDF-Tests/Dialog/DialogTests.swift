@@ -12,49 +12,37 @@ private extension Actions {
 
 extension DialogType {
     @MainActor
-    static func dialogWithAction(_ action: @Sendable @escaping () -> Void) -> DialogCustomType<EmptyView, EmptyView> {
-        DialogCustomType.custom(
-            content: DialogContent(
-                title: "Custom dialog title with action",
-                message: "Custom dialog text with action", actions: {
-                    DialogButton(title: "Action button", action: action)
-                    DialogButton(title: "Cancel")
-                        .role(.cancel)
-                }
-            ),
-            style: .alert
-        )
+    static func dialogWithAction(_ action: @Sendable @escaping () -> Void) -> AlertDialog {
+        AlertDialog {
+            DialogTitle("Custom dialog title with action")
+            DialogMessage("Custom dialog text with action")
+            DialogButton(title: "Action button", action: action)
+            DialogButton(title: "Cancel").role(.cancel)
+        }
     }
 
     @MainActor
-    static func toastWithAction(_ action: @Sendable @escaping () -> Void) -> DialogCustomType<EmptyView, EmptyView> {
-        DialogCustomType.custom(
-            content: DialogContent(
-                title: "Toast dialog",
-                message: "Toast with action button",
-                actions: {
-                    DialogButton(title: "Action", action: action)
-                }
-            ),
-            style: .toast()
-        )
+    static func toastWithAction(_ action: @Sendable @escaping () -> Void) -> Toast {
+        Toast {
+            DialogMessage("Toast with action button")
+            DialogButton(title: "Action", action: action)
+        }
     }
 
-    static func customToastWithIcon() -> DialogCustomType<Image, EmptyView> {
-        DialogCustomType.custom(
-            content: DialogContent(
-                title: "Custom Toast",
-                message: "Toast with custom icon",
-                iconImage: Image(systemName: "party.popper.fill"),
-                actions: {}
-            ),
-            style: .toast(.vibrant)
-        )
+    @MainActor
+    static func customToastWithIcon() -> Toast {
+        Toast(config: .init(theme: .vibrant)) {
+            DialogMessage("Toast with custom icon")
+            DialogIcon {
+                Image(systemName: "party.popper.fill")
+            }
+        }
     }
 
-    static func customViewToast() -> any DialogTypeProtocol {
-        DialogCustomType.custom(
-            content: DialogContent {
+    @MainActor
+    static func customViewToast() -> Toast {
+        Toast(config: .init(position: .center)) {
+            DialogView {
                 VStack {
                     Image(systemName: "checkmark.circle.fill")
                         .font(.largeTitle)
@@ -63,9 +51,8 @@ extension DialogType {
                         .font(.headline)
                 }
                 .padding()
-            },
-            style: .toast(.center)
-        )
+            }
+        }
     }
 }
 
@@ -105,22 +92,19 @@ extension DialogType {
     }
 
     init() {
-        DialogRegistry.clearAll()
+        Dialog.clearAll()
     }
 
     @Test func whendialogRegistered_dialogCanBePresentedById() async {
         let store = await TestStore(initial: AppState())
         #expect(await store.state.form.dialog.status == .dismissed)
 
-        let dialogWithAction = await MainActor.run {
+        await Dialog.register(id: FormWithDialog.DialogId.dialogWithAction) {
             DialogType.dialogWithAction {
                 print("Custom dialog action")
             }
         }
-        
-        DialogRegistry.register(id: FormWithDialog.DialogId.dialogWithAction) {
-            dialogWithAction
-        }
+        await waitForCondition { Dialog.isRegistered(id: FormWithDialog.DialogId.dialogWithAction) }
 
         await store.dispatch(Actions.PresentDialogWithAction())
         let success = await waitForCondition { await store.state.form.dialog.status != .dismissed }
@@ -189,15 +173,12 @@ extension DialogType {
         let store = await TestStore(initial: AppState())
         #expect(await store.state.form.dialog.status == .dismissed)
 
-        let toastWithAction = await MainActor.run {
+        await Dialog.register(id: FormWithDialog.DialogId.toastDialog) {
             DialogType.toastWithAction {
                 print("Toast action executed")
             }
         }
-        
-        DialogRegistry.register(id: FormWithDialog.DialogId.toastDialog) {
-            toastWithAction
-        }
+        await waitForCondition { Dialog.isRegistered(id: FormWithDialog.DialogId.toastDialog) }
 
         await store.dispatch(Actions.PresentToastDialog())
         let success = await waitForCondition { await store.state.form.dialog.status != .dismissed }
@@ -218,27 +199,28 @@ extension DialogType {
     @Test func customToastWithIcon() async {
         let store = await TestStore(initial: AppState())
 
-        DialogRegistry.register(id: FormWithDialog.DialogId.customToastWithIcon) {
+        await Dialog.register(id: FormWithDialog.DialogId.customToastWithIcon) {
             DialogType.customToastWithIcon()
         }
+        await waitForCondition { Dialog.isRegistered(id: FormWithDialog.DialogId.customToastWithIcon) }
 
         await store.dispatch(Actions.PresentCustomToastWithIcon())
         let success = await waitForCondition { await store.state.form.dialog.status != .dismissed }
         #expect(success)
 
         // Verify it's a toast with custom icon
-        if case .presented(let dialogType) = await store.state.form.dialog.status,
-           case DialogCustomType<Image, EmptyView>.custom(let content, let style) = dialogType {
+        if case .presented(let dialogProtocol) = await store.state.form.dialog.status,
+           let toast = dialogProtocol as? Toast {
 
             // Check style is toast
-            if case .toast(let config) = style {
+            if case .toast(let config) = toast.style {
                 #expect(config.theme == .vibrant)
             } else {
                 Issue.record("Expected toast style")
             }
 
             // Check custom icon
-            #expect(content.hasIcon)
+            #expect(toast.payload.icon != nil)
         } else {
             Issue.record("Expected custom dialog with content")
         }
@@ -247,9 +229,10 @@ extension DialogType {
     @Test func customViewToast() async {
         let store = await TestStore(initial: AppState())
 
-        DialogRegistry.register(id: FormWithDialog.DialogId.customViewToast) {
+        await Dialog.register(id: FormWithDialog.DialogId.customViewToast) {
             DialogType.customViewToast()
         }
+        await waitForCondition { Dialog.isRegistered(id: FormWithDialog.DialogId.customViewToast) }
 
         await store.dispatch(Actions.PresentCustomViewToast())
         let success = await waitForCondition { await store.state.form.dialog.status != .dismissed }
@@ -299,14 +282,14 @@ extension DialogType {
     // MARK: - Complex Content Tests
     @MainActor
     @Test func customDialogWithContent() {
-        let dialog = DialogStatus(style: .alert) {
-            DialogContent(title: "Custom Title", message: "Custom message", actions: {
-                DialogButton.destructive("Delete") {
-                    print("Delete action")
-                }
-                DialogButton.cancel("Cancel")
-            })
-        }
+        let dialog = DialogStatus(dialog: AlertDialog {
+            DialogTitle("Custom Title")
+            DialogMessage("Custom message")
+            DialogButton(title: "Delete", role: .destructive) {
+                print("Delete action")
+            }
+            DialogButton(title: "Cancel", role: .cancel)
+        })
 
         #expect(dialog.status != .dismissed)
 
@@ -322,13 +305,12 @@ extension DialogType {
 
     @MainActor
     @Test func toastWithContentAndActions() {
-        let dialog = DialogStatus(style: .toast()) {
-            DialogContent(title: "Toast Title", message: "Toast message", actions: {
-                DialogButton.default("Action") {
-                    print("Toast action")
-                }
-            })
-        }
+        let dialog = DialogStatus(dialog: Toast {
+            DialogMessage("Toast message")
+            DialogButton(title: "Action") {
+                print("Toast action")
+            }
+        })
 
         if case .presented(let dialogType) = dialog.status {
             if case .toast = dialogType.style {
@@ -366,15 +348,12 @@ extension DialogType {
         let store = await TestStore(initial: AppState())
         
         // Register a toast with long duration (won't auto-dismiss during test)
-        DialogRegistry.register(id: FormWithDialog.DialogId.toastDialog) {
-            DialogCustomType.custom(
-                content: DialogContent(
-                    title: "Manual dismiss test",
-                    message: "This should be manually dismissed"
-                ),
-                style: .toast(ToastConfiguration(defaultDuration: 10.0)) // 10 seconds
-            )
+        await Dialog.register(id: FormWithDialog.DialogId.toastDialog) {
+            Toast(config: .init(defaultDuration: 10.0)) {
+                DialogMessage("This toast should be manually dismissed")
+            }
         }
+        await waitForCondition { Dialog.isRegistered(id: FormWithDialog.DialogId.toastDialog) }
         
         // Present the toast
         await store.dispatch(Actions.PresentToastDialog())
@@ -394,15 +373,12 @@ extension DialogType {
         let store = await TestStore(initial: AppState())
         
         // Register a toast with zero duration (manual dismiss only)
-        DialogRegistry.register(id: FormWithDialog.DialogId.toastDialog) {
-            DialogCustomType.custom(
-                content: DialogContent(
-                    title: "Persistent toast",
-                    message: "This should not auto-dismiss"
-                ),
-                style: .toast(ToastConfiguration(defaultDuration: 0)) // No auto-dismiss
-            )
+        await Dialog.register(id: FormWithDialog.DialogId.toastDialog) {
+            Toast(config: .init(defaultDuration: 0)) {
+                DialogMessage("This toast should not auto-dismiss")
+            }
         }
+        await waitForCondition { Dialog.isRegistered(id: FormWithDialog.DialogId.toastDialog) }
         
         // Present the toast
         await store.dispatch(Actions.PresentToastDialog())
@@ -417,6 +393,7 @@ extension DialogType {
     }
 
     // MARK: - Registry Tests
+    @MainActor
     @Test func registryBehavior() {
         let testId = "test-dialog"
 
@@ -425,7 +402,7 @@ extension DialogType {
         #expect(unregisteredDialog.status == .dismissed)
 
         // Register and test
-        DialogRegistry.register(id: testId) {
+        Dialog.register(id: testId) {
             DialogType.success(message: "Registered dialog", style: .toast())
         }
 
