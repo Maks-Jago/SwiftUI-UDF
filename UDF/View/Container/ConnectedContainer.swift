@@ -159,7 +159,10 @@ struct ConnectedContainer<C: Component, State: AppReducer>: View {
         containerLifecycle.set(didLoad: true, store: store)
         
         return C(props: map(store))
-            .onAppear { onContainerAppear(store) }
+            .onAppear {
+                containerLifecycle.markAsAppeared()
+                onContainerAppear(store)
+            }
             .onDisappear { onContainerDisappear(store) }
     }
 }

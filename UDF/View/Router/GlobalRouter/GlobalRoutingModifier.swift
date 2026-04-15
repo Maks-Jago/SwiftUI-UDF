@@ -52,7 +52,7 @@ struct GlobalRoutingModifier<R: Routing>: ViewModifier where R.Route: Hashable {
             .navigationDestination(
                 for: R.Route.self,
                 destination: {
-                    R().view(for: $0)
+                    R().view(for: $0).id($0)
                 }
             )
     }

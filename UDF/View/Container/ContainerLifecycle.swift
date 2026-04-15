@@ -38,7 +38,10 @@ import SwiftUI
 final class ContainerLifecycle<State: AppReducer>: ObservableObject {
     /// A private flag indicating if the container has completed its loading process.
     private var didLoad: Bool = false
-
+    
+    /// A private flag tracking if the container has physically appeared on screen
+    private var hasAppeared: Bool = false
+ 
     /// The hooks used within the container.
     let containerHooks: ContainerHooks<State>
 
@@ -51,8 +54,8 @@ final class ContainerLifecycle<State: AppReducer>: ObservableObject {
     /// Sets the `didLoad` state and executes the load command if the container loads for the first time.
     ///
     /// - Parameters:
-    ///   - didLoad: A Boolean indicating whether the container has completed its loading.
-    ///   - store: The global `EnvironmentStore` holding the state.
+    ///   - didLoad: A boolean value indicating whether the container has loaded.
+    ///   - store: The `EnvironmentStore` instance to use for executing the `didLoadCommand`.
     func set(didLoad: Bool, store: EnvironmentStore<State>) {
         if !self.didLoad, didLoad {
             containerHooks.createHooks()
@@ -61,8 +64,12 @@ final class ContainerLifecycle<State: AppReducer>: ObservableObject {
         self.didLoad = didLoad
     }
 
-    /// Initializes the `ContainerLifecycle` with commands to execute on load and unload,
-    /// and a closure to define hooks.
+    /// Marks the container as having physically appeared on screen at least once.
+    func markAsAppeared() {
+        hasAppeared = true
+    }
+
+    /// Initializes a new `ContainerLifecycle` instance with the specified load/unload commands and hooks.
     ///
     /// - Parameters:
     ///   - didLoadCommand: A command to execute when the container is first loaded.
@@ -81,6 +88,8 @@ final class ContainerLifecycle<State: AppReducer>: ObservableObject {
     /// Cleans up by removing all hooks and executing the unload command.
     deinit {
         containerHooks.removeAllHooks()
-        self.didUnloadCommand(EnvironmentStore<State>.global)
+        if hasAppeared {
+            self.didUnloadCommand(EnvironmentStore<State>.global)
+        }
     }
 }
