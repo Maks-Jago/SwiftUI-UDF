@@ -63,12 +63,7 @@ import SwiftUI
 /// }
 ///
 /// func map(store: EnvironmentStore<AppState>) -> RootComponent.Props {
-///     .init(
-///         path: Binding(
-///             get: { store.state.welcomeForm.navigation.path },
-///             set: { store.dispatch(Actions.UpdateNavigationPath(path: $0)) }
-///         )
-///     )
+///     .init(path: store.$state.welcomeForm.path)
 /// }
 ///
 /// // Component
@@ -77,8 +72,9 @@ import SwiftUI
 /// var body: some View {
 ///     NavigationStackBound(to: props.path) {
 ///         WelcomeScreen()
+///             .navigationDestination(for: AuthRouting.self)
 ///     }
-///     .modifier(GlobalRoutingModifier(routing: AuthRouting.self))
+///     .environment(\.globalRouter, GlobalRouter(path: props.path))
 /// }
 /// ```
 public struct NavigationStackBound<Root: View>: View {
