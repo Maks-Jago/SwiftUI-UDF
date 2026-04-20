@@ -56,7 +56,7 @@ extension StoreOperation {
         var taskPriority: TaskPriority {
             switch self {
             case .default: .high
-            case .userInteractive: .userInitiated
+            case .userInteractive: .userInteractive
             }
         }
 
