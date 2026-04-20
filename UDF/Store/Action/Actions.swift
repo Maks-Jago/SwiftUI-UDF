@@ -475,6 +475,10 @@ public extension Actions {
 public extension Actions {
     /// `DidLoadItem` is an action that represents a single item being loaded.
     struct DidLoadItem<M: Equatable & Sendable>: Action {
+        public static func == (lhs: Actions.DidLoadItem<M>, rhs: Actions.DidLoadItem<M>) -> Bool {
+            areEqual(lhs.item, rhs.item) && areEqual(lhs.id, rhs.id)
+        }
+
         /// The item that was loaded.
         public var item: M
 
@@ -501,6 +505,10 @@ public extension Actions {
 
     /// `DidLoadItems` is an action that represents multiple items being loaded.
     struct DidLoadItems<M: Equatable & Sendable>: Action, CustomStringConvertible {
+        public static func == (lhs: Actions.DidLoadItems<M>, rhs: Actions.DidLoadItems<M>) -> Bool {
+            areEqual(lhs.items, rhs.items) && areEqual(lhs.id, rhs.id)
+        }
+
         /// The list of items that were loaded.
         public var items: [M]
 
@@ -534,6 +542,10 @@ public extension Actions {
 
     /// `DidUpdateItem` is an action that represents an item being updated.
     struct DidUpdateItem<M: Equatable & Sendable>: Action {
+        public static func == (lhs: Actions.DidUpdateItem<M>, rhs: Actions.DidUpdateItem<M>) -> Bool {
+            areEqual(lhs.item, rhs.item) && areEqual(lhs.id, rhs.id)
+        }
+
         /// The item that was updated.
         public var item: M
 
@@ -560,6 +572,10 @@ public extension Actions {
 
     /// `DeleteItem` is an action that represents an item being deleted.
     struct DeleteItem<M: Equatable & Sendable>: Action {
+        public static func == (lhs: Actions.DeleteItem<M>, rhs: Actions.DeleteItem<M>) -> Bool {
+            areEqual(lhs.item, rhs.item) && areEqual(lhs.id, rhs.id)
+        }
+
         /// The item that was deleted.
         public var item: M
 
@@ -589,6 +605,10 @@ public extension Actions {
 public extension Actions {
     /// `DidLoadNestedItem` is an action that represents a nested item being loaded.
     struct DidLoadNestedItem<ParentId: Hashable & Sendable, Nested: Equatable & Sendable>: Action {
+        public static func == (lhs: Actions.DidLoadNestedItem<ParentId, Nested>, rhs: Actions.DidLoadNestedItem<ParentId, Nested>) -> Bool {
+            areEqual(lhs.item, rhs.item) && areEqual(lhs.id, rhs.id) && areEqual(lhs.parentId, rhs.parentId)
+        }
+
         /// The nested item that was loaded.
         public var item: Nested
 
@@ -623,6 +643,10 @@ public extension Actions {
 
     /// `DidLoadNestedItems` is an action that represents multiple nested items being loaded.
     struct DidLoadNestedItems<ParentId: Hashable & Sendable, Nested: Equatable & Sendable>: Action, CustomStringConvertible {
+        public static func == (lhs: Actions.DidLoadNestedItems<ParentId, Nested>, rhs: Actions.DidLoadNestedItems<ParentId, Nested>) -> Bool {
+            areEqual(lhs.items, rhs.items) && areEqual(lhs.id, rhs.id) && areEqual(lhs.parentId, rhs.parentId)
+        }
+
         /// The nested items that were loaded.
         public var items: [Nested]
 
@@ -673,6 +697,10 @@ public extension Actions {
 
     /// `DidLoadNestedByParents` is an action representing the loading of nested items grouped by their parent identifiers.
     struct DidLoadNestedByParents<ParentId: Hashable & Sendable, Nested: Equatable & Sendable>: Action, CustomStringConvertible {
+        public static func == (lhs: Actions.DidLoadNestedByParents<ParentId, Nested>, rhs: Actions.DidLoadNestedByParents<ParentId, Nested>) -> Bool {
+            areEqual(lhs.dictionary, rhs.dictionary) && areEqual(lhs.id, rhs.id)
+        }
+
         /// A dictionary mapping parent identifiers to their corresponding nested items.
         public var dictionary: [ParentId: [Nested]]
 
@@ -716,6 +744,10 @@ public extension Actions {
 
     /// `DidUpdateNestedItem` is an action representing the update of a nested item for a specific parent identifier.
     struct DidUpdateNestedItem<ParentId: Hashable & Sendable, Nested: Equatable & Sendable>: Action {
+        public static func == (lhs: Actions.DidUpdateNestedItem<ParentId, Nested>, rhs: Actions.DidUpdateNestedItem<ParentId, Nested>) -> Bool {
+            areEqual(lhs.item, rhs.item) && areEqual(lhs.id, rhs.id) && areEqual(lhs.parentId, rhs.parentId)
+        }
+
         /// The nested item that was updated.
         public var item: Nested
 
@@ -750,6 +782,10 @@ public extension Actions {
 
     /// `DeleteNestedItem` is an action representing the deletion of a nested item for a specific parent identifier.
     struct DeleteNestedItem<ParentId: Hashable & Sendable, Nested: Equatable & Sendable>: Action {
+        public static func == (lhs: Actions.DeleteNestedItem<ParentId, Nested>, rhs: Actions.DeleteNestedItem<ParentId, Nested>) -> Bool {
+            areEqual(lhs.item, rhs.item) && areEqual(lhs.id, rhs.id) && areEqual(lhs.parentId, rhs.parentId)
+        }
+
         /// The nested item that is to be deleted.
         public var item: Nested
 

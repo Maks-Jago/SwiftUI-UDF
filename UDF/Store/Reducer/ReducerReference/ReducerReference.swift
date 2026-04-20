@@ -71,6 +71,10 @@ public class ReducerReference<AppState: AppReducer, Reducer: Reducible>: @unchec
 // MARK: - Extensions for Forms
 
 public extension ReducerReference where Reducer: Form {
+    private struct SendableWritableKeyPath<Root, Value>: @unchecked Sendable {
+        let value: WritableKeyPath<Root, Value>
+    }
+
     /// Binds a property of the referenced reducer to a SwiftUI view using a key path.
     ///
     /// This allows direct binding of form fields to SwiftUI views. When the bound property is updated, an `UpdateFormField` action is
