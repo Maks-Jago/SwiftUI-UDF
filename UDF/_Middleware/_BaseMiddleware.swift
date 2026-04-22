@@ -72,9 +72,8 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
     
     /// Synchronizes access to the middleware's mutable state.
     ///
-    /// This property ensures that operations on the internal dictionary—such as
-    /// adding, retrieving, or removing cancellation tasks—are atomic across different
-    /// physical threads, preventing data races and memory corruption.
+    /// This property ensures that operations on the internal data such as reading/writing—are
+    /// atomic across different physical threads, preventing data races and memory corruption.
     private let state = OSAllocatedUnfairLock(initialState: MutableState())
 
     // MARK: - Cancellation
