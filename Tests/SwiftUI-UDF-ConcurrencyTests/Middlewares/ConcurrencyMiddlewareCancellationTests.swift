@@ -82,7 +82,6 @@ import Foundation
         let acceptableFlowState: [MiddlewareFlow] = [.cancel, .didCancel]
         
         success = await waitForCondition { acceptableFlowState.contains(await store.state.middlewareFlow) }
-        print(await store.state.middlewareFlow)
         #expect(success)
         
         await store.wait()
