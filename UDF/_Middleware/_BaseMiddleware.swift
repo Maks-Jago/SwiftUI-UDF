@@ -92,7 +92,7 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
 
         cancellableTask.cancel()
         state.withLockUnchecked { state in
-            state.deleteCancellation(forKey: anyId)
+            state.removeCancellation(forKey: anyId)
         }
         return true
     }
@@ -159,14 +159,14 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
             .handleEvents(receiveCancel: { [weak self] in
                 // Handle cancellation: Remove the task from cancellations and dispatch cancellation action
                 self?.state.withLockUnchecked { state in
-                    state.deleteCancellation(forKey: anyId)
+                    state.removeCancellation(forKey: anyId)
                 }
                 self?.dispatch(action: mapAction(Actions.DidCancelEffect(by: cancellation)), filePosition: filePosition)
             })
             .sink(receiveCompletion: { [weak self] _ in
                 // Handle completion: Remove the task from cancellations and signal Testing
                 self?.state.withLockUnchecked { state in
-                    state.deleteCancellation(forKey: anyId)
+                    state.removeCancellation(forKey: anyId)
                 }
             }, receiveValue: { [weak self] action in
                 // Handle receiving a value: Dispatch the action to the store
@@ -266,7 +266,7 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
             .handleEvents(receiveCancel: { [weak self] in
                 // Handle cancellation: Remove the task from cancellations and dispatch cancellation action
                 self?.state.withLockUnchecked { state in
-                    state.deleteCancellation(forKey: anyId)
+                    state.removeCancellation(forKey: anyId)
                 }
                 self?.dispatch(action: mapAction(Actions.DidCancelEffect(by: cancellation)), filePosition: filePosition)
             })
@@ -286,7 +286,7 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
             .sink(receiveCompletion: { [weak self] _ in
                 // Handle completion: Remove the task from cancellations
                 self?.state.withLockUnchecked { state in
-                    state.deleteCancellation(forKey: anyId)
+                    state.removeCancellation(forKey: anyId)
                 }
                 TestGroup.instanceFor(key: testGroupKey).leave()
 
@@ -347,14 +347,14 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
             .handleEvents(receiveCancel: { [weak self] in
                 // Handle cancellation: Remove the task from cancellations and dispatch cancellation action
                 self?.state.withLockUnchecked { state in
-                    state.deleteCancellation(forKey: anyId)
+                    state.removeCancellation(forKey: anyId)
                 }
                 self?.dispatch(action: mapAction(Actions.DidCancelEffect(by: cancellation)), filePosition: filePosition )
             })
             .sink(receiveCompletion: { [weak self] _ in
                 // Handle completion: Remove the task from cancellations
                 self?.state.withLockUnchecked { state in
-                    state.deleteCancellation(forKey: anyId)
+                    state.removeCancellation(forKey: anyId)
                 }
                 TestGroup.instanceFor(key: testGroupKey).leave()
 
@@ -498,10 +498,8 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
             }
 
             // Remove the task from the cancellations dictionary
-            _ = self?.queue.sync { [weak self] in
-                self?.state.withLockUnchecked { state in
-                    state.deleteCancellation(forKey: anyCancellationId)
-                }
+            self?.state.withLockUnchecked { state in
+                state.removeCancellation(forKey: anyCancellationId)
             }
         }
 
@@ -522,7 +520,7 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
             cancellations[key] = cancellable
         }
         
-        func deleteCancellation(forKey key: AnyHashable) {
+        func removeCancellation(forKey key: AnyHashable) {
             cancellations.removeValue(forKey: key)
         }
     }
