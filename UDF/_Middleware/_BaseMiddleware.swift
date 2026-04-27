@@ -11,7 +11,6 @@
 
 import Combine
 import Foundation
-import os
 
 /// `_BaseMiddleware` is an open class that serves as the base for creating middleware components
 /// in the UDF architecture. Middleware is responsible for handling side effects and can process actions
