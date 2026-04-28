@@ -22,7 +22,11 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
     public var store: any Store<State>
 
     /// The dispatch queue used to execute asynchronous operations.
-    public var queue: DispatchQueue
+    public var queue: DispatchQueue {
+        didSet {
+            queue.setSpecific(key: queueKey, value: ())
+        }
+    }
 
     // MARK: - Initialization
 
@@ -34,6 +38,11 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
     public required init(store: some Store<State>, queue: DispatchQueue) {
         self.store = store
         self.queue = queue
+        self.queue.setSpecific(key: queueKey, value: ())
+    }
+    
+    deinit {
+        queue.setSpecific(key: queueKey, value: nil)
     }
 
     // MARK: - Middleware Status
@@ -75,7 +84,7 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
     open func cancel(by cancellation: some Hashable) -> Bool {
         let anyId = AnyHashable(cancellation)
 
-        guard cancellations[anyId] != nil else {
+        guard isRunningTask(id: anyId) else {
             return false
         }
 
@@ -87,6 +96,11 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
 
     /// Cancels all ongoing tasks tracked in the `cancellations` dictionary.
     open func cancelAll() {
+        let cancellations = if isOnQueue {
+            self.cancellations
+        } else {
+            queue.sync { self.cancellations }
+        }
         cancellations.keys.forEach { cancelation in
             cancel(by: cancelation)
         }
@@ -129,7 +143,7 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
         let anyId = AnyHashable(cancellation)
 
         // Prevent executing the effect if an effect with the same ID is already in progress
-        guard cancellations[anyId] == nil else {
+        guard !isRunningTask(id: anyId) else {
             return
         }
 
@@ -153,7 +167,7 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
                 self?.setTask(nil, for: anyId)
             }, receiveValue: { [weak self] action in
                 // Handle receiving a value: Dispatch the action to the store
-                if self?.cancellations[anyId] != nil {
+                if self?.isRunningTask(id: anyId) == true {
                     self?.dispatch(action: mapAction(action), filePosition: filePosition)
                 } else {
                     TestGroup.instanceFor(key: testGroupKey).leave()
@@ -232,7 +246,7 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
         let anyId = AnyHashable(cancellation)
 
         // Prevent running the effect if an effect with the same ID is already in progress
-        guard cancellations[anyId] == nil else {
+        guard !isRunningTask(id: anyId) else {
             return
         }
 
@@ -269,7 +283,7 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
 
             }, receiveValue: { [weak self] result in
                 // Dispatch the action if the cancellation token exists and the dispatch filter returns true
-                if self?.cancellations[anyId] != nil, dispatchFilter(result.state, result.action) {
+                if self?.isRunningTask(id: anyId) == true, dispatchFilter(result.state, result.action) {
                     self?.dispatch(action: mapAction(result.action), filePosition: filePosition)
                 }
             })
@@ -307,7 +321,7 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
         let anyId = AnyHashable(cancellation)
 
         // Prevent running the effect if an effect with the same ID is already in progress
-        guard cancellations[anyId] == nil else {
+        guard !isRunningTask(id: anyId) else {
             return
         }
 
@@ -331,7 +345,7 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
 
             }, receiveValue: { [weak self] action in
                 // Dispatch the mapped action to the store if the effect is still active
-                if self?.cancellations[anyId] != nil {
+                if self?.isRunningTask(id: anyId) == true {
                     TestGroup.instanceFor(key: testGroupKey).enter()
                     self?.dispatch(action: mapAction(action), filePosition: filePosition)
                 }
@@ -436,7 +450,7 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
         let anyCancellationId = AnyHashable(cancellation)
 
         // Prevent running the effect if an effect with the same cancellation ID is already in progress
-        guard cancellations[anyCancellationId] == nil else {
+        guard !isRunningTask(id: anyCancellationId) else {
             return
         }
 
@@ -474,10 +488,29 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
         setTask(task, for: anyCancellationId)
     }
     
+    /// Stores/removes a cancellation task for the given identifier, ensuring thread safety.
     private func setTask(_ task: CancellableTask?, for anyId: AnyHashable) {
         queue.async(flags: .barrier) { [weak self] in
             self?.cancellations[anyId] = task
         }
+    }
+    
+    /// Returns `true` if a cancellation with the given `id` exists in `cancellations`, checking the queue to ensure thread safety.
+    private func isRunningTask(id: AnyHashable) -> Bool {
+        if isOnQueue {
+            return cancellations[id] != nil
+        }
+        return queue.sync {
+            cancellations[id] != nil
+        }
+    }
+    
+    /// Specific key used to identify `queue` between other queues.
+    private let queueKey = DispatchSpecificKey<Void>()
+    
+    /// Returns `true` if the caller is currently executing on `queue`.
+    private var isOnQueue: Bool {
+        DispatchQueue.getSpecific(key: queueKey) != nil
     }
 }
 
