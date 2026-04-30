@@ -1,0 +1,42 @@
+//===--- DialogComponents.swift ----------------------------------===//
+//
+// This source file is part of the UDF open source project
+//
+// Copyright (c) 2026 You are launched
+// Licensed under Apache License v2.0
+//
+// See https://opensource.org/licenses/Apache-2.0 for license information
+//
+//===----------------------------------------------------------------------===//
+
+import SwiftUI
+
+/// A dialog component representing arbitrary custom SwiftUI content for a dialog.
+///
+/// `DialogView` is only supported in ``Toast``. Attempting to use it
+/// in an ``AlertDialog`` or ``ConfirmationDialog`` will produce a compile-time error.
+///
+/// Use this component when the standard title/message layout is insufficient
+/// and you need a fully custom view inside the toast.
+///
+/// ```swift
+/// Toast {
+///     DialogView {
+///         VStack {
+///             ProgressView()
+///             Text("Uploading...")
+///         }
+///     }
+/// }
+/// ```
+public struct DialogView: ToastComponent {
+    let value: @MainActor () -> AnyView
+
+    /// Creates a dialog custom content component with a SwiftUI view.
+    /// - Parameter content: A `@ViewBuilder` closure producing the custom content view.
+    public init<Content: View>(
+        @ViewBuilder _ content: @MainActor @escaping () -> Content
+    ) {
+        self.value = { AnyView(content()) }
+    }
+}

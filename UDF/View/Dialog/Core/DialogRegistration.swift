@@ -12,6 +12,10 @@
 import Foundation
 import SwiftUI
 
+/// Legacy typealias for the dialog component namespace.
+@available(*, deprecated, renamed: "Dialog")
+public typealias DialogRegistry = Dialog
+
 /// Registration system for reusable dialogs.
 ///
 /// The dialog registration system allows you to pre-define dialogs
@@ -27,7 +31,7 @@ import SwiftUI
 /// ## Usage:
 /// ```swift
 /// // Register a dialog
-/// DialogRegistry.register(id: "networkError") {
+/// Dialog.register(id: "networkError") {
 ///     .error("No internet connection", style: .alert)
 /// }
 /// 
@@ -35,11 +39,11 @@ import SwiftUI
 /// dialog = .init(id: "networkError")
 ///
 /// // Check if registered
-/// if DialogRegistry.isRegistered(id: "networkError") {
+/// if Dialog.isRegistered(id: "networkError") {
 ///     // Use it
 /// }
 /// ```
-public enum DialogRegistry {
+enum _DialogRegistry {
     
     // MARK: - Private Storage
     
@@ -68,7 +72,7 @@ public enum DialogRegistry {
     ///
     /// ## Example:
     /// ```swift
-    /// DialogRegistry.register(id: "deleteConfirmation") {
+    /// Dialog.register(id: "deleteConfirmation") {
     ///     DialogCustomType.custom(
     ///         content: DialogContent("Delete Item", message: "This cannot be undone") {
     ///             DialogButton.destructive("Delete") { performDelete() }
@@ -78,12 +82,61 @@ public enum DialogRegistry {
     ///     )
     /// }
     /// ```
+    @available(*, deprecated, message: "Use the new ResultBuilder-based register(id:dialog:) with AlertDialog, Toast, or ConfirmationDialog instead.")
     public static func register<ID: Hashable & Sendable>(
         id: ID,
         builder: @escaping @Sendable () -> any DialogTypeProtocol
     ) {
         queue.async(flags: .barrier) {
             registry[AnyHashable(id)] = builder
+        }
+    }
+    
+    /// Registers a convenient standard dialog factory for a given identifier.
+    ///
+    /// This registration overload is optimized for standard ``DialogType`` instances
+    /// representing simple `.success`, `.error`, `.warning`, or `.info` states.
+    ///
+    /// - Parameters:
+    ///   - id: A unique identifier for the dialog. Can be any Hashable type.
+    ///   - builder: A closure that returns a standard ``DialogType`` when called.
+    public static func register<ID: Hashable & Sendable>(
+        id: ID,
+        builder: @escaping @Sendable () -> DialogType
+    ) {
+        queue.async(flags: .barrier) {
+            registry[AnyHashable(id)] = builder
+        }
+    }
+    
+    /// Registers a type-safe ``Dialog`` (``AlertDialog``, ``Toast``, or ``ConfirmationDialog``)
+    /// for the given identifier.
+    ///
+    /// The `@MainActor` builder closure is evaluated eagerly at registration time
+    /// and the resulting ``Dialog`` value — which is `Sendable` — is captured and
+    /// stored in the registry for later retrieval.
+    ///
+    /// ```swift
+    /// Dialog.register(id: MyDialogs.error) {
+    ///     AlertDialog {
+    ///         DialogTitle("Error")
+    ///         DialogMessage("Something went wrong.")
+    ///         DialogButton(title: "OK")
+    ///     }
+    /// }
+    /// ```
+    ///
+    /// - Parameters:
+    ///   - id: A unique, hashable identifier for this dialog.
+    ///   - dialog: A closure that returns a ``Dialog`` conforming value.
+    @MainActor
+    public static func register<ID: Hashable & Sendable, D: DialogProtocol>(
+        id: ID,
+        dialog: @escaping @Sendable @MainActor () -> D
+    ) {
+        let dialog = dialog()
+        queue.async(flags: .barrier) {
+            registry[AnyHashable(id)] = { dialog }
         }
     }
     
@@ -111,7 +164,7 @@ public enum DialogRegistry {
     ///
     /// ## Example:
     /// ```swift
-    /// if DialogRegistry.isRegistered(id: "networkError") {
+    /// if Dialog.isRegistered(id: "networkError") {
     ///     dialog = .init(id: "networkError")
     /// } else {
     ///     dialog = .init(error: "Unknown error occurred")
@@ -132,7 +185,7 @@ public enum DialogRegistry {
     ///
     /// ## Example:
     /// ```swift
-    /// DialogRegistry.unregister(id: "temporaryPromotion")
+    /// Dialog.unregister(id: "temporaryPromotion")
     /// ```
     public static func unregister<ID: Hashable & Sendable>(id: ID) {
         queue.async(flags: .barrier) {
@@ -152,7 +205,7 @@ public enum DialogRegistry {
     /// ## Example:
     /// ```swift
     /// // In test teardown
-    /// DialogRegistry.clearAll()
+    /// Dialog.clearAll()
     /// ```
     public static func clearAll() {
         queue.async(flags: .barrier) {
@@ -194,6 +247,7 @@ public enum DialogRegistry {
     ///   - category: The dialog category (success, error, warning, info).
     ///   - message: The message to display.
     ///   - style: The dialog style (defaults to .alert).
+    @available(*, deprecated, message: "Use the new ResultBuilder-based register(id:dialog:) with AlertDialog, Toast, or ConfirmationDialog instead.")
     public static func register<ID: Hashable & Sendable>(
         id: ID,
         category: DialogCategory,
@@ -220,12 +274,12 @@ public enum DialogRegistry {
 
 // MARK: - ToastRegistry Extension
 
-/// Toast-specific registration extensions for `DialogRegistry`.
+/// Toast-specific registration extensions for `_DialogRegistry`.
 ///
 /// This extension provides convenient methods for registering toast dialogs
 /// with common configurations and patterns. Toasts are non-modal dialogs
 /// that appear as overlay notifications.
-public extension DialogRegistry {
+extension _DialogRegistry {
     
     /// Registers a toast dialog with custom content and configuration.
     ///
@@ -241,7 +295,7 @@ public extension DialogRegistry {
     ///
     /// ## Example:
     /// ```swift
-    /// DialogRegistry.registerToast(id: "uploadProgress") {
+    /// Dialog.registerToast(id: "uploadProgress") {
     ///     DialogContent(
     ///         title: "Uploading File",
     ///         actions: {
@@ -258,6 +312,7 @@ public extension DialogRegistry {
     ///     print("Upload toast dismissed")
     /// }
     /// ```
+    @available(*, deprecated, message: "Use the new ResultBuilder-based register(id:dialog:) with Toast instead.")
     static func registerToast<ID: Hashable & Sendable>(
         id: ID,
         content: @escaping @Sendable () -> DialogContent<EmptyView, EmptyView>,
@@ -295,7 +350,7 @@ public extension DialogRegistry {
     ///
     /// ## Example:
     /// ```swift
-    /// DialogRegistry.registerCustomToast(id: "downloadProgress", title: "Downloading") {
+    /// Dialog.registerCustomToast(id: "downloadProgress", title: "Downloading") {
     ///     VStack(spacing: 8) {
     ///         ProgressView(value: downloadProgress)
     ///         Text("\(Int(downloadProgress * 100))% complete")
@@ -305,6 +360,7 @@ public extension DialogRegistry {
     ///     print("Download progress dismissed")
     /// }
     /// ```
+    @available(*, deprecated, message: "Use the new ResultBuilder-based register(id:dialog:) with Toast and DialogView instead.")
     static func registerCustomToast<ID: Hashable & Sendable, CustomContent: View>(
         id: ID,
         title: String,

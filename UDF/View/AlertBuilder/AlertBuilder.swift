@@ -132,7 +132,7 @@ public enum AlertBuilder {
     ///   - builder: A closure that returns an `AlertStyle`.
     @available(*, deprecated, message: "Use DialogRegistry.register(id:builder:) instead")
     public static func registerAlert(by id: some Hashable & Sendable, _ builder: @escaping @Sendable () -> AlertStyle) {
-        DialogRegistry.register(id: id) {
+        _DialogRegistry.register(id: id) {
             // Convert the AlertStyle to DialogType when accessed
             let alertStyle = builder()
             switch alertStyle.type {

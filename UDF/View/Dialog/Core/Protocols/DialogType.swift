@@ -15,15 +15,17 @@ import SwiftUI
 public protocol DialogTypeProtocol: Sendable, IsEquatable, Hashable {
     var style: DialogStyle { get }
     var category: DialogCategory { get }
-
+    
     var title: String { get }
     var message: String? { get }
     var actions: [any DialogAction] { get }
     
     /// Returns the icon for this dialog as a type-erased AnyView
+    @MainActor
     func getIconView(theme: ToastTheme) -> AnyView?
     
     /// Returns the custom content view for this dialog as a type-erased AnyView
+    @MainActor
     func getCustomContentView() -> AnyView?
 }
 
@@ -36,40 +38,40 @@ extension DialogTypeProtocol {
         }
         return nil
     }
-
+    
 }
 
 public enum DialogCustomType<Icon: View, Content: View>: DialogTypeProtocol {
     case custom(content: DialogContent<Icon, Content>, style: DialogStyle)
-
+    
     public var style: DialogStyle {
         switch self {
         case .custom(_, style: let style):
             return style
         }
     }
-
+    
     public var title: String {
         switch self {
         case let .custom(content, _):
             return content.title()
         }
     }
-
+    
     public var message: String? {
         switch self {
         case let .custom(content, _):
             return content.message()
         }
     }
-
+    
     public var actions: [any DialogAction] {
         switch self {
         case let .custom(content, _):
             return content.actions
         }
     }
-
+    
     public var category: DialogCategory {
         .custom
     }
@@ -124,7 +126,7 @@ public enum DialogType: Sendable, DialogTypeProtocol {
     
     /// An informational dialog with a message.
     case info(message: String, style: DialogStyle)
-
+    
     // MARK: - Computed Properties
     
     /// The dialog style associated with this type.
@@ -149,15 +151,15 @@ public enum DialogType: Sendable, DialogTypeProtocol {
             return message
         }
     }
-
+    
     public var title: String {
         ""
     }
-
+    
     public var actions: [any DialogAction] {
         []
     }
-
+    
     /// The semantic category of this dialog.
     public var category: DialogCategory {
         switch self {
@@ -175,7 +177,7 @@ public enum DialogType: Sendable, DialogTypeProtocol {
     public func getIconView(theme: ToastTheme) -> AnyView? {
         let systemName = switch self {
         case .success: "checkmark.circle.fill"
-        case .error: "exclamationmark.triangle.fill" 
+        case .error: "exclamationmark.triangle.fill"
         case .warning: "exclamationmark.triangle.fill"
         case .info: "info.circle.fill"
         }
@@ -191,7 +193,7 @@ public enum DialogType: Sendable, DialogTypeProtocol {
         // Semantic dialog types don't have custom content
         return nil
     }
-
+    
     // MARK: - Equatable Implementation
     public static func == (lhs: DialogType, rhs: DialogType) -> Bool {
         switch (lhs, rhs) {
@@ -206,7 +208,7 @@ public enum DialogType: Sendable, DialogTypeProtocol {
             
         case let (.info(lhsMessage, lhsStyle), .info(rhsMessage, rhsStyle)):
             return lhsMessage == rhsMessage && lhsStyle == rhsStyle
-
+            
         default:
             return false
         }
@@ -239,7 +241,7 @@ public enum DialogType: Sendable, DialogTypeProtocol {
 /// Semantic categories for dialogs.
 public enum DialogCategory: String, CaseIterable, Sendable {
     case success
-    case error  
+    case error
     case warning
     case info
     case custom

@@ -150,6 +150,7 @@ import SwiftUI
     }
 
     // MARK: - Complex Action Scenarios
+    @MainActor
     @Test func actionWithCustomAction() {
         var actionExecuted = false
 
@@ -197,6 +198,7 @@ import SwiftUI
         #expect(!content.hasActions)
     }
 
+    @MainActor
     @Test func actionEquality() {
         let button1 = DialogButton.cancel("Cancel")
         let button2 = DialogButton.cancel("Cancel")
