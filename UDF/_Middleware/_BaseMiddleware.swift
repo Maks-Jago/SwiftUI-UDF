@@ -11,6 +11,7 @@
 
 import Combine
 import Foundation
+import os
 
 /// `_BaseMiddleware` is an open class that serves as the base for creating middleware components
 /// in the UDF architecture. Middleware is responsible for handling side effects and can process actions
@@ -63,7 +64,17 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
     public typealias ErrorMapper<Id> = @Sendable (_ id: Id, _ error: Error) -> any Action
 
     /// A dictionary to track ongoing tasks by their unique identifiers, allowing for cancellation.
-    public var cancellations: [AnyHashable: CancellableTask] = [:]
+    public var cancellations: [AnyHashable: CancellableTask] {
+        cancellationsBox.withLockUnchecked { box in
+            box.cancellations
+        }
+    }
+    
+    /// Synchronizes access to the middleware's mutable state.
+    ///
+    /// This property ensures that operations on the internal data such as reading/writing—are
+    /// atomic across different physical threads, preventing data races and memory corruption.
+    private let cancellationsBox = OSAllocatedUnfairLock(initialState: CancellationsBox())
 
     // MARK: - Cancellation
 
@@ -80,7 +91,9 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
         }
 
         cancellableTask.cancel()
-        cancellations[anyId] = nil
+        cancellationsBox.withLockUnchecked { box in
+            box.removeCancellation(forKey: anyId)
+        }
         return true
     }
 
@@ -140,17 +153,21 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
         let testGroupKey = TestGroup.enter(for: store)
 
         // Subscribe to the effect and store the cancellation token
-        cancellations[anyId] = effect
+        let cancellable = effect
             .subscribe(on: queue)
             .receive(on: queue)
             .handleEvents(receiveCancel: { [weak self] in
                 // Handle cancellation: Remove the task from cancellations and dispatch cancellation action
-                self?.cancellations[anyId] = nil
+                self?.cancellationsBox.withLockUnchecked { box in
+                    box.removeCancellation(forKey: anyId)
+                }
                 self?.dispatch(action: mapAction(Actions.DidCancelEffect(by: cancellation)), filePosition: filePosition)
             })
             .sink(receiveCompletion: { [weak self] _ in
                 // Handle completion: Remove the task from cancellations and signal Testing
-                self?.cancellations[anyId] = nil
+                self?.cancellationsBox.withLockUnchecked { box in
+                    box.removeCancellation(forKey: anyId)
+                }
             }, receiveValue: { [weak self] action in
                 // Handle receiving a value: Dispatch the action to the store
                 if self?.cancellations[anyId] != nil {
@@ -159,6 +176,9 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
                     TestGroup.instanceFor(key: testGroupKey).leave()
                 }
             })
+        cancellationsBox.withLockUnchecked { state in
+            state.set(cancellable: cancellable, forKey: anyId)
+        }
     }
 
     /// Executes an effect that conforms to both `PureEffect` and `ErasableToEffect` and dispatches actions to the store.
@@ -240,12 +260,14 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
         let testGroupKey = TestGroup.instanceKey(store)
 
         // Subscribe to the effect and store the cancellation token
-        cancellations[anyId] = effect
+        let cancellable = effect
             .subscribe(on: queue)
             .receive(on: queue)
             .handleEvents(receiveCancel: { [weak self] in
                 // Handle cancellation: Remove the task from cancellations and dispatch cancellation action
-                self?.cancellations[anyId] = nil
+                self?.cancellationsBox.withLockUnchecked { box in
+                    box.removeCancellation(forKey: anyId)
+                }
                 self?.dispatch(action: mapAction(Actions.DidCancelEffect(by: cancellation)), filePosition: filePosition)
             })
             .flatMap { [weak self] action in
@@ -263,7 +285,9 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
             }
             .sink(receiveCompletion: { [weak self] _ in
                 // Handle completion: Remove the task from cancellations
-                self?.cancellations[anyId] = nil
+                self?.cancellationsBox.withLockUnchecked { box in
+                    box.removeCancellation(forKey: anyId)
+                }
                 TestGroup.instanceFor(key: testGroupKey).leave()
 
             }, receiveValue: { [weak self] result in
@@ -272,6 +296,9 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
                     self?.dispatch(action: mapAction(result.action), filePosition: filePosition)
                 }
             })
+        cancellationsBox.withLockUnchecked { box in
+            box.set(cancellable: cancellable, forKey: anyId)
+        }
     }
 
     /// Runs a `PureEffect` and dispatches its actions to the store.
@@ -314,17 +341,21 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
         let testGroupKey = TestGroup.instanceKey(store)
 
         // Subscribe to the effect and store the cancellation token
-        cancellations[anyId] = effect
+        let cancellable = effect
             .subscribe(on: queue) // Subscribe to the effect on the specified queue
             .receive(on: queue) // Specify the queue on which to receive events
             .handleEvents(receiveCancel: { [weak self] in
                 // Handle cancellation: Remove the task from cancellations and dispatch cancellation action
-                self?.cancellations[anyId] = nil
+                self?.cancellationsBox.withLockUnchecked { box in
+                    box.removeCancellation(forKey: anyId)
+                }
                 self?.dispatch(action: mapAction(Actions.DidCancelEffect(by: cancellation)), filePosition: filePosition )
             })
             .sink(receiveCompletion: { [weak self] _ in
                 // Handle completion: Remove the task from cancellations
-                self?.cancellations[anyId] = nil
+                self?.cancellationsBox.withLockUnchecked { box in
+                    box.removeCancellation(forKey: anyId)
+                }
                 TestGroup.instanceFor(key: testGroupKey).leave()
 
             }, receiveValue: { [weak self] action in
@@ -334,6 +365,9 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
                     self?.dispatch(action: mapAction(action), filePosition: filePosition)
                 }
             })
+        cancellationsBox.withLockUnchecked { box in
+            box.set(cancellable: cancellable, forKey: anyId)
+        }
     }
 
     // MARK: - Concurrency
@@ -464,13 +498,31 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
             }
 
             // Remove the task from the cancellations dictionary
-            _ = self?.queue.sync { [weak self] in
-                self?.cancellations.removeValue(forKey: anyCancellationId)
+            self?.cancellationsBox.withLockUnchecked { box in
+                box.removeCancellation(forKey: anyCancellationId)
             }
         }
 
         // Store the task in the cancellations dictionary for future cancellation
-        cancellations[anyCancellationId] = task
+        cancellationsBox.withLockUnchecked { box in
+            box.set(cancellable: task, forKey: anyCancellationId)
+        }
+    }
+    
+    /// A container for the middleware's mutable state, designed to be managed by a synchronization mechanism
+    /// 
+    /// This class enables the safe retrieval and cancellation of tasks across different threads,
+    /// ensuring that internal storage is modified only through the established lock.
+    private class CancellationsBox: @unchecked Sendable {
+        var cancellations: [AnyHashable: CancellableTask] = [:]
+        
+        func set(cancellable: CancellableTask, forKey key: AnyHashable) {
+            cancellations[key] = cancellable
+        }
+        
+        func removeCancellation(forKey key: AnyHashable) {
+            cancellations.removeValue(forKey: key)
+        }
     }
 }
 
