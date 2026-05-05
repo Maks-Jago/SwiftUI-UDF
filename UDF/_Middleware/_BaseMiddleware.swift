@@ -65,8 +65,8 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
 
     /// A dictionary to track ongoing tasks by their unique identifiers, allowing for cancellation.
     public var cancellations: [AnyHashable: CancellableTask] {
-        return state.withLockUnchecked { state in
-            state.cancellations
+        cancellationsBox.withLockUnchecked { box in
+            box.cancellations
         }
     }
     
@@ -74,7 +74,7 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
     ///
     /// This property ensures that operations on the internal data such as reading/writing—are
     /// atomic across different physical threads, preventing data races and memory corruption.
-    private let state = OSAllocatedUnfairLock(initialState: MutableState())
+    private let cancellationsBox = OSAllocatedUnfairLock(initialState: CancellationsBox())
 
     // MARK: - Cancellation
 
@@ -91,8 +91,8 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
         }
 
         cancellableTask.cancel()
-        state.withLockUnchecked { state in
-            state.removeCancellation(forKey: anyId)
+        cancellationsBox.withLockUnchecked { box in
+            box.removeCancellation(forKey: anyId)
         }
         return true
     }
@@ -158,15 +158,15 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
             .receive(on: queue)
             .handleEvents(receiveCancel: { [weak self] in
                 // Handle cancellation: Remove the task from cancellations and dispatch cancellation action
-                self?.state.withLockUnchecked { state in
-                    state.removeCancellation(forKey: anyId)
+                self?.cancellationsBox.withLockUnchecked { box in
+                    box.removeCancellation(forKey: anyId)
                 }
                 self?.dispatch(action: mapAction(Actions.DidCancelEffect(by: cancellation)), filePosition: filePosition)
             })
             .sink(receiveCompletion: { [weak self] _ in
                 // Handle completion: Remove the task from cancellations and signal Testing
-                self?.state.withLockUnchecked { state in
-                    state.removeCancellation(forKey: anyId)
+                self?.cancellationsBox.withLockUnchecked { box in
+                    box.removeCancellation(forKey: anyId)
                 }
             }, receiveValue: { [weak self] action in
                 // Handle receiving a value: Dispatch the action to the store
@@ -176,7 +176,7 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
                     TestGroup.instanceFor(key: testGroupKey).leave()
                 }
             })
-        state.withLockUnchecked { state in
+        cancellationsBox.withLockUnchecked { state in
             state.set(cancellable: cancellable, forKey: anyId)
         }
     }
@@ -265,8 +265,8 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
             .receive(on: queue)
             .handleEvents(receiveCancel: { [weak self] in
                 // Handle cancellation: Remove the task from cancellations and dispatch cancellation action
-                self?.state.withLockUnchecked { state in
-                    state.removeCancellation(forKey: anyId)
+                self?.cancellationsBox.withLockUnchecked { box in
+                    box.removeCancellation(forKey: anyId)
                 }
                 self?.dispatch(action: mapAction(Actions.DidCancelEffect(by: cancellation)), filePosition: filePosition)
             })
@@ -285,8 +285,8 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
             }
             .sink(receiveCompletion: { [weak self] _ in
                 // Handle completion: Remove the task from cancellations
-                self?.state.withLockUnchecked { state in
-                    state.removeCancellation(forKey: anyId)
+                self?.cancellationsBox.withLockUnchecked { box in
+                    box.removeCancellation(forKey: anyId)
                 }
                 TestGroup.instanceFor(key: testGroupKey).leave()
 
@@ -296,8 +296,8 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
                     self?.dispatch(action: mapAction(result.action), filePosition: filePosition)
                 }
             })
-        state.withLockUnchecked { state in
-            state.set(cancellable: cancellable, forKey: anyId)
+        cancellationsBox.withLockUnchecked { box in
+            box.set(cancellable: cancellable, forKey: anyId)
         }
     }
 
@@ -346,15 +346,15 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
             .receive(on: queue) // Specify the queue on which to receive events
             .handleEvents(receiveCancel: { [weak self] in
                 // Handle cancellation: Remove the task from cancellations and dispatch cancellation action
-                self?.state.withLockUnchecked { state in
-                    state.removeCancellation(forKey: anyId)
+                self?.cancellationsBox.withLockUnchecked { box in
+                    box.removeCancellation(forKey: anyId)
                 }
                 self?.dispatch(action: mapAction(Actions.DidCancelEffect(by: cancellation)), filePosition: filePosition )
             })
             .sink(receiveCompletion: { [weak self] _ in
                 // Handle completion: Remove the task from cancellations
-                self?.state.withLockUnchecked { state in
-                    state.removeCancellation(forKey: anyId)
+                self?.cancellationsBox.withLockUnchecked { box in
+                    box.removeCancellation(forKey: anyId)
                 }
                 TestGroup.instanceFor(key: testGroupKey).leave()
 
@@ -365,8 +365,8 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
                     self?.dispatch(action: mapAction(action), filePosition: filePosition)
                 }
             })
-        state.withLockUnchecked { state in
-            state.set(cancellable: cancellable, forKey: anyId)
+        cancellationsBox.withLockUnchecked { box in
+            box.set(cancellable: cancellable, forKey: anyId)
         }
     }
 
@@ -498,14 +498,14 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
             }
 
             // Remove the task from the cancellations dictionary
-            self?.state.withLockUnchecked { state in
-                state.removeCancellation(forKey: anyCancellationId)
+            self?.cancellationsBox.withLockUnchecked { box in
+                box.removeCancellation(forKey: anyCancellationId)
             }
         }
 
         // Store the task in the cancellations dictionary for future cancellation
-        state.withLockUnchecked { state in
-            state.set(cancellable: task, forKey: anyCancellationId)
+        cancellationsBox.withLockUnchecked { box in
+            box.set(cancellable: task, forKey: anyCancellationId)
         }
     }
     
@@ -513,7 +513,7 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
     /// 
     /// This class enables the safe retrieval and cancellation of tasks across different threads,
     /// ensuring that internal storage is modified only through the established lock.
-    private class MutableState: @unchecked Sendable {
+    private class CancellationsBox: @unchecked Sendable {
         var cancellations: [AnyHashable: CancellableTask] = [:]
         
         func set(cancellable: CancellableTask, forKey key: AnyHashable) {
