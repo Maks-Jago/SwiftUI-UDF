@@ -88,7 +88,7 @@ public struct NavigationStackBound<Data: Equatable, Content: View>: View {
 
 private extension View {
     func backportOnChange<V>(of value: V, _ action: @escaping (_ newValue: V) -> Void) -> some View where V : Equatable {
-        if #available(iOS 17.0, *) {
+        if #available(iOS 17.0, macOS 14.0, *) {
             return self.onChange(of: value) { _, newValue in
                 action(newValue)
             }
