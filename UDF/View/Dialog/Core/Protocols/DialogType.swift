@@ -94,6 +94,31 @@ public enum DialogCustomType<Icon: View, Content: View>: DialogTypeProtocol {
     }
 }
 
+extension DialogCustomType: DialogProtocol {
+    public var payload: DialogPayload {
+        let icon: @MainActor () -> AnyView = {
+            getIconView(theme: .default) ?? AnyView(EmptyView())
+        }
+        let content: @MainActor () -> AnyView = {
+            getCustomContentView() ?? AnyView(EmptyView())
+        }
+        let title: @Sendable () -> String = { [title] in title }
+        let message: @Sendable () -> String? = { [message] in message }
+        
+        return DialogPayload(
+            title: title,
+            message: message,
+            actions: actions,
+            icon: icon,
+            customContentView: content
+        )
+    }
+    
+    public var dialogStyle: DialogStyle {
+        style
+    }
+}
+
 /// Defines the type and content of a dialog.
 ///
 /// `DialogType` represents different categories of dialogs with their

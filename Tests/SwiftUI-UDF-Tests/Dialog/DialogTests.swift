@@ -94,6 +94,29 @@ extension DialogType {
     init() {
         Dialog.clearAll()
     }
+    
+    @Test func legacyDialogRegistration_allowsPresentationById() async {
+        let store = await TestStore(initial: AppState())
+        #expect(await store.state.form.dialog.status == .dismissed)
+        
+        await Dialog.register(id: FormWithDialog.DialogId.dialogWithAction) {
+            DialogCustomType.custom(
+                content: .init(
+                    title: "Custom Title",
+                    message: "Custom Desciprion",
+                    actions: {
+                        DialogButton(title: "Cancel")
+                        DialogButton(title: "Primary", role: .destructive)
+                    }
+                ),
+                style: .alert
+            )
+        }
+        await waitForCondition { Dialog.isRegistered(id: FormWithDialog.DialogId.dialogWithAction) }
+        await store.dispatch(Actions.PresentDialogWithAction())
+        let success = await waitForCondition { await store.state.form.dialog.status != .dismissed }
+        #expect(success)
+    }
 
     @Test func whendialogRegistered_dialogCanBePresentedById() async {
         let store = await TestStore(initial: AppState())
