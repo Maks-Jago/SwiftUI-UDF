@@ -75,13 +75,27 @@ public struct NavigationStackBound<Data: Equatable, Content: View>: View {
 
     public var body: some View {
         content($local)
-            .onChange(of: external) { newExternal in
+            .backportOnChange(of: external) { newExternal in
                 guard local != newExternal else { return }
                 local = newExternal
             }
-            .onChange(of: local) { newLocal in
+            .backportOnChange(of: local) { newLocal in
                 guard external != newLocal else { return }
                 external = newLocal
             }
+    }
+}
+
+private extension View {
+    func backportOnChange<V>(of value: V, _ action: @escaping (_ newValue: V) -> Void) -> some View where V : Equatable {
+        if #available(iOS 17.0, *) {
+            return self.onChange(of: value) { _, newValue in
+                action(newValue)
+            }
+        } else {
+            return self.onChange(of: value) { newValue in
+                action(newValue)
+            }
+        }
     }
 }
