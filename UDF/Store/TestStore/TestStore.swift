@@ -117,3 +117,14 @@ public extension TestStore {
         await self.dispatch(Actions._OnContainerDidUnLoad(containerType: containerType, id: id), fileName: fileName, functionName: functionName, lineNumber: lineNumber)
     }
 }
+
+public extension TestStore {
+    func dispatch(
+        fileName: String = #file,
+        functionName: String = #function,
+        lineNumber: Int = #line,
+        @ActionGroupBuilder _ builder: () -> ActionGroup
+    ) async {
+        await dispatch(builder(), fileName: fileName, functionName: functionName, lineNumber: lineNumber)
+    }
+}
