@@ -32,10 +32,10 @@ import UDFSwiftTesting
     @Test func dispatchActionGroupBuilder_TestStore() async {
         let store = await TestStore(initial: AppState())
 
-        await store.dispatch(ActionGroup {
+        await store.dispatch {
             Actions.UpdateFormField(keyPath: \PlainForm.title, value: "test title")
             Actions.UpdateFormField(keyPath: \PlainForm.subtitle, value: "test subtitle")
-        })
+        }
 
         let title = await store.state.plainForm.title
         let subtitle = await store.state.plainForm.subtitle
