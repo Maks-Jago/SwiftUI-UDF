@@ -144,15 +144,15 @@ struct ConnectedContainer<C: Component, State: AppReducer>: View {
                     
                     onContainerDidLoad(store)
                     
-                    let boundReducer = Self.getBoundReducer(with: store)
-                    if boundReducer?.hasReducers == false {
+                    let boundReducer = Self.getBoundReducer(with: store, for: containerType)
+                    if boundReducer?.hasReducer(for: containerId()) == false {
                         onBindableContainerStateDidLoad(store)
                     }
                 },
                 didUnloadCommand: { store in
                     onContainerDidUnload(store)
                     
-                    let boundReducer = Self.getBoundReducer(with: store)
+                    let boundReducer = Self.getBoundReducer(with: store, for: containerType)
                     if boundReducer?.isLastInstance(for: containerId()) == true {
                         onBindableContainerStateDidUnload(store)
                     }
@@ -180,13 +180,14 @@ struct ConnectedContainer<C: Component, State: AppReducer>: View {
 }
 
 extension ConnectedContainer {
-    static func getBoundReducer(with store: EnvironmentStore<State>) -> (any AnyBindableReducer)? {
+    static func getBoundReducer<T: BindableContainer>(with store: EnvironmentStore<State>, for type: T.Type) -> (any AnyBindableReducer)? {
         guard let info = try? typeInfo(of: State.self) else {
             return nil
         }
         
         for property in info.properties {
-            if let bindableReducer = try? property.get(from: store.state) as? AnyBindableReducer {
+            if let bindableReducer = try? property.get(from: store.state) as? AnyBindableReducer,
+               bindableReducer.boundContainerType == T.self {
                 return bindableReducer
             }
         }

@@ -137,11 +137,15 @@ extension BindableReducer: AnyBindableReducer {
         containerType
     }
     
-    var hasReducers: Bool {
-        !reducers.isEmpty
+    func hasReducer(for id: any Hashable) -> Bool {
+        reducers.count { $0.key == id as? BindedContainer.ID } > 0
     }
     
     func isLastInstance(for id: any Hashable) -> Bool {
-        reducers.count { $0.key == id as? BindedContainer.ID } == 1
+        if let containerID = id as? BindedContainer.ID {
+            return reducers.isUniquelyReferenced(key: containerID)
+        }
+        
+        return false
     }
 }
