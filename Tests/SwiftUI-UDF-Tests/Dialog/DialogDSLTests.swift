@@ -15,7 +15,7 @@ import Testing
 
 // MARK: - DSL Tests
 @MainActor
-extension DialogTests {
+extension DialogRegistryTests.DialogTests {
 
     @Test("AlertDialog builder creates correct payload and applies properties")
     func alertBuilderAppliesPropertiesCorrectly() {
