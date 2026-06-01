@@ -125,6 +125,8 @@ struct ConnectedContainer<C: Component, State: AppReducer>: View {
         onContainerDisappear: @escaping @MainActor (EnvironmentStore<State>) -> Void,
         onContainerDidLoad: @escaping (EnvironmentStore<State>) -> Void,
         onContainerDidUnload: @escaping (EnvironmentStore<State>) -> Void,
+        onBindableContainerStateDidLoad: @escaping (EnvironmentStore<State>) -> Void,
+        onBindableContainerStateDidUnload: @escaping (EnvironmentStore<State>) -> Void,
         useHooks: @escaping () -> [Hook<State>]
     ) where BindedContainer.ID: Sendable {
         self.store = store
@@ -144,7 +146,7 @@ struct ConnectedContainer<C: Component, State: AppReducer>: View {
                     
                     let boundReducer = Self.getBoundReducer(with: store)
                     if boundReducer?.hasReducers == false {
-                        // onBindableContainerDidLoad
+                        onBindableContainerStateDidLoad(store)
                     }
                 },
                 didUnloadCommand: { store in
@@ -152,7 +154,7 @@ struct ConnectedContainer<C: Component, State: AppReducer>: View {
                     
                     let boundReducer = Self.getBoundReducer(with: store)
                     if boundReducer?.isLastInstance(for: containerId()) == true {
-                        // onBindableContainerDidUnload
+                        onBindableContainerStateDidUnload(store)
                     }
                     
                     store.dispatch(

@@ -48,7 +48,21 @@ import SwiftUI
 ///     }
 /// }
 /// ```
-public protocol BindableContainer: Container, Identifiable where ID: Sendable {}
+public protocol BindableContainer: Container, Identifiable where ID: Sendable {
+    @MainActor
+    func onBindableContainerStateDidLoad(store: EnvironmentStore<ContainerState>)
+    
+    @MainActor
+    func onBindableContainerStateDidUnload(store: EnvironmentStore<ContainerState>)
+}
+
+public extension BindableContainer {
+    @MainActor
+    func onBindableContainerStateDidLoad(store: EnvironmentStore<ContainerState>) {}
+    
+    @MainActor
+    func onBindableContainerStateDidUnload(store: EnvironmentStore<ContainerState>) {}
+}
 
 public extension BindableContainer {
     /// The main view body that connects the container to the state using `ConnectedContainer`.
@@ -66,6 +80,8 @@ public extension BindableContainer {
             onContainerDisappear: onContainerDisappear,
             onContainerDidLoad: onContainerDidLoad,
             onContainerDidUnload: onContainerDidUnload,
+            onBindableContainerStateDidLoad: onBindableContainerStateDidLoad,
+            onBindableContainerStateDidUnload: onBindableContainerStateDidUnload,
             useHooks: useHooks
         )
     }
