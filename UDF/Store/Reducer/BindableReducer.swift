@@ -129,3 +129,19 @@ public extension BindableReducer {
         }
     }
 }
+
+
+// MARK: - AnyBindableReducer
+extension BindableReducer: AnyBindableReducer {
+    var boundContainerType: any Any.Type {
+        containerType
+    }
+    
+    var hasReducers: Bool {
+        !reducers.isEmpty
+    }
+    
+    func isLastInstance(for id: any Hashable) -> Bool {
+        reducers.count { $0.key == id as? BindedContainer.ID } == 1
+    }
+}

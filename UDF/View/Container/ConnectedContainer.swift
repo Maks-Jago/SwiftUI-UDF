@@ -11,6 +11,7 @@
 
 import Foundation
 import SwiftUI
+import Runtime
 
 /// A SwiftUI view that connects a `Component` with its associated state in the UDF architecture.
 ///
@@ -138,10 +139,22 @@ struct ConnectedContainer<C: Component, State: AppReducer>: View {
                         Actions._OnContainerDidLoad(containerType: containerType, id: containerId()).silent(),
                         priority: .userInteractive
                     )
+                    
                     onContainerDidLoad(store)
+                    
+                    let boundReducer = Self.getBoundReducer(with: store)
+                    if boundReducer?.hasReducers == false {
+                        // onBindableContainerDidLoad
+                    }
                 },
                 didUnloadCommand: { store in
                     onContainerDidUnload(store)
+                    
+                    let boundReducer = Self.getBoundReducer(with: store)
+                    if boundReducer?.isLastInstance(for: containerId()) == true {
+                        // onBindableContainerDidUnload
+                    }
+                    
                     store.dispatch(
                         Actions._OnContainerDidUnLoad(containerType: containerType, id: containerId())
                             .with(delay: 0.15)
@@ -161,5 +174,21 @@ struct ConnectedContainer<C: Component, State: AppReducer>: View {
         return C(props: map(store))
             .onAppear { onContainerAppear(store) }
             .onDisappear { onContainerDisappear(store) }
+    }
+}
+
+extension ConnectedContainer {
+    static func getBoundReducer(with store: EnvironmentStore<State>) -> (any AnyBindableReducer)? {
+        guard let info = try? typeInfo(of: State.self) else {
+            return nil
+        }
+        
+        for property in info.properties {
+            if let bindableReducer = try? property.get(from: store.state) as? AnyBindableReducer {
+                return bindableReducer
+            }
+        }
+        
+        return nil
     }
 }
