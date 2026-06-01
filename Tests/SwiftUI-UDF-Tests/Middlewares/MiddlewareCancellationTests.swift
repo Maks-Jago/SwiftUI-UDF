@@ -108,7 +108,7 @@ import Foundation
         await store.subscribe(ObservableMiddlewareToCancel.self, environment: ())
         
         await store.dispatch(Actions.Loading())
-        var success = await waitForCondition { await store.state.middlewareFlow == .loading }
+        var success = await store.state.middlewareFlow == .loading
         #expect(success)
         await withTaskGroup(of: Void.self) { group in
             for _ in 0..<10 {
@@ -118,7 +118,7 @@ import Foundation
             }
         }
         let acceptableFlowState: [MiddlewareFlow] = [.none, .cancel]
-        success = await waitForCondition { acceptableFlowState.contains(await store.state.middlewareFlow) }
+        success = acceptableFlowState.contains(await store.state.middlewareFlow)
         #expect(success)
         
         await store.wait()
