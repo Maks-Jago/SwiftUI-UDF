@@ -7,7 +7,6 @@
 
 import Combine
 import SwiftUI
-import Testing
 
 @globalActor public actor TestStoreActor {
     public static let shared = TestStoreActor()
