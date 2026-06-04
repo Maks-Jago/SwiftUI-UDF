@@ -10,6 +10,10 @@
 //===----------------------------------------------------------------------===//
 
 import Foundation
+import os
+@preconcurrency import Runtime
+
+extension PropertyInfo: @unchecked Sendable {}
 
 /// A property wrapper used to represent the central source of truth for the application state.
 /// It allows for dynamic member lookup to access reducers and bindable containers within the `AppState`.
@@ -20,6 +24,8 @@ import Foundation
 public final class SourceOfTruth<AppState: AppReducer> {
     /// The current value of the application state.
     public var wrappedValue: AppState
+
+    private let propertyCacheLock = OSAllocatedUnfairLock(initialState: [ObjectIdentifier: PropertyInfo]())
 
     /// A reference to the store that holds and manages the application state.
     private weak var store: Optional<any Store<AppState>>
@@ -73,5 +79,19 @@ extension SourceOfTruth: Equatable {
     /// - Returns: A Boolean value indicating whether the two instances are equal.
     public static func == (lhs: SourceOfTruth<AppState>, rhs: SourceOfTruth<AppState>) -> Bool {
         lhs.wrappedValue == rhs.wrappedValue
+    }
+}
+
+extension SourceOfTruth {
+    /// Returns the cached property metadata for a given container type.
+    ///
+    /// This is used by `ConnectedContainer` to optimize state reflection lookups from O(N^2) to O(N) at scale.
+    public func getPropertyMetadata(for containerType: Any.Type) -> PropertyInfo? {
+        propertyCacheLock.withLock { $0[ObjectIdentifier(containerType)] }
+    }
+    
+    /// Caches the property metadata for a given container type.
+    public func setPropertyMetadata(_ property: PropertyInfo, for containerType: Any.Type) {
+        propertyCacheLock.withLock { $0[ObjectIdentifier(containerType)] = property }
     }
 }

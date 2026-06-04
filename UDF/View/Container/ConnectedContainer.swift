@@ -180,15 +180,30 @@ struct ConnectedContainer<C: Component, State: AppReducer>: View {
 }
 
 extension ConnectedContainer {
-    static func getBoundReducer<T: BindableContainer>(with store: EnvironmentStore<State>, for type: T.Type) -> (any AnyBindableReducer)? {
+    /// Resolves and returns the bound reducer associated with a container type.
+    ///
+    /// Uses cached property metadata inside the `SourceOfTruth` wrapper to avoid repeatedly reflecting over
+    /// the entire `AppState` properties list.
+    ///
+    /// - Parameters:
+    ///   - store: The environment store containing the state and cache.
+    ///   - type: The type of the bindable container.
+    /// - Returns: The matched bindable reducer existential, or `nil` if not found.
+    nonisolated static func getBoundReducer<T: BindableContainer>(with store: EnvironmentStore<State>, for type: T.Type) -> (any AnyBindableReducer)? {
+        if let property = store.$state.getPropertyMetadata(for: T.self) {
+            return try? property.get(from: store.state) as? AnyBindableReducer
+        }
+        
         guard let info = try? typeInfo(of: State.self) else {
             return nil
         }
         
         for property in info.properties {
-            if let bindableReducer = try? property.get(from: store.state) as? AnyBindableReducer,
-               bindableReducer.boundContainerType == T.self {
-                return bindableReducer
+            if let bindableReducer = try? property.get(from: store.state) as? AnyBindableReducer {
+                store.$state.setPropertyMetadata(property, for: bindableReducer.boundContainerType)
+                if bindableReducer.boundContainerType == T.self {
+                    return bindableReducer
+                }
             }
         }
         
