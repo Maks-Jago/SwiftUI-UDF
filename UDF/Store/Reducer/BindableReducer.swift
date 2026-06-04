@@ -133,10 +133,15 @@ public extension BindableReducer {
 
 // MARK: - AnyBindableReducer
 extension BindableReducer: AnyBindableReducer {
+    /// The type of container this reducer is bound to.
     var boundContainerType: any Any.Type {
         containerType
     }
     
+    /// Checks if a reducer is registered for the specified container identifier.
+    ///
+    /// - Parameter id: The identifier of the container, expected to be of type `BindedContainer.ID`.
+    /// - Returns: `true` if a reducer exists for the given identifier; otherwise, `false`.
     func hasReducer(for id: any Hashable) -> Bool {
         guard let id = id as? BindedContainer.ID else {
             return false
@@ -145,6 +150,10 @@ extension BindableReducer: AnyBindableReducer {
         return reducers.contains { $0.key == id }
     }
     
+    /// Determines whether the reducer for the given identifier is the last active instance.
+    ///
+    /// - Parameter id: The identifier of the container, expected to be of type `BindedContainer.ID`.
+    /// - Returns: `true` if the reducer is uniquely referenced; otherwise, `false`.
     func isLastInstance(for id: any Hashable) -> Bool {
         guard let containerID = id as? BindedContainer.ID else {
             return false
@@ -153,3 +162,4 @@ extension BindableReducer: AnyBindableReducer {
         return reducers.isUniquelyReferenced(key: containerID)
     }
 }
+
