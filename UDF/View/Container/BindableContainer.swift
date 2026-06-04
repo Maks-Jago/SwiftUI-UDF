@@ -49,9 +49,21 @@ import SwiftUI
 /// }
 /// ```
 public protocol BindableContainer: Container, Identifiable where ID: Sendable {
+    /// A lifecycle callback executed when the dynamic reducer state associated with this container's `id` is loaded and online.
+    ///
+    /// This callback is triggered when the dynamic reducer (e.g. form or flow) is successfully allocated and visible in the `EnvironmentStore`.
+    /// Use this callback to perform state-dependent actions (like loading details or checking validation states) that require the reducer to be active.
+    ///
+    /// - Parameter store: The `EnvironmentStore` instance managing the state.
     @MainActor
     func onBindableContainerStateDidLoad(store: EnvironmentStore<ContainerState>)
     
+    /// A lifecycle callback executed when the dynamic reducer state associated with this container's `id` is unloaded and offline.
+    ///
+    /// This callback is triggered when the dynamic reducer is deallocated from the store (e.g. when the last container with this ID is unloaded).
+    /// Use this callback to perform cleanup operations or clear state variables that are no longer needed.
+    ///
+    /// - Parameter store: The `EnvironmentStore` instance managing the state.
     @MainActor
     func onBindableContainerStateDidUnload(store: EnvironmentStore<ContainerState>)
 }

@@ -114,6 +114,8 @@ struct ConnectedContainer<C: Component, State: AppReducer>: View {
     ///   - onContainerDisappear: A closure executed when the container disappears.
     ///   - onContainerDidLoad: A closure executed when the container is loaded.
     ///   - onContainerDidUnload: A closure executed when the container is unloaded.
+    ///   - onBindableContainerStateDidLoad: A closure executed when the bindable container's state is loaded and verified online.
+    ///   - onBindableContainerStateDidUnload: A closure executed when the bindable container's state is unloaded and verified offline.
     ///   - useHooks: A closure that provides an array of hooks to use within the container.
     init<BindedContainer: BindableContainer>(
         store: EnvironmentStore<State>,
@@ -189,7 +191,10 @@ extension ConnectedContainer {
     ///   - store: The environment store containing the state and cache.
     ///   - type: The type of the bindable container.
     /// - Returns: The matched bindable reducer existential, or `nil` if not found.
-    nonisolated static func getBoundReducer<T: BindableContainer>(with store: EnvironmentStore<State>, for type: T.Type) -> (any AnyBindableReducer)? {
+    static func getBoundReducer<T: BindableContainer>(
+        with store: EnvironmentStore<State>,
+        for type: T.Type
+    ) -> (any AnyBindableReducer)? {
         if let property = store.$state.getPropertyMetadata(for: T.self) {
             return try? property.get(from: store.state) as? AnyBindableReducer
         }
