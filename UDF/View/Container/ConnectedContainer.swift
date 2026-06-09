@@ -136,6 +136,19 @@ struct ConnectedContainer<C: Component, State: AppReducer>: View {
         self.scope = scope
         self.onContainerAppear = onContainerAppear
         self.onContainerDisappear = onContainerDisappear
+        let wrappedUseHooks = {
+            var hooks = useHooks()
+            if let syntheticHook = Self.makeStateDidLoadHook(
+                store: store,
+                containerType: containerType,
+                id: containerId(),
+                onBindableContainerStateDidLoad: onBindableContainerStateDidLoad
+            ) {
+                hooks.append(syntheticHook)
+            }
+            return hooks
+        }
+
         self._containerLifecycle = .init(
             wrappedValue: ContainerLifecycle(
                 didLoadCommand: { store in
@@ -145,16 +158,11 @@ struct ConnectedContainer<C: Component, State: AppReducer>: View {
                     )
                     
                     onContainerDidLoad(store)
-                    
-                    let boundReducer = Self.getBoundReducer(with: store, for: containerType)
-                    if boundReducer?.hasReducer(for: containerId()) == false {
-                        onBindableContainerStateDidLoad(store)
-                    }
                 },
                 didUnloadCommand: { store in
                     onContainerDidUnload(store)
                     
-                    let boundReducer = Self.getBoundReducer(with: store, for: containerType)
+                    let boundReducer = Self.getBoundReducer(from: store.state, with: store, for: containerType)
                     if boundReducer?.isLastInstance(for: containerId()) == true {
                         onBindableContainerStateDidUnload(store)
                     }
@@ -165,7 +173,7 @@ struct ConnectedContainer<C: Component, State: AppReducer>: View {
                             .silent()
                     )
                 },
-                useHooks: useHooks
+                useHooks: wrappedUseHooks
             )
         )
         self._containerState = .init(wrappedValue: .init(store: store, scope: scope))
@@ -188,15 +196,17 @@ extension ConnectedContainer {
     /// the entire `AppState` properties list.
     ///
     /// - Parameters:
+    ///   - state: The copy of the store's state.
     ///   - store: The environment store containing the state and cache.
     ///   - type: The type of the bindable container.
     /// - Returns: The matched bindable reducer existential, or `nil` if not found.
     static func getBoundReducer<T: BindableContainer>(
+        from state: State,
         with store: EnvironmentStore<State>,
         for type: T.Type
     ) -> (any AnyBindableReducer)? {
         if let property = store.$state.getPropertyMetadata(for: T.self) {
-            return try? property.get(from: store.state) as? AnyBindableReducer
+            return try? property.get(from: state) as? AnyBindableReducer
         }
         
         guard let info = try? typeInfo(of: State.self) else {
@@ -204,7 +214,7 @@ extension ConnectedContainer {
         }
         
         for property in info.properties {
-            if let bindableReducer = try? property.get(from: store.state) as? AnyBindableReducer {
+            if let bindableReducer = try? property.get(from: state) as? AnyBindableReducer {
                 store.$state.setPropertyMetadata(property, for: bindableReducer.boundContainerType)
                 if bindableReducer.boundContainerType == T.self {
                     return bindableReducer
@@ -213,5 +223,31 @@ extension ConnectedContainer {
         }
         
         return nil
+    }
+
+    /// Builds a synthetic hook that monitors the online state of a bindable reducer
+    /// and triggers `onBindableContainerStateDidLoad` once the reducer is online.
+    static func makeStateDidLoadHook<T: BindableContainer>(
+        store: EnvironmentStore<State>,
+        containerType: T.Type,
+        id: T.ID,
+        onBindableContainerStateDidLoad: @escaping (EnvironmentStore<State>) -> Void
+    ) -> Hook<State>? where T.ID: Sendable {
+        let reducer = getBoundReducer(from: store.state, with: store, for: containerType)
+        guard reducer?.hasReducer(for: id) == false else {
+            return nil
+        }
+        
+        return Hook(
+            id: "onBindableContainerStateDidLoad-\(id)",
+            type: .oneTime,
+            condition: { state in
+                let reducer = getBoundReducer(from: state, with: store, for: containerType)
+                return reducer?.hasReducer(for: id) == true
+            },
+            block: { store in
+                onBindableContainerStateDidLoad(store)
+            }
+        )
     }
 }
