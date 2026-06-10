@@ -268,7 +268,7 @@ public struct DialogStatus: Equatable, Identifiable, Sendable {
     /// dialog = .init(id: "networkError")
     /// ```
     public init(id: some Hashable) {
-        if let dialog = DialogRegistry.get(id: id) {
+        if let dialog = _DialogRegistry.get(id: id) {
             self = .init(dialog: dialog)
         } else {
             self = .dismissed
@@ -291,6 +291,30 @@ public struct DialogStatus: Equatable, Identifiable, Sendable {
     internal init(dialog: any DialogTypeProtocol) {
         self.id = UUID()
         self.status = .presented(dialog)
+    }
+    
+    /// Initializes a dialog state using a type-safe DialogProtocol instance.
+    ///
+    /// The `@MainActor` builder closure is evaluated eagerly and the resulting
+    /// dialog is captured for presentation. This mirrors the registration
+    /// pattern used in `Dialog.register(id:dialog:)`.
+    ///
+    /// - Parameter dialog: A closure that returns a `DialogProtocol` conforming value
+    ///   (e.g., `AlertDialog`, `Toast`, `ConfirmationDialog`).
+    ///
+    /// ## Example:
+    /// ```swift
+    /// let status = DialogStatus {
+    ///     AlertDialog {
+    ///         DialogTitle("Cancel Download")
+    ///         DialogButton(title: "No", role: .cancel)
+    ///         DialogButton(title: "Cancel", role: .destructive) { /* action */ }
+    ///     }
+    /// }
+    /// ```
+    @MainActor
+    public init(dialog: @MainActor () -> any DialogProtocol) {
+        self = .init(dialog: dialog() as any DialogTypeProtocol)
     }
     
     /// Initializes a dismissed dialog status.

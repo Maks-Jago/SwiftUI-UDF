@@ -197,7 +197,9 @@ private extension InternalStore {
         if oldStatus == .suspend, newStatus != oldStatus {
             callObserve = true
         } else if oldStatus != .suspend, newStatus == .suspend {
-            middleware.cancelAll()
+            middleware.queue.async {
+                middleware.cancelAll()
+            }
         } else if newStatus == .active {
             callObserve = !oldScope.isEqual(newScope)
         }

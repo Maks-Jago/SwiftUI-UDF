@@ -13,14 +13,14 @@ concurrency:
 jobs:
   testing:
     name: Run all tests
-    runs-on: macos-15
+    runs-on: macos-26
     env:
       UNDER_TEST: "1"
     
     strategy:
       fail-fast: false
       matrix:
-        xcode: ['16.4']
+        xcode: ['26.5']
         
     steps:
     - name: Checkout

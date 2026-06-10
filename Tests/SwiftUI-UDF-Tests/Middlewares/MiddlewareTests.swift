@@ -19,21 +19,37 @@ private extension Actions {
     struct SendMessage: Action {
         var message: String
         var id: AnyHashable? = nil
+
+        static func == (lhs: Self, rhs: Self) -> Bool {
+            lhs.message == rhs.message
+        }
     }
 
     struct TriggerFlow: Action {
         var flowName: String
         var id: AnyHashable? = nil
+
+        static func == (lhs: Self, rhs: Self) -> Bool {
+            lhs.flowName == rhs.flowName
+        }
     }
 
     struct CompleteTask: Action {
         var taskId: String
         var id: AnyHashable? = nil
+
+        static func == (lhs: Self, rhs: Self) -> Bool {
+            lhs.taskId == rhs.taskId
+        }
     }
 
     struct StartTask: Action {
         var taskId: String
         var id: AnyHashable? = nil
+
+        static func == (lhs: Self, rhs: Self) -> Bool {
+            lhs.taskId == rhs.taskId
+        }
     }
 }
 
@@ -606,7 +622,7 @@ private extension Actions {
                 case let action as Actions.CompleteTask:
                     // Add delay to simulate async work that can be cancelled
                     execute(
-                        DelayedUpdateEffect(title: "Completed: \(action.taskId)", delay: 0.1),
+                        DelayedUpdateEffect(title: "Completed: \(action.taskId)", delay: 0.5),
                         cancellation: "delayed_task"
                     )
                 default:

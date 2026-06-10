@@ -7,7 +7,6 @@
 
 import Combine
 import SwiftUI
-import Testing
 
 @globalActor public actor TestStoreActor {
     public static let shared = TestStoreActor()
@@ -115,5 +114,16 @@ public extension TestStore {
     
     func didUnload<C: BindableContainer>(_ containerType: C.Type, id: C.ID, fileName: String = #file, functionName: String = #function, lineNumber: Int = #line) async {
         await self.dispatch(Actions._OnContainerDidUnLoad(containerType: containerType, id: id), fileName: fileName, functionName: functionName, lineNumber: lineNumber)
+    }
+}
+
+public extension TestStore {
+    func dispatch(
+        fileName: String = #file,
+        functionName: String = #function,
+        lineNumber: Int = #line,
+        @ActionGroupBuilder _ builder: () -> ActionGroup
+    ) async {
+        await dispatch(builder(), fileName: fileName, functionName: functionName, lineNumber: lineNumber)
     }
 }

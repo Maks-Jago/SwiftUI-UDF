@@ -169,6 +169,29 @@ public enum Actions {
             self.id = AnyHashable(id)
         }
         
+        /// Initializes a new `UpdateDialogStatus` action using a type-safe DialogProtocol instance.
+        ///
+        /// Use this initializer when you have a pre-built dialog conforming to `DialogProtocol`
+        /// (e.g., `AlertDialog`, `Toast`, `ConfirmationDialog`).
+        ///
+        /// - Parameters:
+        ///   - dialog: A `DialogProtocol` conforming value.
+        ///   - id: The unique identifier for the dialog.
+        ///
+        /// ## Example:
+        /// ```swift
+        /// let alert = AlertDialog {
+        ///     DialogTitle("Error")
+        ///     DialogMessage("Something went wrong.")
+        ///     DialogButton(title: "OK") {}
+        /// }
+        /// store.dispatch(Actions.UpdateDialogStatus(dialog: alert, id: "errorDialog"))
+        /// ```
+        public init(dialog: any DialogProtocol, id: some Hashable) {
+            self.status = .init(dialog: dialog as any DialogTypeProtocol)
+            self.id = AnyHashable(id)
+        }
+        
         // MARK: - Convenience Initializers
         
         /// Initializes a new `UpdateDialogStatus` action with a success message.
