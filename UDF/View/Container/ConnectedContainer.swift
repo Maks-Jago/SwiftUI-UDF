@@ -257,7 +257,18 @@ extension ConnectedContainer {
         )
     }
 
-    /// Increments the active view count and dispatches the container load events.
+    /// Handles the load event of a `BindableContainer` by tracking its active container instance count
+    /// and executing the required load actions.
+    ///
+    /// This method increments the reference count in `BaseContainerLifecycle.activeContainersCount`
+    /// for the given container type and identifier. It also dispatches the internal `_OnContainerDidLoad`
+    /// action to the store and triggers the custom `onContainerDidLoad` callback.
+    ///
+    /// - Parameters:
+    ///   - containerType: The metatype of the container being loaded (e.g., `MyContainer.self`).
+    ///   - id: The unique domain identifier of the container instance.
+    ///   - store: The environment store containing the global state.
+    ///   - onContainerDidLoad: A callback closure to execute on container load.
     @MainActor
     static func handleContainerDidLoad<T: BindableContainer>(
         containerType: T.Type,
@@ -266,7 +277,7 @@ extension ConnectedContainer {
         onContainerDidLoad: @escaping (EnvironmentStore<State>) -> Void
     ) {
         let key = BaseContainerLifecycle.ActiveContainerKey(containerType: ObjectIdentifier(containerType), id: id)
-        BaseContainerLifecycle.activeViewsCount[key, default: 0] += 1
+        BaseContainerLifecycle.activeContainersCount[key, default: 0] += 1
         
         store.dispatch(
             Actions._OnContainerDidLoad(containerType: containerType, id: id).silent(),
@@ -275,7 +286,30 @@ extension ConnectedContainer {
         onContainerDidLoad(store)
     }
 
-    /// Decrements the active view count, handles state unloading, and cleans up the active count registry.
+    /// Handles the unload event of a `BindableContainer` by decrementing its active container instance count
+    /// and executing state unloading if no active instances remain.
+    ///
+    /// ### Rationale for This Logic
+    /// When multiple instances of the same container layout (sharing the same metatype and domain ID) are deallocated
+    /// at the same time, checking the store's state directly to determine if an instance is the "last one" is prone to race conditions.
+    /// Because the store state updates asynchronously, when two deallocating instances query the store, the delayed 
+    /// `_OnContainerDidUnLoad` action has not been reduced yet. Both instances inspect the store state, see that the 
+    /// reference count in the state is still 2 (meaning they both think another instance remains active), and conclude 
+    /// that they are not the last instance. Consequently, `isLastInstance` returns false for both, and neither triggers 
+    /// `onBindableContainerStateDidUnload`.
+    ///
+    /// To resolve this and ensure the unload is reliably triggered:
+    /// 1. We maintain a local, synchronous reference count in `BaseContainerLifecycle.activeContainersCount`.
+    /// 2. When an instance is deallocated, we decrement this count.
+    /// 3. The instance that decrements the count to zero removes the key and schedules a 150ms delay using `Task.sleep`.
+    /// 4. After the delay, we verify if the container's active count remains zero (confirming no new instance has been loaded
+    ///    in the meantime). Only then do we execute the full state teardown (`onBindableContainerStateDidUnload`).
+    ///
+    /// - Parameters:
+    ///   - containerType: The metatype of the container being unloaded (e.g., `MyContainer.self`).
+    ///   - id: The unique domain identifier of the container instance.
+    ///   - store: The environment store containing the global state.
+    ///   - onBindableContainerStateDidUnload: A callback closure to execute when the bindable state unloads.
     @MainActor
     static func handleContainerDidUnload<T: BindableContainer>(
         containerType: T.Type,
@@ -284,19 +318,19 @@ extension ConnectedContainer {
         onBindableContainerStateDidUnload: @escaping (EnvironmentStore<State>) -> Void
     ) {
         let key = BaseContainerLifecycle.ActiveContainerKey(containerType: ObjectIdentifier(containerType), id: id)
-        guard let count = BaseContainerLifecycle.activeViewsCount[key] else { return }
+        guard let count = BaseContainerLifecycle.activeContainersCount[key] else { return }
         
         if (count - 1) <= 0 {
-            BaseContainerLifecycle.activeViewsCount.removeValue(forKey: key)
+            BaseContainerLifecycle.activeContainersCount.removeValue(forKey: key)
             
             Task {
                 try? await Task.sleep(for: .milliseconds(150))
-                if BaseContainerLifecycle.activeViewsCount[key] == nil {
+                if BaseContainerLifecycle.activeContainersCount[key] == nil {
                     onBindableContainerStateDidUnload(store)
                 }
             }
         } else {
-            BaseContainerLifecycle.activeViewsCount[key] = count - 1
+            BaseContainerLifecycle.activeContainersCount[key] = count - 1
         }
     }
 }

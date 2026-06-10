@@ -12,6 +12,45 @@
 import Foundation
 import SwiftUI
 
+/// A base class for container lifecycles that maintains global state tracking for active containers.
+///
+/// In SwiftUI's rendering lifecycle (e.g., during animations, navigation transitions, or list re-renderings),
+/// multiple instances of the same container view can temporarily coexist. To prevent race conditions
+/// and premature state unloading, this base class provides a centralized registry to track the active count
+/// of each container key before executing full unload sequences.
+class BaseContainerLifecycle: ObservableObject {
+    
+    /// A unique key identifying a container type and its specific instance ID.
+    ///
+    /// This key is used in `activeContainersCount` to distinguish and track active instances of different container types.
+    public struct ActiveContainerKey: Hashable, Sendable {
+        /// The unique identifier of the container's Swift metatype.
+        public let containerType: ObjectIdentifier
+        
+        /// The unique domain identifier for the specific container instance (e.g. user ID, item ID).
+        public let id: AnyHashable
+
+        /// Initializes a new key for tracking container instances.
+        ///
+        /// - Parameters:
+        ///   - containerType: The metatype's `ObjectIdentifier` of the container.
+        ///   - id: The unique domain identifier of the container instance.
+        public init(containerType: ObjectIdentifier, id: AnyHashable) {
+            self.containerType = containerType
+            self.id = id
+        }
+    }
+
+    /// A global registry tracking the number of active, mounted view instances for each container key.
+    ///
+    /// When a container view is loaded, its count in this dictionary is incremented. When the view is unloaded,
+    /// its count is decremented. A container's state will only perform its full teardown and state unloading actions
+    /// if the active count remains at zero after a transition grace period.
+    @MainActor
+    public static var activeContainersCount: [ActiveContainerKey: Int] = [:]
+}
+
+
 /// Manages the lifecycle events of a container within the UDF architecture,
 /// including loading and unloading operations, as well as managing container hooks.
 ///
@@ -35,21 +74,6 @@ import SwiftUI
 /// ## Initialization:
 /// - `init(didLoadCommand:didUnloadCommand:useHooks:)`: Initializes the lifecycle manager with commands to execute on load and unload, as
 /// well as a closure for creating hooks.
-class BaseContainerLifecycle: ObservableObject {
-    public struct ActiveContainerKey: Hashable, Sendable {
-        public let containerType: ObjectIdentifier
-        public let id: AnyHashable
-
-        public init(containerType: ObjectIdentifier, id: AnyHashable) {
-            self.containerType = containerType
-            self.id = id
-        }
-    }
-
-    @MainActor
-    public static var activeViewsCount: [ActiveContainerKey: Int] = [:]
-}
-
 final class ContainerLifecycle<State: AppReducer>: BaseContainerLifecycle {
     /// A private flag indicating if the container has completed its loading process.
     private var didLoad: Bool = false
