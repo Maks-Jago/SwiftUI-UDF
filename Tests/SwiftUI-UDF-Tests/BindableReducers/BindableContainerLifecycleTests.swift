@@ -51,6 +51,7 @@ struct BindableContainerLifecycleTests {
     func singleContainerLifecycle() async throws {
         let store = EnvironmentStore(initial: AppState(), loggers: [])
         let itemId = Item.ID(value: 1)
+        
         var didLoadCalled = false
         var didUnloadCalled = false
 
@@ -91,9 +92,11 @@ struct BindableContainerLifecycleTests {
     func multipleContainersWithSameID() async throws {
         let store = EnvironmentStore(initial: AppState(), loggers: [])
         let itemId = Item.ID(value: 1)
-        let manager = TestStateManager()
+        
+        let manager = TestStateViewModel()
         let root = TestStateView(manager: manager)
         var window: PlatformWindow? = await PlatformWindow.render(view: root)
+        
         var didLoadCalled = false
         var didUnloadCalled = false
 
@@ -165,9 +168,11 @@ struct BindableContainerLifecycleTests {
     func rapidUnloadRaceCondition() async throws {
         let store = EnvironmentStore(initial: AppState(), loggers: [])
         let itemId = Item.ID(value: 1)
-        let manager = TestStateManager()
+        
+        let manager = TestStateViewModel()
         let root = TestStateView(manager: manager)
         var window: PlatformWindow? = await PlatformWindow.render(view: root)
+        
         var didLoadCalled = false
         var didUnloadCalled = false
 
@@ -233,9 +238,11 @@ struct BindableContainerLifecycleTests {
         let store = EnvironmentStore(initial: AppState(), loggers: [])
         let itemId1 = Item.ID(value: 1)
         let itemId2 = Item.ID(value: 2)
-        let manager = TestStateManager()
+        
+        let manager = TestStateViewModel()
         let root = TestStateView(manager: manager)
         var window: PlatformWindow? = await PlatformWindow.render(view: root)
+        
         var didLoad1Called = false
         var didLoad2Called = false
         var didUnload1Called = false
@@ -311,7 +318,8 @@ struct BindableContainerLifecycleTests {
 }
 
 private extension BindableContainerLifecycleTests {
-    @MainActor class TestStateManager: ObservableObject {
+    @MainActor
+    class TestStateViewModel: ObservableObject {
         @Published var showContainer1 = false
         @Published var showContainer2 = false
 
@@ -320,7 +328,7 @@ private extension BindableContainerLifecycleTests {
     }
 
     struct TestStateView: View {
-        @ObservedObject var manager: TestStateManager
+        @ObservedObject var manager: TestStateViewModel
 
         var body: some View {
             VStack {
