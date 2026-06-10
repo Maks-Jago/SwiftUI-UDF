@@ -105,7 +105,10 @@ public struct Paginator<Item: Hashable & Identifiable & Sendable, FlowId: Hashab
 
         self.page = .number(page)
         let itemsToRemove = items.count - (page * perPage)
-        items.removeLast(itemsToRemove)
+        
+        if itemsToRemove > 0 {
+            items.removeLast(itemsToRemove)
+        }
     }
 
     /// Removes all items from the paginator and sets the initial page number.
