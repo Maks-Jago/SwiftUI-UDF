@@ -152,23 +152,27 @@ struct ConnectedContainer<C: Component, State: AppReducer>: View {
         self._containerLifecycle = .init(
             wrappedValue: ContainerLifecycle(
                 didLoadCommand: { store in
-                    store.dispatch(
-                        Actions._OnContainerDidLoad(containerType: containerType, id: containerId()).silent(),
-                        priority: .userInteractive
+                    let id = containerId()
+                    Self.handleContainerDidLoad(
+                        containerType: containerType,
+                        id: id,
+                        store: store,
+                        onContainerDidLoad: onContainerDidLoad
                     )
-                    
-                    onContainerDidLoad(store)
                 },
                 didUnloadCommand: { store in
                     onContainerDidUnload(store)
                     
-                    let boundReducer = Self.getBoundReducer(from: store.state, with: store, for: containerType)
-                    if boundReducer?.isLastInstance(for: containerId()) == true {
-                        onBindableContainerStateDidUnload(store)
-                    }
+                    let id = containerId()
+                    Self.handleContainerDidUnload(
+                        containerType: containerType,
+                        id: id,
+                        store: store,
+                        onBindableContainerStateDidUnload: onBindableContainerStateDidUnload
+                    )
                     
                     store.dispatch(
-                        Actions._OnContainerDidUnLoad(containerType: containerType, id: containerId())
+                        Actions._OnContainerDidUnLoad(containerType: containerType, id: id)
                             .with(delay: 0.15)
                             .silent()
                     )
@@ -233,8 +237,11 @@ extension ConnectedContainer {
         id: T.ID,
         onBindableContainerStateDidLoad: @escaping (EnvironmentStore<State>) -> Void
     ) -> Hook<State>? where T.ID: Sendable {
-        let reducer = getBoundReducer(from: store.state, with: store, for: containerType)
-        guard reducer?.hasReducer(for: id) == false else {
+        guard getBoundReducer(
+            from: store.state,
+            with: store,
+            for: containerType
+        )?.hasReducer(for: id) == false else {
             return nil
         }
         
@@ -242,12 +249,54 @@ extension ConnectedContainer {
             id: "onBindableContainerStateDidLoad-\(id)",
             type: .oneTime,
             condition: { state in
-                let reducer = getBoundReducer(from: state, with: store, for: containerType)
-                return reducer?.hasReducer(for: id) == true
+                getBoundReducer(from: state, with: store, for: containerType)?.hasReducer(for: id) == true
             },
             block: { store in
                 onBindableContainerStateDidLoad(store)
             }
         )
+    }
+
+    /// Increments the active view count and dispatches the container load events.
+    @MainActor
+    static func handleContainerDidLoad<T: BindableContainer>(
+        containerType: T.Type,
+        id: T.ID,
+        store: EnvironmentStore<State>,
+        onContainerDidLoad: @escaping (EnvironmentStore<State>) -> Void
+    ) {
+        let key = BaseContainerLifecycle.ActiveContainerKey(containerType: ObjectIdentifier(containerType), id: id)
+        BaseContainerLifecycle.activeViewsCount[key, default: 0] += 1
+        
+        store.dispatch(
+            Actions._OnContainerDidLoad(containerType: containerType, id: id).silent(),
+            priority: .userInteractive
+        )
+        onContainerDidLoad(store)
+    }
+
+    /// Decrements the active view count, handles state unloading, and cleans up the active count registry.
+    @MainActor
+    static func handleContainerDidUnload<T: BindableContainer>(
+        containerType: T.Type,
+        id: T.ID,
+        store: EnvironmentStore<State>,
+        onBindableContainerStateDidUnload: @escaping (EnvironmentStore<State>) -> Void
+    ) {
+        let key = BaseContainerLifecycle.ActiveContainerKey(containerType: ObjectIdentifier(containerType), id: id)
+        guard let count = BaseContainerLifecycle.activeViewsCount[key] else { return }
+        
+        if (count - 1) <= 0 {
+            BaseContainerLifecycle.activeViewsCount.removeValue(forKey: key)
+            
+            Task {
+                try? await Task.sleep(for: .milliseconds(150))
+                if BaseContainerLifecycle.activeViewsCount[key] == nil {
+                    onBindableContainerStateDidUnload(store)
+                }
+            }
+        } else {
+            BaseContainerLifecycle.activeViewsCount[key] = count - 1
+        }
     }
 }

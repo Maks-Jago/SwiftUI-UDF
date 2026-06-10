@@ -35,7 +35,22 @@ import SwiftUI
 /// ## Initialization:
 /// - `init(didLoadCommand:didUnloadCommand:useHooks:)`: Initializes the lifecycle manager with commands to execute on load and unload, as
 /// well as a closure for creating hooks.
-final class ContainerLifecycle<State: AppReducer>: ObservableObject {
+class BaseContainerLifecycle: ObservableObject {
+    public struct ActiveContainerKey: Hashable, Sendable {
+        public let containerType: ObjectIdentifier
+        public let id: AnyHashable
+
+        public init(containerType: ObjectIdentifier, id: AnyHashable) {
+            self.containerType = containerType
+            self.id = id
+        }
+    }
+
+    @MainActor
+    public static var activeViewsCount: [ActiveContainerKey: Int] = [:]
+}
+
+final class ContainerLifecycle<State: AppReducer>: BaseContainerLifecycle {
     /// A private flag indicating if the container has completed its loading process.
     private var didLoad: Bool = false
 
