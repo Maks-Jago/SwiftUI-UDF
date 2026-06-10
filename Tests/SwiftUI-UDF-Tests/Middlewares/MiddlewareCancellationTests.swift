@@ -93,11 +93,13 @@ import Foundation
         let store = await TestStore(initial: AppState())
         await store.subscribe(ReducibleMiddlewareToCancel.self, environment: ReducibleMiddlewareToCancel.Environment())
         await store.dispatch(Actions.Loading())
-        var success = await waitForCondition { await store.state.middlewareFlow == .loading }
+        var success = await store.state.middlewareFlow == .loading
         #expect(success)
 
         await store.dispatch(Actions.CancelLoading())
-        success = await waitForCondition { await store.state.middlewareFlow == .none }
+        await store.wait()
+        
+        success = await store.state.middlewareFlow == .none
         #expect(success)
     }
     
@@ -106,7 +108,7 @@ import Foundation
         await store.subscribe(ObservableMiddlewareToCancel.self, environment: ())
         
         await store.dispatch(Actions.Loading())
-        var success = await waitForCondition { await store.state.middlewareFlow == .loading }
+        var success = await store.state.middlewareFlow == .loading
         #expect(success)
         await withTaskGroup(of: Void.self) { group in
             for _ in 0..<10 {
@@ -116,7 +118,7 @@ import Foundation
             }
         }
         let acceptableFlowState: [MiddlewareFlow] = [.none, .cancel]
-        success = await waitForCondition { acceptableFlowState.contains(await store.state.middlewareFlow) }
+        success = acceptableFlowState.contains(await store.state.middlewareFlow)
         #expect(success)
         
         await store.wait()

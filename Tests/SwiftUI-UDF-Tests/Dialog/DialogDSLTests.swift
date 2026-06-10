@@ -15,7 +15,7 @@ import Testing
 
 // MARK: - DSL Tests
 @MainActor
-extension DialogTests {
+extension DialogRegistryTests.DialogTests {
 
     @Test("AlertDialog builder creates correct payload and applies properties")
     func alertBuilderAppliesPropertiesCorrectly() {
@@ -263,7 +263,6 @@ extension DialogTests {
     }
     
     // MARK: - Dialog Protocol Conformance
-    
     @Test("Dialog category is always .custom for DSL types")
     func dialogCategoryIsAlwaysCustom() {
         let alert = AlertDialog {
@@ -352,7 +351,7 @@ extension DialogTests {
     func dialogStatusIntegrationWithDSLAlertDialog() {
         let id = 999
         
-        DialogRegistry.register(id: id) {
+        Dialog.register(id: id) {
             AlertDialog {
                 DialogTitle("Status AlertDialog")
                 DialogMessage("Integration test")
@@ -381,7 +380,7 @@ extension DialogTests {
     func dialogStatusIntegrationWithDSLToast() {
         let id = 998
         
-        DialogRegistry.register(id: id) {
+        Dialog.register(id: id) {
             Toast(config: .init(theme: .vibrant, position: .bottom)) {
                 DialogMessage("Saved!")
                 DialogIcon { Image(systemName: "checkmark") }
@@ -425,5 +424,104 @@ extension DialogTests {
         }
         
         #expect(_DialogRegistry.get(id: id)?.title == "Second")
+    }
+    
+    // MARK: - Direct DialogStatus(dialog:) Init
+    
+    @Test("DialogStatus can be created directly from an AlertDialog using the closure-based init")
+    func dialogStatusDirectInitWithAlertDialog() {
+        let status = DialogStatus {
+            AlertDialog {
+                DialogTitle("Direct Alert")
+                DialogMessage("Created without registry")
+                DialogButton(title: "OK", action: {})
+            }
+        }
+        
+        guard case .presented(let dialog) = status.status else {
+            Issue.record("Expected presented dialog")
+            return
+        }
+        
+        #expect(dialog.title == "Direct Alert")
+        #expect(dialog.message == "Created without registry")
+        #expect(dialog.actions.count == 1)
+        
+        guard case .alert = dialog.style else {
+            Issue.record("Expected alert style")
+            return
+        }
+    }
+    
+    @Test("DialogStatus can be created directly from a Toast using the closure-based init")
+    func dialogStatusDirectInitWithToast() {
+        let status = DialogStatus {
+            Toast(config: .init(theme: .vibrant, position: .bottom)) {
+                DialogMessage("Direct Toast")
+                DialogIcon { Image(systemName: "checkmark") }
+            }
+        }
+        
+        guard case .presented(let dialog) = status.status else {
+            Issue.record("Expected presented dialog")
+            return
+        }
+        
+        #expect(dialog.message == "Direct Toast")
+        
+        guard case .toast(let config) = dialog.style else {
+            Issue.record("Expected toast style")
+            return
+        }
+        
+        #expect(config.theme == .vibrant)
+        #expect(config.position == .bottom)
+    }
+    
+    @Test("DialogStatus can be created directly from a ConfirmationDialog using the closure-based init")
+    func dialogStatusDirectInitWithConfirmationDialog() {
+        let status = DialogStatus {
+            ConfirmationDialog {
+                DialogTitle("Direct Confirmation")
+                DialogMessage("Are you sure?")
+                DialogButton(title: "Yes", role: .destructive, action: {})
+                DialogButton(title: "No", role: .cancel, action: {})
+            }
+        }
+        
+        guard case .presented(let dialog) = status.status else {
+            Issue.record("Expected presented dialog")
+            return
+        }
+        
+        #expect(dialog.title == "Direct Confirmation")
+        #expect(dialog.message == "Are you sure?")
+        #expect(dialog.actions.count == 2)
+        
+        guard case .confirmationDialog = dialog.style else {
+            Issue.record("Expected confirmationDialog style")
+            return
+        }
+    }
+    
+    @Test("UpdateDialogStatus can be initialized with a pre-built DialogProtocol instance")
+    func updateDialogStatusWithDialogProtocol() {
+        let alert = AlertDialog {
+            DialogTitle("Action Alert")
+            DialogMessage("From UpdateDialogStatus")
+            DialogButton(title: "Dismiss", action: {})
+        }
+        
+        let action = Actions.UpdateDialogStatus(dialog: alert, id: "testAction")
+        
+        guard case .presented(let dialog) = action.status.status else {
+            Issue.record("Expected presented dialog")
+            return
+        }
+        
+        #expect(dialog.title == "Action Alert")
+        #expect(dialog.message == "From UpdateDialogStatus")
+        #expect(dialog.actions.count == 1)
+        #expect(action.id == AnyHashable("testAction"))
     }
 }
