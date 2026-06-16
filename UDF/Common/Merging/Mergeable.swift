@@ -30,3 +30,17 @@ public protocol Mergeable {
     /// - Returns: A new instance of the same type, filled with values from the provided instance and modified as needed.
     func filled(from value: Self, mutate: (_ filled: inout Self, _ old: Self) -> Void) -> Self
 }
+
+public extension Mergeable {
+    /// Fills the current instance with values from another instance, and performs a custom mutation on the filled instance.
+    ///
+    /// - Parameters:
+    ///   - value: The instance to fill from.
+    ///   - mutate: A closure that allows for additional mutation on the filled instance.
+    /// - Returns: A new instance filled with values from the provided `value`.
+    func filled(from value: Self, mutate: (_ filled: inout Self, _ old: Self) -> Void) -> Self {
+        var mutableSelf = value
+        mutate(&mutableSelf, self)
+        return mutableSelf
+    }
+}
