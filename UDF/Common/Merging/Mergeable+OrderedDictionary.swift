@@ -18,7 +18,13 @@ public extension OrderedDictionary where Value: Mergeable {
             preconditionFailure("You have to use optional subscript")
         }
         set {
-            self.updateValue(self[key]?.merging(newValue) ?? newValue, forKey: key)
+            if let old = self[key] {
+                var filled = newValue
+                Value.merging(&filled, new: newValue, old: old)
+                self.updateValue(filled, forKey: key)
+            } else {
+                self.updateValue(newValue, forKey: key)
+            }
         }
     }
 }
@@ -39,11 +45,23 @@ public typealias OMI = Identifiable & Mergeable
 public extension OrderedDictionary where Value: MI, Key == Value.ID {
     mutating func insert(items: [Value]) {
         for item in items {
-            self[item.id] = self[item.id]?.merging(item) ?? item
+            if let old = self[item.id] {
+                var filled = item
+                Value.merging(&filled, new: item, old: old)
+                self[item.id] = filled
+            } else {
+                self[item.id] = item
+            }
         }
     }
 
     mutating func insert(item: Value) {
-        self[item.id] = self[item.id]?.merging(item) ?? item
+        if let old = self[item.id] {
+            var filled = item
+            Value.merging(&filled, new: item, old: old)
+            self[item.id] = filled
+        } else {
+            self[item.id] = item
+        }
     }
 }
