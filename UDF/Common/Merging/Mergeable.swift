@@ -14,11 +14,11 @@ import Foundation
 /// A protocol that allows types to define merging and filling behavior.
 /// Types conforming to `Mergeable` can combine instances and modify themselves based on other instances.
 public protocol Mergeable {
-    /// Merges the current instance with a new value and returns the result.
-    ///
-    /// - Parameter newValue: The new value to merge with the current instance.
-    /// - Returns: A new instance of the same type, containing the merged values of both instances.
+    /// Legacy merging method (instance-based).
     func merging(_ newValue: Self) -> Self
+
+    /// Modernized merging method (static-based).
+    static func merging(_ filledValue: inout Self, new newValue: Self, old oldValue: Self)
 
     /// Fills the current instance using values from another instance, allowing for further mutation.
     ///
@@ -32,6 +32,17 @@ public protocol Mergeable {
 }
 
 public extension Mergeable {
+    /// Default implementation of the legacy instance method forwards to the static method.
+    func merging(_ newValue: Self) -> Self {
+        var filledValue = newValue
+        Self.merging(&filledValue, new: newValue, old: self)
+        return filledValue
+    }
+
+    /// Default implementation of the modern static method forwards to the legacy instance method.
+    static func merging(_ filledValue: inout Self, new newValue: Self, old oldValue: Self) {
+        filledValue = oldValue.merging(newValue)
+    }
     /// Fills the current instance with values from another instance, and performs a custom mutation on the filled instance.
     ///
     /// - Parameters:
