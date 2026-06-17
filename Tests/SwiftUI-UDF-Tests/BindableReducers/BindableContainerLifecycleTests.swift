@@ -47,7 +47,7 @@ struct BindableContainerLifecycleTests {
     }
 
     @MainActor
-    @Test("onBindableContainerStateDidLoad and onBindableContainerStateDidUnload are called for a single container")
+    @Test("onBindableReducerDidLoad and onBindableReducerDidUnload are called for a single container")
     func singleContainerLifecycle() async throws {
         let store = EnvironmentStore(initial: AppState(), loggers: [])
         let itemId = Item.ID(value: 1)
@@ -88,7 +88,7 @@ struct BindableContainerLifecycleTests {
     }
 
     @MainActor
-    @Test("onBindableContainerStateDidLoad fires once on first load, and onBindableContainerStateDidUnload fires once when last container unloads")
+    @Test("onBindableReducerDidLoad fires once on first load, and onBindableReducerDidUnload fires once when last container unloads")
     func multipleContainersWithSameID() async throws {
         let store = EnvironmentStore(initial: AppState(), loggers: [])
         let itemId = Item.ID(value: 1)
@@ -233,7 +233,7 @@ struct BindableContainerLifecycleTests {
     }
 
     @MainActor
-    @Test("onBindableContainerStateDidLoad and onBindableContainerStateDidUnload behave independently for different container IDs")
+    @Test("onBindableReducerDidLoad and onBindableReducerDidUnload behave independently for different container IDs")
     func multipleContainersWithDifferentIDs() async throws {
         let store = EnvironmentStore(initial: AppState(), loggers: [])
         let itemId1 = Item.ID(value: 1)
@@ -360,11 +360,11 @@ private extension BindableContainerLifecycleTests {
             .init()
         }
 
-        func onBindableContainerStateDidLoad(store: EnvironmentStore<AppState>) {
+        func onBindableReducerDidLoad(store: EnvironmentStore<AppState>) {
             onStateDidLoad?()
         }
 
-        func onBindableContainerStateDidUnload(store: EnvironmentStore<AppState>) {
+        func onBindableReducerDidUnload(store: EnvironmentStore<AppState>) {
             onStateDidUnload?()
         }
     }

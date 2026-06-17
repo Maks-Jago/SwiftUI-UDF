@@ -114,8 +114,8 @@ struct ConnectedContainer<C: Component, State: AppReducer>: View {
     ///   - onContainerDisappear: A closure executed when the container disappears.
     ///   - onContainerDidLoad: A closure executed when the container is loaded.
     ///   - onContainerDidUnload: A closure executed when the container is unloaded.
-    ///   - onBindableContainerStateDidLoad: A closure executed when the bindable container's state is loaded and verified online.
-    ///   - onBindableContainerStateDidUnload: A closure executed when the bindable container's state is unloaded and verified offline.
+    ///   - onBindableReducerDidLoad: A closure executed when the bindable container's state is loaded and verified online.
+    ///   - onBindableReducerDidUnload: A closure executed when the bindable container's state is unloaded and verified offline.
     ///   - useHooks: A closure that provides an array of hooks to use within the container.
     init<BindedContainer: BindableContainer>(
         store: EnvironmentStore<State>,
@@ -127,8 +127,8 @@ struct ConnectedContainer<C: Component, State: AppReducer>: View {
         onContainerDisappear: @escaping @MainActor (EnvironmentStore<State>) -> Void,
         onContainerDidLoad: @escaping (EnvironmentStore<State>) -> Void,
         onContainerDidUnload: @escaping (EnvironmentStore<State>) -> Void,
-        onBindableContainerStateDidLoad: @escaping (EnvironmentStore<State>) -> Void,
-        onBindableContainerStateDidUnload: @escaping (EnvironmentStore<State>) -> Void,
+        onBindableReducerDidLoad: @escaping (EnvironmentStore<State>) -> Void,
+        onBindableReducerDidUnload: @escaping (EnvironmentStore<State>) -> Void,
         useHooks: @escaping () -> [Hook<State>]
     ) where BindedContainer.ID: Sendable {
         self.store = store
@@ -142,7 +142,7 @@ struct ConnectedContainer<C: Component, State: AppReducer>: View {
                 store: store,
                 containerType: containerType,
                 id: containerId(),
-                onBindableContainerStateDidLoad: onBindableContainerStateDidLoad
+                onBindableReducerDidLoad: onBindableReducerDidLoad
             ) {
                 hooks.append(syntheticHook)
             }
@@ -168,7 +168,7 @@ struct ConnectedContainer<C: Component, State: AppReducer>: View {
                         containerType: containerType,
                         id: id,
                         store: store,
-                        onBindableContainerStateDidUnload: onBindableContainerStateDidUnload
+                        onBindableReducerDidUnload: onBindableReducerDidUnload
                     )
                     
                     store.dispatch(
@@ -230,12 +230,12 @@ extension ConnectedContainer {
     }
 
     /// Builds a synthetic hook that monitors the online state of a bindable reducer
-    /// and triggers `onBindableContainerStateDidLoad` once the reducer is online.
+    /// and triggers `onBindableReducerDidLoad` once the reducer is online.
     static func makeStateDidLoadHook<T: BindableContainer>(
         store: EnvironmentStore<State>,
         containerType: T.Type,
         id: T.ID,
-        onBindableContainerStateDidLoad: @escaping (EnvironmentStore<State>) -> Void
+        onBindableReducerDidLoad: @escaping (EnvironmentStore<State>) -> Void
     ) -> Hook<State>? where T.ID: Sendable {
         guard getBoundReducer(
             from: store.state,
@@ -246,13 +246,13 @@ extension ConnectedContainer {
         }
         
         return Hook(
-            id: "onBindableContainerStateDidLoad-\(id)",
+            id: "onBindableReducerDidLoad-\(id)",
             type: .oneTime,
             condition: { state in
                 getBoundReducer(from: state, with: store, for: containerType)?.hasReducer(for: id) == true
             },
             block: { store in
-                onBindableContainerStateDidLoad(store)
+                onBindableReducerDidLoad(store)
             }
         )
     }
@@ -296,26 +296,26 @@ extension ConnectedContainer {
     /// `_OnContainerDidUnLoad` action has not been reduced yet. Both instances inspect the store state, see that the 
     /// reference count in the state is still 2 (meaning they both think another instance remains active), and conclude 
     /// that they are not the last instance. Consequently, `isLastInstance` returns false for both, and neither triggers 
-    /// `onBindableContainerStateDidUnload`.
+    /// `onBindableReducerDidUnload`.
     ///
     /// To resolve this and ensure the unload is reliably triggered:
     /// 1. We maintain a local, synchronous reference count in `BaseContainerLifecycle.activeContainersCount`.
     /// 2. When an instance is deallocated, we decrement this count.
     /// 3. The instance that decrements the count to zero removes the key and schedules a 150ms delay using `Task.sleep`.
     /// 4. After the delay, we verify if the container's active count remains zero (confirming no new instance has been loaded
-    ///    in the meantime). Only then do we execute the full state teardown (`onBindableContainerStateDidUnload`).
+    ///    in the meantime). Only then do we execute the full state teardown (`onBindableReducerDidUnload`).
     ///
     /// - Parameters:
     ///   - containerType: The metatype of the container being unloaded (e.g., `MyContainer.self`).
     ///   - id: The unique domain identifier of the container instance.
     ///   - store: The environment store containing the global state.
-    ///   - onBindableContainerStateDidUnload: A callback closure to execute when the bindable state unloads.
+    ///   - onBindableReducerDidUnload: A callback closure to execute when the bindable state unloads.
     @MainActor
     static func handleContainerDidUnload<T: BindableContainer>(
         containerType: T.Type,
         id: T.ID,
         store: EnvironmentStore<State>,
-        onBindableContainerStateDidUnload: @escaping (EnvironmentStore<State>) -> Void
+        onBindableReducerDidUnload: @escaping (EnvironmentStore<State>) -> Void
     ) {
         let key = BaseContainerLifecycle.ActiveContainerKey(containerType: ObjectIdentifier(containerType), id: id)
         guard let count = BaseContainerLifecycle.activeContainersCount[key] else { return }
@@ -326,7 +326,7 @@ extension ConnectedContainer {
             Task {
                 try? await Task.sleep(for: .milliseconds(150))
                 if BaseContainerLifecycle.activeContainersCount[key] == nil {
-                    onBindableContainerStateDidUnload(store)
+                    onBindableReducerDidUnload(store)
                 }
             }
         } else {

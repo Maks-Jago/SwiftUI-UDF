@@ -56,7 +56,7 @@ public protocol BindableContainer: Container, Identifiable where ID: Sendable {
     ///
     /// - Parameter store: The `EnvironmentStore` instance managing the state.
     @MainActor
-    func onBindableContainerStateDidLoad(store: EnvironmentStore<ContainerState>)
+    func onBindableReducerDidLoad(store: EnvironmentStore<ContainerState>)
     
     /// A lifecycle callback executed when the dynamic reducer state associated with this container's `id` is unloaded and offline.
     ///
@@ -65,15 +65,15 @@ public protocol BindableContainer: Container, Identifiable where ID: Sendable {
     ///
     /// - Parameter store: The `EnvironmentStore` instance managing the state.
     @MainActor
-    func onBindableContainerStateDidUnload(store: EnvironmentStore<ContainerState>)
+    func onBindableReducerDidUnload(store: EnvironmentStore<ContainerState>)
 }
 
 public extension BindableContainer {
     @MainActor
-    func onBindableContainerStateDidLoad(store: EnvironmentStore<ContainerState>) {}
+    func onBindableReducerDidLoad(store: EnvironmentStore<ContainerState>) {}
     
     @MainActor
-    func onBindableContainerStateDidUnload(store: EnvironmentStore<ContainerState>) {}
+    func onBindableReducerDidUnload(store: EnvironmentStore<ContainerState>) {}
 }
 
 public extension BindableContainer {
@@ -92,8 +92,8 @@ public extension BindableContainer {
             onContainerDisappear: onContainerDisappear,
             onContainerDidLoad: onContainerDidLoad,
             onContainerDidUnload: onContainerDidUnload,
-            onBindableContainerStateDidLoad: onBindableContainerStateDidLoad,
-            onBindableContainerStateDidUnload: onBindableContainerStateDidUnload,
+            onBindableReducerDidLoad: onBindableReducerDidLoad,
+            onBindableReducerDidUnload: onBindableReducerDidUnload,
             useHooks: useHooks
         )
     }
