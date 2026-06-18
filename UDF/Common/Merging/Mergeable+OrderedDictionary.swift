@@ -20,7 +20,7 @@ public extension OrderedDictionary where Value: Mergeable {
         set {
             if let old = self[key] {
                 var filled = newValue
-                Value.merging(&filled, new: newValue, old: old)
+                Value.merging(&filled, old: old)
                 self.updateValue(filled, forKey: key)
             } else {
                 self.updateValue(newValue, forKey: key)
@@ -47,7 +47,7 @@ public extension OrderedDictionary where Value: MI, Key == Value.ID {
         for item in items {
             if let old = self[item.id] {
                 var filled = item
-                Value.merging(&filled, new: item, old: old)
+                Value.merging(&filled, old: old)
                 self.updateValue(filled, forKey: item.id)
             } else {
                 self.updateValue(item, forKey: item.id)
@@ -58,7 +58,7 @@ public extension OrderedDictionary where Value: MI, Key == Value.ID {
     mutating func insert(item: Value) {
         if let old = self[item.id] {
             var filled = item
-            Value.merging(&filled, new: item, old: old)
+            Value.merging(&filled, old: old)
             self.updateValue(filled, forKey: item.id)
         } else {
             self.updateValue(item, forKey: item.id)

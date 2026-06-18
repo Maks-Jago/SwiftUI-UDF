@@ -15,10 +15,15 @@ extension MergeableTests {
         var tags: [String]
         var description: String?
 
-        static func merging(_ filledValue: inout ModernItem, new newValue: ModernItem, old oldValue: ModernItem) {
-            filledValue.merge(oldValue, \.number, preserving: 0)
-            filledValue.merge(oldValue, \.tags)
-            filledValue.merge(oldValue, \.description)
+        static func merging(_ newValue: inout ModernItem, old oldValue: ModernItem) {
+            newValue.restore(\.number, from: oldValue, ifNewIs: 0)
+            newValue.restore(\.tags, from: oldValue, ifNewIsEmpty: true)
+            newValue.restore(\.description, from: oldValue, ifNewIs: nil)
+
+            // Custom Rule: Restore title if the new title is shorter than 3 characters
+            newValue.restore(\.title, from: oldValue) { oldValue, newValue in
+                newValue.count < 3
+            }
         }
     }
 
@@ -44,12 +49,12 @@ extension MergeableTests {
             oldValue: ModernItem(id: .init(value: 1), title: "title", text: "text", number: 20.0, tags: ["tag2"], description: "old")
         )
     ])
-    func testMergeOverloadsComparedToTernary(newValue: ModernItem, oldValue: ModernItem) {
-        // 1. Using key-path merge overloads
-        var keyPathMerged = newValue
-        keyPathMerged.merge(oldValue, \.description)
-        keyPathMerged.merge(oldValue, \.tags)
-        keyPathMerged.merge(oldValue, \.number, preserving: 0)
+    func testRestoreOverloadsComparedToTernary(newValue: ModernItem, oldValue: ModernItem) {
+        // 1. Using key-path restore overloads
+        var keyPathRestored = newValue
+        keyPathRestored.restore(\.description, from: oldValue, ifNewIs: nil)
+        keyPathRestored.restore(\.tags, from: oldValue, ifNewIsEmpty: true)
+        keyPathRestored.restore(\.number, from: oldValue, ifNewIs: 0)
 
         // 2. Using traditional ternary / nil-coalescing equivalent logic
         var ternaryMerged = newValue
@@ -57,7 +62,25 @@ extension MergeableTests {
         ternaryMerged.tags = newValue.tags.isEmpty ? oldValue.tags : newValue.tags
         ternaryMerged.number = newValue.number == 0 ? oldValue.number : newValue.number
 
-        #expect(keyPathMerged == ternaryMerged)
+        #expect(keyPathRestored == ternaryMerged)
+    }
+
+    @Test func testRestoreCustomCondition() {
+        let old = ModernItem(id: .init(value: 1), title: "Original Title", text: "Original Text", number: 5, tags: [], description: nil)
+        
+        // Custom Rule 1: Restore if new title is shorter than old
+        var new1 = ModernItem(id: .init(value: 1), title: "Short", text: "New Text", number: 10, tags: [], description: nil)
+        new1.restore(\.title, from: old) { oldValue, newValue in
+            newValue.count < oldValue.count
+        }
+        #expect(new1.title == "Original Title")
+
+        // Custom Rule 2: Do NOT restore if new title is longer or equal
+        var new2 = ModernItem(id: .init(value: 1), title: "Very Long New Title", text: "New Text", number: 10, tags: [], description: nil)
+        new2.restore(\.title, from: old) { oldValue, newValue in
+            newValue.count < oldValue.count
+        }
+        #expect(new2.title == "Very Long New Title")
     }
 
     @Test func modernItemMerging() {
@@ -66,12 +89,33 @@ extension MergeableTests {
 
         // Test static method directly
         var mergedStatic = new
-        ModernItem.merging(&mergedStatic, new: new, old: old)
-        #expect(mergedStatic.title == "title 2")       // Auto-merged (overwritten)
-        #expect(mergedStatic.text == "new text")       // Auto-merged (overwritten)
-        #expect(mergedStatic.number == 12.23)          // Merged using KeyPath preserving 0
-        #expect(mergedStatic.tags == ["swift", "udf"]) // Merged using KeyPath preserving empty
-        #expect(mergedStatic.description == "Hello")   // Merged using KeyPath preserving nil
+        ModernItem.merging(&mergedStatic, old: old)
+        #expect(mergedStatic.title == "title 2")
+        #expect(mergedStatic.text == "new text")
+        #expect(mergedStatic.number == 12.23)
+        #expect(mergedStatic.tags == ["swift", "udf"])
+        #expect(mergedStatic.description == "Hello")
+
+        // Test instance method (calls default forwarding implementation to static method)
+        let mergedInstance = old.merging(new)
+        #expect(mergedInstance.title == "title 2")
+        #expect(mergedInstance.text == "new text")
+        #expect(mergedInstance.number == 12.23)
+        #expect(mergedInstance.tags == ["swift", "udf"])
+        #expect(mergedInstance.description == "Hello")
+
+        #expect(mergedStatic == mergedInstance)
+
+        // Test the custom rule in modern merging:
+        // New title is "hi" (length 2 < 3) -> should restore "title 1"
+        let newShortTitle = ModernItem(id: .init(value: 1), title: "hi", text: "new text", number: 0, tags: [], description: nil)
+        var mergedShort = newShortTitle
+        ModernItem.merging(&mergedShort, old: old)
+        #expect(mergedShort.title == "title 1")
+
+        // Verifying it also works via instance method forwarding
+        let mergedShortInstance = old.merging(newShortTitle)
+        #expect(mergedShortInstance.title == "title 1")
     }
 
     @Test func legacyItemBackwardsCompatibility() {
@@ -80,7 +124,7 @@ extension MergeableTests {
 
         // Test static method (calls default forwarding implementation to legacy instance method)
         var mergedStatic = new
-        Item.merging(&mergedStatic, new: new, old: old)
+        Item.merging(&mergedStatic, old: old)
         #expect(mergedStatic.title == "title 2")
         #expect(mergedStatic.text == "new text")
         #expect(mergedStatic.number == 12.23)
@@ -98,8 +142,8 @@ extension MergeableTests {
         var id: Id
         var mergeCount: Int = 0
 
-        static func merging(_ filledValue: inout TraceableItem, new newValue: TraceableItem, old oldValue: TraceableItem) {
-            filledValue.mergeCount = newValue.mergeCount + oldValue.mergeCount + 1
+        static func merging(_ newValue: inout TraceableItem, old oldValue: TraceableItem) {
+            newValue.mergeCount = newValue.mergeCount + oldValue.mergeCount + 1
         }
     }
 
@@ -132,4 +176,31 @@ extension MergeableTests {
         // Expected single merge: newValue.mergeCount (2) + oldValue.mergeCount (5) + 1 = 8
         #expect(dict[itemId]?.mergeCount == 8)
     }
+
+    @Test(arguments: [
+        (newTitle: "a", oldTitle: "Original", expected: "Original"),
+        (newTitle: "ab", oldTitle: "Original", expected: "Original"),
+        (newTitle: "", oldTitle: "Original", expected: "Original"),
+        (newTitle: "abc", oldTitle: "Original", expected: "abc"),
+        (newTitle: "abcd", oldTitle: "Original", expected: "abcd"),
+        (newTitle: "  ", oldTitle: "Original", expected: "Original"),
+        (newTitle: "   ", oldTitle: "Original", expected: "   "),
+        (newTitle: "ab", oldTitle: "xy", expected: "xy")
+    ])
+    func testModernItemCustomTitleRestoreRule(newTitle: String, oldTitle: String, expected: String) {
+        let old = ModernItem(id: .init(value: 1), title: oldTitle, text: "original text", number: 4.5, tags: ["t1"], description: "desc")
+        let new = ModernItem(id: .init(value: 1), title: newTitle, text: "new text", number: 0, tags: [], description: nil)
+        
+        // Test static merging function directly
+        var merged = new
+        ModernItem.merging(&merged, old: old)
+        
+        #expect(merged.title == expected)
+        // Ensure other fields were still merged correctly according to their restore rules:
+        #expect(merged.text == "new text")
+        #expect(merged.number == 4.5)
+        #expect(merged.tags == ["t1"])
+        #expect(merged.description == "desc")
+    }
 }
+

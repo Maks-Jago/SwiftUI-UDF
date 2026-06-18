@@ -18,17 +18,19 @@ public protocol Mergeable {
     ///
     /// - Parameter newValue: The new value to merge with the current instance.
     /// - Returns: A new instance of the same type, containing the merged values of both instances.
-    @available(*, deprecated, message: "Use the static merging(_:new:old:) method instead.")
+    @available(*, deprecated, message: "Use the static merging(_:old:) method instead.")
     func merging(_ newValue: Self) -> Self
 
     /// Merges a new value with an old value into a pre-populated mutable instance.
+    @available(*, deprecated, message: "Use the static merging(_:old:) method instead.")
+    static func merging(_ filledValue: inout Self, new newValue: Self, old oldValue: Self)
+
+    /// Merges a new value with an old value in-place, allowing properties from the old value to be selectively restored.
     ///
     /// - Parameters:
-    ///   - filledValue: The mutable instance where the merged result is constructed.
-    ///                  It is pre-populated with `newValue` before this method is called.
-    ///   - newValue: The incoming new instance containing updated values.
+    ///   - newValue: The mutating incoming instance containing updated values.
     ///   - oldValue: The existing old instance containing previous values.
-    static func merging(_ filledValue: inout Self, new newValue: Self, old oldValue: Self)
+    static func merging(_ newValue: inout Self, old oldValue: Self)
 
     /// Fills the current instance using values from another instance, allowing for further mutation.
     ///
@@ -42,18 +44,27 @@ public protocol Mergeable {
 }
 
 public extension Mergeable {
-    /// Default implementation of the legacy instance method forwards to the static method.
-    @available(*, deprecated, message: "Use the static merging(_:new:old:) method instead.")
+    /// Default implementation of the legacy instance method forwards to the new static method.
+    @available(*, deprecated, message: "Use the static merging(_:old:) method instead.")
     func merging(_ newValue: Self) -> Self {
-        var filledValue = newValue
-        Self.merging(&filledValue, new: newValue, old: self)
-        return filledValue
+        var mutableNewValue = newValue
+        Self.merging(&mutableNewValue, old: self)
+        return mutableNewValue
     }
 
-    /// Default implementation of the modern static method forwards to the legacy instance method.
+    /// Default implementation of the deprecated static method forwards to the legacy instance method.
+    @available(*, deprecated, message: "Use the static merging(_:old:) method instead.")
     static func merging(_ filledValue: inout Self, new newValue: Self, old oldValue: Self) {
         filledValue = oldValue.merging(newValue)
     }
+
+    /// Default implementation of the new static method forwards to the legacy 3-argument static method.
+    static func merging(_ newValue: inout Self, old oldValue: Self) {
+        var mutableNew = newValue
+        Self.merging(&mutableNew, new: newValue, old: oldValue)
+        newValue = mutableNew
+    }
+
     /// Fills the current instance with values from another instance, and performs a custom mutation on the filled instance.
     ///
     /// - Parameters:
