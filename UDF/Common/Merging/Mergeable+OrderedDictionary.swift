@@ -48,9 +48,9 @@ public extension OrderedDictionary where Value: MI, Key == Value.ID {
             if let old = self[item.id] {
                 var filled = item
                 Value.merging(&filled, new: item, old: old)
-                self[item.id] = filled
+                self.updateValue(filled, forKey: item.id)
             } else {
-                self[item.id] = item
+                self.updateValue(item, forKey: item.id)
             }
         }
     }
@@ -59,9 +59,9 @@ public extension OrderedDictionary where Value: MI, Key == Value.ID {
         if let old = self[item.id] {
             var filled = item
             Value.merging(&filled, new: item, old: old)
-            self[item.id] = filled
+            self.updateValue(filled, forKey: item.id)
         } else {
-            self[item.id] = item
+            self.updateValue(item, forKey: item.id)
         }
     }
 }
