@@ -12,13 +12,13 @@
 import Foundation
 
 public extension Mergeable {
-    /// Restores a property from the old value if the new value matches a specific value.
+    /// Keeps a property from the old value if the new value matches a specific value.
     ///
     /// - Parameters:
     ///   - keyPath: The WritableKeyPath to the property.
     ///   - old: The original instance containing the old value.
-    ///   - value: The value which triggers restoration of the old value.
-    mutating func restore<T: Equatable>(
+    ///   - value: The value which triggers keeping of the old value.
+    mutating func keep<T: Equatable>(
         _ keyPath: WritableKeyPath<Self, T>,
         from old: Self,
         ifNewIs value: T
@@ -28,13 +28,13 @@ public extension Mergeable {
         }
     }
 
-    /// Restores a collection property from the old value if the new one is empty.
+    /// Keeps a collection property from the old value if the new one is empty.
     ///
     /// - Parameters:
     ///   - keyPath: The WritableKeyPath to the collection property.
     ///   - old: The original instance containing the old value.
-    ///   - ifNewIsEmpty: If true, restores the old value when the new collection is empty.
-    mutating func restore<T: Collection>(
+    ///   - ifNewIsEmpty: If true, keeps the old value when the new collection is empty.
+    mutating func keep<T: Collection>(
         _ keyPath: WritableKeyPath<Self, T>,
         from old: Self,
         ifNewIsEmpty: Bool
@@ -44,13 +44,13 @@ public extension Mergeable {
         }
     }
 
-    /// Restores a property from the old value based on a custom condition closure comparing old and new values.
+    /// Keeps a property from the old value based on a custom condition closure comparing old and new values.
     ///
     /// - Parameters:
     ///   - keyPath: The WritableKeyPath to the property.
     ///   - old: The original instance containing the old value.
-    ///   - condition: A closure taking the old property value and the new property value, returning true if the old value should be restored.
-    mutating func restore<T>(
+    ///   - condition: A closure taking the old property value and the new property value, returning true if the old value should be kept.
+    mutating func keep<T>(
         _ keyPath: WritableKeyPath<Self, T>,
         from old: Self,
         where condition: (_ oldValue: T, _ newValue: T) -> Bool

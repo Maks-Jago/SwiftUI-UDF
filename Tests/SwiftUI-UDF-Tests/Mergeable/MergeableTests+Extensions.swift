@@ -16,12 +16,12 @@ extension MergeableTests {
         var description: String?
 
         static func merging(_ newValue: inout ModernItem, old oldValue: ModernItem) {
-            newValue.restore(\.number, from: oldValue, ifNewIs: 0)
-            newValue.restore(\.tags, from: oldValue, ifNewIsEmpty: true)
-            newValue.restore(\.description, from: oldValue, ifNewIs: nil)
+            newValue.keep(\.number, from: oldValue, ifNewIs: 0)
+            newValue.keep(\.tags, from: oldValue, ifNewIsEmpty: true)
+            newValue.keep(\.description, from: oldValue, ifNewIs: nil)
 
-            // Custom Rule: Restore title if the new title is shorter than 3 characters
-            newValue.restore(\.title, from: oldValue) { oldValue, newValue in
+            // Custom Rule: Keep title if the new title is shorter than 3 characters
+            newValue.keep(\.title, from: oldValue) { oldValue, newValue in
                 newValue.count < 3
             }
         }
@@ -49,12 +49,12 @@ extension MergeableTests {
             oldValue: ModernItem(id: .init(value: 1), title: "title", text: "text", number: 20.0, tags: ["tag2"], description: "old")
         )
     ])
-    func testRestoreOverloadsComparedToTernary(newValue: ModernItem, oldValue: ModernItem) {
-        // 1. Using key-path restore overloads
-        var keyPathRestored = newValue
-        keyPathRestored.restore(\.description, from: oldValue, ifNewIs: nil)
-        keyPathRestored.restore(\.tags, from: oldValue, ifNewIsEmpty: true)
-        keyPathRestored.restore(\.number, from: oldValue, ifNewIs: 0)
+    func testKeepOverloadsComparedToTernary(newValue: ModernItem, oldValue: ModernItem) {
+        // 1. Using key-path keep overloads
+        var keyPathKept = newValue
+        keyPathKept.keep(\.description, from: oldValue, ifNewIs: nil)
+        keyPathKept.keep(\.tags, from: oldValue, ifNewIsEmpty: true)
+        keyPathKept.keep(\.number, from: oldValue, ifNewIs: 0)
 
         // 2. Using traditional ternary / nil-coalescing equivalent logic
         var ternaryMerged = newValue
@@ -62,22 +62,22 @@ extension MergeableTests {
         ternaryMerged.tags = newValue.tags.isEmpty ? oldValue.tags : newValue.tags
         ternaryMerged.number = newValue.number == 0 ? oldValue.number : newValue.number
 
-        #expect(keyPathRestored == ternaryMerged)
+        #expect(keyPathKept == ternaryMerged)
     }
 
-    @Test func testRestoreCustomCondition() {
+    @Test func testKeepCustomCondition() {
         let old = ModernItem(id: .init(value: 1), title: "Original Title", text: "Original Text", number: 5, tags: [], description: nil)
         
-        // Custom Rule 1: Restore if new title is shorter than old
+        // Custom Rule 1: Keep if new title is shorter than old
         var new1 = ModernItem(id: .init(value: 1), title: "Short", text: "New Text", number: 10, tags: [], description: nil)
-        new1.restore(\.title, from: old) { oldValue, newValue in
+        new1.keep(\.title, from: old) { oldValue, newValue in
             newValue.count < oldValue.count
         }
         #expect(new1.title == "Original Title")
 
-        // Custom Rule 2: Do NOT restore if new title is longer or equal
+        // Custom Rule 2: Do NOT keep if new title is longer or equal
         var new2 = ModernItem(id: .init(value: 1), title: "Very Long New Title", text: "New Text", number: 10, tags: [], description: nil)
-        new2.restore(\.title, from: old) { oldValue, newValue in
+        new2.keep(\.title, from: old) { oldValue, newValue in
             newValue.count < oldValue.count
         }
         #expect(new2.title == "Very Long New Title")
@@ -107,7 +107,7 @@ extension MergeableTests {
         #expect(mergedStatic == mergedInstance)
 
         // Test the custom rule in modern merging:
-        // New title is "hi" (length 2 < 3) -> should restore "title 1"
+        // New title is "hi" (length 2 < 3) -> should keep "title 1"
         let newShortTitle = ModernItem(id: .init(value: 1), title: "hi", text: "new text", number: 0, tags: [], description: nil)
         var mergedShort = newShortTitle
         ModernItem.merging(&mergedShort, old: old)
@@ -187,7 +187,7 @@ extension MergeableTests {
         (newTitle: "   ", oldTitle: "Original", expected: "   "),
         (newTitle: "ab", oldTitle: "xy", expected: "xy")
     ])
-    func testModernItemCustomTitleRestoreRule(newTitle: String, oldTitle: String, expected: String) {
+    func testModernItemCustomTitleKeepRule(newTitle: String, oldTitle: String, expected: String) {
         let old = ModernItem(id: .init(value: 1), title: oldTitle, text: "original text", number: 4.5, tags: ["t1"], description: "desc")
         let new = ModernItem(id: .init(value: 1), title: newTitle, text: "new text", number: 0, tags: [], description: nil)
         
@@ -196,7 +196,7 @@ extension MergeableTests {
         ModernItem.merging(&merged, old: old)
         
         #expect(merged.title == expected)
-        // Ensure other fields were still merged correctly according to their restore rules:
+        // Ensure other fields were still merged correctly according to their keep rules:
         #expect(merged.text == "new text")
         #expect(merged.number == 4.5)
         #expect(merged.tags == ["t1"])
