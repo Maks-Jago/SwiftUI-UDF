@@ -1,6 +1,7 @@
 
 import Testing
 import Foundation
+import Combine
 
 public func sleep(for seconds: TimeInterval = 0.3) async {
     let nanoseconds = UInt64(seconds * 1_000_000_000)
@@ -118,3 +119,39 @@ public func waitForMainActorCondition(
 
     return true
 }
+
+/// Waits for a publisher to emit a value that satisfies the given condition within a timeout.
+///
+/// - Parameters:
+///   - publisher: The Combine publisher to observe.
+///   - timeout: Maximum time to wait in seconds (defaults to 5.0).
+///   - condition: The predicate that the emitted value must satisfy.
+/// - Returns: `true` if a matching value was received, `false` if the timeout occurred first.
+@MainActor
+@discardableResult
+public func waitForPublisherCondition<P: Publisher>(
+    _ publisher: P,
+    timeout: TimeInterval = 5.0,
+    condition: @escaping @MainActor (P.Output) -> Bool
+) async -> Bool where P.Failure == Never {
+    let values = publisher.values
+    
+    let loopTask = Task { @MainActor in
+        for await value in values {
+            if condition(value) {
+                return true
+            }
+        }
+        return false
+    }
+    
+    let timeoutTask = Task {
+        try? await Task.sleep(for: .seconds(timeout))
+        loopTask.cancel()
+    }
+    
+    let result = await loopTask.value
+    timeoutTask.cancel()
+    return result
+}
+
