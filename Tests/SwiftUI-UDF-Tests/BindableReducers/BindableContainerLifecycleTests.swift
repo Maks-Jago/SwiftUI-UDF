@@ -114,8 +114,7 @@ struct BindableContainerLifecycleTests {
                         confirmUnload()
                     }
                 )
-                manager.container1 = container1
-                manager.showContainer1 = true
+                manager.containers = [.init(container: container1, isVisible: true)]
                 window?.redraw()
 
                 // Wait for the state to load and callback to fire
@@ -134,22 +133,21 @@ struct BindableContainerLifecycleTests {
                         confirmUnload()
                     }
                 )
-                manager.container2 = container2
-                manager.showContainer2 = true
+                manager.containers.append(.init(container: container2, isVisible: true))
                 window?.redraw()
                 
                 // Wait for the store to process the load action
                 await sleep(for: 0.1)
 
                 // 3. Unload the first container
-                manager.showContainer1 = false
+                manager.containers[0].isVisible = false
                 window?.redraw()
 
                 // Wait a bit to make sure didUnload doesn't fire yet (since container2 is still active)
                 try? await Task.sleep(for: .milliseconds(200))
 
                 // 4. Unload the second container (the last instance)
-                manager.showContainer2 = false
+                manager.containers[1].isVisible = false
                 window?.redraw()
 
                 // Wait for the state to unload completely and callback to fire
@@ -190,8 +188,7 @@ struct BindableContainerLifecycleTests {
                         confirmUnload()
                     }
                 )
-                manager.container1 = container1
-                manager.showContainer1 = true
+                manager.containers = [.init(container: container1, isVisible: true)]
                 window?.redraw()
 
                 // Wait for the state to load and callback to fire
@@ -209,16 +206,15 @@ struct BindableContainerLifecycleTests {
                         confirmUnload()
                     }
                 )
-                manager.container2 = container2
-                manager.showContainer2 = true
+                manager.containers.append(.init(container: container2, isVisible: true))
                 window?.redraw()
                 
                 // Wait for the store to process the load action
                 await sleep(for: 0.1)
 
                 // 3. Rapidly unload both containers in the same run loop cycle
-                manager.showContainer1 = false
-                manager.showContainer2 = false
+                manager.containers[0].isVisible = false
+                manager.containers[1].isVisible = false
                 window?.redraw()
 
                 // Wait for the state to unload completely and callback to fire
@@ -276,10 +272,10 @@ struct BindableContainerLifecycleTests {
                         )
 
                         // Load both
-                        manager.container1 = container1
-                        manager.showContainer1 = true
-                        manager.container2 = container2
-                        manager.showContainer2 = true
+                        manager.containers = [
+                            .init(container: container1, isVisible: true),
+                            .init(container: container2, isVisible: true)
+                        ]
                         window?.redraw()
 
                         // Wait for both states to load and callbacks to fire
@@ -292,7 +288,7 @@ struct BindableContainerLifecycleTests {
                         #expect(success)
 
                         // Unload first
-                        manager.showContainer1 = false
+                        manager.containers[0].isVisible = false
                         window?.redraw()
 
                         // Wait for first state to unload and callback to fire
@@ -300,7 +296,7 @@ struct BindableContainerLifecycleTests {
                         #expect(success1)
 
                         // Unload second
-                        manager.showContainer2 = false
+                        manager.containers[1].isVisible = false
                         window?.redraw()
 
                         // Wait for second state to unload and callback to fire
@@ -315,16 +311,80 @@ struct BindableContainerLifecycleTests {
         window = nil
         window?.redraw()
     }
+
+    @MainActor
+    @Test("onBindableReducerDidLoad fires once, and onBindableReducerDidUnload is called when all 5 containers are rapidly unloaded simultaneously")
+    func fiveContainersSimultaneousUnload() async throws {
+        let store = EnvironmentStore(initial: AppState(), loggers: [])
+        let itemId = Item.ID(value: 1)
+        
+        let manager = TestStateViewModel()
+        let root = TestStateView(manager: manager)
+        var window: PlatformWindow? = await PlatformWindow.render(view: root)
+        
+        var didLoadCalled = false
+        var lastUnloadedContainerIndex: Int? = nil
+
+        await confirmation("didLoad", expectedCount: 1) { confirmLoad in
+            await confirmation("didUnload", expectedCount: 1) { confirmUnload in
+                var containers: [ItemsContainer] = []
+                for index in 0..<5 {
+                    let container = ItemsContainer(
+                        id: itemId,
+                        onBindableReducerDidLoad: {
+                            if !didLoadCalled {
+                                didLoadCalled = true
+                                confirmLoad()
+                            }
+                        },
+                        onBindableReducerDidUnload: {
+                            lastUnloadedContainerIndex = index
+                            confirmUnload()
+                        }
+                    )
+                    containers.append(container)
+                }
+
+                // Load all 5 containers
+                manager.containers = containers.map { .init(container: $0, isVisible: true) }
+                window?.redraw()
+
+                // Wait for the state to load and callback to fire
+                var success = await waitForMainActorCondition { store.state.itemsForm[itemId] != nil && didLoadCalled }
+                #expect(success)
+
+                // Rapidly unload all 5 containers in the same run loop cycle
+                for i in 0..<5 {
+                    manager.containers[i].isVisible = false
+                }
+                window?.redraw()
+
+                // Wait for the state to unload completely and callback to fire (which is when the last/5th container invokes its handler)
+                success = await waitForMainActorCondition { store.state.itemsForm[itemId] == nil && lastUnloadedContainerIndex != nil }
+                #expect(success)
+                
+                // Assert that the last deallocated container was indeed the one that triggered the lifecycle call
+                // Since they disappear in sequence from index 0 to 4 in ForEach, index 4 (the 5th container) is the last one deallocated.
+                #expect(lastUnloadedContainerIndex == 4)
+            }
+        }
+
+        window?.release()
+        window = nil
+        window?.redraw()
+    }
 }
 
 private extension BindableContainerLifecycleTests {
     @MainActor
     class TestStateViewModel: ObservableObject {
-        @Published var showContainer1 = false
-        @Published var showContainer2 = false
+        struct ContainerItem: Identifiable {
+            var id = UUID()
+            let container: ItemsContainer
+            var isVisible: Bool
+        }
 
-        var container1: ItemsContainer? = nil
-        var container2: ItemsContainer? = nil
+        @Published var containers: [ContainerItem] = []
     }
 
     struct TestStateView: View {
@@ -332,11 +392,10 @@ private extension BindableContainerLifecycleTests {
 
         var body: some View {
             VStack {
-                if manager.showContainer1, let container1 = manager.container1 {
-                    container1
-                }
-                if manager.showContainer2, let container2 = manager.container2 {
-                    container2
+                ForEach(manager.containers) { item in
+                    if item.isVisible {
+                        item.container
+                    }
                 }
             }
         }
