@@ -59,11 +59,11 @@ struct BindableContainerLifecycleTests {
             await confirmation("didUnload", expectedCount: 1) { confirmUnload in
                 let container = ItemsContainer(
                     id: itemId,
-                    onStateDidLoad: {
+                    onBindableReducerDidLoad: {
                         didLoadCalled = true
                         confirmLoad()
                     },
-                    onStateDidUnload: {
+                    onBindableReducerDidUnload: {
                         didUnloadCalled = true
                         confirmUnload()
                     }
@@ -105,11 +105,11 @@ struct BindableContainerLifecycleTests {
                 // 1. Load the first container
                 let container1 = ItemsContainer(
                     id: itemId,
-                    onStateDidLoad: {
+                    onBindableReducerDidLoad: {
                         didLoadCalled = true
                         confirmLoad()
                     },
-                    onStateDidUnload: {
+                    onBindableReducerDidUnload: {
                         didUnloadCalled = true
                         confirmUnload()
                     }
@@ -125,11 +125,11 @@ struct BindableContainerLifecycleTests {
                 // 2. Load the second container with the same ID
                 let container2 = ItemsContainer(
                     id: itemId,
-                    onStateDidLoad: {
+                    onBindableReducerDidLoad: {
                         // We do not set didLoadCalled here because expectedCount is 1, so it shouldn't fire again
                         confirmLoad()
                     },
-                    onStateDidUnload: {
+                    onBindableReducerDidUnload: {
                         didUnloadCalled = true
                         confirmUnload()
                     }
@@ -181,11 +181,11 @@ struct BindableContainerLifecycleTests {
                 // 1. Load first container
                 let container1 = ItemsContainer(
                     id: itemId,
-                    onStateDidLoad: {
+                    onBindableReducerDidLoad: {
                         didLoadCalled = true
                         confirmLoad()
                     },
-                    onStateDidUnload: {
+                    onBindableReducerDidUnload: {
                         didUnloadCalled = true
                         confirmUnload()
                     }
@@ -201,10 +201,10 @@ struct BindableContainerLifecycleTests {
                 // 2. Load second container
                 let container2 = ItemsContainer(
                     id: itemId,
-                    onStateDidLoad: {
+                    onBindableReducerDidLoad: {
                         confirmLoad()
                     },
-                    onStateDidUnload: {
+                    onBindableReducerDidUnload: {
                         didUnloadCalled = true
                         confirmUnload()
                     }
@@ -254,22 +254,22 @@ struct BindableContainerLifecycleTests {
                     await confirmation("didUnloadItem2", expectedCount: 1) { confirmUnload2 in
                         let container1 = ItemsContainer(
                             id: itemId1,
-                            onStateDidLoad: {
+                            onBindableReducerDidLoad: {
                                 didLoad1Called = true
                                 confirmLoad1()
                             },
-                            onStateDidUnload: {
+                            onBindableReducerDidUnload: {
                                 didUnload1Called = true
                                 confirmUnload1()
                             }
                         )
                         let container2 = ItemsContainer(
                             id: itemId2,
-                            onStateDidLoad: {
+                            onBindableReducerDidLoad: {
                                 didLoad2Called = true
                                 confirmLoad2()
                             },
-                            onStateDidUnload: {
+                            onBindableReducerDidUnload: {
                                 didUnload2Called = true
                                 confirmUnload2()
                             }
@@ -349,8 +349,8 @@ private extension BindableContainerLifecycleTests {
         typealias ContainerComponent = ItemsComponent
 
         var id: Item.ID
-        var onStateDidLoad: (@MainActor () -> Void)? = nil
-        var onStateDidUnload: (@MainActor () -> Void)? = nil
+        var onBindableReducerDidLoad: (@MainActor () -> Void)? = nil
+        var onBindableReducerDidUnload: (@MainActor () -> Void)? = nil
 
         func scope(for state: AppState) -> Scope {
             state.itemsForm[id]
@@ -361,11 +361,11 @@ private extension BindableContainerLifecycleTests {
         }
 
         func onBindableReducerDidLoad(store: EnvironmentStore<AppState>) {
-            onStateDidLoad?()
+            self.onBindableReducerDidLoad?()
         }
 
         func onBindableReducerDidUnload(store: EnvironmentStore<AppState>) {
-            onStateDidUnload?()
+            self.onBindableReducerDidUnload?()
         }
     }
 

@@ -18,7 +18,7 @@ import SwiftUI
 /// multiple instances of the same container view can temporarily coexist. To prevent race conditions
 /// and premature state unloading, this base class provides a centralized registry to track the active count
 /// of each container key before executing full unload sequences.
-class BaseContainerLifecycle: ObservableObject {
+class BaseContainerLifecycle {
     
     /// A unique key identifying a container type and its specific instance ID.
     ///
