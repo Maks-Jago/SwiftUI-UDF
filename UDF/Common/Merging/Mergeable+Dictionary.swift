@@ -24,7 +24,7 @@ public extension Dictionary where Value: Mergeable {
         set {
             var filled = newValue
             if let old = self[key] {
-                Value.merging(&filled, old: old)
+                filled = Value.merging(new: filled, old: old)
             }
             self.updateValue(filled, forKey: key)
         }
@@ -62,7 +62,7 @@ public extension Dictionary where Value: MI, Key == Value.ID {
         for item in items {
             var filled = item
             if let old = self[item.id] {
-                Value.merging(&filled, old: old)
+                filled = Value.merging(new: filled, old: old)
             }
             self.updateValue(filled, forKey: item.id)
         }
@@ -75,7 +75,7 @@ public extension Dictionary where Value: MI, Key == Value.ID {
     mutating func insert(item: Value) {
         var filled = item
         if let old = self[item.id] {
-            Value.merging(&filled, old: old)
+            filled = Value.merging(new: filled, old: old)
         }
         self.updateValue(filled, forKey: item.id)
     }
