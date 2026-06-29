@@ -135,7 +135,8 @@ extension DialogRegistryTests {
             #expect(queueManager.visibleToasts.count == 1)
             
             // Wait for auto-dismiss
-            await sleep(for: 0.5)
+            let dismissed = await waitForMainActorCondition { queueManager.visibleToasts.isEmpty }
+            #expect(dismissed)
             
             // Verify callback was executed
             #expect(tracker.executed)
