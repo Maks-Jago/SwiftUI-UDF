@@ -15,7 +15,4 @@ protocol AnyBindableReducer: Sendable {
 
     /// Returns whether a reducer instance currently exists in the dictionary for the given ID
     func hasReducer(for id: any Hashable) -> Bool
-
-    /// Returns whether the reducer instance for the given ID is the last active one (refCount == 1)
-    func isLastInstance(for id: any Hashable) -> Bool
 }

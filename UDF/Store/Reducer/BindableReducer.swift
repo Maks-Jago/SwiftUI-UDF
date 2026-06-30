@@ -149,17 +149,5 @@ extension BindableReducer: AnyBindableReducer {
 
         return reducers.contains { $0.key == id }
     }
-    
-    /// Determines whether the reducer for the given identifier is the last active instance.
-    ///
-    /// - Parameter id: The identifier of the container, expected to be of type `BindedContainer.ID`.
-    /// - Returns: `true` if the reducer is uniquely referenced; otherwise, `false`.
-    func isLastInstance(for id: any Hashable) -> Bool {
-        guard let containerID = id as? BindedContainer.ID else {
-            return false
-        }
-
-        return reducers.isUniquelyReferenced(key: containerID)
-    }
 }
 

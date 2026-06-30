@@ -295,7 +295,7 @@ extension ConnectedContainer {
     /// Because the store state updates asynchronously, when two deallocating instances query the store, the delayed 
     /// `_OnContainerDidUnLoad` action has not been reduced yet. Both instances inspect the store state, see that the 
     /// reference count in the state is still 2 (meaning they both think another instance remains active), and conclude 
-    /// that they are not the last instance. Consequently, `isLastInstance` returns false for both, and neither triggers 
+    /// that they are not the last instance. Consequently, neither triggers 
     /// `onBindableReducerDidUnload`.
     ///
     /// To resolve this and ensure the unload is reliably triggered:
