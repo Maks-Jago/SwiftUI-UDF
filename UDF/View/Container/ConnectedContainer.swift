@@ -58,7 +58,7 @@ struct ConnectedContainer<C: Component, State: AppReducer>: View {
     var onContainerDisappear: @MainActor (EnvironmentStore<State>) -> Void
     
     /// The container's lifecycle manager that handles loading, unloading, and hooks.
-    @SwiftUI.State var containerLifecycle: ContainerLifecycle<State>
+    @StateObject var containerLifecycle: ContainerLifecycle<State>
     
     /// The container state that observes changes in the scoped state.
     @ObservedObject var containerState: ContainerState<State>
