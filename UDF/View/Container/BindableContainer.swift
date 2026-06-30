@@ -100,7 +100,7 @@ public extension BindableContainer {
 }
 
 // MARK: - Environment-Aware Container
-public extension BindableContainer {
+extension BindableContainer {
     /// Creates a version of this container that uses a specific store instead of global
     func with(store: EnvironmentStore<ContainerState>) -> some View {
         ConnectedContainer<ContainerComponent, ContainerState>(
