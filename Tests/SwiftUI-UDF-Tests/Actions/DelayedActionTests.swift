@@ -137,4 +137,24 @@ import Testing
         success = await waitForCondition { store.state.dataForm.count == 5 }
         #expect(success)
     }
+
+    @Test func whenActionGroupHasDelayAndChildHasAnimation_BothShouldBePreserved() async throws {
+        let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
+
+        let delayedTitle = "delayed animated title"
+        store.dispatch(
+            ActionGroup {
+                Actions.UpdateFormField(keyPath: \DataForm.title, value: delayedTitle)
+                    .with(animation: .bouncy)
+            }
+            .with(delay: 1)
+        )
+
+        // Title should NOT be updated immediately (delay must be respected)
+        #expect(store.state.dataForm.title.isEmpty)
+
+        // Title should be updated after the delay
+        let success = await waitForCondition { store.state.dataForm.title == delayedTitle }
+        #expect(success)
+    }
 }
