@@ -22,7 +22,11 @@ public extension Dictionary where Value: Mergeable {
             preconditionFailure("You have to use optional subscript")
         }
         set {
-            self[key] = self[key]?.merging(newValue) ?? newValue
+            var filled = newValue
+            if let old = self[key] {
+                filled = Value.merging(new: filled, old: old)
+            }
+            self.updateValue(filled, forKey: key)
         }
     }
 }
@@ -56,7 +60,11 @@ public extension Dictionary where Value: MI, Key == Value.ID {
     ///                    If an item with the same ID already exists, it will be merged with the new item.
     mutating func insert(items: [Value]) {
         for item in items {
-            self[item.id] = self[item.id]?.merging(item) ?? item
+            var filled = item
+            if let old = self[item.id] {
+                filled = Value.merging(new: filled, old: old)
+            }
+            self.updateValue(filled, forKey: item.id)
         }
     }
 
@@ -65,6 +73,10 @@ public extension Dictionary where Value: MI, Key == Value.ID {
     /// - Parameter item: The item to be inserted into the dictionary.
     ///                   If an item with the same ID already exists, it will be merged with the new item.
     mutating func insert(item: Value) {
-        self[item.id] = self[item.id]?.merging(item) ?? item
+        var filled = item
+        if let old = self[item.id] {
+            filled = Value.merging(new: filled, old: old)
+        }
+        self.updateValue(filled, forKey: item.id)
     }
 }

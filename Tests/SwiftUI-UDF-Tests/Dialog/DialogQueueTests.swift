@@ -319,10 +319,8 @@ import UDFSwiftTesting
         #expect(queueManager.visibleToasts.count == 1)
 
         // Wait for auto-dismiss
-        try? await Task.sleep(nanoseconds: 100_000_000) // 100ms
-
-        // Toast should be dismissed
-        #expect(queueManager.visibleToasts.count == 0)
+        let dismissed = await waitForMainActorCondition { queueManager.visibleToasts.isEmpty }
+        #expect(dismissed)
     }
 
     @Test
@@ -424,10 +422,9 @@ import UDFSwiftTesting
             queueManager.enqueue(toast)
 
             // Wait for auto-dismiss
-            await sleep(for: 0.3)
+            let dismissed = await waitForMainActorCondition { queueManager.visibleToasts.isEmpty }
+            #expect(dismissed)
         }
-
-        #expect(queueManager.visibleToasts.count == 0, "Toast should be dismissed")
     }
 
     @Test
@@ -491,7 +488,10 @@ import UDFSwiftTesting
                 #expect(queueManager.queuedToasts.count == 1)
 
                 // Wait for both toasts to auto-dismiss
-                await sleep(for: 0.5)
+                let dismissed = await waitForMainActorCondition {
+                    queueManager.visibleToasts.isEmpty && queueManager.queuedToasts.isEmpty
+                }
+                #expect(dismissed)
             }
         }
 
@@ -534,7 +534,10 @@ import UDFSwiftTesting
                 #expect(queueManager.queuedToasts.count == 0)
 
                 // Wait for both toasts to auto-dismiss
-                await sleep(for: 0.2)
+                let dismissed = await waitForMainActorCondition {
+                    queueManager.visibleToasts.isEmpty
+                }
+                #expect(dismissed)
             }
         }
 
