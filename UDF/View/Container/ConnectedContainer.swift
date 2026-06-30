@@ -276,7 +276,11 @@ extension ConnectedContainer {
         store: EnvironmentStore<State>,
         onContainerDidLoad: @escaping (EnvironmentStore<State>) -> Void
     ) {
-        let key = BaseContainerLifecycle.ActiveContainerKey(containerType: ObjectIdentifier(containerType), id: id)
+        let key = BaseContainerLifecycle.ActiveContainerKey(
+            containerType: ObjectIdentifier(containerType),
+            id: id,
+            storeId: ObjectIdentifier(store)
+        )
         BaseContainerLifecycle.activeContainersCount[key, default: 0] += 1
         
         store.dispatch(
@@ -317,7 +321,11 @@ extension ConnectedContainer {
         store: EnvironmentStore<State>,
         onBindableReducerDidUnload: @escaping (EnvironmentStore<State>) -> Void
     ) {
-        let key = BaseContainerLifecycle.ActiveContainerKey(containerType: ObjectIdentifier(containerType), id: id)
+        let key = BaseContainerLifecycle.ActiveContainerKey(
+            containerType: ObjectIdentifier(containerType),
+            id: id,
+            storeId: ObjectIdentifier(store)
+        )
         guard let count = BaseContainerLifecycle.activeContainersCount[key] else { return }
         
         if (count - 1) <= 0 {

@@ -98,3 +98,24 @@ public extension BindableContainer {
         )
     }
 }
+
+// MARK: - Environment-Aware Container
+public extension BindableContainer {
+    /// Creates a version of this container that uses a specific store instead of global
+    func with(store: EnvironmentStore<ContainerState>) -> some View {
+        ConnectedContainer<ContainerComponent, ContainerState>(
+            store: store,
+            containerType: Self.self,
+            containerId: { self.id },
+            map: map,
+            scope: scope(for:),
+            onContainerAppear: onContainerAppear,
+            onContainerDisappear: onContainerDisappear,
+            onContainerDidLoad: onContainerDidLoad,
+            onContainerDidUnload: onContainerDidUnload,
+            onBindableReducerDidLoad: onBindableReducerDidLoad,
+            onBindableReducerDidUnload: onBindableReducerDidUnload,
+            useHooks: useHooks
+        )
+    }
+}

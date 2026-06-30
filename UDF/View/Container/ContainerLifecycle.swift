@@ -30,14 +30,19 @@ class BaseContainerLifecycle {
         /// The unique domain identifier for the specific container instance (e.g. user ID, item ID).
         public let id: AnyHashable
 
+        /// The unique identifier of the store associated with the container.
+        public let storeId: ObjectIdentifier
+
         /// Initializes a new key for tracking container instances.
         ///
         /// - Parameters:
         ///   - containerType: The metatype's `ObjectIdentifier` of the container.
         ///   - id: The unique domain identifier of the container instance.
-        public init(containerType: ObjectIdentifier, id: AnyHashable) {
+        ///   - storeId: The unique identifier of the store.
+        public init(containerType: ObjectIdentifier, id: AnyHashable, storeId: ObjectIdentifier) {
             self.containerType = containerType
             self.id = id
+            self.storeId = storeId
         }
     }
 

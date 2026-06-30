@@ -373,6 +373,59 @@ struct BindableContainerLifecycleTests {
         window = nil
         window?.redraw()
     }
+
+    @MainActor
+    @Test("Containers with the same ID on different stores have isolated active container counts")
+    func multipleStoresWithSameContainerAndIDIsolatesCounts() async throws {
+        let storeA = EnvironmentStore(initial: AppState(), loggers: [])
+        let storeB = EnvironmentStore(initial: AppState(), loggers: [])
+        let itemId = Item.ID(value: 99)
+
+        let containerA = ItemsContainer(id: itemId)
+        let containerB = ItemsContainer(id: itemId)
+
+        struct TestView: View {
+            let containerA: ItemsContainer
+            let containerB: ItemsContainer
+            let storeA: EnvironmentStore<AppState>
+            let storeB: EnvironmentStore<AppState>
+
+            var body: some View {
+                VStack {
+                    containerA.with(store: storeA)
+                    containerB.with(store: storeB)
+                }
+            }
+        }
+
+        let root = TestView(
+            containerA: containerA,
+            containerB: containerB,
+            storeA: storeA,
+            storeB: storeB
+        )
+
+        var window: PlatformWindow? = await PlatformWindow.render(view: root)
+        window?.redraw()
+
+        // Wait for both stores to load the state for itemId
+        let loaded = await waitForMainActorCondition {
+            storeA.state.itemsForm[itemId] != nil &&
+            storeB.state.itemsForm[itemId] != nil
+        }
+        #expect(loaded)
+
+        // Get the active keys
+        let keys = BaseContainerLifecycle.activeContainersCount.keys
+        let matchingKeys = keys.filter { $0.id == AnyHashable(itemId) }
+
+        // There should be exactly 2 distinct keys in the active count dictionary (one for each store)
+        #expect(matchingKeys.count == 2)
+
+        window?.release()
+        window = nil
+        window?.redraw()
+    }
 }
 
 private extension BindableContainerLifecycleTests {
