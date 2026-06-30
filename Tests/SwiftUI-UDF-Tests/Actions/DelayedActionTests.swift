@@ -3,7 +3,7 @@
 import UDFSwiftTesting
 import Testing
 
-@Suite(.serialized) struct DelayedActionTests {
+@Suite(.serialized, .timeLimit(.minutes(1))) struct DelayedActionTests {
     private struct TestStoreLogger: ActionLogger {
         var actionFilters: [ActionFilter] = [VerboseActionFilter()]
         var actionDescriptor: ActionDescriptor = StringDescribingActionDescriptor()
@@ -142,6 +142,8 @@ import Testing
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
 
         let delayedTitle = "delayed animated title"
+        let sentinelTitle = "sentinel title"
+        
         store.dispatch(
             ActionGroup {
                 Actions.UpdateFormField(keyPath: \DataForm.title, value: delayedTitle)
@@ -150,10 +152,14 @@ import Testing
             .with(delay: 1)
         )
 
-        // Title should NOT be updated immediately (delay must be respected)
-        #expect(store.state.dataForm.title.isEmpty)
+        // Dispatch an immediate action after the delayed action
+        store.dispatch(Actions.UpdateFormField(keyPath: \DataForm.title, value: sentinelTitle))
 
-        // Title should be updated after the delay
+        // Wait for the immediate action to be reduced first (proves the delayed action is delayed)
+        let sentinelSuccess = await waitForCondition { store.state.dataForm.title == sentinelTitle }
+        #expect(sentinelSuccess)
+
+        // Wait for the delayed action to be reduced
         let success = await waitForCondition { store.state.dataForm.title == delayedTitle }
         #expect(success)
     }
