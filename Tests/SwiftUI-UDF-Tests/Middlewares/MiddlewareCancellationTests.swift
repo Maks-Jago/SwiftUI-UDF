@@ -65,9 +65,8 @@ import Foundation
         #expect(success)
 
         await store.dispatch(Actions.CancelLoading())
-        await store.wait()
 
-        success = await store.state.middlewareFlow == .none
+        success = await waitForCondition { await store.state.middlewareFlow == .none }
         #expect(success)
     }
 
@@ -78,14 +77,12 @@ import Foundation
         var success = await store.state.middlewareFlow == .loading
         #expect(success)
 
-        await store.wait(additionalSleepFor: 2.0)
-        success = await store.state.runForm.messagesCount > 0
+        success = await waitForCondition { await store.state.runForm.messagesCount > 0 }
         #expect(success)
 
         await store.dispatch(Actions.CancelLoading())
-        await store.wait(additionalSleepFor: 0.1)
 
-        success = await store.state.middlewareFlow == .none
+        success = await waitForCondition { await store.state.middlewareFlow == .none }
         #expect(success)
     }
 
@@ -97,9 +94,8 @@ import Foundation
         #expect(success)
 
         await store.dispatch(Actions.CancelLoading())
-        await store.wait()
-        
-        success = await store.state.middlewareFlow == .none
+
+        success = await waitForCondition { await store.state.middlewareFlow == .none }
         #expect(success)
     }
     

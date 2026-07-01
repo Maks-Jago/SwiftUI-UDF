@@ -65,9 +65,8 @@ import Foundation
         #expect(success)
 
         await store.dispatch(Actions.CancelLoading())
-        await store.wait()
 
-        success = await store.state.middlewareFlow == .didCancel
+        success = await waitForCondition { await store.state.middlewareFlow == .didCancel }
         #expect(success)
     }
 
@@ -80,9 +79,8 @@ import Foundation
         #expect(success)
 
         await store.dispatch(Actions.CancelLoading())
-        await store.wait(additionalSleepFor: 0.1)
 
-        success = await store.state.middlewareFlow == .didCancel
+        success = await waitForCondition { await store.state.middlewareFlow == .didCancel }
         #expect(success)
     }
 
@@ -95,9 +93,8 @@ import Foundation
         #expect(success)
 
         await store.dispatch(Actions.CancelLoading())
-        await store.wait()
-        
-        success = await store.state.middlewareFlow == .didCancel
+
+        success = await waitForCondition { await store.state.middlewareFlow == .didCancel }
 
         #expect(await store.state.runForm.messagesCount == 0)
         #expect(success)
