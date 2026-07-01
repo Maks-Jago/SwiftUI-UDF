@@ -34,10 +34,9 @@ public struct Toast: DialogProtocol {
     /// - Parameters:
     ///   - config: A `ToastConfiguration` used to customize the presentation.
     ///   - content: The dialog components making up the toast.
-    @MainActor
     public init(
         config: ToastConfiguration = .default,
-        @ToastComponentBuilder _ content: @MainActor () -> [DialogComponent]
+        @ToastComponentBuilder _ content: () -> [DialogComponent]
     ) {
         self.payload = DialogComponentParser.parse(content())
         self.dialogStyle = .toast(config)

@@ -10,10 +10,10 @@ private extension Actions {
     struct PresentCustomViewToast: Action {}
     struct PresentDynamicDialog: Action {}
     struct DismissDynamicDialog: Action {}
+    struct PresentDirectDynamicDialog: Action {}
 }
 
 extension DialogType {
-    @MainActor
     static func dialogWithAction(_ action: @Sendable @escaping () -> Void) -> AlertDialog {
         AlertDialog {
             DialogTitle("Custom dialog title with action")
@@ -23,7 +23,6 @@ extension DialogType {
         }
     }
 
-    @MainActor
     static func toastWithAction(_ action: @Sendable @escaping () -> Void) -> Toast {
         Toast {
             DialogMessage("Toast with action button")
@@ -31,7 +30,6 @@ extension DialogType {
         }
     }
 
-    @MainActor
     static func customToastWithIcon() -> Toast {
         Toast(config: .init(theme: .vibrant)) {
             DialogMessage("Toast with custom icon")
@@ -41,7 +39,6 @@ extension DialogType {
         }
     }
 
-    @MainActor
     static func customViewToast() -> Toast {
         Toast(config: .init(position: .center)) {
             DialogView {
@@ -92,6 +89,15 @@ extension DialogRegistryTests {
                     
                 case is Actions.PresentDynamicDialog:
                     dialog = .init(id: DialogId.dynamicDialog)
+                    
+                case is Actions.PresentDirectDynamicDialog:
+                    dialog = DialogStatus {
+                        AlertDialog {
+                            DialogTitle("Title \(stringProperty)")
+                            DialogMessage("Message \(stringProperty)")
+                            DialogButton(title: "OK \(stringProperty)")
+                        }
+                    }
                     
                 case is Actions.DismissDynamicDialog:
                     dialog = .dismissed
@@ -489,6 +495,47 @@ extension DialogRegistryTests {
             await waitForMainActorCondition { store.state.form.dialog.status == .dismissed }
             
             store.dispatch(Actions.PresentDynamicDialog())
+            await waitForMainActorCondition { store.state.form.dialog.status != .dismissed }
+            
+            if case .presented(let dialogType) = store.state.form.dialog.status {
+                #expect(dialogType.title == "Title Updated")
+                #expect(dialogType.message == "Message Updated")
+                let okButton = dialogType.actions.first as? DialogButton
+                #expect(okButton?.title == "OK Updated")
+            } else {
+                Issue.record("Expected presented dialog")
+            }
+        }
+        
+        @MainActor
+        @Test func directDialogStatusCapturesLatestState() async throws {
+            let store = EnvironmentStore(initial: AppState(), loggers: [])
+            
+            store.dispatch(Actions.PresentDirectDynamicDialog())
+            await waitForMainActorCondition { store.state.form.dialog.status != .dismissed }
+            
+            // Verify initial values
+            if case .presented(let dialogType) = store.state.form.dialog.status {
+                #expect(dialogType.title == "Title Initial")
+                #expect(dialogType.message == "Message Initial")
+                let okButton = dialogType.actions.first as? DialogButton
+                #expect(okButton?.title == "OK Initial")
+            } else {
+                Issue.record("Expected presented dialog")
+            }
+            
+            // Update the form field
+            store.dispatch(UDF.Actions.UpdateFormField(keyPath: \FormWithDialog.stringProperty, value: "Updated"))
+            await waitForMainActorCondition { store.state.form.stringProperty == "Updated" }
+            
+            #expect(store.state.form.stringProperty == "Updated")
+            
+            // Dismiss it first to allow the new PresentDirectDynamicDialog to trigger a state change
+            store.dispatch(Actions.DismissDynamicDialog())
+            await waitForMainActorCondition { store.state.form.dialog.status == .dismissed }
+            
+            // Re-dispatch PresentDirectDynamicDialog to capture the new state
+            store.dispatch(Actions.PresentDirectDynamicDialog())
             await waitForMainActorCondition { store.state.form.dialog.status != .dismissed }
             
             if case .presented(let dialogType) = store.state.form.dialog.status {

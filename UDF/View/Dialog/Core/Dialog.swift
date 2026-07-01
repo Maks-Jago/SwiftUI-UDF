@@ -34,9 +34,8 @@ public extension Dialog {
     /// Registers a type-safe ``DialogProtocol`` (``AlertDialog``, ``Toast``, or ``ConfirmationDialog``)
     /// for the given identifier.
     ///
-    /// The `@MainActor` builder closure is evaluated eagerly at registration time
-    /// and the resulting ``DialogProtocol`` value — which is `Sendable` — is captured and
-    /// stored in the registry for later retrieval.
+    /// The builder closure is evaluated when the dialog is requested,
+    /// allowing it to capture the latest state dynamically.
     ///
     /// ```swift
     /// Dialog.register(id: MyDialogs.error) {
@@ -51,10 +50,9 @@ public extension Dialog {
     /// - Parameters:
     ///   - id: A unique, hashable identifier for this dialog.
     ///   - dialog: A closure that returns a ``DialogProtocol`` conforming value.
-    @MainActor
     static func register<ID: Hashable & Sendable, D: DialogProtocol>(
         id: ID,
-        dialog: @escaping @Sendable @MainActor () -> D
+        dialog: @escaping @Sendable () -> D
     ) {
         _DialogRegistry.register(id: id, dialog: dialog)
     }
