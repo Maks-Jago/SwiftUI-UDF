@@ -84,7 +84,10 @@ final class ContainerLifecycle<State: AppReducer>: BaseContainerLifecycle {
     private var didLoad: Bool = false
 
     /// The hooks used within the container.
-    let containerHooks: ContainerHooks<State>
+    var containerHooks: ContainerHooks<State>?
+
+    /// A closure that returns an array of hooks to be used in the container.
+    private var useHooks: () -> [Hook<State>]
 
     /// A command that is executed when the container is loaded.
     var didLoadCommand: CommandWith<EnvironmentStore<State>>
@@ -92,14 +95,19 @@ final class ContainerLifecycle<State: AppReducer>: BaseContainerLifecycle {
     /// A command that is executed when the container is unloaded.
     var didUnloadCommand: CommandWith<EnvironmentStore<State>>
 
+    /// A reference to the EnvironmentStore.
+    private var store: EnvironmentStore<State> = EnvironmentStore<State>.global
+
     /// Sets the `didLoad` state and executes the load command if the container loads for the first time.
     ///
     /// - Parameters:
     ///   - didLoad: A Boolean indicating whether the container has completed its loading.
     ///   - store: The global `EnvironmentStore` holding the state.
     func set(didLoad: Bool, store: EnvironmentStore<State>) {
+        self.store = store
         if !self.didLoad, didLoad {
-            containerHooks.createHooks()
+            containerHooks = ContainerHooks(store: store, hooks: useHooks)
+            containerHooks?.createHooks()
             didLoadCommand(store)
         }
         self.didLoad = didLoad
@@ -119,12 +127,12 @@ final class ContainerLifecycle<State: AppReducer>: BaseContainerLifecycle {
     ) {
         self.didLoadCommand = didLoadCommand
         self.didUnloadCommand = didUnloadCommand
-        self.containerHooks = .init(store: EnvironmentStore<State>.global, hooks: useHooks)
+        self.useHooks = useHooks
     }
 
     /// Cleans up by removing all hooks and executing the unload command.
     deinit {
-        containerHooks.removeAllHooks()
-        self.didUnloadCommand(EnvironmentStore<State>.global)
+        containerHooks?.removeAllHooks()
+        self.didUnloadCommand(self.store)
     }
 }

@@ -10,7 +10,7 @@ import SwiftUI
 import UDFSwiftTesting
 import Testing
 
-@Suite(.serialized)
+@Suite
 struct BindableContainerLifecycleTests {
     struct Item: Identifiable {
         struct ID: Hashable {
@@ -27,22 +27,23 @@ struct BindableContainerLifecycleTests {
         fileprivate var itemsForm
     }
 
+    @MainActor
     @Test func bindableContainerLifecycle() async throws {
         let store = EnvironmentStore(initial: AppState(), loggers: [])
 
         let itemId = Item.ID(value: 1)
         let itemsContainer = ItemsContainer(id: itemId)
-        var window: PlatformWindow? = await PlatformWindow.render(view: itemsContainer)
+        var window: PlatformWindow? = await PlatformWindow.render(view: itemsContainer.with(store: store))
 
-        await window?.redraw()
+        window?.redraw()
 
-        var success = await waitForCondition { store.state.itemsForm[itemId] != nil }
+        var success = await waitForMainActorCondition { store.state.itemsForm[itemId] != nil }
         #expect(success)
 
         window = nil
-        await window?.redraw()
+        window?.redraw()
 
-        success = await waitForCondition { store.state.itemsForm[itemId] == nil }
+        success = await waitForMainActorCondition { store.state.itemsForm[itemId] == nil }
         #expect(success)
     }
 
@@ -68,7 +69,7 @@ struct BindableContainerLifecycleTests {
                         confirmUnload()
                     }
                 )
-                var window: PlatformWindow? = await PlatformWindow.render(view: container)
+                var window: PlatformWindow? = await PlatformWindow.render(view: container.with(store: store))
                 window?.redraw()
 
                 // Wait for the state to load and callback to fire
@@ -94,7 +95,7 @@ struct BindableContainerLifecycleTests {
         let itemId = Item.ID(value: 1)
         
         let manager = TestStateViewModel()
-        let root = TestStateView(manager: manager)
+        let root = TestStateView(manager: manager, store: store)
         var window: PlatformWindow? = await PlatformWindow.render(view: root)
         
         var didLoadCalled = false
@@ -168,7 +169,7 @@ struct BindableContainerLifecycleTests {
         let itemId = Item.ID(value: 1)
         
         let manager = TestStateViewModel()
-        let root = TestStateView(manager: manager)
+        let root = TestStateView(manager: manager, store: store)
         var window: PlatformWindow? = await PlatformWindow.render(view: root)
         
         var didLoadCalled = false
@@ -236,7 +237,7 @@ struct BindableContainerLifecycleTests {
         let itemId2 = Item.ID(value: 2)
         
         let manager = TestStateViewModel()
-        let root = TestStateView(manager: manager)
+        let root = TestStateView(manager: manager, store: store)
         var window: PlatformWindow? = await PlatformWindow.render(view: root)
         
         var didLoad1Called = false
@@ -319,7 +320,7 @@ struct BindableContainerLifecycleTests {
         let itemId = Item.ID(value: 1)
         
         let manager = TestStateViewModel()
-        let root = TestStateView(manager: manager)
+        let root = TestStateView(manager: manager, store: store)
         var window: PlatformWindow? = await PlatformWindow.render(view: root)
         
         var didLoadCalled = false
@@ -442,12 +443,13 @@ private extension BindableContainerLifecycleTests {
 
     struct TestStateView: View {
         @ObservedObject var manager: TestStateViewModel
+        let store: EnvironmentStore<AppState>
 
         var body: some View {
             VStack {
                 ForEach(manager.containers) { item in
                     if item.isVisible {
-                        item.container
+                        item.container.with(store: store)
                     }
                 }
             }
