@@ -7,6 +7,8 @@
 
 @testable import UDF
 import Testing
+import SwiftUI
+import Foundation
 
 @Suite struct ActionGroupBuilderTests {
     @Test func whenVoid_ActionGroupShouldBeEmpty() {
@@ -134,4 +136,90 @@ import Testing
 
         #expect(group.actions.count == 1)
     }
+
+    @Test func actionGroupDeduplication() {
+        struct TestAction: Action {}
+        
+        // Identical actions must be deduplicated
+        let group1 = ActionGroup {
+            TestAction()
+            TestAction()
+        }
+        #expect(InternalAction(group1).unwrapActions().count == 1)
+        
+        // Bindable actions for different containers must NOT be deduplicated
+        let group2 = ActionGroup {
+            Actions._BindableAction(value: TestAction(), containerType: TestContainer.self, id: 1)
+            Actions._BindableAction(value: TestAction(), containerType: TestContainer.self, id: 2)
+        }
+        #expect(InternalAction(group2).unwrapActions().count == 3)
+        
+        // Navigation actions to different screens must NOT be deduplicated
+        let group3 = ActionGroup {
+            Actions.Navigate(to: "home")
+            Actions.Navigate(to: "settings")
+        }
+        #expect(InternalAction(group3).unwrapActions().count == 2)
+    }
+
+    @Test func nestedActionGroupFlatteningAndDeduplication() {
+        struct TestAction: Action {}
+        
+        let nestedGroup = ActionGroup {
+            ActionGroup {
+                TestAction()
+            }
+            TestAction()
+        }
+        
+        #expect(InternalAction(nestedGroup).unwrapActions().count == 1)
+    }
+
+    @Test func bindableActionsWithDifferentPayloads() {
+        struct ActionWithPayload: Action {
+            let value: String
+        }
+        struct OtherAction: Action {}
+        
+        let group = ActionGroup {
+            Actions._BindableAction(value: ActionWithPayload(value: "A"), containerType: TestContainer.self, id: 1)
+            Actions._BindableAction(value: ActionWithPayload(value: "B"), containerType: TestContainer.self, id: 1)
+            Actions._BindableAction(value: OtherAction(), containerType: TestContainer.self, id: 1)
+        }
+        
+        #expect(InternalAction(group).unwrapActions().count == 6)
+    }
 }
+
+// MARK: - Test Types
+private struct TestState: AppReducer, Equatable {
+    struct TestStateForm: UDF.Form, Equatable {
+        mutating func reduce(_ action: some Action) {}
+    }
+    
+    var form = TestStateForm()
+    mutating func reduce(_ action: some Action) {}
+}
+
+private struct TestContainer: BindableContainer {
+    typealias ContainerComponent = TestComponent
+    typealias ContainerState = TestState
+    
+    var id: Int
+    
+    func scope(for state: TestState) -> Scope {
+        state.form
+    }
+    
+    func map(store: EnvironmentStore<TestState>) -> TestComponent.Props {
+        .init()
+    }
+}
+
+private struct TestComponent: Component {
+    struct Props {}
+    var props: Props
+    var body: some View { EmptyView() }
+}
+
+

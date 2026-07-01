@@ -116,6 +116,20 @@ import Testing
         let itemsForm2 = try await #require(store.state.itemsForm[Item.ID(value: 2)])
         #expect(itemsForm2.paginator.items.isEmpty)
     }
+
+    @Test func bindableActionEquality() {
+        struct TestAction: Action {}
+        struct OtherAction: Action {}
+        
+        let action1 = Actions._BindableAction(value: TestAction(), containerType: ItemsContainer.self, id: Item.ID(value: 1))
+        let action2 = Actions._BindableAction(value: TestAction(), containerType: ItemsContainer.self, id: Item.ID(value: 2))
+        let action3 = Actions._BindableAction(value: TestAction(), containerType: ItemsContainer.self, id: Item.ID(value: 1))
+        let action4 = Actions._BindableAction(value: OtherAction(), containerType: ItemsContainer.self, id: Item.ID(value: 1))
+        
+        #expect(action1 != action2)
+        #expect(action1 == action3)
+        #expect(action1 != action4)
+    }
 }
 
 // MARK: Container
