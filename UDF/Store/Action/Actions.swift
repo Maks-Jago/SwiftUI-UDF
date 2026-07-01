@@ -687,10 +687,10 @@ public extension Actions {
         /// A textual representation of the nested items.
         public var description: String {
             guard shortDescription else {
-                return "DidLoadNestedItems<\(Nested.self)> Parent \(String(reflecting: ParentId.self))(itemsCount: \(items.count), items:\n\t\t\t\t\t\(items.map { String(describing: $0) }.joined(separator: "\n\t\t\t\t\t")))\n"
+                return "DidLoadNestedItems<\(Nested.self)> Parent: \(parentId) (itemsCount: \(items.count), items:\n\t\t\t\t\t\(items.map { String(describing: $0) }.joined(separator: "\n\t\t\t\t\t")))\n"
             }
 
-            return "DidLoadNestedItems<\(Nested.self)> Parent \(String(reflecting: ParentId.self))(count: \(items.count), prefix(1): \(String(describing: items.prefix(1)))"
+            return "DidLoadNestedItems<\(Nested.self)> Parent: \(parentId) (count: \(items.count), prefix(1): \(String(describing: items.prefix(1)))"
         }
     }
 
@@ -729,11 +729,12 @@ public extension Actions {
 
         /// A textual representation of the nested items.
         public var description: String {
+            let parentKeys = dictionary.keys.map { String(describing: $0) }.joined(separator: ", ")
             guard shortDescription else {
-                return "DidLoadNestedByParents<\(Nested.self)> Parent \(String(reflecting: ParentId.self))(parentCount: \(dictionary.keys.count), items:\n\t\t\t\t\t\(dictionary.map { String(describing: $0) }.joined(separator: "\n\t\t\t\t\t")))\n"
+                return "DidLoadNestedByParents<\(Nested.self)> Parents [\(parentKeys)] (parentCount: \(dictionary.keys.count), items:\n\t\t\t\t\t\(dictionary.map { String(describing: $0) }.joined(separator: "\n\t\t\t\t\t")))\n"
             }
 
-            return "DidLoadNestedByParents<\(Nested.self)> Parent \(String(reflecting: ParentId.self))(parentCount: \(dictionary.keys.count), prefix(1): \(String(describing: dictionary.prefix(1)))"
+            return "DidLoadNestedByParents<\(Nested.self)> Parents [\(parentKeys)] (parentCount: \(dictionary.keys.count), prefix(1): \(String(describing: dictionary.prefix(1)))"
         }
     }
 
