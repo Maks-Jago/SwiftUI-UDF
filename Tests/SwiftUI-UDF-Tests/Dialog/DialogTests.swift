@@ -8,6 +8,8 @@ private extension Actions {
     struct PresentToastDialog: Action {}
     struct PresentCustomToastWithIcon: Action {}
     struct PresentCustomViewToast: Action {}
+    struct PresentDynamicDialog: Action {}
+    struct DismissDynamicDialog: Action {}
 }
 
 extension DialogType {
@@ -68,8 +70,10 @@ extension DialogRegistryTests {
                 case toastDialog
                 case customToastWithIcon
                 case customViewToast
+                case dynamicDialog
             }
             
+            var stringProperty: String = "Initial"
             var dialog: DialogStatus = .dismissed
             
             nonisolated mutating func reduce(_ action: some Action) {
@@ -85,6 +89,12 @@ extension DialogRegistryTests {
                     
                 case is Actions.PresentCustomViewToast:
                     dialog = .init(id: DialogId.customViewToast)
+                    
+                case is Actions.PresentDynamicDialog:
+                    dialog = .init(id: DialogId.dynamicDialog)
+                    
+                case is Actions.DismissDynamicDialog:
+                    dialog = .dismissed
                     
                 default:
                     break
@@ -437,6 +447,57 @@ extension DialogRegistryTests {
                 #expect(dialogType.category == .success)
             } else {
                 Issue.record("Expected presented dialog from registry")
+            }
+        }
+        
+        @MainActor
+        @Test func dynamicDialogCapturesLatestState() async throws {
+            let store = EnvironmentStore(initial: AppState(), loggers: [])
+            
+            Dialog.register(id: FormWithDialog.DialogId.dynamicDialog) {
+                AlertDialog {
+                    DialogTitle("Title \(store.state.form.stringProperty)")
+                    DialogMessage("Message \(store.state.form.stringProperty)")
+                    DialogButton(title: "OK \(store.state.form.stringProperty)")
+                }
+            }
+            
+            store.dispatch(Actions.PresentDynamicDialog())
+            await waitForMainActorCondition { store.state.form.dialog.status != .dismissed }
+            
+            // Verify initial values
+            if case .presented(let dialogType) = store.state.form.dialog.status {
+                #expect(dialogType.title == "Title Initial")
+                #expect(dialogType.message == "Message Initial")
+                let okButton = dialogType.actions.first as? DialogButton
+                #expect(okButton?.title == "OK Initial")
+            } else {
+                Issue.record("Expected presented dialog")
+            }
+            
+            // Update the form field
+            store.dispatch(UDF.Actions.UpdateFormField(keyPath: \FormWithDialog.stringProperty, value: "Updated"))
+            await waitForMainActorCondition { store.state.form.stringProperty == "Updated" }
+            
+            #expect(store.state.form.stringProperty == "Updated")
+            
+            // Re-present the dialog
+            // First we need to dismiss it or we could just dispatch again and wait for the state to be processed
+            // Wait, we can't easily wait for it to be processed if the state is ALREADY presented and doesn't change!
+            // Let's dismiss it first.
+            store.dispatch(Actions.DismissDynamicDialog())
+            await waitForMainActorCondition { store.state.form.dialog.status == .dismissed }
+            
+            store.dispatch(Actions.PresentDynamicDialog())
+            await waitForMainActorCondition { store.state.form.dialog.status != .dismissed }
+            
+            if case .presented(let dialogType) = store.state.form.dialog.status {
+                #expect(dialogType.title == "Title Updated")
+                #expect(dialogType.message == "Message Updated")
+                let okButton = dialogType.actions.first as? DialogButton
+                #expect(okButton?.title == "OK Updated")
+            } else {
+                Issue.record("Expected presented dialog")
             }
         }
     }
