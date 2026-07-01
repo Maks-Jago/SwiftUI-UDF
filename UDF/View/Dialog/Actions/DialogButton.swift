@@ -61,7 +61,7 @@ public struct DialogButton: DialogAction, AlertDialogComponent, ToastComponent, 
     public var disabled: Bool = false
     
     /// The action to execute when the button is tapped.
-    public var action: @MainActor () -> Void
+    public var action: @MainActor @Sendable () -> Void
     
     // MARK: - Equatable Implementation
     /// Checks if two `DialogButton` instances are equal by comparing their title, role, and disabled state.
@@ -89,10 +89,10 @@ public struct DialogButton: DialogAction, AlertDialogComponent, ToastComponent, 
     ///   - title: The title of the button.
     ///   - role: The button role. Defaults to nil.
     ///   - action: A closure to execute when the button is tapped. Defaults to an empty closure.
-    public init(
+    nonisolated public init(
         title: String,
         role: ButtonRole? = nil,
-        action: @MainActor @escaping () -> Void = {}
+        action: @MainActor @Sendable @escaping () -> Void = {}
     ) {
         self.title = title
         self.role = role
@@ -180,7 +180,7 @@ public extension DialogAction where Self == DialogButton {
     ///     print("OK tapped")
     /// }
     /// ```
-    static func `default`(_ title: String, action: @MainActor @escaping () -> Void = {}) -> Self {
+    nonisolated static func `default`(_ title: String, action: @MainActor @Sendable @escaping () -> Void = {}) -> Self {
         DialogButton(title: title, action: action)
     }
     
@@ -197,7 +197,7 @@ public extension DialogAction where Self == DialogButton {
     ///     print("Cancelled")
     /// }
     /// ```
-    static func cancel(_ title: String, action: @MainActor @escaping () -> Void = {}) -> Self {
+    nonisolated static func cancel(_ title: String, action: @MainActor @Sendable @escaping () -> Void = {}) -> Self {
         DialogButton(title: title, action: action)
             .role(.cancel)
     }
@@ -215,7 +215,7 @@ public extension DialogAction where Self == DialogButton {
     ///     performDelete()
     /// }
     /// ```
-    static func destructive(_ title: String, action: @MainActor @escaping () -> Void = {}) -> Self {
+    nonisolated static func destructive(_ title: String, action: @MainActor @Sendable @escaping () -> Void = {}) -> Self {
         DialogButton(title: title, action: action)
             .role(.destructive)
     }

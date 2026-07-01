@@ -198,7 +198,7 @@ public struct DialogStatus: Equatable, Identifiable, Sendable {
         title: String,
         message: String,
         style: DialogStyle = .alert,
-        @DialogActionsBuilder _ actions: @Sendable () -> [any DialogAction]
+        @DialogActionsBuilder _ actions: () -> [any DialogAction]
     ) {
         let content = DialogContent(
             title: title,
