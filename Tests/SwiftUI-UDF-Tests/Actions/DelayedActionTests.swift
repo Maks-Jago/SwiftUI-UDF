@@ -2,6 +2,7 @@
 import UDFSwiftTesting
 import Testing
 import Foundation
+import os
 
 @Suite(.serialized, .timeLimit(.minutes(1))) struct DelayedActionTests {
     private struct TestStoreLogger: ActionLogger {
@@ -20,19 +21,14 @@ import Foundation
         var actionFilters: [ActionFilter] = [VerboseActionFilter()]
         var actionDescriptor: ActionDescriptor = StringDescribingActionDescriptor()
 
-        private let lock = NSLock()
-        private var _actions: [LoggingAction] = []
+        private let lock = OSAllocatedUnfairLock(initialState: [LoggingAction]())
 
         var actions: [LoggingAction] {
-            lock.lock()
-            defer { lock.unlock() }
-            return _actions
+            lock.withLock { $0 }
         }
 
         func log(_ action: LoggingAction, description: String) {
-            lock.lock()
-            _actions.append(action)
-            lock.unlock()
+            lock.withLock { $0.append(action) }
             print("Reduce\t\t", description)
         }
     }
