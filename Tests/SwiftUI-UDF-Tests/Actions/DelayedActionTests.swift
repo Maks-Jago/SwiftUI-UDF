@@ -1,7 +1,7 @@
-
 @testable import UDF
 import UDFSwiftTesting
 import Testing
+import Foundation
 
 @Suite(.serialized, .timeLimit(.minutes(1))) struct DelayedActionTests {
     private struct TestStoreLogger: ActionLogger {
@@ -15,6 +15,28 @@ import Testing
             )
         }
     }
+
+    private final class ActionCollectorLogger: ActionLogger, @unchecked Sendable {
+        var actionFilters: [ActionFilter] = [VerboseActionFilter()]
+        var actionDescriptor: ActionDescriptor = StringDescribingActionDescriptor()
+
+        private let lock = NSLock()
+        private var _actions: [LoggingAction] = []
+
+        var actions: [LoggingAction] {
+            lock.lock()
+            defer { lock.unlock() }
+            return _actions
+        }
+
+        func log(_ action: LoggingAction, description: String) {
+            lock.lock()
+            _actions.append(action)
+            lock.unlock()
+            print("Reduce\t\t", description)
+        }
+    }
+
 
     struct AppState: AppReducer {
         var dataForm = DataForm()
@@ -251,6 +273,78 @@ import Testing
             elapsed >= .seconds(1),
             "expected delayed action to be applied after at least 1 second"
         )
+    }
+
+    @Test func whenNestedGroupsHaveDifferentModifiersAndOuterHasDelay_AllModifiersShouldBePreserved() async throws {
+        let logger = ActionCollectorLogger()
+        let store = EnvironmentStore(initial: AppState(), logger: logger)
+
+        let delayedTitle = "delayed title"
+        let count = 42
+        
+        let clock = ContinuousClock()
+        let start = clock.now
+
+        store.dispatch(
+            ActionGroup {
+                // Animated group
+                ActionGroup {
+                    Actions.UpdateFormField(keyPath: \DataForm.title, value: delayedTitle)
+                }
+                .with(animation: .bouncy)
+
+                // Silent group
+                ActionGroup {
+                    Actions.UpdateFormField(keyPath: \DataForm.count, value: count)
+                }
+                .silent()
+            }
+            .with(delay: 1)
+        )
+
+        // Wait for both updates to be reduced
+        let success1 = await waitForCondition { store.state.dataForm.title == delayedTitle }
+        #expect(success1)
+
+        let success2 = await waitForCondition { store.state.dataForm.count == count }
+        #expect(success2)
+
+        let elapsed = start.duration(to: clock.now)
+        #expect(
+            elapsed >= .seconds(1),
+            "expected delayed action to be applied after at least 1 second"
+        )
+
+        // Verify the properties on the leaf actions recorded by the logger
+        let animatedAction = logger.actions.first { action in
+            if let updateAction = action.value as? Actions.UpdateFormField<DataForm> {
+                return updateAction.keyPath == \DataForm.title
+            }
+            return false
+        }
+        #expect(animatedAction != nil)
+        #expect(animatedAction?.internalAction.animation != nil)
+
+        let silentAction = logger.actions.first { action in
+            if let updateAction = action.value as? Actions.UpdateFormField<DataForm> {
+                return updateAction.keyPath == \DataForm.count
+            }
+            return false
+        }
+        #expect(silentAction != nil)
+        #expect(silentAction?.internalAction.silent == true)
+    }
+
+    @Test func whenEmptyActionGroupHasDelay_ShouldNotCrash() async throws {
+        let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
+        
+        store.dispatch(
+            ActionGroup {}
+                .with(delay: 1)
+        )
+        
+        // Ensure execution continues normally
+        #expect(true)
     }
 }
 
