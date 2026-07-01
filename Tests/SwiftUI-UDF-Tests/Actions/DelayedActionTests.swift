@@ -144,6 +144,9 @@ import Testing
         let delayedTitle = "delayed animated title"
         let sentinelTitle = "sentinel title"
         
+        let clock = ContinuousClock()
+        let start = clock.now
+
         store.dispatch(
             ActionGroup {
                 Actions.UpdateFormField(keyPath: \DataForm.title, value: delayedTitle)
@@ -162,5 +165,92 @@ import Testing
         // Wait for the delayed action to be reduced
         let success = await waitForCondition { store.state.dataForm.title == delayedTitle }
         #expect(success)
+
+        let elapsed = start.duration(to: clock.now)
+        #expect(
+            elapsed >= .seconds(1),
+            "expected delayed action to be applied after at least 1 second"
+        )
+    }
+
+    private func getDismissAction(title: String, count: Int) -> any Action {
+        ActionGroup {
+            Actions.UpdateFormField(keyPath: \DataForm.title, value: title)
+            Actions.UpdateFormField(keyPath: \DataForm.count, value: count)
+        }
+    }
+
+    @Test func whenFunctionReturnsAnyActionWithNestedGroupsAndDelay_DataShouldBeUpdatedAfterDelay() async throws {
+        let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
+
+        let delayedTitle = "delayed group-in-group title"
+        let count = 42
+        
+        let action = getDismissAction(title: delayedTitle, count: count)
+        
+        let clock = ContinuousClock()
+        let start = clock.now
+
+        store.dispatch(
+            ActionGroup {
+                action
+            }
+            .with(delay: 1)
+        )
+
+        #expect(store.state.dataForm.title.isEmpty)
+        #expect(store.state.dataForm.count == 0)
+
+        let successTitle = await waitForCondition { store.state.dataForm.title == delayedTitle }
+        #expect(successTitle)
+
+        let successCount = await waitForCondition { store.state.dataForm.count == count }
+        #expect(successCount)
+
+        let elapsed = start.duration(to: clock.now)
+        #expect(
+            elapsed >= .seconds(1),
+            "expected delayed action to be applied after at least 1 second"
+        )
+    }
+
+    @Test func whenDeeplyNestedActionGroupsHaveDelay_DataShouldBeUpdatedAfterDelay() async throws {
+        let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
+
+        let delayedTitle = "deeply delayed title"
+        let count = 100
+        
+        // Level 4 nested groups
+        let action = ActionGroup {
+            ActionGroup {
+                ActionGroup {
+                    ActionGroup {
+                        Actions.UpdateFormField(keyPath: \DataForm.title, value: delayedTitle)
+                        Actions.UpdateFormField(keyPath: \DataForm.count, value: count)
+                    }
+                }
+            }
+        }
+        
+        let clock = ContinuousClock()
+        let start = clock.now
+
+        store.dispatch(action.with(delay: 1))
+
+        #expect(store.state.dataForm.title.isEmpty)
+        #expect(store.state.dataForm.count == 0)
+
+        let successTitle = await waitForCondition { store.state.dataForm.title == delayedTitle }
+        #expect(successTitle)
+
+        let successCount = await waitForCondition { store.state.dataForm.count == count }
+        #expect(successCount)
+
+        let elapsed = start.duration(to: clock.now)
+        #expect(
+            elapsed >= .seconds(1),
+            "expected delayed action to be applied after at least 1 second"
+        )
     }
 }
+
