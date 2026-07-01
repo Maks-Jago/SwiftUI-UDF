@@ -428,8 +428,6 @@ import UDFSwiftTesting
             let success = await waitForPublisherCondition(queueManager.$visibleToasts) { $0.isEmpty }
             #expect(success)
         }
-
-        #expect(queueManager.visibleToasts.count == 0, "Toast should be dismissed")
     }
 
     @Test

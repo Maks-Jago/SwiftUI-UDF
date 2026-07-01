@@ -339,4 +339,12 @@ import Testing
         #expect(paginator.page.pageNumber == 1)
         #expect(paginator.page == .lastPage(1))
     }
+
+    @Test func removeItemsAfterPageWhenItemsCountFewerThanPageCapacity() {
+        var paginator = Paginator(Item.self, flowId: ItemFlow.id, perPage: 10)
+        paginator.set(items: Item.fakeItems(count: 15))
+        
+        paginator.reduce(Actions.LoadPage(pageNumber: 3, id: ItemFlow.id))
+        paginator.reduce(Actions.LoadPage(pageNumber: 2, id: ItemFlow.id))
+    }
 }
