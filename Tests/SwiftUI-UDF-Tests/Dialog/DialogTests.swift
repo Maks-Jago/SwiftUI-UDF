@@ -596,5 +596,68 @@ extension DialogRegistryTests {
                 Issue.record("Expected presented dialog")
             }
         }
+        @MainActor
+        @Test func dynamicDialogTextFieldCapturesLatestState() async throws {
+            let store = EnvironmentStore(initial: AppState(), loggers: [])
+            store.dispatch(UDF.Actions.UpdateFormField(keyPath: \FormWithDialog.stringProperty, value: "Initial Text"))
+            await waitForMainActorCondition { store.state.form.stringProperty == "Initial Text" }
+            
+            Dialog.register(id: FormWithDialog.DialogId.dynamicDialog) {
+                AlertDialog {
+                    DialogTitle("Edit Item")
+                    DialogTextField(
+                        title: "Name",
+                        text: Binding(
+                            get: { store.state.form.stringProperty },
+                            set: { _ in }
+                        )
+                    )
+                    DialogButton(title: "Cancel", role: .cancel)
+                }
+            }
+            
+            store.dispatch(Actions.PresentDynamicDialog())
+            await waitForMainActorCondition { store.state.form.dialog.status != .dismissed }
+            
+            // Verify initial values
+            if case .presented(let dialogType) = store.state.form.dialog.status {
+                let textField = dialogType.actions[0] as? DialogTextField
+                // Wait, DialogTextField doesn't expose the text value directly, but we can check if it updates by
+                // somehow verifying if the new text field has the new value.
+                // However, we can use Mirror to inspect the initialValue.
+                let mirror = Mirror(reflecting: textField!)
+                let initialValue = mirror.children.first { $0.label == "initialValue" }?.value as? String
+                #expect(initialValue == "Initial Text")
+            } else {
+                Issue.record("Expected presented dialog")
+            }
+            
+            // Update the form field dynamically
+            store.dispatch(UDF.Actions.UpdateFormField(keyPath: \FormWithDialog.stringProperty, value: "Updated Text"))
+            await waitForMainActorCondition { store.state.form.stringProperty == "Updated Text" }
+            
+            // Re-dispatch without dismissing
+            store.dispatch(Actions.PresentDynamicDialog())
+            
+            // Wait for the state to process
+            await waitForMainActorCondition { 
+                if case .presented(let dialogType) = store.state.form.dialog.status {
+                    let textField = dialogType.actions[0] as? DialogTextField
+                    let mirror = Mirror(reflecting: textField!)
+                    let initialValue = mirror.children.first { $0.label == "initialValue" }?.value as? String
+                    return initialValue == "Updated Text"
+                }
+                return false
+            }
+            
+            if case .presented(let dialogType) = store.state.form.dialog.status {
+                let textField = dialogType.actions[0] as? DialogTextField
+                let mirror = Mirror(reflecting: textField!)
+                let initialValue = mirror.children.first { $0.label == "initialValue" }?.value as? String
+                #expect(initialValue == "Updated Text")
+            } else {
+                Issue.record("Expected presented dialog")
+            }
+        }
     }
 }
