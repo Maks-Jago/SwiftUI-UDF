@@ -47,9 +47,14 @@ enum _DialogRegistry {
     
     // MARK: - Private Storage
     
+    /// Internal wrapper to safely store non-Sendable closures.
+    private struct RegistryItem: @unchecked Sendable {
+        let closure: () -> any DialogTypeProtocol
+    }
+    
     /// Internal registry storage for dialog builders.
     /// Protected by registrationQueue for thread safety.
-    nonisolated(unsafe) private static var registry: [AnyHashable: () -> any DialogTypeProtocol] = [:]
+    nonisolated(unsafe) private static var registry: [AnyHashable: RegistryItem] = [:]
 
     /// Concurrent queue for thread-safe registry access.
     /// Uses barrier writes to ensure data consistency.
@@ -85,10 +90,10 @@ enum _DialogRegistry {
     @available(*, deprecated, message: "Use the new ResultBuilder-based register(id:dialog:) with AlertDialog, Toast, or ConfirmationDialog instead.")
     public static func register<ID: Hashable & Sendable>(
         id: ID,
-        builder: @escaping @Sendable () -> any DialogTypeProtocol
+        builder: @escaping () -> any DialogTypeProtocol
     ) {
         queue.async(flags: .barrier) {
-            registry[AnyHashable(id)] = builder
+            registry[AnyHashable(id)] = RegistryItem(closure: builder)
         }
     }
     
@@ -102,10 +107,10 @@ enum _DialogRegistry {
     ///   - builder: A closure that returns a standard ``DialogType`` when called.
     public static func register<ID: Hashable & Sendable>(
         id: ID,
-        builder: @escaping @Sendable () -> DialogType
+        builder: @escaping () -> DialogType
     ) {
         queue.async(flags: .barrier) {
-            registry[AnyHashable(id)] = builder
+            registry[AnyHashable(id)] = RegistryItem(closure: builder)
         }
     }
     
@@ -130,10 +135,10 @@ enum _DialogRegistry {
     ///   - dialog: A closure that returns a ``Dialog`` conforming value.
     public static func register<ID: Hashable & Sendable, D: DialogProtocol>(
         id: ID,
-        dialog: @escaping @Sendable () -> D
+        dialog: @escaping () -> D
     ) {
         queue.async(flags: .barrier) {
-            registry[AnyHashable(id)] = { dialog() as any DialogTypeProtocol }
+            registry[AnyHashable(id)] = RegistryItem(closure: { dialog() as any DialogTypeProtocol })
         }
     }
     
@@ -150,7 +155,7 @@ enum _DialogRegistry {
     /// This function is thread-safe and can be called from any queue.
     internal static func get<ID: Hashable>(id: ID) -> (any DialogTypeProtocol)? {
         queue.sync {
-            registry[AnyHashable(id)]?()
+            registry[AnyHashable(id)]?.closure()
         }
     }
     
@@ -312,7 +317,7 @@ extension _DialogRegistry {
     @available(*, deprecated, message: "Use the new ResultBuilder-based register(id:dialog:) with Toast instead.")
     static func registerToast<ID: Hashable & Sendable>(
         id: ID,
-        content: @escaping @Sendable () -> DialogContent<EmptyView, EmptyView>,
+        content: @escaping () -> DialogContent<EmptyView, EmptyView>,
         configuration: @escaping @Sendable () -> ToastConfiguration = { .default },
         onAutoDismiss: (@Sendable () -> Void)? = nil
     ) {

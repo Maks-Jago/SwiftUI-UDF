@@ -26,7 +26,7 @@ public extension Dialog {
     ///   - builder: A closure that returns a dialog type when called.
     static func register<ID: Hashable & Sendable>(
         id: ID,
-        builder: @escaping @Sendable () -> DialogType
+        builder: @escaping () -> DialogType
     ) {
         _DialogRegistry.register(id: id, builder: builder)
     }
@@ -52,7 +52,7 @@ public extension Dialog {
     ///   - dialog: A closure that returns a ``DialogProtocol`` conforming value.
     static func register<ID: Hashable & Sendable, D: DialogProtocol>(
         id: ID,
-        dialog: @escaping @Sendable () -> D
+        dialog: @escaping () -> D
     ) {
         _DialogRegistry.register(id: id, dialog: dialog)
     }
@@ -133,7 +133,7 @@ public extension Dialog {
     @available(*, deprecated, message: "Use the new ResultBuilder-based register(id:dialog:) with Toast instead.")
     static func registerToast<ID: Hashable & Sendable>(
         id: ID,
-        content: @escaping @Sendable () -> DialogContent<EmptyView, EmptyView>,
+        content: @escaping () -> DialogContent<EmptyView, EmptyView>,
         configuration: @escaping @Sendable () -> ToastConfiguration = { .default },
         onAutoDismiss: (@Sendable () -> Void)? = nil
     ) {
