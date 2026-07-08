@@ -547,5 +547,54 @@ extension DialogRegistryTests {
                 Issue.record("Expected presented dialog")
             }
         }
+        
+        @MainActor
+        @Test func dynamicDialogButtonCapturesLatestState() async throws {
+            let store = EnvironmentStore(initial: AppState(), loggers: [])
+            store.dispatch(UDF.Actions.UpdateFormField(keyPath: \FormWithDialog.stringProperty, value: "5"))
+            await waitForMainActorCondition { store.state.form.stringProperty == "5" }
+            
+            Dialog.register(id: FormWithDialog.DialogId.dynamicDialog) {
+                AlertDialog {
+                    DialogTitle("do you want to delete these items?")
+                    DialogButton(title: "Cancel", role: .cancel)
+                    DialogButton(title: "Delete \(store.state.form.stringProperty) items", role: .destructive)
+                }
+            }
+            
+            store.dispatch(Actions.PresentDynamicDialog())
+            await waitForMainActorCondition { store.state.form.dialog.status != .dismissed }
+            
+            // Verify initial values
+            if case .presented(let dialogType) = store.state.form.dialog.status {
+                let deleteButton = dialogType.actions[1] as? DialogButton
+                #expect(deleteButton?.title == "Delete 5 items")
+            } else {
+                Issue.record("Expected presented dialog")
+            }
+            
+            // Update the form field
+            store.dispatch(UDF.Actions.UpdateFormField(keyPath: \FormWithDialog.stringProperty, value: "3"))
+            await waitForMainActorCondition { store.state.form.stringProperty == "3" }
+            
+            // Re-dispatch without dismissing
+            store.dispatch(Actions.PresentDynamicDialog())
+            
+            // Wait for the state to process
+            await waitForMainActorCondition { 
+                if case .presented(let dialogType) = store.state.form.dialog.status {
+                    let deleteButton = dialogType.actions[1] as? DialogButton
+                    return deleteButton?.title == "Delete 3 items"
+                }
+                return false
+            }
+            
+            if case .presented(let dialogType) = store.state.form.dialog.status {
+                let deleteButton = dialogType.actions[1] as? DialogButton
+                #expect(deleteButton?.title == "Delete 3 items")
+            } else {
+                Issue.record("Expected presented dialog")
+            }
+        }
     }
 }
