@@ -92,8 +92,9 @@ enum _DialogRegistry {
         id: ID,
         builder: @escaping () -> any DialogTypeProtocol
     ) {
+        let item = RegistryItem(closure: builder)
         queue.async(flags: .barrier) {
-            registry[AnyHashable(id)] = RegistryItem(closure: builder)
+            registry[AnyHashable(id)] = item
         }
     }
     
@@ -109,8 +110,9 @@ enum _DialogRegistry {
         id: ID,
         builder: @escaping () -> DialogType
     ) {
+        let item = RegistryItem(closure: builder)
         queue.async(flags: .barrier) {
-            registry[AnyHashable(id)] = RegistryItem(closure: builder)
+            registry[AnyHashable(id)] = item
         }
     }
     
@@ -137,8 +139,9 @@ enum _DialogRegistry {
         id: ID,
         dialog: @escaping () -> D
     ) {
+        let item = RegistryItem(closure: { dialog() })
         queue.async(flags: .barrier) {
-            registry[AnyHashable(id)] = RegistryItem(closure: { dialog() as any DialogTypeProtocol })
+            registry[AnyHashable(id)] = item
         }
     }
     
@@ -154,8 +157,16 @@ enum _DialogRegistry {
     /// ## Thread Safety:
     /// This function is thread-safe and can be called from any queue.
     internal static func get<ID: Hashable>(id: ID) -> (any DialogTypeProtocol)? {
-        queue.sync {
-            registry[AnyHashable(id)]?.closure()
+        let item = queue.sync {
+            registry[AnyHashable(id)]
+        }
+        
+        guard let item else { return nil }
+        
+        if Thread.isMainThread {
+            return item.closure()
+        } else {
+            return DispatchQueue.main.sync { item.closure() }
         }
     }
     
