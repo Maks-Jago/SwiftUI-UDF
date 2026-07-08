@@ -56,7 +56,7 @@ public struct DialogTextField: DialogAction, AlertDialogComponent {
     public var submitLabel: SubmitLabel = .done
     
     /// The initial value of the text field (stored for internal use).
-    private let initialValue: String
+    let initialValue: String
     
     // MARK: - Equatable Implementation
     /// Checks if two `DialogTextField` instances are equal by comparing their titles and initial values.

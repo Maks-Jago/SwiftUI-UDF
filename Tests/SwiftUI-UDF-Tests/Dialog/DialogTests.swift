@@ -652,9 +652,98 @@ extension DialogRegistryTests {
             
             if case .presented(let dialogType) = store.state.form.dialog.status {
                 let textField = dialogType.actions[0] as? DialogTextField
-                let mirror = Mirror(reflecting: textField!)
-                let initialValue = mirror.children.first { $0.label == "initialValue" }?.value as? String
+                let initialValue = textField?.initialValue
                 #expect(initialValue == "Updated Text")
+            } else {
+                Issue.record("Expected presented dialog")
+            }
+        }
+        @MainActor
+        @Test func dynamicDialogTitleCapturesLatestState() async throws {
+            let store = EnvironmentStore(initial: AppState(), loggers: [])
+            store.dispatch(UDF.Actions.UpdateFormField(keyPath: \FormWithDialog.stringProperty, value: "Old Title"))
+            await waitForMainActorCondition { store.state.form.stringProperty == "Old Title" }
+            
+            Dialog.register(id: FormWithDialog.DialogId.dynamicDialog) {
+                AlertDialog {
+                    DialogTitle(store.state.form.stringProperty)
+                    DialogButton(title: "OK")
+                }
+            }
+            
+            store.dispatch(Actions.PresentDynamicDialog())
+            await waitForMainActorCondition { store.state.form.dialog.status != .dismissed }
+            
+            // Verify initial values
+            if case .presented(let dialogType) = store.state.form.dialog.status {
+                #expect(dialogType.title == "Old Title")
+            } else {
+                Issue.record("Expected presented dialog")
+            }
+            
+            // Update the form field dynamically
+            store.dispatch(UDF.Actions.UpdateFormField(keyPath: \FormWithDialog.stringProperty, value: "New Title"))
+            await waitForMainActorCondition { store.state.form.stringProperty == "New Title" }
+            
+            // Re-dispatch without dismissing
+            store.dispatch(Actions.PresentDynamicDialog())
+            
+            // Wait for the state to process
+            await waitForMainActorCondition { 
+                if case .presented(let dialogType) = store.state.form.dialog.status {
+                    return dialogType.title == "New Title"
+                }
+                return false
+            }
+            
+            if case .presented(let dialogType) = store.state.form.dialog.status {
+                #expect(dialogType.title == "New Title")
+            } else {
+                Issue.record("Expected presented dialog")
+            }
+        }
+        
+        @MainActor
+        @Test func dynamicDialogMessageCapturesLatestState() async throws {
+            let store = EnvironmentStore(initial: AppState(), loggers: [])
+            store.dispatch(UDF.Actions.UpdateFormField(keyPath: \FormWithDialog.stringProperty, value: "Old Message"))
+            await waitForMainActorCondition { store.state.form.stringProperty == "Old Message" }
+            
+            Dialog.register(id: FormWithDialog.DialogId.dynamicDialog) {
+                AlertDialog {
+                    DialogTitle("Static Title")
+                    DialogMessage(store.state.form.stringProperty)
+                    DialogButton(title: "OK")
+                }
+            }
+            
+            store.dispatch(Actions.PresentDynamicDialog())
+            await waitForMainActorCondition { store.state.form.dialog.status != .dismissed }
+            
+            // Verify initial values
+            if case .presented(let dialogType) = store.state.form.dialog.status {
+                #expect(dialogType.message == "Old Message")
+            } else {
+                Issue.record("Expected presented dialog")
+            }
+            
+            // Update the form field dynamically
+            store.dispatch(UDF.Actions.UpdateFormField(keyPath: \FormWithDialog.stringProperty, value: "New Message"))
+            await waitForMainActorCondition { store.state.form.stringProperty == "New Message" }
+            
+            // Re-dispatch without dismissing
+            store.dispatch(Actions.PresentDynamicDialog())
+            
+            // Wait for the state to process
+            await waitForMainActorCondition { 
+                if case .presented(let dialogType) = store.state.form.dialog.status {
+                    return dialogType.message == "New Message"
+                }
+                return false
+            }
+            
+            if case .presented(let dialogType) = store.state.form.dialog.status {
+                #expect(dialogType.message == "New Message")
             } else {
                 Issue.record("Expected presented dialog")
             }
