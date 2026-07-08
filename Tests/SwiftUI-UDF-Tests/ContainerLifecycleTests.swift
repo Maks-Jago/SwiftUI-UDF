@@ -4,7 +4,9 @@ import SwiftUI
 import Testing
 import UDFSwiftTesting
 
-@Suite struct ContainerLifecycleTests {
+@MainActor
+@Suite
+struct ContainerLifecycleTests {
     struct AppState: AppReducer {
         var userData = UserData()
     }
@@ -33,13 +35,13 @@ import UDFSwiftTesting
         let rootContainer = RootContainer()
 
         var window: PlatformWindow? = await PlatformWindow.render(view: rootContainer)
-        await window?.redraw()
-        var success = await waitForCondition { store.state.userData.didLoad }
+        window?.redraw()
+        var success = await waitForMainActorCondition { store.state.userData.didLoad }
         #expect(success)
 
-        await window?.release()
+        window?.release()
         window = nil
-        success = await waitForCondition { store.state.userData.didUnload }
+        success = await waitForMainActorCondition { store.state.userData.didUnload }
         #expect(success)
     }
 }
