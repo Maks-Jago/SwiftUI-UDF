@@ -191,28 +191,3 @@ enum RuntimeReducing {
     }
 }
 
-public extension Mergeable {
-    /// Fills the current instance with values from another instance, and performs a custom mutation on the filled instance.
-    ///
-    /// - Parameters:
-    ///   - value: The instance to fill from.
-    ///   - mutate: A closure that allows for additional mutation on the filled instance.
-    /// - Returns: A new instance filled with values from the provided `value`.
-    func filled(from value: Self, mutate: (_ filledValue: inout Self, _ oldValue: Self) -> Void) -> Self {
-        var mutableSelf = self
-        do {
-            let info = try typeInfo(of: Self.self)
-
-            for property in info.properties {
-                let newValue = try property.get(from: value)
-                try property.set(value: newValue, on: &mutableSelf)
-            }
-
-        } catch {
-            return value
-        }
-
-        mutate(&mutableSelf, self)
-        return mutableSelf
-    }
-}
