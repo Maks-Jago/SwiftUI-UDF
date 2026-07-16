@@ -12,7 +12,14 @@ import Foundation
     }
 
     enum MiddlewareFlow: IdentifiableFlow {
-        case none, loading, cancel, message
+        case none
+        case loading
+        case loadingTask(id: Int)
+        case executeEffect(id: Int)
+        case runEffect(id: Int)
+        case cancel
+        case cancelAll
+        case message
 
         init() { self = .none }
 
@@ -28,11 +35,27 @@ import Foundation
             case let action as Actions.DidCancelEffect where action.cancellation == ObservableRunMiddlewareToCancel.Сancellation.runMessage:
                 self = .none
 
+            case let action as Actions.DidCancelEffect
+                where action.cancellation is ObservableMiddlewareToCancelAll.Сancellation:
+                self = .none
+
             case is Actions.Loading:
                 self = .loading
 
             case is Actions.CancelLoading:
                 self = .cancel
+                
+            case is Actions.CancelAll:
+                self = .cancelAll
+                
+            case let action as Actions.RunTaskByID:
+                self = .loadingTask(id: action.id)
+                
+            case let action as Actions.ExecuteEffectByID:
+                self = .executeEffect(id: action.id)
+
+            case let action as Actions.RunEffectByID:
+                self = .runEffect(id: action.id)
 
             case is Actions.Message:
                 self = .message
@@ -123,15 +146,168 @@ import Foundation
         
         await store.wait()
     }
+    
+    @Test func testMiddlewareCancellationAllTask() async {
+        let store = await TestStore(initial: AppState())
+        var observableMiddlewareToCancelAll: ObservableMiddlewareToCancelAll?
+        await store.subscribe(buildMiddlewares: { store in
+            let middleware = ObservableMiddlewareToCancelAll(store: store, environment: ())
+            observableMiddlewareToCancelAll = middleware
+            return [middleware]
+        })
+
+        let tasks = 10
+        for id in 0..<tasks {
+            await store.dispatch(Actions.RunTaskByID(id: id))
+        }
+
+        try? await Task.sleep(for: .milliseconds(100))
+
+        #expect(observableMiddlewareToCancelAll != nil, "The test should capture the subscribed ObservableMiddlewareToCancelAll instance")
+        #expect(
+            observableMiddlewareToCancelAll?.cancellations.count == tasks,
+            "Expected \(tasks) tracked cancellations before CancelAll, got \(observableMiddlewareToCancelAll?.cancellations.count ?? 0)"
+        )
+
+        await store.dispatch(Actions.CancelAll())
+        await store.wait()
+
+        #expect(
+            observableMiddlewareToCancelAll?.cancellations.count == 0,
+            "Expected all tracked cancellations to be removed after CancelAll, got \(observableMiddlewareToCancelAll?.cancellations.count ?? 0)"
+        )
+
+        let taskMessagesCount = await store.state.runForm.messagesCount
+        #expect(taskMessagesCount == 0, "Message count should be unincremented after cancelling all tasks")
+    }
+
+    @Test func testMiddlewareCancellationAllExecuteEffect() async {
+        let store = await TestStore(initial: AppState())
+        var observableMiddlewareToCancelAll: ObservableMiddlewareToCancelAll?
+        await store.subscribe(buildMiddlewares: { store in
+            let middleware = ObservableMiddlewareToCancelAll(store: store, environment: ())
+            observableMiddlewareToCancelAll = middleware
+            return [middleware]
+        })
+
+        let tasks = 10
+        for id in 0..<tasks {
+            await store.dispatch(Actions.ExecuteEffectByID(id: id))
+        }
+
+        try? await Task.sleep(for: .milliseconds(100))
+
+        #expect(observableMiddlewareToCancelAll != nil, "The test should capture the subscribed ObservableMiddlewareToCancelAll instance")
+        #expect(
+            observableMiddlewareToCancelAll?.cancellations.count == tasks,
+            "Expected \(tasks) tracked cancellations before CancelAll, got \(observableMiddlewareToCancelAll?.cancellations.count ?? 0)"
+        )
+
+        await store.dispatch(Actions.CancelAll())
+        await store.wait()
+
+        #expect(
+            observableMiddlewareToCancelAll?.cancellations.count == 0,
+            "Expected all tracked cancellations to be removed after CancelAll, got \(observableMiddlewareToCancelAll?.cancellations.count ?? 0)"
+        )
+        let executeEffectMessagesCount = await store.state.runForm.messagesCount
+        #expect(executeEffectMessagesCount == 0, "Message count should be unincremented after cancelling all effects")
+    }
+
+    @Test func testMiddlewareCancellationAllRunEffect() async {
+        let store = await TestStore(initial: AppState())
+        var observableMiddlewareToCancelAll: ObservableMiddlewareToCancelAll?
+        await store.subscribe(buildMiddlewares: { store in
+            let middleware = ObservableMiddlewareToCancelAll(store: store, environment: ())
+            observableMiddlewareToCancelAll = middleware
+            return [middleware]
+        })
+
+        let tasks = 10
+        for id in 0..<tasks {
+            await store.dispatch(Actions.RunEffectByID(id: id))
+        }
+
+        try? await Task.sleep(for: .milliseconds(100))
+
+        #expect(observableMiddlewareToCancelAll != nil, "The test should capture the subscribed ObservableMiddlewareToCancelAll instance")
+        #expect(
+            observableMiddlewareToCancelAll?.cancellations.count == tasks,
+            "Expected \(tasks) tracked cancellations before CancelAll, got \(observableMiddlewareToCancelAll?.cancellations.count ?? 0)"
+        )
+
+        await store.dispatch(Actions.CancelAll())
+        await store.wait()
+
+        #expect(
+            observableMiddlewareToCancelAll?.cancellations.count == 0,
+            "Expected all tracked cancellations to be removed after CancelAll, got \(observableMiddlewareToCancelAll?.cancellations.count ?? 0)"
+        )
+        let runEffectMessagesCount = await store.state.runForm.messagesCount
+        #expect(runEffectMessagesCount == 0, "Message count should be unincremented after cancelling all run effects")
+    }
 }
 
 private extension Actions {
     struct Loading: Action {}
+    struct RunTaskByID: Action {
+        let id: Int
+    }
+    struct ExecuteEffectByID: Action {
+        let id: Int
+    }
+    struct RunEffectByID: Action {
+        let id: Int
+    }
     struct CancelLoading: Action {}
+    struct CancelAll: Action {}
 }
 
 // MARK: - Middlewares
 private extension MiddlewareCancellationTests {
+    final class ObservableMiddlewareToCancelAll: Middleware<AppState>, @unchecked Sendable {
+        var environment: Void!
+        
+        enum Сancellation: Hashable {
+            case message(Int)
+        }
+
+        func scope(for state: AppState) -> Scope {
+            state.middlewareFlow
+        }
+        
+        func observe(state: AppState) {
+            switch state.middlewareFlow {
+            case let .loadingTask(id):
+                execute(
+                    flowId: MiddlewareFlow.id,
+                    cancellation: Сancellation.message(id)
+                ) { flowID in
+                    try? await Task.sleep(for: .seconds(1))
+                    return Actions.Message(message: "message \(id)", id: flowID)
+                }
+                
+            case let .executeEffect(id):
+                execute(
+                    Effect(action: Actions.Message(message: "message \(id)", id: MiddlewareFlow.id)).delay(duration: 1, queue: queue),
+                    cancellation: Сancellation.message(id)
+                )
+
+            case let .runEffect(id):
+                run(
+                    Effect(action: Actions.Message(message: "message \(id)", id: MiddlewareFlow.id)).delay(duration: 1, queue: queue),
+                    cancellation: Сancellation.message(id)
+                )
+
+            case .cancelAll:
+                cancelAll()
+
+            default:
+                break
+            }
+        }
+    }
+    
     final class ObservableMiddlewareToCancel: Middleware<AppState>, @unchecked Sendable {
         var environment: Void!
 
@@ -243,4 +419,3 @@ private extension MiddlewareCancellationTests {
         }
     }
 }
-
