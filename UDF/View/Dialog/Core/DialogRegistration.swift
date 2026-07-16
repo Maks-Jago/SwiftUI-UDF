@@ -134,9 +134,8 @@ enum _DialogRegistry {
         id: ID,
         dialog: @escaping @Sendable @MainActor () -> D
     ) {
-        let dialog = dialog()
         queue.async(flags: .barrier) {
-            registry[AnyHashable(id)] = { dialog }
+            registry[AnyHashable(id)] = { dialog() }
         }
     }
     

@@ -64,6 +64,7 @@ extension DialogProtocol {
         lhs.title == rhs.title &&
         lhs.message == rhs.message &&
         lhs.actions.count == rhs.actions.count &&
+        zip(lhs.actions, rhs.actions).allSatisfy { $0.hashValue == $1.hashValue } &&
         lhs.style == rhs.style
     }
 
@@ -71,6 +72,9 @@ extension DialogProtocol {
         hasher.combine(title)
         hasher.combine(message)
         hasher.combine(actions.count)
+        for action in actions {
+            hasher.combine(action.hashValue)
+        }
         hasher.combine(style)
     }
 

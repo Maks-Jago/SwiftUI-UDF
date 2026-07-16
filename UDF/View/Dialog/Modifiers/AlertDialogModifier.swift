@@ -151,6 +151,7 @@ private struct AlertState: Equatable {
     static func == (lhs: AlertState, rhs: AlertState) -> Bool {
         lhs.title == rhs.title &&
         lhs.message == rhs.message &&
-        lhs.actions.count == rhs.actions.count
+        lhs.actions.count == rhs.actions.count &&
+        zip(lhs.actions, rhs.actions).allSatisfy { $0.hashValue == $1.hashValue }
     }
 }
