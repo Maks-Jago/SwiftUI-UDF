@@ -117,6 +117,30 @@ public enum ActionGroupBuilder {
         ]
     }
 
+    /// Converts an array of actions (`[any Action]`) into an array of `InternalAction`.
+    ///
+    /// - Parameters:
+    ///   - expression: An array of `any Action` to be converted.
+    ///   - fileName: The name of the file where this method is called. Defaults to the current file.
+    ///   - functionName: The name of the function where this method is called. Defaults to the current function.
+    ///   - lineNumber: The line number where this method is called. Defaults to the current line.
+    /// - Returns: An array containing the converted `InternalAction`s.
+    public static func buildExpression(
+        _ expression: [any Action],
+        fileName: String = #file,
+        functionName: String = #function,
+        lineNumber: Int = #line
+    ) -> [any Equatable] {
+        expression.map {
+            InternalAction(
+                $0,
+                fileName: fileName,
+                functionName: functionName,
+                lineNumber: lineNumber
+            )
+        }
+    }
+
     /// Handles a `Void` expression, returning an empty array.
     ///
     /// - Parameter expression: A `Void` expression.

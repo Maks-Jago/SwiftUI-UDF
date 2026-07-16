@@ -189,6 +189,49 @@ import Foundation
         
         #expect(InternalAction(group).unwrapActions().count == 6)
     }
+
+    @Test func actionsArrayExpression() {
+        let analyticsActions: [any Action] = [
+            Actions.Message(message: "a1", id: "a1"),
+            Actions.Message(message: "a2", id: "a2"),
+        ]
+
+        let group = ActionGroup {
+            Actions.Message(message: "m1", id: "m1")
+            analyticsActions
+        }
+
+        #expect(group.actions.count == 3)
+    }
+
+    @Test func mixedIndividualActionsAndArrayOfActions() {
+        let firstBatch: [any Action] = [
+            Actions.Message(message: "b1", id: "b1"),
+            Actions.Message(message: "b2", id: "b2"),
+        ]
+        let secondBatch: [any Action] = [
+            Actions.Message(message: "b3", id: "b3"),
+        ]
+
+        let group = ActionGroup {
+            firstBatch
+            Actions.Message(message: "m1", id: "m1")
+            secondBatch
+        }
+
+        #expect(group.actions.count == 4)
+    }
+
+    @Test func emptyActionsArrayExpression() {
+        let emptyActions: [any Action] = []
+
+        let group = ActionGroup {
+            Actions.Message(message: "m1", id: "m1")
+            emptyActions
+        }
+
+        #expect(group.actions.count == 1)
+    }
 }
 
 // MARK: - Test Types
