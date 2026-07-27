@@ -20,11 +20,20 @@ import Testing
         var bookToModalPresent: Int? = nil
     }
 
+    struct TailForm: Form {
+        var counter: Int = 0
+    }
+
     struct AppState: AppReducer {
         var rootForm = RootForm()
+        var tailForm = TailForm()
     }
 
     struct BookScope: Scope, Equatable {
+        let id: Int
+    }
+
+    struct AlternateBookScope: Scope, Equatable {
         let id: Int
     }
 
@@ -43,6 +52,29 @@ import Testing
             BookScope(id: bookId)
         } else {
             EmptyBookScope()
+        }
+    }
+
+    /// Mirrors the real shape used in `RootContainer.scope(for:)`: an `if let` branch
+    /// followed by unconditional statements in the same builder block.
+    @ScopeBuilder
+    static func combinedScope(for state: AppState) -> Scope {
+        if let bookId = state.rootForm.bookToModalPresent {
+            BookScope(id: bookId)
+        }
+        state.tailForm
+    }
+
+    /// A condition nested inside another condition, to make sure `EitherScope`/`OptionalScope`
+    /// compose correctly when layered.
+    @ScopeBuilder
+    static func nestedConditionScope(for state: AppState) -> Scope {
+        if let bookId = state.rootForm.bookToModalPresent {
+            if bookId > 100 {
+                AlternateBookScope(id: bookId)
+            } else {
+                BookScope(id: bookId)
+            }
         }
     }
 
@@ -98,5 +130,94 @@ import Testing
         #expect(Self.ifElseScope(for: stateNil).isEqual(Self.ifElseScope(for: AppState())))
         #expect(Self.ifElseScope(for: stateValue).isEqual(Self.ifElseScope(for: stateValue)))
         #expect(!Self.ifElseScope(for: stateNil).isEqual(Self.ifElseScope(for: stateValue)))
+    }
+
+    // MARK: - Combined scope (if let + unconditional trailing statements, like `RootContainer`)
+
+    @Test
+    func combinedScopeIsEqualWhenNothingChanged() {
+        let stateA = AppState()
+        let stateB = AppState()
+
+        #expect(Self.combinedScope(for: stateA).isEqual(Self.combinedScope(for: stateB)))
+    }
+
+    @Test
+    func combinedScopeDetectsChangeInTheConditionalPartOnly() {
+        let stateNil = AppState()
+        var stateValue = AppState()
+        stateValue.rootForm.bookToModalPresent = 1
+        // tailForm stays identical in both states
+
+        #expect(!Self.combinedScope(for: stateNil).isEqual(Self.combinedScope(for: stateValue)))
+    }
+
+    @Test
+    func combinedScopeDetectsChangeInTheTrailingUnconditionalPartOnly() {
+        var stateA = AppState()
+        stateA.rootForm.bookToModalPresent = 1
+
+        var stateB = AppState()
+        stateB.rootForm.bookToModalPresent = 1
+        stateB.tailForm.counter = 1
+        // the conditional part (bookToModalPresent) is identical in both states
+
+        #expect(!Self.combinedScope(for: stateA).isEqual(Self.combinedScope(for: stateB)))
+    }
+
+    @Test
+    func combinedScopeIsEqualWhenBothPartsMatch() {
+        var stateA = AppState()
+        stateA.rootForm.bookToModalPresent = 1
+        stateA.tailForm.counter = 5
+
+        var stateB = AppState()
+        stateB.rootForm.bookToModalPresent = 1
+        stateB.tailForm.counter = 5
+
+        #expect(Self.combinedScope(for: stateA).isEqual(Self.combinedScope(for: stateB)))
+    }
+
+    // MARK: - Nested conditions
+
+    @Test
+    func nestedConditionBranchNotTakenIsEqualAcrossStates() {
+        let stateA = AppState()
+        let stateB = AppState()
+
+        #expect(Self.nestedConditionScope(for: stateA).isEqual(Self.nestedConditionScope(for: stateB)))
+    }
+
+    @Test
+    func nestedConditionSameInnerBranchWithSameValueIsEqual() {
+        var stateA = AppState()
+        stateA.rootForm.bookToModalPresent = 5
+
+        var stateB = AppState()
+        stateB.rootForm.bookToModalPresent = 5
+
+        #expect(Self.nestedConditionScope(for: stateA).isEqual(Self.nestedConditionScope(for: stateB)))
+    }
+
+    @Test
+    func nestedConditionDifferentInnerBranchesAreNotEqual() {
+        var stateA = AppState()
+        stateA.rootForm.bookToModalPresent = 5 // takes the `else` inner branch -> BookScope
+
+        var stateB = AppState()
+        stateB.rootForm.bookToModalPresent = 150 // takes the `if` inner branch -> AlternateBookScope
+
+        #expect(!Self.nestedConditionScope(for: stateA).isEqual(Self.nestedConditionScope(for: stateB)))
+    }
+
+    @Test
+    func nestedConditionSameInnerBranchDifferentValueIsNotEqual() {
+        var stateA = AppState()
+        stateA.rootForm.bookToModalPresent = 150
+
+        var stateB = AppState()
+        stateB.rootForm.bookToModalPresent = 151
+
+        #expect(!Self.nestedConditionScope(for: stateA).isEqual(Self.nestedConditionScope(for: stateB)))
     }
 }
