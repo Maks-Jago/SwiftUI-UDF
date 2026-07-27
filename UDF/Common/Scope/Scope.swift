@@ -87,4 +87,33 @@ public enum ScopeBuilder {
     public static func buildPartialBlock(accumulated: some EquatableScope, next: some EquatableScope) -> some EquatableScope {
         CombinedScope(accumulated, next)
     }
+
+    /// Supports `if`/`if let` branches without a matching `else` inside a `@ScopeBuilder` block.
+    ///
+    /// - Parameter scope: The scope produced by the branch, or `nil` if the condition wasn't met
+    ///   (or the optional being bound with `if let` was `nil`).
+    /// - Returns: An `OptionalScope` wrapping the given scope.
+    public static func buildOptional(_ scope: (some EquatableScope)?) -> some EquatableScope {
+        OptionalScope(scope)
+    }
+
+    /// Supports the first branch of an `if`/`else` (or a `switch` case) inside a `@ScopeBuilder` block.
+    ///
+    /// - Parameter scope: The scope produced by the first branch.
+    /// - Returns: An `EitherScope` wrapping the given scope.
+    public static func buildEither<TrueScope: EquatableScope, FalseScope: EquatableScope>(
+        first scope: TrueScope
+    ) -> EitherScope<TrueScope, FalseScope> {
+        .first(scope)
+    }
+
+    /// Supports the second branch of an `if`/`else` (or a `switch` case) inside a `@ScopeBuilder` block.
+    ///
+    /// - Parameter scope: The scope produced by the second branch.
+    /// - Returns: An `EitherScope` wrapping the given scope.
+    public static func buildEither<TrueScope: EquatableScope, FalseScope: EquatableScope>(
+        second scope: FalseScope
+    ) -> EitherScope<TrueScope, FalseScope> {
+        .second(scope)
+    }
 }
