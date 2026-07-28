@@ -54,7 +54,7 @@ import UDFSwiftTesting
 
         mutating func reduce(_ action: some Action) {
             switch action {
-            case let action as TestActions.LoadItem:
+            case let action as Actions.DidLoadItem<Item>:
                 byId[action.item.id] = action.item
             case let action as TestActions.UpdateItemTitle:
                 byId[action.id]?.title = action.title
@@ -72,10 +72,6 @@ import UDFSwiftTesting
     }
 
     enum TestActions {
-        struct LoadItem: Action {
-            let item: Item
-        }
-
         struct UpdateItemTitle: Action {
             let id: Item.ID
             let title: String
@@ -101,7 +97,7 @@ import UDFSwiftTesting
         let container = ItemContainer(itemId: .init(value: 1))
         let window = await PlatformWindow.render(view: container.with(store: store))
 
-        var success = await waitForMainActorCondition { container.renderingNumber == 1 }
+        var success = await waitForMainActorCondition { container.renderingCount == 1 }
         #expect(success)
 
         // Mutate a *different* item in the same collection.
@@ -110,16 +106,19 @@ import UDFSwiftTesting
 
         window.redraw()
         // Give the run loop a beat, then assert the count did NOT advance.
-        success = await waitForMainActorCondition { container.renderingNumber == 1 }
+        success = await waitForMainActorCondition { container.renderingCount == 1 }
         #expect(success)
-        #expect(container.renderingNumber == 1)
+        #expect(container.renderingCount == 1)
     }
 
     @Test
     @MainActor func targetItemChangeRedraws() async {
+        // Two items present -> proves diffing reacts to the *specific* item,
+        // not just to "the store has any content".
         let initialState = AppState(
             items: ItemsStore(byId: [
-                .init(value: 1): .init(id: .init(value: 1), title: "target")
+                .init(value: 1): .init(id: .init(value: 1), title: "target"),
+                .init(value: 2): .init(id: .init(value: 2), title: "other")
             ])
         )
         let store = EnvironmentStore(initial: initialState, logger: TestStoreLogger())
@@ -127,14 +126,14 @@ import UDFSwiftTesting
         let container = ItemContainer(itemId: .init(value: 1))
         let window = await PlatformWindow.render(view: container.with(store: store))
 
-        var success = await waitForMainActorCondition { container.renderingNumber == 1 }
+        var success = await waitForMainActorCondition { container.renderingCount == 1 }
         #expect(success)
 
         store.dispatch(TestActions.UpdateItemTitle(id: .init(value: 1), title: "target changed"))
         await waitForMainActorCondition { store.state.items.byId[.init(value: 1)]?.title == "target changed" }
 
         window.redraw()
-        success = await waitForMainActorCondition { container.renderingNumber == 2 }
+        success = await waitForMainActorCondition { container.renderingCount == 2 }
         #expect(success)
     }
 
@@ -146,23 +145,26 @@ import UDFSwiftTesting
         let container = ItemContainer(itemId: .init(value: 1))
         let window = await PlatformWindow.render(view: container.with(store: store))
 
-        var success = await waitForMainActorCondition { container.renderingNumber == 1 }
+        var success = await waitForMainActorCondition { container.renderingCount == 1 }
         #expect(success)
-        #expect(container.renderingNumber == 1) // rendered once with `.empty`
+        #expect(container.renderingCount == 1) // rendered once with `.empty`
 
-        store.dispatch(TestActions.LoadItem(item: .init(id: .init(value: 1), title: "loaded")))
+        store.dispatch(Actions.DidLoadItem(item: Item(id: .init(value: 1), title: "loaded")))
         await waitForMainActorCondition { store.state.items.byId[.init(value: 1)] != nil }
 
         window.redraw()
-        success = await waitForMainActorCondition { container.renderingNumber == 2 }
+        success = await waitForMainActorCondition { container.renderingCount == 2 }
         #expect(success)
     }
 
     @Test
     @MainActor func targetItemRemovalRedraws() async {
+        // Two items present -> proves removal-driven redraw isn't just an
+        // artifact of the store becoming empty overall.
         let initialState = AppState(
             items: ItemsStore(byId: [
-                .init(value: 1): .init(id: .init(value: 1), title: "target")
+                .init(value: 1): .init(id: .init(value: 1), title: "target"),
+                .init(value: 2): .init(id: .init(value: 2), title: "other")
             ])
         )
         let store = EnvironmentStore(initial: initialState, logger: TestStoreLogger())
@@ -170,7 +172,7 @@ import UDFSwiftTesting
         let container = ItemContainer(itemId: .init(value: 1))
         let window = await PlatformWindow.render(view: container.with(store: store))
 
-        var success = await waitForMainActorCondition { container.renderingNumber == 1 }
+        var success = await waitForMainActorCondition { container.renderingCount == 1 }
         #expect(success)
 
         store.dispatch(TestActions.RemoveItem(id: .init(value: 1)))
@@ -178,8 +180,11 @@ import UDFSwiftTesting
 
         window.redraw()
         // itemBy(id:) now resolves to .empty -> Scope must change -> redraw fires again.
-        success = await waitForMainActorCondition { container.renderingNumber == 2 }
+        success = await waitForMainActorCondition { container.renderingCount == 2 }
         #expect(success)
+        // The unrelated item must still be present -> confirms the redraw was
+        // driven by the target's removal, not by the store becoming empty.
+        #expect(store.state.items.byId[.init(value: 2)] != nil)
     }
 
     // Mirrors the real containers' shape: `Scope` combines the collection-scoped item
@@ -197,21 +202,21 @@ import UDFSwiftTesting
         let container = CombinedScopeItemContainer(itemId: .init(value: 1))
         let window = await PlatformWindow.render(view: container.with(store: store))
 
-        var success = await waitForMainActorCondition { container.renderingNumber == 1 }
+        var success = await waitForMainActorCondition { container.renderingCount == 1 }
         #expect(success)
 
         // Part 1 of the combined scope changes -> must redraw.
         store.dispatch(TestActions.UpdateItemTitle(id: .init(value: 1), title: "target changed"))
         await waitForMainActorCondition { store.state.items.byId[.init(value: 1)]?.title == "target changed" }
         window.redraw()
-        success = await waitForMainActorCondition { container.renderingNumber == 2 }
+        success = await waitForMainActorCondition { container.renderingCount == 2 }
         #expect(success)
 
         // Part 2 of the combined scope changes -> must also redraw.
         store.dispatch(Actions.UpdateFormField(keyPath: \SideForm.flag, value: true))
         await waitForMainActorCondition { store.state.sideForm.flag == true }
         window.redraw()
-        success = await waitForMainActorCondition { container.renderingNumber == 3 }
+        success = await waitForMainActorCondition { container.renderingCount == 3 }
         #expect(success)
 
         // A different, unrelated item changes -> neither part of the combined scope
@@ -219,9 +224,9 @@ import UDFSwiftTesting
         store.dispatch(TestActions.UpdateItemTitle(id: .init(value: 2), title: "other changed"))
         await waitForMainActorCondition { store.state.items.byId[.init(value: 2)]?.title == "other changed" }
         window.redraw()
-        success = await waitForMainActorCondition { container.renderingNumber == 3 }
+        success = await waitForMainActorCondition { container.renderingCount == 3 }
         #expect(success)
-        #expect(container.renderingNumber == 3)
+        #expect(container.renderingCount == 3)
     }
 }
 
@@ -233,15 +238,15 @@ extension ContainerScopedToCollectionItemTests {
 
         let itemId: Item.ID
 
-        @Box var renderingNumber: Int = 0
+        @Box var renderingCount: Int = 0
 
         func scope(for state: AppState) -> Scope {
             state.items.itemBy(id: itemId)
         }
 
         func map(store: EnvironmentStore<AppState>) -> ContainerComponent.Props {
-            renderingNumber += 1
-            print("ItemContainer: renderingNumber - \(renderingNumber)")
+            renderingCount += 1
+            print("ItemContainer: renderingCount - \(renderingCount)")
 
             return .init(title: store.state.items.itemBy(id: itemId).title)
         }
@@ -266,7 +271,7 @@ extension ContainerScopedToCollectionItemTests {
 
         let itemId: Item.ID
 
-        @Box var renderingNumber: Int = 0
+        @Box var renderingCount: Int = 0
 
         func scope(for state: AppState) -> Scope {
             state.items.itemBy(id: itemId)
@@ -274,8 +279,8 @@ extension ContainerScopedToCollectionItemTests {
         }
 
         func map(store: EnvironmentStore<AppState>) -> ContainerComponent.Props {
-            renderingNumber += 1
-            print("CombinedScopeItemContainer: renderingNumber - \(renderingNumber)")
+            renderingCount += 1
+            print("CombinedScopeItemContainer: renderingCount - \(renderingCount)")
 
             return .init(title: store.state.items.itemBy(id: itemId).title)
         }
