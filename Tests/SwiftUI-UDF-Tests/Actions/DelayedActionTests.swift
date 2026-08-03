@@ -2,6 +2,7 @@
 @testable import UDF
 import UDFSwiftTesting
 import Testing
+import Foundation
 
 @Suite(.serialized) struct DelayedActionTests {
     private struct TestStoreLogger: ActionLogger {
@@ -142,43 +143,64 @@ import Testing
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
         let clock = ContinuousClock()
         let start = clock.now
-        
+        let delay: TimeInterval = 1
+        let timingTolerance = 0.1
+
         let titleText = "title"
         let updatedTitleText = "updated title"
-        store.dispatch(ActionGroup {
+        store.dispatch {
             Actions.UpdateFormField(keyPath: \DataForm.title, value: titleText)
-            Actions.UpdateFormField(keyPath: \DataForm.title, value: updatedTitleText).with(delay: 1)
-            Actions.UpdateFormField(keyPath: \DataForm.count, value: 10).with(delay: 1)
-        })
+            Actions.UpdateFormField(keyPath: \DataForm.title, value: updatedTitleText).with(delay: delay)
+            Actions.UpdateFormField(keyPath: \DataForm.count, value: 10).with(delay: delay)
+        }
 
         var success = await waitForCondition { store.state.dataForm.title == titleText }
         #expect(success, "Regular action should be reduced without waiting for delayed actions")
-        success = await waitForCondition { store.state.dataForm.title == updatedTitleText && store.state.dataForm.count == 10 }
-        #expect(success, "All delayed and regular actions should complete without hanging")
+        var elapsed = start.duration(to: clock.now)
+        #expect(
+            (Duration.seconds(0)...Duration.seconds(timingTolerance)).contains(elapsed),
+            "Regular actions should execute immediately"
+        )
+        #expect(success, "Regular action should be reduced without waiting for delayed actions")
+        success = await waitForCondition(timeout: 1 + timingTolerance) {
+            store.state.dataForm.title == updatedTitleText && store.state.dataForm.count == 10
+        }
+        #expect(success, "Delayed actions should complete within the 1 second delay tolerance")
 
-        let elapsed = start.duration(to: clock.now)
-        #expect(elapsed >= .seconds(1), "Expected delayed actions to take at least 1 second, got \(elapsed)")
-        #expect(elapsed <= .seconds(2), "Expected delayed actions to finish within 2 seconds, got \(elapsed)")
+        elapsed = start.duration(to: clock.now)
+        #expect(
+            (Duration.seconds(delay - timingTolerance)...Duration.seconds(delay + timingTolerance)).contains(elapsed),
+            "Expected elapsed time to stay within the delay tolerance window"
+        )
     }
 
     @Test func delayedActionsAndRegularDispatchWithSeparateDispatching() async throws {
         let store = EnvironmentStore(initial: AppState(), logger: TestStoreLogger())
         let clock = ContinuousClock()
         let start = clock.now
+        let delay: TimeInterval = 1
+        let timingTolerance = 0.1
 
         let titleText = "title"
         let updatedTitleText = "updated title"
         store.dispatch(Actions.UpdateFormField(keyPath: \DataForm.title, value: titleText))
-        store.dispatch(Actions.UpdateFormField(keyPath: \DataForm.title, value: updatedTitleText).with(delay: 1))
-        store.dispatch(Actions.UpdateFormField(keyPath: \DataForm.count, value: 10).with(delay: 1))
+        store.dispatch(Actions.UpdateFormField(keyPath: \DataForm.title, value: updatedTitleText).with(delay: delay))
+        store.dispatch(Actions.UpdateFormField(keyPath: \DataForm.count, value: 10).with(delay: delay))
 
         var success = await waitForCondition { store.state.dataForm.title == titleText }
         #expect(success, "Regular action should be reduced without waiting for delayed actions")
+        var elapsed = start.duration(to: clock.now)
+        #expect(
+            (Duration.seconds(0)...Duration.seconds(timingTolerance)).contains(elapsed),
+            "Regular actions should execute immediately"
+        )
         success = await waitForCondition { store.state.dataForm.title == updatedTitleText && store.state.dataForm.count == 10 }
         #expect(success, "All delayed and regular actions should complete without hanging")
 
-        let elapsed = start.duration(to: clock.now)
-        #expect(elapsed >= .seconds(1), "Expected delayed actions to take at least 1 second, got \(elapsed)")
-        #expect(elapsed <= .seconds(2), "Expected delayed actions to finish within 2 seconds, got \(elapsed)")
+        elapsed = start.duration(to: clock.now)
+        #expect(
+            (Duration.seconds(delay - timingTolerance)...Duration.seconds(delay + timingTolerance)).contains(elapsed),
+            "Expected elapsed time to stay within the delay tolerance window"
+        )
     }
 }

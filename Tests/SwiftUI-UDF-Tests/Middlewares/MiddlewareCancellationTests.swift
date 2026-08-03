@@ -90,7 +90,8 @@ import Foundation
         await store.dispatch(Actions.CancelLoading())
         await store.wait()
 
-        success = await store.state.middlewareFlow == .none
+        success = await waitForCondition { await store.state.middlewareFlow == .none }
+        
         #expect(success)
     }
 
@@ -146,105 +147,39 @@ import Foundation
         
         await store.wait()
     }
-    
-    @Test func testMiddlewareCancellationAllTask() async {
+
+    @Test(arguments: CancellationAllAction.allCases)
+    func testMiddlewareCancellationAll(action: CancellationAllAction) async throws {
         let store = await TestStore(initial: AppState())
         var observableMiddlewareToCancelAll: ObservableMiddlewareToCancelAll?
-        await store.subscribe(buildMiddlewares: { store in
+        await store.subscribe(build: { store in
             let middleware = ObservableMiddlewareToCancelAll(store: store, environment: ())
             observableMiddlewareToCancelAll = middleware
-            return [middleware]
+            return [MiddlewareWrapper(instance: middleware)]
         })
 
         let tasks = 10
         for id in 0..<tasks {
-            await store.dispatch(Actions.RunTaskByID(id: id))
+            await store.dispatch(action.makeActions(id: id))
         }
 
         try? await Task.sleep(for: .milliseconds(100))
 
-        #expect(observableMiddlewareToCancelAll != nil, "The test should capture the subscribed ObservableMiddlewareToCancelAll instance")
+        let middleware = try #require(observableMiddlewareToCancelAll, "The test should capture the subscribed ObservableMiddlewareToCancelAll instance")
         #expect(
-            observableMiddlewareToCancelAll?.cancellations.count == tasks,
-            "Expected \(tasks) tracked cancellations before CancelAll, got \(observableMiddlewareToCancelAll?.cancellations.count ?? 0)"
+            middleware.cancellations.count == tasks,
+            "Expected \(tasks) tracked cancellations before CancelAll, got \(middleware.cancellations.count)"
         )
 
         await store.dispatch(Actions.CancelAll())
         await store.wait()
 
         #expect(
-            observableMiddlewareToCancelAll?.cancellations.count == 0,
-            "Expected all tracked cancellations to be removed after CancelAll, got \(observableMiddlewareToCancelAll?.cancellations.count ?? 0)"
+            middleware.cancellations.count == 0,
+            "Expected all tracked cancellations to be removed after CancelAll, got \(middleware.cancellations.count)"
         )
-
-        let taskMessagesCount = await store.state.runForm.messagesCount
-        #expect(taskMessagesCount == 0, "Message count should be unincremented after cancelling all tasks")
-    }
-
-    @Test func testMiddlewareCancellationAllExecuteEffect() async {
-        let store = await TestStore(initial: AppState())
-        var observableMiddlewareToCancelAll: ObservableMiddlewareToCancelAll?
-        await store.subscribe(buildMiddlewares: { store in
-            let middleware = ObservableMiddlewareToCancelAll(store: store, environment: ())
-            observableMiddlewareToCancelAll = middleware
-            return [middleware]
-        })
-
-        let tasks = 10
-        for id in 0..<tasks {
-            await store.dispatch(Actions.ExecuteEffectByID(id: id))
-        }
-
-        try? await Task.sleep(for: .milliseconds(100))
-
-        #expect(observableMiddlewareToCancelAll != nil, "The test should capture the subscribed ObservableMiddlewareToCancelAll instance")
-        #expect(
-            observableMiddlewareToCancelAll?.cancellations.count == tasks,
-            "Expected \(tasks) tracked cancellations before CancelAll, got \(observableMiddlewareToCancelAll?.cancellations.count ?? 0)"
-        )
-
-        await store.dispatch(Actions.CancelAll())
-        await store.wait()
-
-        #expect(
-            observableMiddlewareToCancelAll?.cancellations.count == 0,
-            "Expected all tracked cancellations to be removed after CancelAll, got \(observableMiddlewareToCancelAll?.cancellations.count ?? 0)"
-        )
-        let executeEffectMessagesCount = await store.state.runForm.messagesCount
-        #expect(executeEffectMessagesCount == 0, "Message count should be unincremented after cancelling all effects")
-    }
-
-    @Test func testMiddlewareCancellationAllRunEffect() async {
-        let store = await TestStore(initial: AppState())
-        var observableMiddlewareToCancelAll: ObservableMiddlewareToCancelAll?
-        await store.subscribe(buildMiddlewares: { store in
-            let middleware = ObservableMiddlewareToCancelAll(store: store, environment: ())
-            observableMiddlewareToCancelAll = middleware
-            return [middleware]
-        })
-
-        let tasks = 10
-        for id in 0..<tasks {
-            await store.dispatch(Actions.RunEffectByID(id: id))
-        }
-
-        try? await Task.sleep(for: .milliseconds(100))
-
-        #expect(observableMiddlewareToCancelAll != nil, "The test should capture the subscribed ObservableMiddlewareToCancelAll instance")
-        #expect(
-            observableMiddlewareToCancelAll?.cancellations.count == tasks,
-            "Expected \(tasks) tracked cancellations before CancelAll, got \(observableMiddlewareToCancelAll?.cancellations.count ?? 0)"
-        )
-
-        await store.dispatch(Actions.CancelAll())
-        await store.wait()
-
-        #expect(
-            observableMiddlewareToCancelAll?.cancellations.count == 0,
-            "Expected all tracked cancellations to be removed after CancelAll, got \(observableMiddlewareToCancelAll?.cancellations.count ?? 0)"
-        )
-        let runEffectMessagesCount = await store.state.runForm.messagesCount
-        #expect(runEffectMessagesCount == 0, "Message count should be unincremented after cancelling all run effects")
+        let messagesCount = await store.state.runForm.messagesCount
+        #expect(messagesCount == 0, "Message count should remain unchanged after cancelling all \(action.description)")
     }
 }
 
@@ -415,6 +350,44 @@ private extension MiddlewareCancellationTests {
 
             default:
                 break
+            }
+        }
+    }
+}
+
+extension MiddlewareCancellationTests {
+    enum CancellationAllAction: CaseIterable, Sendable, CustomStringConvertible {
+        case task
+        case executeEffect
+        case runEffect
+        case all
+
+        var description: String {
+            switch self {
+            case .task:
+                "tasks"
+            case .executeEffect:
+                "execute effects"
+            case .runEffect:
+                "run effects"
+            case .all:
+                "all executable task types"
+            }
+        }
+
+        @ActionGroupBuilder
+        func makeActions(id: Int) -> any Action {
+            switch self {
+            case .task:
+                Actions.RunTaskByID(id: id)
+            case .executeEffect:
+                Actions.ExecuteEffectByID(id: id)
+            case .runEffect:
+                Actions.RunEffectByID(id: id)
+            case .all:
+                Actions.RunTaskByID(id: id)
+                Actions.ExecuteEffectByID(id: id)
+                Actions.RunEffectByID(id: id)
             }
         }
     }
