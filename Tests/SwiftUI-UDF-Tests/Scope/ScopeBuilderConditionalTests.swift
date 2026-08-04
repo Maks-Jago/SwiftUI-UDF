@@ -29,29 +29,29 @@ import Testing
         var tailForm = TailForm()
     }
 
-    struct BookScope: Scope, Equatable {
+    struct MockBook: Scope, Equatable {
         let id: Int
     }
 
-    struct AlternateBookScope: Scope, Equatable {
+    struct MockAlternateBook: Scope, Equatable {
         let id: Int
     }
 
-    struct EmptyBookScope: Scope, Equatable {}
+    struct MockEmptyBook: Scope, Equatable {}
 
     @ScopeBuilder
     static func ifLetOnlyScope(for state: AppState) -> Scope {
         if let bookId = state.rootForm.bookToModalPresent {
-            BookScope(id: bookId)
+            MockBook(id: bookId)
         }
     }
 
     @ScopeBuilder
     static func ifElseScope(for state: AppState) -> Scope {
         if let bookId = state.rootForm.bookToModalPresent {
-            BookScope(id: bookId)
+            MockBook(id: bookId)
         } else {
-            EmptyBookScope()
+            MockEmptyBook()
         }
     }
 
@@ -60,7 +60,7 @@ import Testing
     @ScopeBuilder
     static func combinedScope(for state: AppState) -> Scope {
         if let bookId = state.rootForm.bookToModalPresent {
-            BookScope(id: bookId)
+            MockBook(id: bookId)
         }
         state.tailForm
     }
@@ -71,9 +71,9 @@ import Testing
     static func nestedConditionScope(for state: AppState) -> Scope {
         if let bookId = state.rootForm.bookToModalPresent {
             if bookId > 100 {
-                AlternateBookScope(id: bookId)
+                MockAlternateBook(id: bookId)
             } else {
-                BookScope(id: bookId)
+                MockBook(id: bookId)
             }
         }
     }
