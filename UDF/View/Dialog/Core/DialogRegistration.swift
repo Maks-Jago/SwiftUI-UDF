@@ -157,16 +157,8 @@ enum _DialogRegistry {
     /// ## Thread Safety:
     /// This function is thread-safe and can be called from any queue.
     internal static func get<ID: Hashable>(id: ID) -> (any DialogTypeProtocol)? {
-        let item = queue.sync {
-            registry[AnyHashable(id)]
-        }
-        
-        guard let item else { return nil }
-        
-        if Thread.isMainThread {
-            return item.closure()
-        } else {
-            return DispatchQueue.main.sync { item.closure() }
+        queue.sync {
+            registry[AnyHashable(id)]?.closure()
         }
     }
     

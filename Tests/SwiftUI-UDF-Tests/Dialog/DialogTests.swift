@@ -531,61 +531,7 @@ extension DialogRegistryTests {
                 Issue.record("Expected presented dialog")
             }
         }
-        @MainActor
-        @Test func dynamicDialogTextFieldCapturesLatestState() async throws {
-            let store = EnvironmentStore(initial: AppState(), loggers: [])
-            store.dispatch(UDF.Actions.UpdateFormField(keyPath: \FormWithDialog.stringProperty, value: "Initial Text"))
-            await waitForMainActorCondition { store.state.form.stringProperty == "Initial Text" }
-            
-            Dialog.register(id: FormWithDialog.DialogId.dynamicDialog) {
-                AlertDialog {
-                    DialogTitle("Edit Item")
-                    DialogTextField(
-                        title: "Name",
-                        text: Binding(
-                            get: { store.state.form.stringProperty },
-                            set: { _ in }
-                        )
-                    )
-                    DialogButton(title: "Cancel", role: .cancel)
-                }
-            }
-            
-            store.dispatch(Actions.PresentDynamicDialog())
-            await waitForMainActorCondition { store.state.form.dialog.status != .dismissed }
-            
-            if case .presented(let dialogType) = store.state.form.dialog.status {
-                let textField = dialogType.actions[0] as? DialogTextField
-                let mirror = Mirror(reflecting: textField!)
-                let initialValue = mirror.children.first { $0.label == "initialValue" }?.value as? String
-                #expect(initialValue == "Initial Text")
-            } else {
-                Issue.record("Expected presented dialog")
-            }
-            
-            store.dispatch(UDF.Actions.UpdateFormField(keyPath: \FormWithDialog.stringProperty, value: "Updated Text"))
-            await waitForMainActorCondition { store.state.form.stringProperty == "Updated Text" }
-            
-            store.dispatch(Actions.PresentDynamicDialog())
-            
-            await waitForMainActorCondition { 
-                if case .presented(let dialogType) = store.state.form.dialog.status {
-                    let textField = dialogType.actions[0] as? DialogTextField
-                    let mirror = Mirror(reflecting: textField!)
-                    let initialValue = mirror.children.first { $0.label == "initialValue" }?.value as? String
-                    return initialValue == "Updated Text"
-                }
-                return false
-            }
-            
-            if case .presented(let dialogType) = store.state.form.dialog.status {
-                let textField = dialogType.actions[0] as? DialogTextField
-                let initialValue = textField?.initialValue
-                #expect(initialValue == "Updated Text")
-            } else {
-                Issue.record("Expected presented dialog")
-            }
-        }
+
         @MainActor
         @Test func dynamicDialogTitleCapturesLatestState() async throws {
             let store = EnvironmentStore(initial: AppState(), loggers: [])
@@ -709,15 +655,22 @@ extension DialogRegistryTests {
             await waitForMainActorCondition { 
                 if case .presented(let dialogType) = store.state.form.dialog.status {
                     let iconView = dialogType.getIconView(theme: .default)
-                    return String(describing: iconView!).contains("Image")
+                    if let iconView {
+                        return String(describing: iconView).contains("Image")
+                    }
+                    return false
                 }
                 return false
             }
             
             if case .presented(let dialogType) = store.state.form.dialog.status {
                 let iconView = dialogType.getIconView(theme: .default)
-                let description = String(describing: iconView!)
-                #expect(description.contains("Image"))
+                if let iconView {
+                    let description = String(describing: iconView)
+                    #expect(description.contains("Image"))
+                } else {
+                    Issue.record("iconView is nil")
+                }
             } else {
                 Issue.record("Expected presented dialog")
             }
@@ -730,7 +683,10 @@ extension DialogRegistryTests {
             await waitForMainActorCondition { 
                 if case .presented(let dialogType) = store.state.form.dialog.status {
                     let iconView = dialogType.getIconView(theme: .default)
-                    return String(describing: iconView!).contains("TrackerTestView")
+                    if let iconView {
+                        return String(describing: iconView).contains("TrackerTestView")
+                    }
+                    return false
                 }
                 return false
             }
@@ -784,15 +740,22 @@ extension DialogRegistryTests {
             await waitForMainActorCondition { 
                 if case .presented(let dialogType) = store.state.form.dialog.status {
                     let customView = dialogType.getCustomContentView()
-                    return String(describing: customView!).contains("Image")
+                    if let customView {
+                        return String(describing: customView).contains("Image")
+                    }
+                    return false
                 }
                 return false
             }
             
             if case .presented(let dialogType) = store.state.form.dialog.status {
                 let customView = dialogType.getCustomContentView()
-                let description = String(describing: customView!)
-                #expect(description.contains("Image"))
+                if let customView {
+                    let description = String(describing: customView)
+                    #expect(description.contains("Image"))
+                } else {
+                    Issue.record("customView is nil")
+                }
             } else {
                 Issue.record("Expected presented dialog")
             }
@@ -805,7 +768,10 @@ extension DialogRegistryTests {
             await waitForMainActorCondition { 
                 if case .presented(let dialogType) = store.state.form.dialog.status {
                     let customView = dialogType.getCustomContentView()
-                    return String(describing: customView!).contains("TrackerTestView")
+                    if let customView {
+                        return String(describing: customView).contains("TrackerTestView")
+                    }
+                    return false
                 }
                 return false
             }

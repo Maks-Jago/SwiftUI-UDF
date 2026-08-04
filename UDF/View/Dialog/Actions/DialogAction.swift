@@ -29,7 +29,7 @@ import SwiftUI
 ///     // Implementation
 /// }
 /// ```
-public protocol DialogAction: Hashable, View, Sendable {}
+public protocol DialogAction: Hashable, Sendable {}
 
 @available(*, deprecated, message: "Use `DialogAction` instead.")
 public typealias AlertAction = DialogAction

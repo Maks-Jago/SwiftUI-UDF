@@ -40,9 +40,27 @@ struct AlertDialogModifier: ViewModifier {
                     if let alertState {
                         ForEach(Array(alertState.actions.enumerated()), id: \.offset) { _, action in
                             if let button = action as? DialogButton {
-                                button
+                                Button(role: button.role) {
+                                    button.action()
+                                } label: {
+                                    Text(button.title)
+                                }
+                                .disabled(button.disabled)
                             } else if let textField = action as? DialogTextField {
-                                textField
+                                #if os(iOS)
+                                DialogTextFieldView(
+                                    title: textField.title,
+                                    text: textField.text,
+                                    textInputAutocapitalization: textField.textInputAutocapitalization,
+                                    submitLabel: textField.submitLabel
+                                )
+                                #else
+                                DialogTextFieldView(
+                                    title: textField.title,
+                                    text: textField.text,
+                                    submitLabel: textField.submitLabel
+                                )
+                                #endif
                             }
                         }
                     }

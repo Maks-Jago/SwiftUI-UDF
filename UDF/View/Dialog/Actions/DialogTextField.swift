@@ -55,25 +55,20 @@ public struct DialogTextField: DialogAction, AlertDialogComponent {
     /// The submit label for the keyboard's return key.
     public var submitLabel: SubmitLabel = .done
     
-    /// The initial value of the text field (stored for internal use).
-    let initialValue: String
-    
     // MARK: - Equatable Implementation
-    /// Checks if two `DialogTextField` instances are equal by comparing their titles and initial values.
+    /// Checks if two `DialogTextField` instances are equal by comparing their titles.
     ///
-    /// Note: Text bindings cannot be compared directly, so the title and initial value are used for equality.
+    /// Note: Text bindings cannot be compared directly, so the title is used for equality.
     nonisolated public static func == (lhs: DialogTextField, rhs: DialogTextField) -> Bool {
-        lhs.title == rhs.title &&
-        lhs.initialValue == rhs.initialValue
+        lhs.title == rhs.title
     }
     
     // MARK: - Hashable Implementation
     /// Hashes the essential properties of the `DialogTextField`.
     ///
-    /// Note: Text bindings cannot be hashed, so the title and initial value are used.
+    /// Note: Text bindings cannot be hashed, so the title is used.
     nonisolated public func hash(into hasher: inout Hasher) {
         hasher.combine(title)
-        hasher.combine(initialValue)
     }
     
     // MARK: - Initializers
@@ -85,48 +80,23 @@ public struct DialogTextField: DialogAction, AlertDialogComponent {
     nonisolated public init(title: String, text: Binding<String>) {
         self.title = title
         self.text = text
-        self.initialValue = text.wrappedValue
     }
     
-    // MARK: - View Implementation
-    /// The view body of the `DialogTextField`.
-    ///
-    /// This creates an internal text field implementation that handles debouncing
-    /// and proper integration with the dialog system.
-    public var body: some View {
-    #if os(iOS)
-        DialogTextFieldInternal(
-            title: title,
-            text: text,
-            textInputAutocapitalization: textInputAutocapitalization,
-            submitLabel: submitLabel,
-            initialValue: initialValue
-        )
-    #else
-        DialogTextFieldInternal(
-            title: title,
-            text: text,
-            submitLabel: submitLabel,
-            initialValue: initialValue
-        )
-    #endif
-    }
 }
 
 // MARK: - Internal Implementation
 /// Internal implementation of the text field with debouncing support.
-private struct DialogTextFieldInternal: View {
+package struct DialogTextFieldView: View {
     let title: String
     let text: Binding<String>
     #if os(iOS)
     let textInputAutocapitalization: TextInputAutocapitalization?
     #endif
     let submitLabel: SubmitLabel
-    let initialValue: String
     
     @StateObject private var debouncer = UserInputDebouncer<String>(defaultValue: "")
     
-    var body: some View {
+    package var body: some View {
         TextField(title, text: $debouncer.value)
             #if os(iOS)
             .textInputAutocapitalization(textInputAutocapitalization)
@@ -134,7 +104,7 @@ private struct DialogTextFieldInternal: View {
             .submitLabel(submitLabel)
             .onAppear {
                 if debouncer.value.isEmpty {
-                    debouncer.value = initialValue
+                    debouncer.value = text.wrappedValue
                 }
             }
             .onReceive(debouncer.$debouncedValue.dropFirst()) { value in
@@ -148,8 +118,7 @@ private struct DialogTextFieldInternal: View {
     }
 }
 
-// MARK: - View Conformance
-extension DialogTextField: View {}
+
 
 // MARK: - Action Classification
 extension DialogTextField: @preconcurrency DialogActionClassification {
