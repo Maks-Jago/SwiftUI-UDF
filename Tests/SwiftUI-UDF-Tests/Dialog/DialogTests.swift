@@ -57,6 +57,7 @@ extension DialogType {
 
 extension DialogRegistryTests {
     @Suite(.serialized) struct DialogTests {
+
         init() {
             Dialog.clearAll()
         }
@@ -404,7 +405,6 @@ extension DialogRegistryTests {
                 Issue.record("Expected presented dialog from registry")
             }
         }
-        
         @MainActor
         @Test func dynamicDialogCapturesLatestState() async throws {
             let store = EnvironmentStore(initial: AppState(), loggers: [])
@@ -680,7 +680,7 @@ extension DialogRegistryTests {
         }
 
         @MainActor
-        @Test func dynamicDialogIconCapturesLatestState() async throws {
+        @Test func dynamicDialogCustomIconCapturesLatestState() async throws {
             ViewRenderTracker.renderHistory.removeAll()
             let store = EnvironmentStore(initial: AppState(), loggers: [])
             store.dispatch(UDF.Actions.UpdateFormField(keyPath: \FormWithDialog.viewMode, value: .text("TextMode")))
@@ -911,7 +911,6 @@ extension DialogRegistryTests.DialogTests {
             }
         }
     }
-    
     @MainActor
     class ViewRenderTracker {
         static var renderHistory: [String] = []

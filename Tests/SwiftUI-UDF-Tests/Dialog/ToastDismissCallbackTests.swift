@@ -116,7 +116,8 @@ extension DialogRegistryTests {
         // MARK: - ToastQueueManager Tests
         
         @MainActor
-        @Test func test_ToastQueueManager_ExecutesCallbackOnAutoDismiss() async {
+        @Test(.timeLimit(.minutes(1)))
+        func test_ToastQueueManager_ExecutesCallbackOnAutoDismiss() async {
             let queueManager = ToastQueueManager()
             let tracker = CallbackTracker()
             
@@ -134,9 +135,9 @@ extension DialogRegistryTests {
             // Verify toast is visible
             #expect(queueManager.visibleToasts.count == 1)
             
-            // Wait for auto-dismiss
-            let dismissed = await waitForMainActorCondition { queueManager.visibleToasts.isEmpty }
-            #expect(dismissed)
+            // Wait for auto-dismiss using publisher observation
+            let success = await waitForPublisherCondition(queueManager.$visibleToasts) { $0.isEmpty }
+            #expect(success)
             
             // Verify callback was executed
             #expect(tracker.executed)

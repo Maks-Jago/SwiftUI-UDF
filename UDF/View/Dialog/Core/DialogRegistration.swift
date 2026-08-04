@@ -133,7 +133,7 @@ enum _DialogRegistry {
         dialog: @escaping @Sendable () -> D
     ) {
         queue.async(flags: .barrier) {
-            registry[AnyHashable(id)] = { dialog() as any DialogTypeProtocol }
+            registry[AnyHashable(id)] = { dialog() }
         }
     }
     
