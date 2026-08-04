@@ -99,15 +99,27 @@ public struct DialogButton: DialogAction, AlertDialogComponent, ToastComponent, 
         self.action = action
     }
     
+    // MARK: - View Implementation
+    /// The view body of the `DialogButton`.
+    /// 
+    /// This creates a standard SwiftUI Button with the configured properties.
+    /// The actual presentation may vary depending on the dialog style.
+    public var body: some View {
+        Button(title, role: role, action: action)
+            .disabled(disabled)
+    }
 }
 
+// MARK: - View Conformance
+extension DialogButton: View {}
+
 // MARK: - Action Classification
-extension DialogButton: @preconcurrency DialogActionClassification {
-    var actionType: DialogActionType {
+extension DialogButton: DialogActionClassification {
+    nonisolated var actionType: DialogActionType {
         .button
     }
     
-    var capabilities: DialogActionCapability {
+    nonisolated var capabilities: DialogActionCapability {
         var caps: DialogActionCapability = [.requiresInteraction, .canBeDisabled, .dismissesDialog]
         
         if role != nil {

@@ -28,14 +28,7 @@ struct ConfirmationDialogModifier: ViewModifier {
                 actions: {
                     ForEach(Array(actions.enumerated()), id: \.offset) { _, action in
                         switch action {
-                        case let button as DialogButton: 
-                            Button(role: button.role) {
-                                button.action()
-                            } label: {
-                                Text(button.title)
-                            }
-                            .disabled(button.disabled)
-                            .id(button.hashValue)
+                        case let action as DialogButton: action.id(action.hashValue)
 
                         default:
                             EmptyView()
