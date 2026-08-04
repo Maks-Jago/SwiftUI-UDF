@@ -47,14 +47,9 @@ enum _DialogRegistry {
     
     // MARK: - Private Storage
     
-    /// Internal wrapper to safely store non-Sendable closures.
-    private struct RegistryItem: @unchecked Sendable {
-        let closure: @Sendable () -> any DialogTypeProtocol
-    }
-    
     /// Internal registry storage for dialog builders.
     /// Protected by registrationQueue for thread safety.
-    nonisolated(unsafe) private static var registry: [AnyHashable: RegistryItem] = [:]
+    nonisolated(unsafe) private static var registry: [AnyHashable: () -> any DialogTypeProtocol] = [:]
 
     /// Concurrent queue for thread-safe registry access.
     /// Uses barrier writes to ensure data consistency.
@@ -92,9 +87,8 @@ enum _DialogRegistry {
         id: ID,
         builder: @escaping @Sendable () -> any DialogTypeProtocol
     ) {
-        let item = RegistryItem(closure: builder)
         queue.async(flags: .barrier) {
-            registry[AnyHashable(id)] = item
+            registry[AnyHashable(id)] = builder
         }
     }
     
@@ -110,9 +104,8 @@ enum _DialogRegistry {
         id: ID,
         builder: @escaping @Sendable () -> DialogType
     ) {
-        let item = RegistryItem(closure: builder)
         queue.async(flags: .barrier) {
-            registry[AnyHashable(id)] = item
+            registry[AnyHashable(id)] = builder
         }
     }
     
@@ -139,9 +132,8 @@ enum _DialogRegistry {
         id: ID,
         dialog: @escaping @Sendable () -> D
     ) {
-        let item = RegistryItem(closure: { dialog() })
         queue.async(flags: .barrier) {
-            registry[AnyHashable(id)] = item
+            registry[AnyHashable(id)] = { dialog() as any DialogTypeProtocol }
         }
     }
     
@@ -158,7 +150,7 @@ enum _DialogRegistry {
     /// This function is thread-safe and can be called from any queue.
     internal static func get<ID: Hashable>(id: ID) -> (any DialogTypeProtocol)? {
         queue.sync {
-            registry[AnyHashable(id)]?.closure()
+            registry[AnyHashable(id)]?()
         }
     }
     
