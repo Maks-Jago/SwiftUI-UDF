@@ -49,7 +49,7 @@ enum _DialogRegistry {
     
     /// Internal wrapper to safely store non-Sendable closures.
     private struct RegistryItem: @unchecked Sendable {
-        let closure: () -> any DialogTypeProtocol
+        let closure: @Sendable () -> any DialogTypeProtocol
     }
     
     /// Internal registry storage for dialog builders.
@@ -90,7 +90,7 @@ enum _DialogRegistry {
     @available(*, deprecated, message: "Use the new ResultBuilder-based register(id:dialog:) with AlertDialog, Toast, or ConfirmationDialog instead.")
     public static func register<ID: Hashable & Sendable>(
         id: ID,
-        builder: @escaping () -> any DialogTypeProtocol
+        builder: @escaping @Sendable () -> any DialogTypeProtocol
     ) {
         let item = RegistryItem(closure: builder)
         queue.async(flags: .barrier) {
@@ -108,7 +108,7 @@ enum _DialogRegistry {
     ///   - builder: A closure that returns a standard ``DialogType`` when called.
     public static func register<ID: Hashable & Sendable>(
         id: ID,
-        builder: @escaping () -> DialogType
+        builder: @escaping @Sendable () -> DialogType
     ) {
         let item = RegistryItem(closure: builder)
         queue.async(flags: .barrier) {
@@ -137,7 +137,7 @@ enum _DialogRegistry {
     ///   - dialog: A closure that returns a ``Dialog`` conforming value.
     public static func register<ID: Hashable & Sendable, D: DialogProtocol>(
         id: ID,
-        dialog: @escaping () -> D
+        dialog: @escaping @Sendable () -> D
     ) {
         let item = RegistryItem(closure: { dialog() })
         queue.async(flags: .barrier) {
@@ -320,7 +320,7 @@ extension _DialogRegistry {
     @available(*, deprecated, message: "Use the new ResultBuilder-based register(id:dialog:) with Toast instead.")
     static func registerToast<ID: Hashable & Sendable>(
         id: ID,
-        content: @escaping () -> DialogContent<EmptyView, EmptyView>,
+        content: @escaping @Sendable () -> DialogContent<EmptyView, EmptyView>,
         configuration: @escaping @Sendable () -> ToastConfiguration = { .default },
         onAutoDismiss: (@Sendable () -> Void)? = nil
     ) {
