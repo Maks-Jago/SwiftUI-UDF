@@ -47,15 +47,41 @@ public extension Dialog {
     /// }
     /// ```
     ///
-    /// - Parameters:
-    ///   - id: A unique, hashable identifier for this dialog.
-    ///   - dialog: A closure that returns a ``DialogProtocol`` conforming value.
+    @available(*, deprecated, message: "Use register(id:store:dialog:) to ensure Swift 6 strict concurrency safety when accessing state.")
     static func register<ID: Hashable & Sendable, D: DialogProtocol>(
         id: ID,
         dialog: @escaping @Sendable () -> D
     ) {
         _DialogRegistry.register(id: id, dialog: dialog)
     }
+    
+    /// Registers a type-safe ``DialogProtocol`` (``AlertDialog``, ``Toast``, or ``ConfirmationDialog``)
+    /// for the given identifier, explicitly passing the environment store to the builder closure.
+    ///
+    /// This is required in Swift 6 to avoid strict concurrency warnings when capturing
+    /// variables from a `@MainActor` context (like a View). By passing the store explicitly,
+    /// it is safely evaluated before being passed to the `@Sendable` builder closure.
+    ///
+    /// ```swift
+    /// Dialog.register(id: MyDialogs.error, store: store) { store in
+    ///     AlertDialog {
+    ///         DialogTitle(store.state.errorTitle)
+    ///     }
+    /// }
+    /// ```
+    ///
+    /// - Parameters:
+    ///   - id: A unique, hashable identifier for this dialog.
+    ///   - store: The environment store to pass into the dialog builder.
+    ///   - dialog: A closure that receives the store and returns a ``DialogProtocol`` conforming value.
+    static func register<ID: Hashable & Sendable, D: DialogProtocol, State: AppReducer>(
+        id: ID,
+        store: EnvironmentStore<State>,
+        dialog: @escaping @Sendable (EnvironmentStore<State>) -> D
+    ) {
+        _DialogRegistry.register(id: id) { dialog(store) }
+    }
+
     
     /// Checks if a dialog is registered for the given identifier.
     ///
