@@ -965,55 +965,107 @@ extension Actions {
     ///
     /// This action is typically dispatched when a container of type `BindableContainer` is fully loaded and ready for interactions.
     ///
-    /// - Parameters:
-    ///   - BindedContainer: The container type conforming to `BindableContainer`.
-    struct _OnContainerDidLoad<BindedContainer: BindableContainer>: Action where BindedContainer.ID: Sendable {
-        static func == (lhs: Actions._OnContainerDidLoad<BindedContainer>, rhs: Actions._OnContainerDidLoad<BindedContainer>) -> Bool {
+    struct _OnContainerDidLoad: _AnyBindableContainerAction {
+        static func == (lhs: Actions._OnContainerDidLoad, rhs: Actions._OnContainerDidLoad) -> Bool {
             lhs.id == rhs.id && lhs.containerType == rhs.containerType
         }
 
         /// The type of the container that has loaded.
-        var containerType: BindedContainer.Type
+        var containerType: Any.Type
 
         /// The unique identifier of the container.
-        var id: BindedContainer.ID
+        var id: AnyHashable
+
+        init<ID: Hashable & Sendable>(containerType: Any.Type, id: ID) {
+            self.containerType = containerType
+            self.id = AnyHashable(id)
+        }
+
+        init<Container: BindableContainer>(
+            containerType: Container.Type,
+            id: Container.ID
+        ) {
+            self.containerType = containerType
+            self.id = AnyHashable(id)
+        }
+
+        var anyID: AnyHashable {
+            id
+        }
     }
 
     /// `_OnContainerDidUnLoad` is an internal action used to signal that a `BindableContainer` has unloaded.
     ///
     /// This action is typically dispatched when a container of type `BindableContainer` is unloaded, indicating the end of its lifecycle.
     ///
-    /// - Parameters:
-    ///   - BindedContainer: The container type conforming to `BindableContainer`.
-    struct _OnContainerDidUnLoad<BindedContainer: BindableContainer>: Action where BindedContainer.ID: Sendable {
-        static func == (lhs: Actions._OnContainerDidUnLoad<BindedContainer>, rhs: Actions._OnContainerDidUnLoad<BindedContainer>) -> Bool {
+    struct _OnContainerDidUnLoad: _AnyBindableContainerAction {
+        static func == (lhs: Actions._OnContainerDidUnLoad, rhs: Actions._OnContainerDidUnLoad) -> Bool {
             lhs.id == rhs.id && lhs.containerType == rhs.containerType
         }
 
         /// The type of the container that has unloaded.
-        var containerType: BindedContainer.Type
+        var containerType: Any.Type
 
         /// The unique identifier of the container.
-        var id: BindedContainer.ID
+        var id: AnyHashable
+
+        init<ID: Hashable & Sendable>(containerType: Any.Type, id: ID) {
+            self.containerType = containerType
+            self.id = AnyHashable(id)
+        }
+
+        init<Container: BindableContainer>(
+            containerType: Container.Type,
+            id: Container.ID
+        ) {
+            self.containerType = containerType
+            self.id = AnyHashable(id)
+        }
+
+        var anyID: AnyHashable {
+            id
+        }
     }
 
     /// `_BindableAction` is an internal action that wraps another action and associates it with a specific `BindableContainer`.
     ///
     /// This is useful for dispatching actions that need to be bound to a particular instance of a container.
     ///
-    /// - Parameters:
-    ///   - BindedContainer: The container type conforming to `BindableContainer`.
-    struct _BindableAction<BindedContainer: BindableContainer>: _AnyBindableAction where BindedContainer.ID: Sendable {
+    struct _BindableAction: _AnyBindableAction {
         /// The wrapped action that is being bound to the container.
         let value: any Action
 
         /// The type of the container that the action is bound to.
-        let containerType: BindedContainer.Type
+        let containerType: Any.Type
 
         /// The unique identifier of the container.
-        let id: BindedContainer.ID
+        let id: AnyHashable
 
-        public static func == (lhs: _BindableAction<BindedContainer>, rhs: _BindableAction<BindedContainer>) -> Bool {
+        init<ID: Hashable & Sendable>(
+            value: any Action,
+            containerType: Any.Type,
+            id: ID
+        ) {
+            self.value = value
+            self.containerType = containerType
+            self.id = AnyHashable(id)
+        }
+
+        init<Container: BindableContainer>(
+            value: any Action,
+            containerType: Container.Type,
+            id: Container.ID
+        ) {
+            self.value = value
+            self.containerType = containerType
+            self.id = AnyHashable(id)
+        }
+
+        var anyID: AnyHashable {
+            id
+        }
+
+        public static func == (lhs: _BindableAction, rhs: _BindableAction) -> Bool {
             lhs.id == rhs.id && areEqual(lhs.value, rhs.value)
         }
 

@@ -104,6 +104,22 @@ public extension Action {
         functionName: String = #function,
         lineNumber: Int = #line
     ) -> some Action where BindedContainer.ID: Sendable {
+        binded(
+            to: containerType as Any.Type,
+            by: id,
+            fileName: fileName,
+            functionName: functionName,
+            lineNumber: lineNumber
+        )
+    }
+
+    func binded<ID: Hashable & Sendable>(
+        to containerType: Any.Type,
+        by id: ID,
+        fileName: String = #file,
+        functionName: String = #function,
+        lineNumber: Int = #line
+    ) -> some Action {
         if let group = self as? ActionGroup {
             ActionGroup(internalActions: group._actions.map { oldAction in
                 InternalAction(

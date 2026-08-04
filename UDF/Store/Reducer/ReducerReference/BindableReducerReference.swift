@@ -18,16 +18,13 @@ import Foundation
 /// in applications that use UDF architecture.
 ///
 /// - Note: This class is useful for managing state associated with containers that can have multiple instances, each with its own reducer.
-public final class BindableReducerReference<AppState: AppReducer, BindedContainer: BindableContainer, Reducer: Reducible>: ReducerReference<
-AppState,
-    BindableReducer<BindedContainer, Reducer>
->, @unchecked Sendable where BindedContainer.ID: Sendable {
+public final class BindableReducerReference<AppState: AppReducer, ID: Hashable & Sendable, Reducer: Reducible>: ReducerReference<AppState, BindableReducer<ID, Reducer>>, @unchecked Sendable {
     /// Initializes a new `BindableReducerReference` with the specified `BindableReducer` and action dispatcher.
     ///
     /// - Parameters:
     ///   - reducer: The `BindableReducer` to reference.
     ///   - dispatcher: A closure for dispatching actions.
-    override init(reducer: BindableReducer<BindedContainer, Reducer>, dispatcher: @escaping (any Action) -> Void) {
+    override init(reducer: BindableReducer<ID, Reducer>, dispatcher: @escaping (any Action) -> Void) {
         super.init(reducer: reducer, dispatcher: dispatcher)
     }
 
@@ -35,9 +32,9 @@ AppState,
     ///
     /// - Parameter id: The ID of the container whose reducer is to be accessed.
     /// - Returns: A `ReducerReference` for the reducer associated with the specified container ID.
-    public subscript(_ id: BindedContainer.ID) -> ReducerReference<AppState, Reducer> where BindedContainer.ID: Sendable {
+    public subscript(_ id: ID) -> ReducerReference<AppState, Reducer> {
         ReducerReference(reducer: reducer[id] ?? .init()) { [dispatcher] action in
-            dispatcher(action.binded(to: BindedContainer.self, by: id))
+            dispatcher(action.binded(to: self.reducer.containerType, by: id))
         }
     }
 }

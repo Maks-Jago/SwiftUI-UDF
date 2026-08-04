@@ -14,7 +14,7 @@ struct InternalAction: Action {
     private let actionDescription: String
 
     init(
-        _ value: some Action,
+        _ value: any Action,
         animation: Animation? = nil,
         silent: Bool = false,
         delay: Delay? = nil,

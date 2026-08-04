@@ -53,9 +53,9 @@ public class ReducerReference<AppState: AppReducer, Reducer: Reducible>: @unchec
     /// - Parameter keyPath: A writable key path to a `BindableReducer` within the referenced reducer.
     /// - Returns: A `BindableReducerReference` for the specified nested `BindableReducer`.
     public subscript<
-        C: BindableContainer,
+        ID: Hashable & Sendable,
         R: Reducible
-    >(dynamicMember keyPath: WritableKeyPath<Reducer, BindableReducer<C, R>>) -> BindableReducerReference<AppState, C, R> {
+    >(dynamicMember keyPath: WritableKeyPath<Reducer, BindableReducer<ID, R>>) -> BindableReducerReference<AppState, ID, R> {
         BindableReducerReference(reducer: reducer[keyPath: keyPath], dispatcher: dispatcher)
     }
 
