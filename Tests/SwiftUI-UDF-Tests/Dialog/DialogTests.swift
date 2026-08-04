@@ -65,7 +65,7 @@ extension DialogRegistryTests {
             let store = await TestStore(initial: AppState())
             #expect(await store.state.form.dialog.status == .dismissed)
             
-            await Dialog.register(id: FormWithDialog.DialogId.dialogWithAction) {
+            Dialog.register(id: FormWithDialog.DialogId.dialogWithAction) {
                 DialogCustomType.custom(
                     content: .init(
                         title: "Custom Title",
@@ -88,7 +88,7 @@ extension DialogRegistryTests {
             let store = await TestStore(initial: AppState())
             #expect(await store.state.form.dialog.status == .dismissed)
             
-            await Dialog.register(id: FormWithDialog.DialogId.dialogWithAction) {
+            Dialog.register(id: FormWithDialog.DialogId.dialogWithAction) {
                 DialogType.dialogWithAction {
                     print("Custom dialog action")
                 }
@@ -162,7 +162,7 @@ extension DialogRegistryTests {
             let store = await TestStore(initial: AppState())
             #expect(await store.state.form.dialog.status == .dismissed)
             
-            await Dialog.register(id: FormWithDialog.DialogId.toastDialog) {
+            Dialog.register(id: FormWithDialog.DialogId.toastDialog) {
                 DialogType.toastWithAction {
                     print("Toast action executed")
                 }
@@ -188,7 +188,7 @@ extension DialogRegistryTests {
         @Test func customToastWithIcon() async {
             let store = await TestStore(initial: AppState())
             
-            await Dialog.register(id: FormWithDialog.DialogId.customToastWithIcon) {
+            Dialog.register(id: FormWithDialog.DialogId.customToastWithIcon) {
                 DialogType.customToastWithIcon()
             }
             await waitForCondition { Dialog.isRegistered(id: FormWithDialog.DialogId.customToastWithIcon) }
@@ -218,7 +218,7 @@ extension DialogRegistryTests {
         @Test func customViewToast() async {
             let store = await TestStore(initial: AppState())
             
-            await Dialog.register(id: FormWithDialog.DialogId.customViewToast) {
+            Dialog.register(id: FormWithDialog.DialogId.customViewToast) {
                 DialogType.customViewToast()
             }
             await waitForCondition { Dialog.isRegistered(id: FormWithDialog.DialogId.customViewToast) }
@@ -337,7 +337,7 @@ extension DialogRegistryTests {
             let store = await TestStore(initial: AppState())
             
             // Register a toast with long duration (won't auto-dismiss during test)
-            await Dialog.register(id: FormWithDialog.DialogId.toastDialog) {
+            Dialog.register(id: FormWithDialog.DialogId.toastDialog) {
                 Toast(config: .init(defaultDuration: 10.0)) {
                     DialogMessage("This toast should be manually dismissed")
                 }
@@ -362,7 +362,7 @@ extension DialogRegistryTests {
             let store = await TestStore(initial: AppState())
             
             // Register a toast with zero duration (manual dismiss only)
-            await Dialog.register(id: FormWithDialog.DialogId.toastDialog) {
+            Dialog.register(id: FormWithDialog.DialogId.toastDialog) {
                 Toast(config: .init(defaultDuration: 0)) {
                     DialogMessage("This toast should not auto-dismiss")
                 }
@@ -531,7 +531,71 @@ extension DialogRegistryTests {
                 Issue.record("Expected presented dialog")
             }
         }
-
+        
+        @MainActor
+        @Test func dynamicDialogTextFieldCapturesLatestState() async throws {
+            let store = EnvironmentStore(initial: AppState(), loggers: [])
+            
+            store.dispatch(
+                Actions.UpdateFormField(
+                    keyPath: \FormWithDialog.stringProperty,
+                    value: "Initial Text"
+                )
+            )
+            
+            await waitForMainActorCondition { store.state.form.stringProperty == "Initial Text" }
+            
+            Dialog.register(id: FormWithDialog.DialogId.dynamicDialog) {
+                AlertDialog {
+                    DialogTitle("Edit Item")
+                    DialogTextField(
+                        title: "Name",
+                        text: Binding(
+                            get: { store.state.form.stringProperty },
+                            set: { _ in }
+                        )
+                    )
+                    DialogButton(title: "Cancel", role: .cancel)
+                }
+            }
+            
+            store.dispatch(Actions.PresentDynamicDialog())
+            await waitForMainActorCondition {
+                store.state.form.dialog.status != .dismissed
+            }
+            
+            if case .presented(let dialogType) = store.state.form.dialog.status {
+                if let textField = dialogType.actions[0] as? DialogTextField {
+                    let textValue = textField.text.wrappedValue
+                    #expect(textValue == "Initial Text")
+                } else {
+                    Issue.record("actions[0] is not a DialogTextField: \(dialogType.actions)")
+                }
+            } else {
+                Issue.record("Expected presented dialog")
+            }
+            
+            store.dispatch(
+                Actions.UpdateFormField(
+                    keyPath: \FormWithDialog.stringProperty,
+                    value: "Updated Text"
+                )
+            )
+            await waitForMainActorCondition {
+                store.state.form.stringProperty == "Updated Text"
+            }
+            
+            // Re-evaluate the binding after state updates
+            if case .presented(let dialogType) = store.state.form.dialog.status {
+                if let textField = dialogType.actions[0] as? DialogTextField {
+                    let textValue = textField.text.wrappedValue
+                    #expect(textValue == "Updated Text")
+                }
+            } else {
+                Issue.record("Expected presented dialog")
+            }
+        }
+        
         @MainActor
         @Test func dynamicDialogTitleCapturesLatestState() async throws {
             let store = EnvironmentStore(initial: AppState(), loggers: [])
