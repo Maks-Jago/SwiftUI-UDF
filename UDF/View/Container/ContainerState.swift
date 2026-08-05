@@ -58,14 +58,13 @@ final class ContainerState<State: AppReducer>: ObservableObject, @unchecked Send
 
         // Subscribe to state changes in the store
         self.subscriptionKey = store.add { [weak self] oldState, newState, animation in
-            let oldScope = scope(oldState)
             let newScope = scope(newState)
 
             // Update the scope if it has changed
-            if !oldScope.isEqual(newScope) {
-                withAnimation(animation) {
-                    self?.currentScope = newScope
-                }
+            guard let self else { return }
+            if let old = self.currentScope, old.isEqual(newScope) { return }
+            withAnimation(animation) {
+                self.currentScope = newScope
             }
         }
     }
