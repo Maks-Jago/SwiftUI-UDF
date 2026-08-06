@@ -33,6 +33,10 @@ public struct RCDictionary<Key: Hashable & Sendable, Value: Initable & Equatable
         box.value = value
         keyValues[key] = box
     }
+    
+    func isUniquelyReferenced(key: Key) -> Bool {
+        keyValues[key]?.referenceCount == 1
+    }
 
     public subscript(_ key: Key) -> Value? {
         keyValues[key]?.value
@@ -43,7 +47,7 @@ public struct RCDictionary<Key: Hashable & Sendable, Value: Initable & Equatable
 public extension RCDictionary {
     struct ReducerBox: Equatable {
         var value: Value
-        private var referenceCount: Int = 1
+        private(set) var referenceCount: Int = 1
 
         init(value: Value) {
             self.value = value
