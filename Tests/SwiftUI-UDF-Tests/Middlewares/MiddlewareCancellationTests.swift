@@ -87,6 +87,7 @@ import Foundation
         var success = await store.state.middlewareFlow == .loading
         #expect(success)
 
+        try? await Task.sleep(for: .milliseconds(10))
         await store.dispatch(Actions.CancelLoading())
 
         success = await waitForCondition { await store.state.middlewareFlow == .none }
@@ -116,7 +117,7 @@ import Foundation
         await store.dispatch(Actions.Loading())
         var success = await store.state.middlewareFlow == .loading
         #expect(success)
-
+        try? await Task.sleep(for: .milliseconds(10))
         await store.dispatch(Actions.CancelLoading())
 
         success = await waitForCondition { await store.state.middlewareFlow == .none }
