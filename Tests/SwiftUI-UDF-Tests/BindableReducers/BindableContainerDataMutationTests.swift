@@ -125,10 +125,10 @@ import Testing
         struct TestAction: Action {}
         struct OtherAction: Action {}
         
-        let action1 = Actions._BindableAction(value: TestAction(), containerType: ItemsContainer.self, id: Item.ID(value: 1))
-        let action2 = Actions._BindableAction(value: TestAction(), containerType: ItemsContainer.self, id: Item.ID(value: 2))
-        let action3 = Actions._BindableAction(value: TestAction(), containerType: ItemsContainer.self, id: Item.ID(value: 1))
-        let action4 = Actions._BindableAction(value: OtherAction(), containerType: ItemsContainer.self, id: Item.ID(value: 1))
+        let action1 = Actions._BindableAction(value: TestAction(), containerType: ItemsContainer.self, id: .init(value: 1))
+        let action2 = Actions._BindableAction(value: TestAction(), containerType: ItemsContainer.self, id: .init(value: 2))
+        let action3 = Actions._BindableAction(value: TestAction(), containerType: ItemsContainer.self, id: .init(value: 1))
+        let action4 = Actions._BindableAction(value: OtherAction(), containerType: ItemsContainer.self, id: .init(value: 1))
         
         #expect(action1 != action2)
         #expect(action1 == action3)

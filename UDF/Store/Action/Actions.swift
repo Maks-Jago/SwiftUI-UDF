@@ -523,7 +523,7 @@ public extension Actions {
     }
 
     /// `DidLoadItems` is an action that represents multiple items being loaded.
-    struct DidLoadItems<M: Equatable & Sendable>: Action, CustomStringConvertible {
+    struct DidLoadItems<M: Equatable & Sendable>: Action {
         /// The list of items that were loaded.
         public var items: [M]
 
@@ -965,8 +965,8 @@ extension Actions {
     ///
     /// This action is typically dispatched when a container of type `BindableContainer` is fully loaded and ready for interactions.
     ///
-    struct _OnContainerDidLoad: _AnyBindableContainerAction {
-        static func == (lhs: Actions._OnContainerDidLoad, rhs: Actions._OnContainerDidLoad) -> Bool {
+    struct _OnContainerDidLoad<ID: Hashable & Sendable>: _AnyBindableContainerAction {
+        static func == (lhs: Actions._OnContainerDidLoad<ID>, rhs: Actions._OnContainerDidLoad<ID>) -> Bool {
             lhs.id == rhs.id && lhs.containerType == rhs.containerType
         }
 
@@ -974,19 +974,19 @@ extension Actions {
         var containerType: Any.Type
 
         /// The unique identifier of the container.
-        var id: AnyHashable
+        var id: ID
 
-        init<ID: Hashable & Sendable>(containerType: Any.Type, id: ID) {
+        init(containerType: Any.Type, id: ID) {
             self.containerType = containerType
-            self.id = AnyHashable(id)
+            self.id = id
         }
 
         init<Container: BindableContainer>(
             containerType: Container.Type,
             id: Container.ID
-        ) {
+        ) where Container.ID == ID {
             self.containerType = containerType
-            self.id = AnyHashable(id)
+            self.id = id
         }
 
         var anyID: AnyHashable {
@@ -998,8 +998,8 @@ extension Actions {
     ///
     /// This action is typically dispatched when a container of type `BindableContainer` is unloaded, indicating the end of its lifecycle.
     ///
-    struct _OnContainerDidUnLoad: _AnyBindableContainerAction {
-        static func == (lhs: Actions._OnContainerDidUnLoad, rhs: Actions._OnContainerDidUnLoad) -> Bool {
+    struct _OnContainerDidUnLoad<ID: Hashable & Sendable>: _AnyBindableContainerAction {
+        static func == (lhs: Actions._OnContainerDidUnLoad<ID>, rhs: Actions._OnContainerDidUnLoad<ID>) -> Bool {
             lhs.id == rhs.id && lhs.containerType == rhs.containerType
         }
 
@@ -1007,19 +1007,19 @@ extension Actions {
         var containerType: Any.Type
 
         /// The unique identifier of the container.
-        var id: AnyHashable
+        var id: ID
 
-        init<ID: Hashable & Sendable>(containerType: Any.Type, id: ID) {
+        init(containerType: Any.Type, id: ID) {
             self.containerType = containerType
-            self.id = AnyHashable(id)
+            self.id = id
         }
 
         init<Container: BindableContainer>(
             containerType: Container.Type,
             id: Container.ID
-        ) {
+        ) where Container.ID == ID {
             self.containerType = containerType
-            self.id = AnyHashable(id)
+            self.id = id
         }
 
         var anyID: AnyHashable {
@@ -1031,7 +1031,7 @@ extension Actions {
     ///
     /// This is useful for dispatching actions that need to be bound to a particular instance of a container.
     ///
-    struct _BindableAction: _AnyBindableAction {
+    struct _BindableAction<ID: Hashable & Sendable>: _AnyBindableAction {
         /// The wrapped action that is being bound to the container.
         let value: any Action
 
@@ -1039,26 +1039,26 @@ extension Actions {
         let containerType: Any.Type
 
         /// The unique identifier of the container.
-        let id: AnyHashable
+        let id: ID
 
-        init<ID: Hashable & Sendable>(
+        init(
             value: any Action,
             containerType: Any.Type,
             id: ID
         ) {
             self.value = value
             self.containerType = containerType
-            self.id = AnyHashable(id)
+            self.id = id
         }
 
         init<Container: BindableContainer>(
             value: any Action,
             containerType: Container.Type,
             id: Container.ID
-        ) {
+        ) where Container.ID == ID {
             self.value = value
             self.containerType = containerType
-            self.id = AnyHashable(id)
+            self.id = id
         }
 
         var anyID: AnyHashable {
@@ -1066,7 +1066,7 @@ extension Actions {
         }
 
         public static func == (lhs: _BindableAction, rhs: _BindableAction) -> Bool {
-            lhs.id == rhs.id && areEqual(lhs.value, rhs.value)
+            lhs.id == rhs.id && areEqual(lhs.value, rhs.value) && lhs.containerType == rhs.containerType
         }
 
         var description: String {

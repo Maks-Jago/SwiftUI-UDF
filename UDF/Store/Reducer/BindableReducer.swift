@@ -121,27 +121,17 @@ public extension BindableReducer {
     /// - Parameter action: The action to be reduced.
     mutating func reduce(_ action: some Action) {
         switch action {
-        case let action as Actions._OnContainerDidLoad where action.containerType == containerType:
-            guard let id = action.anyID.base as? ID else {
-                return
-            }
-            
-            reducers.retainOrCreateValue(for: id)
+        case let action as Actions._OnContainerDidLoad<ID> where action.containerType == containerType:
+            reducers.retainOrCreateValue(for: action.id)
 
-        case let action as Actions._OnContainerDidUnLoad where action.containerType == containerType:
-            guard let id = action.anyID.base as? ID else {
-                return
-            }
-            
-            reducers.release(key: id)
+        case let action as Actions._OnContainerDidUnLoad<ID> where action.containerType == containerType:
+            reducers.release(key: action.id)
 
-        case let action as Actions._BindableAction where action.containerType == containerType:
-            guard let id = action.anyID.base as? ID, var reducer = reducers[id] else {
-                return
+        case let action as Actions._BindableAction<ID> where action.containerType == containerType:
+            for (key, var reducer) in reducers where key == action.id {
+                _ = RuntimeReducing.bindableReduce(action.value, reducer: &reducer)
+                reducers.updateValue(reducer, forKey: key)
             }
-            
-            _ = RuntimeReducing.bindableReduce(action.value, reducer: &reducer)
-            reducers.updateValue(reducer, forKey: id)
             
         default:
             break
