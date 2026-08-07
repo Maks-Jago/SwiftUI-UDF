@@ -1,5 +1,6 @@
 import Foundation
 import SwiftUI
+import Limn
 
 struct InternalAction: Action {
     let value: any Action
@@ -10,8 +11,16 @@ struct InternalAction: Action {
     var animation: Animation?
     var silent: Bool
     var delay: Delay?
+    let createdAt: Date
+    
+    private var debugDateFormatter: DateFormatter {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.dateFormat = "yyyy-MM-dd HH:mm:ss.SSS"
+        return formatter
+    }
 
-    private let actionDescription: String
+    private let actionMetadataDescription: String
 
     init(
         _ value: some Action,
@@ -29,13 +38,15 @@ struct InternalAction: Action {
         self.lineNumber = lineNumber
         self.silent = silent
         self.delay = delay
-
+        self.createdAt = .now
+        
         let fileURL = NSURL(fileURLWithPath: fileName).lastPathComponent ?? "Unknown file"
+        
         if let animation {
-            actionDescription =
-                "\(String(describing: value)), animation: \(String(describing: animation)) from \(fileURL) - \(functionName) at line \(lineNumber)"
+            actionMetadataDescription =
+                "animation: \(String(describing: animation)) from \(fileURL) - \(functionName) at line \(lineNumber)"
         } else {
-            actionDescription = "\(String(describing: value)) from \(fileURL) - \(functionName) at line \(lineNumber)"
+            actionMetadataDescription = "from \(fileURL) - \(functionName) at line \(lineNumber)"
         }
     }
 }
@@ -50,7 +61,16 @@ extension InternalAction: Equatable {
 // MARK: - CustomDebugStringConvertible
 extension InternalAction: CustomDebugStringConvertible {
     public var debugDescription: String {
-        actionDescription
+        var dumpFormat = Limn.DumpFormat(collectionIndexMinItems: 0)
+        let allOptionalTypeNameComponents: UInt = 0b111
+        let typeNameComponents = OptionalTypeNameComponents(rawValue: allOptionalTypeNameComponents)
+        dumpFormat.typeNameComponents = typeNameComponents
+        dumpFormat.symbols.collectionIndex = "[%d]"
+        let actionDump = Limn(of: value)
+            .stringDump(format: dumpFormat)
+            .replacingOccurrences(of: #"\n+$"#, with: "", options: .regularExpression)
+        
+        return "[\(debugDateFormatter.string(from: createdAt))] \(actionDump), \(actionMetadataDescription)\n"
     }
 }
 
