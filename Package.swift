@@ -21,12 +21,14 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-collections", from: "1.4.1"),
+        .package(url: "https://github.com/diogopribeiro/Limn", from: "0.8.0"),
         .package(url: "https://github.com/urlaunched-com/Runtime", from: "2.2.6"),
     ],
     targets: [
         .target(
             name: "UDF",
             dependencies: [
+                .product(name: "Limn", package: "Limn"),
                 .product(name: "OrderedCollections", package: "swift-collections"),
                 .product(name: "Runtime", package: "Runtime"),
             ],
@@ -56,3 +58,4 @@ let package = Package(
         ),
     ]
 )
+

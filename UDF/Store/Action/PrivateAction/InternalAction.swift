@@ -61,7 +61,7 @@ extension InternalAction: Equatable {
 // MARK: - CustomDebugStringConvertible
 extension InternalAction: CustomDebugStringConvertible {
     public var debugDescription: String {
-        var dumpFormat = Limn.DumpFormat(collectionIndexMinItems: 0)
+        var dumpFormat = Limn.DumpFormat(maxItems: 5, collectionIndexMinItems: 0)
         let allOptionalTypeNameComponents: UInt = 0b111
         let typeNameComponents = OptionalTypeNameComponents(rawValue: allOptionalTypeNameComponents)
         dumpFormat.typeNameComponents = typeNameComponents
