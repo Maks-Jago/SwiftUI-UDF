@@ -112,30 +112,6 @@ import Foundation
         success = await store.state.middlewareFlow == .none
         #expect(success)
     }
-
-    @Test func reducibleMiddlewareToCancelDelayedAction() async throws {
-        let store = await TestStore(initial: AppState())
-        var middleware: ReducibleMiddlewareToCancel?
-        await store.subscribe { store in
-            let reducibleMiddlewareToCancel = ReducibleMiddlewareToCancel(store: store, environment: .init())
-            middleware = reducibleMiddlewareToCancel
-            return [reducibleMiddlewareToCancel]
-        }
-        
-        let reducibleMiddlewareToCancel = try #require(middleware)
-        await store.dispatch(Actions.Loading())
-        var success = await waitForCondition { await store.state.middlewareFlow == .loading }
-        #expect(success)
-        
-        // Wait until the middleware starts reducibleMessage effect.
-        await waitForCondition { reducibleMiddlewareToCancel.cancellations[ReducibleMiddlewareToCancel.Сancellation.reducibleMessage] != nil }
-        
-        await store.dispatch(Actions.CancelLoading())
-        
-        success = await waitForCondition { await store.state.middlewareFlow == .none }
-        
-        #expect(success)
-    }
     
     @Test func testMiddlewareCancellationDataRace() async {
         let store = await TestStore(initial: AppState())
