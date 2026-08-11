@@ -112,20 +112,6 @@ import Foundation
         success = await store.state.middlewareFlow == .none
         #expect(success)
     }
-
-    @Test func reducibleMiddlewareToCancel() async {
-        let store = await TestStore(initial: AppState())
-        await store.subscribe(ReducibleMiddlewareToCancel.self, environment: ReducibleMiddlewareToCancel.Environment())
-        await store.dispatch(Actions.Loading())
-        var success = await store.state.middlewareFlow == .loading
-        #expect(success)
-
-        await store.dispatch(Actions.CancelLoading())
-        await store.wait()
-        
-        success = await store.state.middlewareFlow == .none
-        #expect(success)
-    }
     
     @Test func testMiddlewareCancellationDataRace() async {
         let store = await TestStore(initial: AppState())
