@@ -20,7 +20,7 @@ public protocol StateEffectable {
     ///   - flowId: The unique identifier for the flow.
     ///   - state: The current application state captured when the effect begins execution.
     /// - Returns: A publisher that emits actions produced by the effect.
-    func publisher(flowId: AnyHashable, state: AppState) -> AnyPublisher<any Action, Never>
+    func publisher(flowId: AnyHashable, state: AppState) throws -> AnyPublisher<any Action, Never>
 }
 
 public extension StateEffectable {

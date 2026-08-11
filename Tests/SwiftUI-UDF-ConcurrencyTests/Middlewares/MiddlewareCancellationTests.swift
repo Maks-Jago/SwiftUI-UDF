@@ -106,7 +106,6 @@ import Foundation
 
 private extension Actions {
     struct Loading: Action {}
-    struct CancelLoading: Action {}
 }
 
 // MARK: - Middlewares

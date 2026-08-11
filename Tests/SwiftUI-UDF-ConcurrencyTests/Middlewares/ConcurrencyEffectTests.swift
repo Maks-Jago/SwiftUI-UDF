@@ -187,7 +187,7 @@ import UDFSwiftTesting
 }
 
 // MARK: - Actions
-fileprivate extension Actions {
+extension Actions {
     struct LoadingPopularMessage: Action {}
     struct LoadingPreviewMessage: Action {}
     struct CancelLoading: Action {}

@@ -246,12 +246,12 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
         functionName: String = #function,
         lineNumber: Int = #line
     ) where Effect.AppState == State {
-        let publisher = Publishers
-            .IsolatedState(from: store)
-            .flatMap { state in
-                effect.publisher(flowId: flowId, state: state)
-            }
-            .eraseToAnyPublisher()
+        self
+        let publisher = stateEffectPublisher(
+            effect: effect,
+            flowId: flowId,
+            cancellation: cancellation
+        )
         
         execute(
             publisher,
@@ -374,11 +374,11 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
         functionName: String = #function,
         lineNumber: Int = #line
     ) where Effect.AppState == State {
-        let publisher = Publishers.IsolatedState(from: store)
-            .flatMap { state in
-                effect.publisher(flowId: flowId, state: state)
-            }
-            .eraseToAnyPublisher()
+        let publisher = stateEffectPublisher(
+            effect: effect,
+            flowId: flowId,
+            cancellation: cancellation
+        )
 
         run(
             publisher,
@@ -482,11 +482,11 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
         functionName: String = #function,
         lineNumber: Int = #line
     ) where Effect.AppState == State {
-        let publisher = Publishers.IsolatedState(from: store)
-            .flatMap { state in
-                effect.publisher(flowId: flowId, state: state)
-            }
-            .eraseToAnyPublisher()
+        let publisher = stateEffectPublisher(
+            effect: effect,
+            flowId: flowId,
+            cancellation: cancellation
+        )
 
         run(
             publisher,
@@ -496,6 +496,28 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
             functionName: functionName,
             lineNumber: lineNumber
         )
+    }
+
+    private func stateEffectPublisher<Effect: StateEffectable>(
+        effect: Effect,
+        flowId: AnyHashable,
+        cancellation: some Hashable
+    ) -> AnyPublisher<any Action, Never> where Effect.AppState == State {
+        Publishers
+            .IsolatedState(from: store)
+            .flatMap { [weak self] state -> AnyPublisher<any Action, Never> in
+                do {
+                    return try effect.publisher(flowId: flowId, state: state)
+                } catch is CancellationError {
+                    self?.cancel(by: cancellation)
+                    return Empty()
+                        .eraseToAnyPublisher()
+                } catch {
+                    return Just(Actions.Error(error: error.localizedDescription, id: flowId))
+                        .eraseToAnyPublisher()
+                }
+            }
+            .eraseToAnyPublisher()
     }
 
     // MARK: - Concurrency
