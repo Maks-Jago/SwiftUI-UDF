@@ -13,7 +13,7 @@ import SwiftUI
 }
 
 @TestStoreActor
-public final class TestStore<State: AppReducer>: @unchecked Sendable {
+public final class TestStore<State: AppReducer> {
     private struct TestStoreLogger: ActionLogger {
         var actionFilters: [ActionFilter] = [VerboseActionFilter()]
         var actionDescriptor: ActionDescriptor = StringDescribingActionDescriptor()

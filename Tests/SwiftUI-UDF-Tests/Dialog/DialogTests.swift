@@ -57,15 +57,14 @@ extension DialogType {
 
 extension DialogRegistryTests {
     @Suite(.serialized) struct DialogTests {
-        let store: TestStore<AppState>
+        let store = EnvironmentStore(initial: AppState(), loggers: [])
 
-        init() async {
+        init() {
             Dialog.clearAll()
-            store = await TestStore(initial: AppState())
         }
         
         @Test func legacyDialogRegistration_allowsPresentationById() async {
-            #expect(await store.state.form.dialog.status == .dismissed)
+            #expect(store.state.form.dialog.status == .dismissed)
 
             Dialog.register(id: FormWithDialog.DialogId.dialogWithAction, store: store) { _ in
                 DialogCustomType.custom(
@@ -81,13 +80,13 @@ extension DialogRegistryTests {
                 )
             }
             await waitForCondition { Dialog.isRegistered(id: FormWithDialog.DialogId.dialogWithAction) }
-            await store.dispatch(Actions.PresentDialogWithAction())
-            let success = await waitForCondition { await store.state.form.dialog.status != .dismissed }
+            store.dispatch(Actions.PresentDialogWithAction())
+            let success = await waitForCondition { store.state.form.dialog.status != .dismissed }
             #expect(success)
         }
         
         @Test func whendialogRegistered_dialogCanBePresentedById() async {
-            #expect(await store.state.form.dialog.status == .dismissed)
+            #expect(store.state.form.dialog.status == .dismissed)
 
             Dialog.register(id: FormWithDialog.DialogId.dialogWithAction, store: store) { _ in
                 DialogType.dialogWithAction {
@@ -95,12 +94,12 @@ extension DialogRegistryTests {
                 }
             }
             await waitForCondition { Dialog.isRegistered(id: FormWithDialog.DialogId.dialogWithAction) }
-            
-            await store.dispatch(Actions.PresentDialogWithAction())
-            let success = await waitForCondition { await store.state.form.dialog.status != .dismissed }
+
+            store.dispatch(Actions.PresentDialogWithAction())
+            let success = await waitForCondition { store.state.form.dialog.status != .dismissed }
             #expect(success)
-            
-            if case .presented(let dialogType) = await store.state.form.dialog.status {
+
+            if case .presented(let dialogType) = store.state.form.dialog.status {
                 #expect(dialogType.style == .alert)
             } else {
                 Issue.record("Expected presented dialog")
@@ -160,7 +159,7 @@ extension DialogRegistryTests {
         
         // MARK: - Toast-Specific Tests
         @Test func whenToastRegistered_ToastCanBePresentedById() async {
-            #expect(await store.state.form.dialog.status == .dismissed)
+            #expect(store.state.form.dialog.status == .dismissed)
 
             Dialog.register(id: FormWithDialog.DialogId.toastDialog, store: store) { _ in
                 DialogType.toastWithAction {
@@ -168,13 +167,13 @@ extension DialogRegistryTests {
                 }
             }
             await waitForCondition { Dialog.isRegistered(id: FormWithDialog.DialogId.toastDialog) }
-            
-            await store.dispatch(Actions.PresentToastDialog())
-            let success = await waitForCondition { await store.state.form.dialog.status != .dismissed }
+
+            store.dispatch(Actions.PresentToastDialog())
+            let success = await waitForCondition { store.state.form.dialog.status != .dismissed }
             #expect(success)
             
             // Verify it's a toast style
-            if case .presented(let dialogType) = await store.state.form.dialog.status {
+            if case .presented(let dialogType) = store.state.form.dialog.status {
                 if case .toast = dialogType.style {
                     #expect(true, "Correct toast style")
                 } else {
@@ -190,13 +189,13 @@ extension DialogRegistryTests {
                 DialogType.customToastWithIcon()
             }
             await waitForCondition { Dialog.isRegistered(id: FormWithDialog.DialogId.customToastWithIcon) }
-            
-            await store.dispatch(Actions.PresentCustomToastWithIcon())
-            let success = await waitForCondition { await store.state.form.dialog.status != .dismissed }
+
+            store.dispatch(Actions.PresentCustomToastWithIcon())
+            let success = await waitForCondition { store.state.form.dialog.status != .dismissed }
             #expect(success)
             
             // Verify it's a toast with custom icon
-            if case .presented(let dialogProtocol) = await store.state.form.dialog.status,
+            if case .presented(let dialogProtocol) = store.state.form.dialog.status,
                let toast = dialogProtocol as? Toast {
                 
                 // Check style is toast
@@ -218,13 +217,13 @@ extension DialogRegistryTests {
                 DialogType.customViewToast()
             }
             await waitForCondition { Dialog.isRegistered(id: FormWithDialog.DialogId.customViewToast) }
-            
-            await store.dispatch(Actions.PresentCustomViewToast())
-            let success = await waitForCondition { await store.state.form.dialog.status != .dismissed }
+
+            store.dispatch(Actions.PresentCustomViewToast())
+            let success = await waitForCondition { store.state.form.dialog.status != .dismissed }
             #expect(success)
             
             // Verify it's a toast with custom view
-            if case .presented(let dialogType) = await store.state.form.dialog.status {
+            if case .presented(let dialogType) = store.state.form.dialog.status {
                 // Check style is toast
                 if case .toast(let config) = dialogType.style {
                     #expect(config.position == .center)
@@ -337,8 +336,8 @@ extension DialogRegistryTests {
             await waitForCondition { Dialog.isRegistered(id: FormWithDialog.DialogId.toastDialog) }
             
             // Present the toast
-            await store.dispatch(Actions.PresentToastDialog())
-            let success = await waitForCondition { await store.state.form.dialog.status != .dismissed }
+            store.dispatch(Actions.PresentToastDialog())
+            let success = await waitForCondition { store.state.form.dialog.status != .dismissed }
             #expect(success)
             
             // For manual dismiss, we'll test by creating a dismissed dialog directly
@@ -360,15 +359,15 @@ extension DialogRegistryTests {
             await waitForCondition { Dialog.isRegistered(id: FormWithDialog.DialogId.toastDialog) }
             
             // Present the toast
-            await store.dispatch(Actions.PresentToastDialog())
-            let success = await waitForCondition { await store.state.form.dialog.status != .dismissed }
+            store.dispatch(Actions.PresentToastDialog())
+            let success = await waitForCondition { store.state.form.dialog.status != .dismissed }
             #expect(success)
             
             // Wait longer than typical auto-dismiss time
             await sleep()
             
             // Verify the dialog status is still presented (not auto-dismissed)
-            #expect(await store.state.form.dialog.status != .dismissed, "Toast with zero duration should not auto-dismiss")
+            #expect(store.state.form.dialog.status != .dismissed, "Toast with zero duration should not auto-dismiss")
         }
         
         // MARK: - Registry Tests
@@ -393,10 +392,9 @@ extension DialogRegistryTests {
                 Issue.record("Expected presented dialog from registry")
             }
         }
+        
         @MainActor
         @Test func dynamicDialogCapturesLatestState() async throws {
-            let store = EnvironmentStore(initial: AppState(), loggers: [])
-            
             Dialog.register(id: FormWithDialog.DialogId.dynamicDialog, store: store) { store in
                 AlertDialog {
                     DialogTitle("Title \(store.state.form.stringProperty)")
@@ -440,8 +438,6 @@ extension DialogRegistryTests {
         
         @MainActor
         @Test func directDialogStatusCapturesLatestState() async throws {
-            let store = EnvironmentStore(initial: AppState(), loggers: [])
-            
             store.dispatch(Actions.PresentDirectDynamicDialog())
             await waitForMainActorCondition { store.state.form.dialog.status != .dismissed }
             
@@ -453,8 +449,8 @@ extension DialogRegistryTests {
             } else {
                 Issue.record("Expected presented dialog")
             }
-            
-            store.dispatch(UDF.Actions.UpdateFormField(keyPath: \FormWithDialog.stringProperty, value: "Updated"))
+
+            store.dispatch(Actions.UpdateFormField(keyPath: \FormWithDialog.stringProperty, value: "Updated"))
             await waitForMainActorCondition { store.state.form.stringProperty == "Updated" }
             
             #expect(store.state.form.stringProperty == "Updated")
@@ -477,7 +473,6 @@ extension DialogRegistryTests {
         
         @MainActor
         @Test func dynamicDialogButtonCapturesLatestState() async throws {
-            let store = EnvironmentStore(initial: AppState(), loggers: [])
             store.dispatch(UDF.Actions.UpdateFormField(keyPath: \FormWithDialog.stringProperty, value: "5"))
             await waitForMainActorCondition { store.state.form.stringProperty == "5" }
             
@@ -504,7 +499,7 @@ extension DialogRegistryTests {
             
             store.dispatch(Actions.PresentDynamicDialog())
             
-            await waitForMainActorCondition { 
+            await waitForMainActorCondition {
                 if case .presented(let dialogType) = store.state.form.dialog.status {
                     let deleteButton = dialogType.actions[1] as? DialogButton
                     return deleteButton?.title == "Delete 3 items"
@@ -522,8 +517,6 @@ extension DialogRegistryTests {
         
         @MainActor
         @Test func dynamicDialogTextFieldCapturesLatestState() async throws {
-            let store = EnvironmentStore(initial: AppState(), loggers: [])
-            
             store.dispatch(
                 Actions.UpdateFormField(
                     keyPath: \FormWithDialog.stringProperty,
@@ -584,11 +577,9 @@ extension DialogRegistryTests {
             }
         }
         
-        @MainActor
         @Test func dynamicDialogTitleCapturesLatestState() async throws {
-            let store = EnvironmentStore(initial: AppState(), loggers: [])
             store.dispatch(UDF.Actions.UpdateFormField(keyPath: \FormWithDialog.stringProperty, value: "Old Title"))
-            await waitForMainActorCondition { store.state.form.stringProperty == "Old Title" }
+            await waitForCondition { store.state.form.stringProperty == "Old Title" }
             
             Dialog.register(id: FormWithDialog.DialogId.dynamicDialog, store: store) { store in
                 AlertDialog {
@@ -598,7 +589,7 @@ extension DialogRegistryTests {
             }
             
             store.dispatch(Actions.PresentDynamicDialog())
-            await waitForMainActorCondition { store.state.form.dialog.status != .dismissed }
+            await waitForCondition { store.state.form.dialog.status != .dismissed }
             
             if case .presented(let dialogType) = store.state.form.dialog.status {
                 #expect(dialogType.title == "Old Title")
@@ -607,11 +598,11 @@ extension DialogRegistryTests {
             }
             
             store.dispatch(UDF.Actions.UpdateFormField(keyPath: \FormWithDialog.stringProperty, value: "New Title"))
-            await waitForMainActorCondition { store.state.form.stringProperty == "New Title" }
+            await waitForCondition { store.state.form.stringProperty == "New Title" }
             
             store.dispatch(Actions.PresentDynamicDialog())
             
-            await waitForMainActorCondition { 
+            await waitForCondition {
                 if case .presented(let dialogType) = store.state.form.dialog.status {
                     return dialogType.title == "New Title"
                 }
@@ -625,11 +616,9 @@ extension DialogRegistryTests {
             }
         }
         
-        @MainActor
         @Test func dynamicDialogMessageCapturesLatestState() async throws {
-            let store = EnvironmentStore(initial: AppState(), loggers: [])
             store.dispatch(UDF.Actions.UpdateFormField(keyPath: \FormWithDialog.stringProperty, value: "Old Message"))
-            await waitForMainActorCondition { store.state.form.stringProperty == "Old Message" }
+            await waitForCondition { store.state.form.stringProperty == "Old Message" }
             
             Dialog.register(id: FormWithDialog.DialogId.dynamicDialog, store: store) { store in
                 AlertDialog {
@@ -640,7 +629,7 @@ extension DialogRegistryTests {
             }
             
             store.dispatch(Actions.PresentDynamicDialog())
-            await waitForMainActorCondition { store.state.form.dialog.status != .dismissed }
+            await waitForCondition { store.state.form.dialog.status != .dismissed }
             
             if case .presented(let dialogType) = store.state.form.dialog.status {
                 #expect(dialogType.message == "Old Message")
@@ -649,11 +638,11 @@ extension DialogRegistryTests {
             }
             
             store.dispatch(UDF.Actions.UpdateFormField(keyPath: \FormWithDialog.stringProperty, value: "New Message"))
-            await waitForMainActorCondition { store.state.form.stringProperty == "New Message" }
+            await waitForCondition { store.state.form.stringProperty == "New Message" }
             
             store.dispatch(Actions.PresentDynamicDialog())
             
-            await waitForMainActorCondition { 
+            await waitForCondition {
                 if case .presented(let dialogType) = store.state.form.dialog.status {
                     return dialogType.message == "New Message"
                 }
@@ -670,7 +659,6 @@ extension DialogRegistryTests {
         @MainActor
         @Test func dynamicDialogCustomIconCapturesLatestState() async throws {
             ViewRenderTracker.renderHistory.removeAll()
-            let store = EnvironmentStore(initial: AppState(), loggers: [])
             store.dispatch(UDF.Actions.UpdateFormField(keyPath: \FormWithDialog.viewMode, value: .text("TextMode")))
             await waitForMainActorCondition { store.state.form.viewMode == .text("TextMode") }
             
@@ -704,7 +692,7 @@ extension DialogRegistryTests {
             
             store.dispatch(Actions.PresentDynamicDialog())
             
-            await waitForMainActorCondition { 
+            await waitForMainActorCondition {
                 if case .presented(let dialogType) = store.state.form.dialog.status {
                     let iconView = dialogType.getIconView(theme: .default)
                     if let iconView {
@@ -732,7 +720,7 @@ extension DialogRegistryTests {
             
             store.dispatch(Actions.PresentDynamicDialog())
             
-            await waitForMainActorCondition { 
+            await waitForMainActorCondition {
                 if case .presented(let dialogType) = store.state.form.dialog.status {
                     let iconView = dialogType.getIconView(theme: .default)
                     if let iconView {
@@ -755,7 +743,6 @@ extension DialogRegistryTests {
         @MainActor
         @Test func dynamicDialogCustomViewCapturesLatestState() async throws {
             ViewRenderTracker.renderHistory.removeAll()
-            let store = EnvironmentStore(initial: AppState(), loggers: [])
             store.dispatch(UDF.Actions.UpdateFormField(keyPath: \FormWithDialog.viewMode, value: .text("TextMode")))
             await waitForMainActorCondition { store.state.form.viewMode == .text("TextMode") }
             
@@ -789,7 +776,7 @@ extension DialogRegistryTests {
             
             store.dispatch(Actions.PresentDynamicDialog())
             
-            await waitForMainActorCondition { 
+            await waitForMainActorCondition {
                 if case .presented(let dialogType) = store.state.form.dialog.status {
                     let customView = dialogType.getCustomContentView()
                     if let customView {
