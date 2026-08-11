@@ -215,6 +215,54 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
         )
     }
 
+    /// Executes a `StateEffectable` and dispatches actions to the store, allowing for cancellation and mapping of actions.
+    ///
+    /// This method builds a publisher from the provided `StateEffectable` using the supplied `flowId` and a snapshot of the current
+    /// store state. It then subscribes to that publisher and dispatches its emitted actions to the store.
+    ///
+    /// - Parameters:
+    ///   - effect: The `StateEffectable` to execute.
+    ///   - flowId: The unique identifier for the flow associated with the effect.
+    ///   - cancellation: A unique identifier to track and cancel the effect.
+    ///   - mapAction: A closure that maps the output of the effect to an action. Defaults to an identity mapping (`{ $0 }`).
+    ///   - fileName: The name of the file from which the method is called. Defaults to the file in which this method is used.
+    ///   - functionName: The name of the function from which the method is called. Defaults to the function in which this method is used.
+    ///   - lineNumber: The line number from which the method is called. Defaults to the line in which this method is used.
+    ///
+    /// This method:
+    /// - Checks if an effect with the same `cancellation` identifier is already running. If it is, the method returns early.
+    /// - Captures the current store state and passes it to `publisher(flowId:state:)`.
+    /// - Subscribes to the resulting publisher on the specified `queue`.
+    /// - Dispatches actions emitted by the publisher to the store.
+    ///
+    /// - Note: This method uses Combine's `sink` and `handleEvents` to manage the effect's lifecycle, including cancellation and
+    /// completion.
+    open func execute<Effect: StateEffectable & Sendable>(
+        effect: Effect,
+        flowId: AnyHashable,
+        cancellation: some Hashable,
+        mapAction: @escaping (any Action) -> any Action = { $0 },
+        fileName: String = #file,
+        functionName: String = #function,
+        lineNumber: Int = #line
+    ) where Effect.AppState == State {
+        let publisher = Publishers
+            .IsolatedState(from: store)
+            .flatMap { state in
+                effect.publisher(flowId: flowId, state: state)
+            }
+            .eraseToAnyPublisher()
+        
+        execute(
+            publisher,
+            cancellation: cancellation,
+            mapAction: mapAction,
+            fileName: fileName,
+            functionName: functionName,
+            lineNumber: lineNumber
+        )
+    }
+
     /// Runs a `PureEffect` and conditionally dispatches actions to the store based on a filter.
     ///
     /// This method subscribes to the provided effect, allowing for its cancellation and mapping of actions. Additionally, it utilizes a
@@ -301,6 +349,48 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
         }
     }
 
+    /// Runs a `StateEffectable` and conditionally dispatches its actions to the store based on a filter.
+    ///
+    /// This method builds a publisher from the provided `StateEffectable` using a snapshot of the current store state and the supplied
+    /// `flowId`, then forwards the resulting publisher to the existing `run` pipeline with a dispatch filter.
+    ///
+    /// - Parameters:
+    ///   - effect: The `StateEffectable` to execute.
+    ///   - flowId: The unique identifier for the flow associated with the effect.
+    ///   - cancellation: A unique identifier used to track and cancel the effect.
+    ///   - mapAction: A closure that maps the output of the effect to an action. Defaults to an identity mapping (`{ $0 }`).
+    ///   - dispatchFilter: A closure that determines whether the action should be dispatched, based on the current state and the action
+    /// itself.
+    ///   - fileName: The name of the file from which the method is called. Defaults to the file in which this method is used.
+    ///   - functionName: The name of the function from which the method is called. Defaults to the function in which this method is used.
+    ///   - lineNumber: The line number from which the method is called. Defaults to the line in which this method is used.
+    open func run<Effect: StateEffectable & Sendable>(
+        effect: Effect,
+        flowId: AnyHashable,
+        cancellation: some Hashable,
+        mapAction: @escaping (any Action) -> any Action = { $0 },
+        dispatchFilter: @escaping DispatchFilter<any Action>,
+        fileName: String = #file,
+        functionName: String = #function,
+        lineNumber: Int = #line
+    ) where Effect.AppState == State {
+        let publisher = Publishers.IsolatedState(from: store)
+            .flatMap { state in
+                effect.publisher(flowId: flowId, state: state)
+            }
+            .eraseToAnyPublisher()
+
+        run(
+            publisher,
+            cancellation: cancellation,
+            mapAction: mapAction,
+            dispatchFilter: dispatchFilter,
+            fileName: fileName,
+            functionName: functionName,
+            lineNumber: lineNumber
+        )
+    }
+
     /// Runs a `PureEffect` and dispatches its actions to the store.
     ///
     /// This method subscribes to the provided effect, allowing for its cancellation and mapping of actions. It handles the lifecycle of the
@@ -349,7 +439,7 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
                 self?.cancellationsBox.withLockUnchecked { box in
                     box.removeCancellation(forKey: anyId)
                 }
-                self?.dispatch(action: mapAction(Actions.DidCancelEffect(by: cancellation)), filePosition: filePosition )
+                self?.dispatch(action: mapAction(Actions.DidCancelEffect(by: cancellation)), filePosition: filePosition)
             })
             .sink(receiveCompletion: { [weak self] _ in
                 // Handle completion: Remove the task from cancellations
@@ -368,6 +458,44 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
         cancellationsBox.withLockUnchecked { box in
             box.set(cancellable: cancellable, forKey: anyId)
         }
+    }
+
+    /// Runs a `StateEffectable` and dispatches its actions to the store.
+    ///
+    /// This method builds a publisher from the provided `StateEffectable` using a snapshot of the current store state and the supplied
+    /// `flowId`, then forwards the resulting publisher to the existing `run` pipeline.
+    ///
+    /// - Parameters:
+    ///   - effect: The `StateEffectable` to execute.
+    ///   - flowId: The unique identifier for the flow associated with the effect.
+    ///   - cancellation: A unique identifier used to track and cancel the effect.
+    ///   - mapAction: A closure that maps the output of the effect to an action. Defaults to an identity mapping (`{ $0 }`).
+    ///   - fileName: The name of the file from which the method is called. Defaults to the file where this method is used.
+    ///   - functionName: The name of the function from which the method is called. Defaults to the function where this method is used.
+    ///   - lineNumber: The line number from which the method is called. Defaults to the line where this method is used.
+    open func run<Effect: StateEffectable & Sendable>(
+        effect: Effect,
+        flowId: AnyHashable,
+        cancellation: some Hashable,
+        mapAction: @escaping (any Action) -> any Action = { $0 },
+        fileName: String = #file,
+        functionName: String = #function,
+        lineNumber: Int = #line
+    ) where Effect.AppState == State {
+        let publisher = Publishers.IsolatedState(from: store)
+            .flatMap { state in
+                effect.publisher(flowId: flowId, state: state)
+            }
+            .eraseToAnyPublisher()
+
+        run(
+            publisher,
+            cancellation: cancellation,
+            mapAction: mapAction,
+            fileName: fileName,
+            functionName: functionName,
+            lineNumber: lineNumber
+        )
     }
 
     // MARK: - Concurrency
