@@ -263,7 +263,7 @@ private extension StateEffectableTests {
             switch state.messageFlow {
             case .loading:
                 execute(
-                    effect: MessageStateEffectable(environment: environment),
+                    effect: MessageStateEffectable(),
                     flowId: MessageFlow.id,
                     cancellation: Cancellation.message
                 )
@@ -274,7 +274,7 @@ private extension StateEffectableTests {
         }
 
         struct MessageStateEffectable: StateEffectable, Sendable {
-            var environment: LoadMessageEnvironment
+            var environment: LoadMessageEnvironment!
 
             func publisher(flowId: AnyHashable, state: AppState) throws -> AnyPublisher<any Action, Never> {
                 guard let token = state.userForm.currentUser?.token else {

@@ -41,11 +41,9 @@ import UDFSwiftTesting
     
     @Test("Middleware uses StateConcurrencyEffect with an environment")
     func observeMiddlewareWithStateConcurrencyEffectAndEnvironment() async throws {
-        let environments = MessageEnvironments(
-            popular: LoadPopularMessage(),
-            preview: LoadPreviewMessage()
-        )
-        await store.subscribe(MessageMiddleware.self, environment: environments)
+        await store.subscribe(LoadPopularMessageMiddleware.self, environment: LoadPopularMessage())
+        await store.subscribe(LoadPreviewMessageMiddleware.self, environment: LoadPreviewMessage())
+        
         #expect(await store.state.messageFlow == .none, "MessageFlow should start in the .none state")
 
         await store.dispatch(Actions.LoadingPopularMessage())
@@ -147,7 +145,7 @@ import UDFSwiftTesting
             case is Actions.DidLoadItem<Counter>:
                 self = .none
                 
-            case let action as Actions.DidCancelEffect where action.cancellation == MessageMiddleware.Сancellation.message:
+            case let action as Actions.DidCancelEffect where action.cancellation == CounterMiddleware.Сancellation.increment:
                 self = .none
                 
             default:
@@ -176,7 +174,10 @@ import UDFSwiftTesting
             case is Actions.DidLoadItem<Message>:
                 self = .none
                 
-            case let action as Actions.DidCancelEffect where action.cancellation == MessageMiddleware.Сancellation.message:
+            case let action as Actions.DidCancelEffect where action.cancellation == LoadPopularMessageMiddleware.Сancellation.message:
+                self = .none
+                
+            case let action as Actions.DidCancelEffect where action.cancellation == LoadPreviewMessageMiddleware.Сancellation.message:
                 self = .none
                 
             default:
@@ -213,22 +214,16 @@ extension ConcurrencyEffectTests {
 
 // MARK: - Middlewares
 private extension ConcurrencyEffectTests {
-    final class MessageMiddleware: Middleware<AppState>, @unchecked Sendable {
-        typealias Environment = MessageEnvironments
+    final class LoadPopularMessageMiddleware: Middleware<AppState>, @unchecked Sendable {
+        typealias Environment = LoadPopularMessage
         var environment: Environment!
 
         static func buildLiveEnvironment(for store: some Store<AppState>) -> Environment {
-            MessageEnvironments(
-                popular: EmptyLoadMessage(),
-                preview: EmptyLoadMessage()
-            )
+            LoadPopularMessage()
         }
 
         static func buildTestEnvironment(for store: some Store<AppState>) -> Environment {
-            MessageEnvironments(
-                popular: LoadPopularMessage(),
-                preview: LoadPreviewMessage()
-            )
+            LoadPopularMessage()
         }
 
         enum Сancellation: CaseIterable {
@@ -243,14 +238,7 @@ private extension ConcurrencyEffectTests {
             switch state.messageFlow {
             case .loadingPopularMessage:
                 execute(
-                    effect: MessageStateConcurrencyEffect(environment: environment.popular),
-                    flowId: MessageFlow.id,
-                    cancellation: Сancellation.message
-                )
-                
-            case .loadingPreviewMessage:
-                execute(
-                    effect: MessageStateConcurrencyEffect(environment: environment.preview),
+                    effect: MessageStateConcurrencyEffect(),
                     flowId: MessageFlow.id,
                     cancellation: Сancellation.message
                 )
@@ -258,18 +246,52 @@ private extension ConcurrencyEffectTests {
                 break
             }
         }
+    }
+    
+    final class LoadPreviewMessageMiddleware: Middleware<AppState>, @unchecked Sendable {
+        typealias Environment = LoadPreviewMessage
+        var environment: Environment!
 
-        struct MessageStateConcurrencyEffect: StateConcurrencyEffect {
-            var environment: LoadMessageEnvironment
-            
-            func task(flowId: AnyHashable, state: AppState) async throws -> any Action {
-                guard let token = state.userForm.currentUser?.token else {
-                    throw CancellationError()
-                }
-                let message = try await environment.loadMessage(token: token)
-                
-                return Actions.DidLoadItem(item: Message(content: message), id: flowId)
+        static func buildLiveEnvironment(for store: some Store<AppState>) -> Environment {
+            LoadPreviewMessage()
+        }
+
+        static func buildTestEnvironment(for store: some Store<AppState>) -> Environment {
+            LoadPreviewMessage()
+        }
+
+        enum Сancellation: CaseIterable {
+            case message
+        }
+
+        func scope(for state: AppState) -> Scope {
+            state.messageFlow
+        }
+
+        func observe(state: AppState) {
+            switch state.messageFlow {
+            case .loadingPreviewMessage:
+                execute(
+                    effect: MessageStateConcurrencyEffect(),
+                    flowId: MessageFlow.id,
+                    cancellation: Сancellation.message
+                )
+            default:
+                break
             }
+        }
+    }
+    
+    struct MessageStateConcurrencyEffect: StateConcurrencyEffect {
+        var environment: LoadMessageEnvironment!
+        
+        func task(flowId: AnyHashable, state: AppState) async throws -> any Action {
+            guard let token = state.userForm.currentUser?.token else {
+                throw CancellationError()
+            }
+            let message = try await environment.loadMessage(token: token)
+            
+            return Actions.DidLoadItem(item: Message(content: message), id: flowId)
         }
     }
     
@@ -313,11 +335,6 @@ private extension ConcurrencyEffectTests {
 
 // MARK: - Environment
 extension ConcurrencyEffectTests {
-    struct MessageEnvironments: Sendable {
-        let popular: any LoadMessageEnvironment
-        let preview: any LoadMessageEnvironment
-    }
-
     protocol LoadMessageEnvironment: Sendable {
         func loadMessage(token: String) async throws -> String
     }
@@ -328,12 +345,6 @@ extension ConcurrencyEffectTests {
     
     private static var previewMessage: String {
         String(fullMessage.prefix(20)).trimmingCharacters(in: .whitespacesAndNewlines).appending("...")
-    }
-    
-    struct EmptyLoadMessage: LoadMessageEnvironment {
-        func loadMessage(token: String) async throws -> String {
-            return ""
-        }
     }
     
     struct LoadPopularMessage: LoadMessageEnvironment {

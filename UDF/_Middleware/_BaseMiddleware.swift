@@ -246,7 +246,6 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
         functionName: String = #function,
         lineNumber: Int = #line
     ) where Effect.AppState == State {
-        self
         let publisher = stateEffectPublisher(
             effect: effect,
             flowId: flowId,
@@ -503,14 +502,15 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
         flowId: AnyHashable,
         cancellation: some Hashable
     ) -> AnyPublisher<any Action, Never> where Effect.AppState == State {
-        Publishers
+        let effect = effectWithEnvironment(effect)
+
+        return Publishers
             .IsolatedState(from: store)
-            .flatMap { [weak self] state -> AnyPublisher<any Action, Never> in
+            .flatMap { state -> AnyPublisher<any Action, Never> in
                 do {
                     return try effect.publisher(flowId: flowId, state: state)
                 } catch is CancellationError {
-                    self?.cancel(by: cancellation)
-                    return Empty()
+                    return Just(Actions.DidCancelEffect(by: cancellation))
                         .eraseToAnyPublisher()
                 } catch {
                     return Just(Actions.Error(error: error.localizedDescription, id: flowId))
@@ -705,6 +705,8 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
             guard let store else {
                 throw CancellationError()
             }
+            
+            let effect = self.effectWithEnvironment(effect)
             return try await effect.task(flowId: flowId, state: store.state)
         }
     }
@@ -723,5 +725,32 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
         func removeCancellation(forKey key: AnyHashable) {
             cancellations.removeValue(forKey: key)
         }
+    }
+}
+
+
+private extension _BaseMiddleware {
+    /// Returns a copy of a state-based Combine effect with the middleware environment injected when the types match.
+    ///
+    /// The middleware environment is stored behind `EnvironmentMiddleware`, so the cast happens at runtime.
+    /// If the middleware does not expose an environment of `Effect.Environment`, the original effect is returned unchanged.
+    func effectWithEnvironment<Effect: StateEffectable>(_ effect: Effect) -> Effect where Effect.AppState == State {
+        var effect = effect
+        if let middleware = self as? (any EnvironmentMiddleware<State>), let environment = middleware.environment as? Effect.Environment {
+            effect.environment = environment
+        }
+        return effect
+    }
+
+    /// Returns a copy of a state-based async effect with the middleware environment injected when the types match.
+    ///
+    /// This mirrors `effectWithEnvironment(_:)` for `StateEffectable`, ensuring concurrency effects receive the
+    /// middleware environment only when it can be safely cast to the effect's `Environment` type.
+    func effectWithEnvironment<Effect: StateConcurrencyEffect>(_ effect: Effect) -> Effect where Effect.AppState == State {
+        var effect = effect
+        if let middleware = self as? (any EnvironmentMiddleware<State>), let environment = middleware.environment as? Effect.Environment {
+            effect.environment = environment
+        }
+        return effect
     }
 }
