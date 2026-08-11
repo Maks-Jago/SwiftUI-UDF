@@ -82,7 +82,33 @@ public extension Dialog {
         _DialogRegistry.register(id: id) { dialog(store) }
     }
 
-    
+    /// Registers a type-safe ``DialogProtocol`` (``AlertDialog``, ``Toast``, or ``ConfirmationDialog``)
+    /// for the given identifier, explicitly passing a ``TestStore`` to the builder closure.
+    ///
+    /// This mirrors the `EnvironmentStore`-based `register(id:store:dialog:)` overload for tests
+    /// that need `TestStore`'s capabilities (e.g. `subscribe(_:)` for injecting test middleware)
+    /// rather than a plain `EnvironmentStore`.
+    ///
+    /// ```swift
+    /// Dialog.register(id: MyDialogs.error, store: testStore) { testStore in
+    ///     AlertDialog {
+    ///         DialogTitle(testStore.state.errorTitle)
+    ///     }
+    /// }
+    /// ```
+    ///
+    /// - Parameters:
+    ///   - id: A unique, hashable identifier for this dialog.
+    ///   - store: The test store to pass into the dialog builder.
+    ///   - dialog: A closure that receives the test store and returns a ``DialogProtocol`` conforming value.
+    static func register<ID: Hashable & Sendable, D: DialogProtocol, State: AppReducer>(
+        id: ID,
+        store: TestStore<State>,
+        dialog: @escaping @Sendable (TestStore<State>) -> D
+    ) {
+        _DialogRegistry.register(id: id) { dialog(store) }
+    }
+
     /// Checks if a dialog is registered for the given identifier.
     ///
     /// - Parameter id: The identifier to check.

@@ -57,16 +57,17 @@ extension DialogType {
 
 extension DialogRegistryTests {
     @Suite(.serialized) struct DialogTests {
+        let store: TestStore<AppState>
 
-        init() {
+        init() async {
             Dialog.clearAll()
+            store = await TestStore(initial: AppState())
         }
         
         @Test func legacyDialogRegistration_allowsPresentationById() async {
-            let store = await TestStore(initial: AppState())
             #expect(await store.state.form.dialog.status == .dismissed)
-            
-            Dialog.register(id: FormWithDialog.DialogId.dialogWithAction) {
+
+            Dialog.register(id: FormWithDialog.DialogId.dialogWithAction, store: store) { _ in
                 DialogCustomType.custom(
                     content: .init(
                         title: "Custom Title",
@@ -86,10 +87,9 @@ extension DialogRegistryTests {
         }
         
         @Test func whendialogRegistered_dialogCanBePresentedById() async {
-            let store = await TestStore(initial: AppState())
             #expect(await store.state.form.dialog.status == .dismissed)
-            
-            Dialog.register(id: FormWithDialog.DialogId.dialogWithAction) {
+
+            Dialog.register(id: FormWithDialog.DialogId.dialogWithAction, store: store) { _ in
                 DialogType.dialogWithAction {
                     print("Custom dialog action")
                 }
@@ -160,10 +160,9 @@ extension DialogRegistryTests {
         
         // MARK: - Toast-Specific Tests
         @Test func whenToastRegistered_ToastCanBePresentedById() async {
-            let store = await TestStore(initial: AppState())
             #expect(await store.state.form.dialog.status == .dismissed)
-            
-            Dialog.register(id: FormWithDialog.DialogId.toastDialog) {
+
+            Dialog.register(id: FormWithDialog.DialogId.toastDialog, store: store) { _ in
                 DialogType.toastWithAction {
                     print("Toast action executed")
                 }
@@ -187,9 +186,7 @@ extension DialogRegistryTests {
         }
         
         @Test func customToastWithIcon() async {
-            let store = await TestStore(initial: AppState())
-            
-            Dialog.register(id: FormWithDialog.DialogId.customToastWithIcon) {
+            Dialog.register(id: FormWithDialog.DialogId.customToastWithIcon, store: store) { _ in
                 DialogType.customToastWithIcon()
             }
             await waitForCondition { Dialog.isRegistered(id: FormWithDialog.DialogId.customToastWithIcon) }
@@ -217,9 +214,7 @@ extension DialogRegistryTests {
         }
         
         @Test func customViewToast() async {
-            let store = await TestStore(initial: AppState())
-            
-            Dialog.register(id: FormWithDialog.DialogId.customViewToast) {
+            Dialog.register(id: FormWithDialog.DialogId.customViewToast, store: store) { _ in
                 DialogType.customViewToast()
             }
             await waitForCondition { Dialog.isRegistered(id: FormWithDialog.DialogId.customViewToast) }
@@ -270,7 +265,6 @@ extension DialogRegistryTests {
         }
         
         // MARK: - Complex Content Tests
-        @MainActor
         @Test func customDialogWithContent() {
             let dialog = DialogStatus(dialog: AlertDialog {
                 DialogTitle("Custom Title")
@@ -293,7 +287,6 @@ extension DialogRegistryTests {
             }
         }
         
-        @MainActor
         @Test func toastWithContentAndActions() {
             let dialog = DialogStatus(dialog: Toast {
                 DialogMessage("Toast message")
@@ -335,10 +328,8 @@ extension DialogRegistryTests {
         
         // MARK: - Auto-Dismiss Dialog Status Tests
         @Test func manualDismissUpdatesDialogStatus() async {
-            let store = await TestStore(initial: AppState())
-            
             // Register a toast with long duration (won't auto-dismiss during test)
-            Dialog.register(id: FormWithDialog.DialogId.toastDialog) {
+            Dialog.register(id: FormWithDialog.DialogId.toastDialog, store: store) { _ in
                 Toast(config: .init(defaultDuration: 10.0)) {
                     DialogMessage("This toast should be manually dismissed")
                 }
@@ -360,10 +351,8 @@ extension DialogRegistryTests {
         }
         
         @Test func zeroDurationToastDoesNotAutoDismiss() async {
-            let store = await TestStore(initial: AppState())
-            
             // Register a toast with zero duration (manual dismiss only)
-            Dialog.register(id: FormWithDialog.DialogId.toastDialog) {
+            Dialog.register(id: FormWithDialog.DialogId.toastDialog, store: store) { _ in
                 Toast(config: .init(defaultDuration: 0)) {
                     DialogMessage("This toast should not auto-dismiss")
                 }
@@ -383,7 +372,6 @@ extension DialogRegistryTests {
         }
         
         // MARK: - Registry Tests
-        @MainActor
         @Test func registryBehavior() {
             let testId = "test-dialog"
             
@@ -409,7 +397,7 @@ extension DialogRegistryTests {
         @Test func dynamicDialogCapturesLatestState() async throws {
             let store = EnvironmentStore(initial: AppState(), loggers: [])
             
-            Dialog.register(id: FormWithDialog.DialogId.dynamicDialog) {
+            Dialog.register(id: FormWithDialog.DialogId.dynamicDialog, store: store) { store in
                 AlertDialog {
                     DialogTitle("Title \(store.state.form.stringProperty)")
                     DialogMessage("Message \(store.state.form.stringProperty)")
@@ -493,7 +481,7 @@ extension DialogRegistryTests {
             store.dispatch(UDF.Actions.UpdateFormField(keyPath: \FormWithDialog.stringProperty, value: "5"))
             await waitForMainActorCondition { store.state.form.stringProperty == "5" }
             
-            Dialog.register(id: FormWithDialog.DialogId.dynamicDialog) {
+            Dialog.register(id: FormWithDialog.DialogId.dynamicDialog, store: store) { store in
                 AlertDialog {
                     DialogTitle("do you want to delete these items?")
                     DialogButton(title: "Cancel", role: .cancel)
@@ -545,7 +533,7 @@ extension DialogRegistryTests {
             
             await waitForMainActorCondition { store.state.form.stringProperty == "Initial Text" }
             
-            Dialog.register(id: FormWithDialog.DialogId.dynamicDialog) {
+            Dialog.register(id: FormWithDialog.DialogId.dynamicDialog, store: store) { store in
                 AlertDialog {
                     DialogTitle("Edit Item")
                     DialogTextField(
@@ -602,7 +590,7 @@ extension DialogRegistryTests {
             store.dispatch(UDF.Actions.UpdateFormField(keyPath: \FormWithDialog.stringProperty, value: "Old Title"))
             await waitForMainActorCondition { store.state.form.stringProperty == "Old Title" }
             
-            Dialog.register(id: FormWithDialog.DialogId.dynamicDialog) {
+            Dialog.register(id: FormWithDialog.DialogId.dynamicDialog, store: store) { store in
                 AlertDialog {
                     DialogTitle(store.state.form.stringProperty)
                     DialogButton(title: "OK")
@@ -643,7 +631,7 @@ extension DialogRegistryTests {
             store.dispatch(UDF.Actions.UpdateFormField(keyPath: \FormWithDialog.stringProperty, value: "Old Message"))
             await waitForMainActorCondition { store.state.form.stringProperty == "Old Message" }
             
-            Dialog.register(id: FormWithDialog.DialogId.dynamicDialog) {
+            Dialog.register(id: FormWithDialog.DialogId.dynamicDialog, store: store) { store in
                 AlertDialog {
                     DialogTitle("Static Title")
                     DialogMessage(store.state.form.stringProperty)
@@ -686,9 +674,9 @@ extension DialogRegistryTests {
             store.dispatch(UDF.Actions.UpdateFormField(keyPath: \FormWithDialog.viewMode, value: .text("TextMode")))
             await waitForMainActorCondition { store.state.form.viewMode == .text("TextMode") }
             
-            Dialog.register(id: FormWithDialog.DialogId.dynamicDialog) {
+            Dialog.register(id: FormWithDialog.DialogId.dynamicDialog, store: store) { store in
                 Toast {
-                    DialogIcon { 
+                    DialogIcon {
                         switch store.state.form.viewMode {
                         case .image:
                             Image(systemName: "star")
@@ -771,10 +759,10 @@ extension DialogRegistryTests {
             store.dispatch(UDF.Actions.UpdateFormField(keyPath: \FormWithDialog.viewMode, value: .text("TextMode")))
             await waitForMainActorCondition { store.state.form.viewMode == .text("TextMode") }
             
-            Dialog.register(id: FormWithDialog.DialogId.dynamicDialog) {
+            Dialog.register(id: FormWithDialog.DialogId.dynamicDialog, store: store) { store in
                 Toast {
                     DialogMessage("Message")
-                    DialogView { 
+                    DialogView {
                         switch store.state.form.viewMode {
                         case .image:
                             Image(systemName: "circle")
