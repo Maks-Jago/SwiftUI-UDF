@@ -404,18 +404,49 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
         lineNumber: Int = #line,
         _ task: @escaping @Sendable (AnyHashable) async throws -> any Action
     ) {
-        execute(
-            effect: ConcurrencyBlockEffect(
-                block: task,
-                fileName: fileName,
-                functionName: functionName,
-                lineNumber: lineNumber
-            ),
-            flowId: flowId,
-            cancellation: cancellation,
-            mapAction: mapAction,
-            mapError: mapError
-        )
+        let anyCancellationId = AnyHashable(cancellation)
+
+        // Prevent running the effect if an effect with the same cancellation ID is already in progress
+        guard cancellations[anyCancellationId] == nil else {
+            return
+        }
+
+        // Capture file name, function name, and line number for debugging and logging purposes
+        let filePosition: FileFunctionLineDescription = (fileName: fileName, functionName: functionName, lineNumber: lineNumber)
+        TestGroup.instance(for: store).enter()
+
+        // Start the task and store the cancellation token
+        let task = Task { @Sendable [weak self] in
+            do {
+                // Execute the effect's task, passing flowId
+                let action = try await task(flowId)
+
+                // Check if the task was cancelled and dispatch appropriate actions
+                if Task.isCancelled {
+                    self?.dispatch(action: mapAction(Actions.DidCancelEffect(by: cancellation)), filePosition: filePosition)
+                } else {
+                    self?.dispatch(action: mapAction(action), filePosition: filePosition)
+                }
+
+            } catch {
+                // Handle errors and task cancellation
+                if error is CancellationError {
+                    self?.dispatch(action: mapAction(Actions.DidCancelEffect(by: cancellation)), filePosition: filePosition)
+                } else if !Task.isCancelled {
+                    self?.dispatch(action: mapError(flowId, error), filePosition: filePosition)
+                }
+            }
+
+            // Remove the task from the cancellations dictionary
+            self?.cancellationsBox.withLockUnchecked { box in
+                box.removeCancellation(forKey: anyCancellationId)
+            }
+        }
+
+        // Store the task in the cancellations dictionary for future cancellation
+        cancellationsBox.withLockUnchecked { box in
+            box.set(cancellable: task, forKey: anyCancellationId)
+        }
     }
 
     private func dispatch(action: any Action, filePosition: FileFunctionLineDescription) {
@@ -464,48 +495,67 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
         functionName: String = #function,
         lineNumber: Int = #line
     ) {
-        let anyCancellationId = AnyHashable(cancellation)
-
-        // Prevent running the effect if an effect with the same cancellation ID is already in progress
-        guard cancellations[anyCancellationId] == nil else {
-            return
+        execute(
+            flowId: flowId,
+            cancellation: cancellation,
+            mapAction: mapAction,
+            mapError: mapError,
+            fileName: fileName,
+            functionName: functionName,
+            lineNumber: lineNumber
+        ) { flowID in
+            try await effect.task(flowId: flowId)
         }
-
-        // Capture file name, function name, and line number for debugging and logging purposes
-        let filePosition = fileFunctionLine(effect, fileName: fileName, functionName: functionName, lineNumber: lineNumber)
-        TestGroup.instance(for: store).enter()
-
-        // Start the task and store the cancellation token
-        let task = Task { @Sendable [weak self] in
-            do {
-                // Execute the effect's task, passing flowId
-                let action = try await effect.task(flowId: flowId)
-
-                // Check if the task was cancelled and dispatch appropriate actions
-                if Task.isCancelled {
-                    self?.dispatch(action: mapAction(Actions.DidCancelEffect(by: cancellation)), filePosition: filePosition)
-                } else {
-                    self?.dispatch(action: mapAction(action), filePosition: filePosition)
-                }
-
-            } catch {
-                // Handle errors and task cancellation
-                if error is CancellationError {
-                    self?.dispatch(action: mapAction(Actions.DidCancelEffect(by: cancellation)), filePosition: filePosition)
-                } else if !Task.isCancelled {
-                    self?.dispatch(action: mapError(flowId, error), filePosition: filePosition)
-                }
+    }
+    
+    /// Executes a `StateConcurrencyEffect` with support for cancellation and error handling.
+    ///
+    /// This method starts a new asynchronous task, invoking the provided `StateConcurrencyEffect`'s `task(flowId:state:)` method.
+    /// It captures the current store state at execution time and passes that state into the effect together with the provided `flowId`.
+    /// It supports cancellation, mapping of the resulting action, and error handling.
+    ///
+    /// - Parameters:
+    ///   - effect: The `StateConcurrencyEffect` to execute.
+    ///   - flowId: The unique identifier for the flow associated with the effect.
+    ///   - cancellation: A unique identifier for tracking and potentially canceling the task.
+    ///   - mapAction: A closure that maps the output action of the task to another action. Defaults to an identity mapping (`{ $0 }`).
+    ///   - mapError: A closure that maps errors thrown by the task to an action. Defaults to creating an `Actions.Error` using the error's
+    /// localized description.
+    ///   - fileName: The name of the file from which the method is called. Defaults to the file where this method is used.
+    ///   - functionName: The name of the function from which the method is called. Defaults to the function where this method is used.
+    ///   - lineNumber: The line number from which the method is called. Defaults to the line where this method is used.
+    ///
+    /// This method:
+    /// - Checks if a task with the same `cancellation` identifier is already running. If it is, the method returns early.
+    /// - Reads the current store state and passes it to the effect's asynchronous `task(flowId:state:)` method.
+    /// - Handles task cancellation and errors, dispatching appropriate actions to the store.
+    /// - Removes the task from the `cancellations` dictionary when it is completed.
+    ///
+    /// - Note: If the store is no longer available when the task starts, this method throws `CancellationError`.
+    /// - Note: This method uses the Swift `Task` API to run the asynchronous task.
+    open func execute<Effect: StateConcurrencyEffect & Sendable>(
+        effect: Effect,
+        flowId: AnyHashable,
+        cancellation: some Hashable & Sendable,
+        mapAction: @escaping @Sendable (any Action) -> any Action = { $0 },
+        mapError: @escaping ErrorMapper<AnyHashable> = { flowId, error in Actions.Error(error: error.localizedDescription, id: flowId) },
+        fileName: String = #file,
+        functionName: String = #function,
+        lineNumber: Int = #line
+    ) where Effect.AppState == State {
+        execute(
+            flowId: flowId,
+            cancellation: cancellation,
+            mapAction: mapAction,
+            mapError: mapError,
+            fileName: fileName,
+            functionName: functionName,
+            lineNumber: lineNumber
+        ) { [weak store] flowID in
+            guard let store else {
+                throw CancellationError()
             }
-
-            // Remove the task from the cancellations dictionary
-            self?.cancellationsBox.withLockUnchecked { box in
-                box.removeCancellation(forKey: anyCancellationId)
-            }
-        }
-
-        // Store the task in the cancellations dictionary for future cancellation
-        cancellationsBox.withLockUnchecked { box in
-            box.set(cancellable: task, forKey: anyCancellationId)
+            return try await effect.task(flowId: flowId, state: store.state)
         }
     }
     
@@ -525,4 +575,3 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
         }
     }
 }
-
