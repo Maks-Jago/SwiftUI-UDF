@@ -4,7 +4,7 @@ import UDFSwiftTesting
 import Testing
 
 @TestStoreActor
-@Suite struct BindableReducersAcrossContainersTests {
+@Suite struct SharedReducerTypeAcrossContainersTests {
     struct Item: Hashable, Identifiable {
         struct ID: Hashable {
             var value: Int
