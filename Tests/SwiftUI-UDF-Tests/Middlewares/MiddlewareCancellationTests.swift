@@ -87,8 +87,8 @@ import Foundation
         var success = await store.state.middlewareFlow == .loading
         #expect(success)
 
+        try? await Task.sleep(for: .milliseconds(10))
         await store.dispatch(Actions.CancelLoading())
-        await store.wait()
 
         success = await waitForCondition { await store.state.middlewareFlow == .none }
         
@@ -102,14 +102,25 @@ import Foundation
         var success = await store.state.middlewareFlow == .loading
         #expect(success)
 
-        await store.wait(additionalSleepFor: 2.0)
-        success = await store.state.runForm.messagesCount > 0
+        success = await waitForCondition { await store.state.runForm.messagesCount > 0 }
         #expect(success)
 
         await store.dispatch(Actions.CancelLoading())
-        await store.wait(additionalSleepFor: 0.1)
 
-        success = await store.state.middlewareFlow == .none
+        success = await waitForCondition { await store.state.middlewareFlow == .none }
+        #expect(success)
+    }
+
+    @Test func reducibleMiddlewareToCancel() async {
+        let store = await TestStore(initial: AppState())
+        await store.subscribe(ReducibleMiddlewareToCancel.self, environment: ReducibleMiddlewareToCancel.Environment())
+        await store.dispatch(Actions.Loading())
+        var success = await store.state.middlewareFlow == .loading
+        #expect(success)
+        try? await Task.sleep(for: .milliseconds(10))
+        await store.dispatch(Actions.CancelLoading())
+
+        success = await waitForCondition { await store.state.middlewareFlow == .none }
         #expect(success)
     }
     
