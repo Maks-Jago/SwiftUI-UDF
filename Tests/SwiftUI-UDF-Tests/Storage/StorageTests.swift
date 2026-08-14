@@ -14,7 +14,7 @@ import Testing
         validateStorage(for: AllItemsOrderedDictionary())
     }
 
-    private func validateStorage<S: Storage>(for storage: S) where S.Entity == Item {
+    private func validateStorage(for storage: some Storage<Item>) {
         var storage = storage
 
         let apple = Item(id: .init(value: 1), name: "apple")
