@@ -523,7 +523,7 @@ public extension Actions {
     }
 
     /// `DidLoadItems` is an action that represents multiple items being loaded.
-    struct DidLoadItems<M: Equatable & Sendable>: Action {
+    struct DidLoadItems<M: Equatable & Sendable>: Action, CustomStringConvertible {
         /// The list of items that were loaded.
         public var items: [M]
 

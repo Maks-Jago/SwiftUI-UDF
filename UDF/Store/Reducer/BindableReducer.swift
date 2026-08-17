@@ -22,7 +22,7 @@ public struct BindableReducer<ID: Hashable & Sendable, Reducer: Reducible>: Redu
     public typealias Reducers = RCDictionary<ID, Reducer>
 
     /// The type of container this reducer is bound to.
-    public internal(set) var containerType: Any.Type
+    public internal(set) var containerType: any BindableContainer.Type
 
     /// The dictionary holding the reducers associated with each container ID.
     var reducers: Reducers = .init()
@@ -47,7 +47,7 @@ public struct BindableReducer<ID: Hashable & Sendable, Reducer: Reducible>: Redu
     /// - Parameters:
     ///   - reducerType: The type of reducer to manage.
     ///   - containerType: The runtime type of the container to bind this reducer to.
-    public init(_ reducerType: Reducer.Type, containerType: Any.Type) {
+    public init(_ reducerType: Reducer.Type, containerType: any BindableContainer.Type) {
         self.containerType = containerType
     }
 

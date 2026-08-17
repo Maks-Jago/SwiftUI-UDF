@@ -105,46 +105,12 @@ public extension Action {
         lineNumber: Int = #line
     ) -> some Action where BindedContainer.ID: Sendable {
         binded(
-            to: containerType as Any.Type,
+            to: containerType as any BindableContainer.Type,
             by: id,
             fileName: fileName,
             functionName: functionName,
             lineNumber: lineNumber
         )
-    }
-
-    func binded<ID: Hashable & Sendable>(
-        to containerType: Any.Type,
-        by id: ID,
-        fileName: String = #file,
-        functionName: String = #function,
-        lineNumber: Int = #line
-    ) -> some Action {
-        if let group = self as? ActionGroup {
-            ActionGroup(internalActions: group._actions.map { oldAction in
-                InternalAction(
-                    oldAction.value.binded(to: containerType, by: id, fileName: fileName, functionName: functionName, lineNumber: lineNumber),
-                    animation: oldAction.animation,
-                    silent: oldAction.silent,
-                    fileName: oldAction.fileName,
-                    functionName: oldAction.functionName,
-                    lineNumber: oldAction.lineNumber
-                )
-            })
-        } else {
-            ActionGroup(internalActions: [
-                InternalAction(
-                    Actions._BindableAction(
-                        value: self,
-                        containerType: containerType,
-                        id: id
-                    ),
-                    fileName: fileName,
-                    functionName: functionName,
-                    lineNumber: lineNumber
-                ),
-            ])
-        }
     }
 
     /// Binds the action to a specific `BindableContainer` instance.
@@ -162,7 +128,7 @@ public extension Action {
         functionName: String = #function,
         lineNumber: Int = #line
     ) -> some Action where BindedContainer.ID: Sendable {
-        binded(
+        return binded(
             to: BindedContainer.self,
             by: container.id,
             fileName: fileName,
@@ -190,6 +156,42 @@ public extension Action {
                 InternalAction(
                     self,
                     delay: Delay(delay),
+                    fileName: fileName,
+                    functionName: functionName,
+                    lineNumber: lineNumber
+                ),
+            ])
+        }
+    }
+}
+
+extension Action {
+    func binded<ID: Hashable & Sendable>(
+        to containerType: any BindableContainer.Type,
+        by id: ID,
+        fileName: String = #file,
+        functionName: String = #function,
+        lineNumber: Int = #line
+    ) -> some Action {
+        if let group = self as? ActionGroup {
+            ActionGroup(internalActions: group._actions.map { oldAction in
+                InternalAction(
+                    oldAction.value.binded(to: containerType, by: id, fileName: fileName, functionName: functionName, lineNumber: lineNumber),
+                    animation: oldAction.animation,
+                    silent: oldAction.silent,
+                    fileName: oldAction.fileName,
+                    functionName: oldAction.functionName,
+                    lineNumber: oldAction.lineNumber
+                )
+            })
+        } else {
+            ActionGroup(internalActions: [
+                InternalAction(
+                    Actions._BindableAction(
+                        value: self,
+                        containerType: containerType,
+                        id: id
+                    ),
                     fileName: fileName,
                     functionName: functionName,
                     lineNumber: lineNumber
