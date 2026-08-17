@@ -161,6 +161,22 @@ public extension ActionGroup {
     }
 }
 
+// MARK: - Recursive Mapping
+extension ActionGroup {
+    /// Recursively applies a transform to all leaf `InternalAction`s.
+    /// When a child's `.value` is itself an `ActionGroup`, recurses into it
+    /// rather than applying the transform to the wrapper.
+    func recursiveMap(_ transform: (InternalAction) -> InternalAction) -> ActionGroup {
+        ActionGroup(internalActions: _actions.flatMap { action -> [InternalAction] in
+            if let innerGroup = action.value as? ActionGroup {
+                return innerGroup.recursiveMap(transform)._actions
+            } else {
+                return [transform(action)]
+            }
+        })
+    }
+}
+
 // MARK: - Insert Actions
 public extension ActionGroup {
     /// Inserts a single action at a specified position in the group.

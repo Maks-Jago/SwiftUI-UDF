@@ -36,11 +36,11 @@ public extension Action {
         lineNumber: Int = #line
     ) -> some Action {
         if let group = self as? ActionGroup {
-            ActionGroup(internalActions: group._actions.map { oldAction in
+            group.recursiveMap { oldAction in
                 var mutableCopy = oldAction
                 mutableCopy.animation = animation
                 return mutableCopy
-            })
+            }
         } else {
             ActionGroup(internalActions: [
                 InternalAction(
@@ -66,11 +66,11 @@ public extension Action {
     /// ```
     func silent(fileName: String = #file, functionName: String = #function, lineNumber: Int = #line) -> some Action {
         if let group = self as? ActionGroup {
-            ActionGroup(internalActions: group._actions.map { oldAction in
+            group.recursiveMap { oldAction in
                 var mutableCopy = oldAction
                 mutableCopy.silent = true
                 return mutableCopy
-            })
+            }
         } else {
             ActionGroup(internalActions: [
                 InternalAction(
@@ -146,11 +146,11 @@ public extension Action {
         lineNumber: Int = #line
     ) -> some Action {
         if let group = self as? ActionGroup {
-            ActionGroup(internalActions: group._actions.map { oldAction in
+            group.recursiveMap { oldAction in
                 var mutableCopy = oldAction
                 mutableCopy.delay = Delay(delay)
                 return mutableCopy
-            })
+            }
         } else {
             ActionGroup(internalActions: [
                 InternalAction(

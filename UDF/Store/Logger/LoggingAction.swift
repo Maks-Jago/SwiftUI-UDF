@@ -12,7 +12,7 @@
 import Foundation
 
 /// A structure representing an action to be logged, including metadata about the action's origin.
-public struct LoggingAction: CustomDebugStringConvertible {
+public struct LoggingAction: CustomDebugStringConvertible, Sendable {
     /// The action being logged.
     public let value: any Action
 

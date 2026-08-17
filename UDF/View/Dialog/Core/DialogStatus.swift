@@ -198,7 +198,7 @@ public struct DialogStatus: Equatable, Identifiable, Sendable {
         title: String,
         message: String,
         style: DialogStyle = .alert,
-        @DialogActionsBuilder _ actions: @Sendable () -> [any DialogAction]
+        @DialogActionsBuilder _ actions: () -> [any DialogAction]
     ) {
         let content = DialogContent(
             title: title,
@@ -295,7 +295,7 @@ public struct DialogStatus: Equatable, Identifiable, Sendable {
     
     /// Initializes a dialog state using a type-safe DialogProtocol instance.
     ///
-    /// The `@MainActor` builder closure is evaluated eagerly and the resulting
+    /// The builder closure is evaluated eagerly and the resulting
     /// dialog is captured for presentation. This mirrors the registration
     /// pattern used in `Dialog.register(id:dialog:)`.
     ///
@@ -312,8 +312,7 @@ public struct DialogStatus: Equatable, Identifiable, Sendable {
     ///     }
     /// }
     /// ```
-    @MainActor
-    public init(dialog: @MainActor () -> any DialogProtocol) {
+    public init(dialog: () -> any DialogProtocol) {
         self = .init(dialog: dialog() as any DialogTypeProtocol)
     }
     
