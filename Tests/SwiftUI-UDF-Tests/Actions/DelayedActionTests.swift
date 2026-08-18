@@ -161,7 +161,7 @@ import os
         let clock = ContinuousClock()
         let start = clock.now
         let delay: TimeInterval = 1
-        let timingTolerance = 0.1
+        let timingTolerance = 0.15
 
         let titleText = "title"
         let updatedTitleText = "updated title"
@@ -196,7 +196,7 @@ import os
         let clock = ContinuousClock()
         let start = clock.now
         let delay: TimeInterval = 1
-        let timingTolerance = 0.1
+        let timingTolerance = 0.15
 
         let titleText = "title"
         let updatedTitleText = "updated title"

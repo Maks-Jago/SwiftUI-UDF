@@ -46,9 +46,9 @@ public final class SourceOfTruth<AppState: AppReducer> {
     /// - Parameter keyPath: A key path to a `BindableReducer` in the application state.
     /// - Returns: A `BindableReducerReference` to the specified `BindableReducer`.
     public subscript<
-        C: BindableContainer,
+        ID: Hashable & Sendable,
         R: Reducible
-    >(dynamicMember keyPath: WritableKeyPath<AppState, BindableReducer<C, R>>) -> BindableReducerReference<AppState, C, R> {
+    >(dynamicMember keyPath: WritableKeyPath<AppState, BindableReducer<ID, R>>) -> BindableReducerReference<AppState, ID, R> {
         BindableReducerReference(reducer: wrappedValue[keyPath: keyPath]) { [weak self] action in
             self?.store?.dispatch(action, priority: .userInteractive)
         }

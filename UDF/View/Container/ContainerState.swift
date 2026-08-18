@@ -62,7 +62,11 @@ final class ContainerState<State: AppReducer>: ObservableObject, @unchecked Send
             let newScope = scope(newState)
             // Skip if the scope hasn't changed
             if let old = self.currentScope, old.isEqual(newScope) { return }
-            withAnimation(animation) {
+            if let animation {
+                withAnimation(animation) {
+                    self.currentScope = newScope
+                }
+            } else {
                 self.currentScope = newScope
             }
         }
