@@ -988,10 +988,6 @@ extension Actions {
             self.containerType = containerType
             self.id = id
         }
-
-        var anyID: AnyHashable {
-            id
-        }
     }
 
     /// `_OnContainerDidUnLoad` is an internal action used to signal that a `BindableContainer` has unloaded.
@@ -1020,10 +1016,6 @@ extension Actions {
         ) where Container.ID == ID {
             self.containerType = containerType
             self.id = id
-        }
-
-        var anyID: AnyHashable {
-            id
         }
     }
 
@@ -1059,10 +1051,6 @@ extension Actions {
             self.value = value
             self.containerType = containerType
             self.id = id
-        }
-
-        var anyID: AnyHashable {
-            id
         }
 
         public static func == (lhs: _BindableAction, rhs: _BindableAction) -> Bool {
