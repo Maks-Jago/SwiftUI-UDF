@@ -21,15 +21,21 @@ import SwiftUI
 #if canImport(UIKit)
     import UIKit.UIApplication
 
+    /// The platform's application type: `UIApplication` on UIKit platforms.
     public typealias PlatformApplication = UIApplication
+    /// The platform's launch-options type: `UIApplication`'s launch options dictionary on UIKit platforms.
     public typealias PlatformLaunchOptions = [UIApplication.LaunchOptionsKey: Any]?
 #else
     import AppKit.NSApplication
 
+    /// The platform's application type: `NSApplication` on AppKit platforms.
     public typealias PlatformApplication = NSApplication
+    /// The platform's launch-options type: the launch `Notification` on AppKit platforms.
     public typealias PlatformLaunchOptions = Notification
 #endif
 
+/// A namespace for the built-in actions shipped with the UDF architecture, covering forms,
+/// alerts, dialogs, pagination, navigation, and application lifecycle events.
 public enum Actions {
     /// `UpdateFormField` is an action used to update a specific field in a form within the UDF architecture.
     /// It captures the key path of the property to be updated along with its new value, and provides a way to
@@ -881,8 +887,12 @@ public extension Actions {
 
     /// `NavigateBack` is an action used to handle navigation back a specified number of steps.
     struct NavigateStepsBack: Action {
+        /// The number of screens to pop off the navigation stack.
         public let stepsCount: Int
 
+        /// Initializes a `NavigateStepsBack` action.
+        ///
+        /// - Parameter stepsCount: The number of screens to pop off the navigation stack.
         public init(stepsCount: Int) {
             self.stepsCount = stepsCount
         }
@@ -951,8 +961,12 @@ public extension Actions {
 
     /// `NavigateStepsBackTyped` is a generic action used to handle navigation back a specified number of steps.
     struct NavigateStepsBackTyped<Routing>: Action {
+        /// The number of screens to pop off the navigation stack.
         public let stepsCount: Int
 
+        /// Initializes a `NavigateStepsBackTyped` action.
+        ///
+        /// - Parameter stepsCount: The number of screens to pop off the navigation stack.
         public init(stepsCount: Int) {
             self.stepsCount = stepsCount
         }

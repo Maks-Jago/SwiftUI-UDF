@@ -12,12 +12,22 @@
 import Foundation
 import SwiftUI
 
+/// Describes the shape of a dialog's content and presentation.
+///
+/// Conforming types (such as `DialogType` and `DialogCustomType`) define what a dialog displays —
+/// its style, semantic category, title, message and actions — and how it renders its icon and any
+/// custom content. This is the core protocol every dialog type in the Dialog subsystem conforms to.
 public protocol DialogTypeProtocol: Sendable, IsEquatable, Hashable {
+    /// The presentation style of the dialog (e.g. alert, toast, confirmation).
     var style: DialogStyle { get }
+    /// The semantic category of the dialog (success, error, warning, info, or custom).
     var category: DialogCategory { get }
-    
+
+    /// The dialog's title. Returns an empty string for types that have no title.
     var title: String { get }
+    /// The dialog's message, if any.
     var message: String? { get }
+    /// The actions the dialog offers to the user.
     var actions: [any DialogAction] { get }
     
     /// Returns the icon for this dialog as a type-erased AnyView

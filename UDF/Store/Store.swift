@@ -30,7 +30,8 @@ public protocol Store<State>: Actor {
     ///   - fileName: The name of the file where the action is dispatched. Defaults to the caller's file.
     ///   - functionName: The name of the function where the action is dispatched. Defaults to the caller's function.
     ///   - lineNumber: The line number where the action is dispatched. Defaults to the caller's line.
-    ///   /// Example usage:
+    ///
+    /// Example usage:
     /// ```swift
     /// // This method is triggered when the container appears.
     /// func onContainerAppear(store: EnvironmentStore<AppState>) {
@@ -70,7 +71,8 @@ public extension Store {
     ///   - functionName: The name of the function where the command is created. Defaults to the caller's function.
     ///   - lineNumber: The line number where the command is created. Defaults to the caller's line.
     /// - Returns: A command that, when executed, dispatches the specified action.
-    /// /// Example usage:
+    ///
+    /// Example usage:
     /// ```swift
     /// struct ExampleComponent: Component {
     ///     struct Props {
