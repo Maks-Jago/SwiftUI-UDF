@@ -11,8 +11,8 @@
 
 protocol AnyBindableReducer: Sendable {
     /// The type of the container this reducer is bound to (e.g., UserDetailsContainer.self)
-    var boundContainerType: any Any.Type { get }
+    var boundContainerType: any BindableContainer.Type { get }
 
     /// Returns whether a reducer instance currently exists in the dictionary for the given ID
-    func hasReducer(for id: any Hashable) -> Bool
+    func hasReducer(for id: some Hashable) -> Bool
 }

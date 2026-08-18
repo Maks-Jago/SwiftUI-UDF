@@ -143,7 +143,7 @@ public extension BindableReducer {
 // MARK: - AnyBindableReducer
 extension BindableReducer: AnyBindableReducer {
     /// The type of container this reducer is bound to.
-    var boundContainerType: any Any.Type {
+    var boundContainerType: any BindableContainer.Type {
         containerType
     }
     
@@ -151,7 +151,7 @@ extension BindableReducer: AnyBindableReducer {
     ///
     /// - Parameter id: The identifier of the container, expected to be of type `BindedContainer.ID`.
     /// - Returns: `true` if a reducer exists for the given identifier; otherwise, `false`.
-    func hasReducer(for id: any Hashable) -> Bool {
+    func hasReducer(for id: some Hashable) -> Bool {
         guard let id = id as? ID else {
             return false
         }
