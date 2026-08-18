@@ -971,12 +971,12 @@ extension Actions {
         }
 
         /// The type of the container that has loaded.
-        var containerType: Any.Type
+        var containerType: any BindableContainer.Type
 
         /// The unique identifier of the container.
         var id: ID
 
-        init(containerType: Any.Type, id: ID) {
+        init(containerType: any BindableContainer.Type, id: ID) {
             self.containerType = containerType
             self.id = id
         }
@@ -1004,12 +1004,12 @@ extension Actions {
         }
 
         /// The type of the container that has unloaded.
-        var containerType: Any.Type
+        var containerType: any BindableContainer.Type
 
         /// The unique identifier of the container.
         var id: ID
 
-        init(containerType: Any.Type, id: ID) {
+        init(containerType: any BindableContainer.Type, id: ID) {
             self.containerType = containerType
             self.id = id
         }
@@ -1036,14 +1036,14 @@ extension Actions {
         let value: any Action
 
         /// The type of the container that the action is bound to.
-        let containerType: Any.Type
+        let containerType: any BindableContainer.Type
 
         /// The unique identifier of the container.
         let id: ID
 
         init(
             value: any Action,
-            containerType: Any.Type,
+            containerType: any BindableContainer.Type,
             id: ID
         ) {
             self.value = value

@@ -12,7 +12,7 @@ import Foundation
 /// actions against the reducer collection associated with a container type.
 protocol _AnyBindableContainerAction: Action {
     /// The type of the `BindableContainer` that this load action is associated with.
-    var containerType: Any.Type { get }
+    var containerType: any BindableContainer.Type { get }
 
     /// The unique identifier for the container instance this action is bound to.
     var anyID: AnyHashable { get }
@@ -34,7 +34,7 @@ protocol _AnyBindableAction: Action {
     var value: any Action { get }
 
     /// The type of the `BindableContainer` associated with this action.
-    var containerType: Any.Type { get }
+    var containerType: any BindableContainer.Type { get }
 
     /// The unique identifier for the container instance this action is bound to.
     var anyID: AnyHashable { get }
