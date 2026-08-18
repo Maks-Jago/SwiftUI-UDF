@@ -47,6 +47,9 @@ final class ContainerState<State: AppReducer>: ObservableObject, @unchecked Send
     /// The current scoped state that is observed by SwiftUI views.
     @Published var currentScope: Scope?
 
+    /// Tracks the latest processed scope independently from SwiftUI's published state updates.
+    private var lastScope: Scope?
+
     /// Initializes the `ContainerState` with a given store and scope closure.
     ///
     /// - Parameters:
@@ -55,13 +58,15 @@ final class ContainerState<State: AppReducer>: ObservableObject, @unchecked Send
     init(store: EnvironmentStore<State>, scope: @escaping @Sendable (_ state: State) -> Scope) {
         self.store = store
         self.currentScope = nil
+        self.lastScope = nil
 
         // Subscribe to state changes in the store
         self.subscriptionKey = store.add { [weak self] oldState, newState, animation in
             guard let self else { return }
             let newScope = scope(newState)
             // Skip if the scope hasn't changed
-            if let old = self.currentScope, old.isEqual(newScope) { return }
+            if let old = self.lastScope, old.isEqual(newScope) { return }
+            self.lastScope = newScope
             withAnimation(animation) {
                 self.currentScope = newScope
             }
