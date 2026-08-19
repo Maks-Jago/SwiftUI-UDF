@@ -35,7 +35,7 @@
 /// `Genre`. Other reducers can then reference `Genre.ID` values instead of storing
 /// duplicated full models.
 public protocol Storage<Entity>: Reducible {
-    associatedtype Entity: Identifiable & Equatable & Sendable
+    associatedtype Entity: StorageItem
     associatedtype Entities: StorageCollection where Entities.Key == Entity.ID, Entities.Value == Entity
 
     /// The normalized lookup table keyed by entity identifier.
@@ -55,14 +55,9 @@ public extension Storage {
     }
 }
 
-public extension Storage where Entity: EmptyValue {
+public extension Storage {
     /// Returns `.empty` when the entity is missing from storage.
     func by(id: Entity.ID) -> Entity {
         self[id] ?? .empty
     }
-}
-
-/// A helper protocol for entity types that can provide an empty fallback value.
-public protocol EmptyValue {
-    static var empty: Self { get }
 }

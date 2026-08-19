@@ -84,7 +84,7 @@ private struct AllItemsOrderedDictionary: Storage {
     }
 }
 
-private struct Item: Identifiable, Equatable, Sendable, EmptyValue {
+private struct Item: StorageItem {
     let id: ID
     let name: String
 
