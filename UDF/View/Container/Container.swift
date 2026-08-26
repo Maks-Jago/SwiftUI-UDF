@@ -131,19 +131,19 @@ public protocol Container<ContainerState>: View, Sendable {
 // MARK: - Lifecycle methods
 public extension Container {
     /// Default implementation for `onContainerAppear`. Does nothing by default.
-    func onContainerAppear(store: EnvironmentStore<ContainerState>) {}
+    @MainActor func onContainerAppear(store: EnvironmentStore<ContainerState>) {}
 
     /// Default implementation for `onContainerDisappear`. Does nothing by default.
-    func onContainerDisappear(store: EnvironmentStore<ContainerState>) {}
+    @MainActor func onContainerDisappear(store: EnvironmentStore<ContainerState>) {}
 
     /// Default implementation for `onContainerDidLoad`. Does nothing by default.
-    func onContainerDidLoad(store: EnvironmentStore<ContainerState>) {}
+    @MainActor func onContainerDidLoad(store: EnvironmentStore<ContainerState>) {}
 
     /// Default implementation for `onContainerDidUnload`. Does nothing by default.
-    func onContainerDidUnload(store: EnvironmentStore<ContainerState>) {}
+    @MainActor func onContainerDidUnload(store: EnvironmentStore<ContainerState>) {}
 
     /// Default implementation for `useHooks`. Returns an empty array by default.
-    func useHooks() -> [Hook<ContainerState>] { [] }
+    @MainActor func useHooks() -> [Hook<ContainerState>] { [] }
 }
 
 // MARK: - Store
