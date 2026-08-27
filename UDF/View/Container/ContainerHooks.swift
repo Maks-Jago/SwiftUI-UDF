@@ -52,14 +52,14 @@ final class ContainerHooks<State: AppReducer>: @unchecked Sendable {
     var hooks: [AnyHashable: Hook<State>] = [:]
 
     /// A closure that returns an array of hooks to be used in the container.
-    var buildHooks: () -> [Hook<State>]
+    var buildHooks: @MainActor () -> [Hook<State>]
 
     /// Initializes the `ContainerHooks` with a store and a closure that builds the hooks.
     ///
     /// - Parameters:
     ///   - store: The `EnvironmentStore` holding the global state.
     ///   - hooks: A closure that provides an array of hooks to use in the container.
-    init(store: EnvironmentStore<State>, hooks: @escaping () -> [Hook<State>]) {
+    init(store: EnvironmentStore<State>, hooks: @escaping @MainActor () -> [Hook<State>]) {
         self.store = store
         self.buildHooks = hooks
         self.subscriptionKey = store.add { [weak self] oldState, newState, _ in
@@ -70,7 +70,7 @@ final class ContainerHooks<State: AppReducer>: @unchecked Sendable {
     }
 
     /// Creates hooks by building them from the provided closure and storing them in a dictionary.
-    func createHooks() {
+    @MainActor func createHooks() {
         self.hooks = Dictionary(uniqueKeysWithValues: buildHooks().map { ($0.id, $0) })
 
         // Trigger initial hook check to ensure hooks fire at least once

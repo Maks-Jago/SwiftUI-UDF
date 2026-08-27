@@ -18,7 +18,7 @@ import SwiftUI
 /// multiple instances of the same container view can temporarily coexist. To prevent race conditions
 /// and premature state unloading, this base class provides a centralized registry to track the active count
 /// of each container key before executing full unload sequences.
-class BaseContainerLifecycle: ObservableObject {
+@MainActor class BaseContainerLifecycle: ObservableObject {
     
     /// A unique key identifying a container type and its specific instance ID.
     ///
@@ -87,13 +87,13 @@ final class ContainerLifecycle<State: AppReducer>: BaseContainerLifecycle {
     var containerHooks: ContainerHooks<State>?
 
     /// A closure that returns an array of hooks to be used in the container.
-    private var useHooks: () -> [Hook<State>]
+    private var useHooks: @MainActor () -> [Hook<State>]
 
     /// A command that is executed when the container is loaded.
-    var didLoadCommand: CommandWith<EnvironmentStore<State>>
+    var didLoadCommand: @MainActor (EnvironmentStore<State>) -> Void
 
     /// A command that is executed when the container is unloaded.
-    var didUnloadCommand: CommandWith<EnvironmentStore<State>>
+    var didUnloadCommand: @MainActor (EnvironmentStore<State>) -> Void
 
     /// A reference to the EnvironmentStore.
     private var store: EnvironmentStore<State> = EnvironmentStore<State>.global
@@ -121,9 +121,9 @@ final class ContainerLifecycle<State: AppReducer>: BaseContainerLifecycle {
     ///   - didUnloadCommand: A command to execute when the container is unloaded.
     ///   - useHooks: A closure that returns an array of hooks to use within the container.
     init(
-        didLoadCommand: @escaping CommandWith<EnvironmentStore<State>>,
-        didUnloadCommand: @escaping CommandWith<EnvironmentStore<State>>,
-        useHooks: @escaping () -> [Hook<State>]
+        didLoadCommand: @escaping @MainActor (EnvironmentStore<State>) -> Void,
+        didUnloadCommand: @escaping @MainActor (EnvironmentStore<State>) -> Void,
+        useHooks: @escaping @MainActor () -> [Hook<State>]
     ) {
         self.didLoadCommand = didLoadCommand
         self.didUnloadCommand = didUnloadCommand
@@ -131,7 +131,7 @@ final class ContainerLifecycle<State: AppReducer>: BaseContainerLifecycle {
     }
 
     /// Cleans up by removing all hooks and executing the unload command.
-    deinit {
+    isolated deinit {
         containerHooks?.removeAllHooks()
         self.didUnloadCommand(self.store)
     }

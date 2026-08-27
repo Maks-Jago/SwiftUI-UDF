@@ -46,7 +46,7 @@ import Runtime
 /// manage its lifecycle events, and bind hooks for actions and side effects.
 struct ConnectedContainer<C: Component, State: AppReducer>: View {
     /// A closure that maps the global store to the properties needed by the component.
-    let map: (_ store: EnvironmentStore<State>) -> C.Props
+    let map: @MainActor (_ store: EnvironmentStore<State>) -> C.Props
     
     /// A closure that defines the scope within the global state.
     let scope: @MainActor (_ state: State) -> Scope
@@ -80,13 +80,13 @@ struct ConnectedContainer<C: Component, State: AppReducer>: View {
     ///   - useHooks: A closure that provides an array of hooks to use within the container.
     init(
         store: EnvironmentStore<State>,
-        map: @escaping (EnvironmentStore<State>) -> C.Props,
+        map: @escaping @MainActor (EnvironmentStore<State>) -> C.Props,
         scope: @escaping @Sendable (State) -> Scope,
         onContainerAppear: @escaping @MainActor (EnvironmentStore<State>) -> Void,
         onContainerDisappear: @escaping @MainActor (EnvironmentStore<State>) -> Void,
-        onContainerDidLoad: @escaping (EnvironmentStore<State>) -> Void,
-        onContainerDidUnload: @escaping (EnvironmentStore<State>) -> Void,
-        useHooks: @escaping () -> [Hook<State>]
+        onContainerDidLoad: @escaping @MainActor (EnvironmentStore<State>) -> Void,
+        onContainerDidUnload: @escaping @MainActor (EnvironmentStore<State>) -> Void,
+        useHooks: @escaping @MainActor () -> [Hook<State>]
     ) {
         self.store = store
         self.map = map
@@ -121,22 +121,22 @@ struct ConnectedContainer<C: Component, State: AppReducer>: View {
         store: EnvironmentStore<State>,
         containerType: BindedContainer.Type,
         containerId: @escaping () -> BindedContainer.ID,
-        map: @escaping (EnvironmentStore<State>) -> C.Props,
+        map: @escaping @MainActor (EnvironmentStore<State>) -> C.Props,
         scope: @escaping @Sendable (State) -> Scope,
         onContainerAppear: @escaping @MainActor (EnvironmentStore<State>) -> Void,
         onContainerDisappear: @escaping @MainActor (EnvironmentStore<State>) -> Void,
-        onContainerDidLoad: @escaping (EnvironmentStore<State>) -> Void,
-        onContainerDidUnload: @escaping (EnvironmentStore<State>) -> Void,
-        onBindableReducerDidLoad: @escaping (EnvironmentStore<State>) -> Void,
-        onBindableReducerDidUnload: @escaping (EnvironmentStore<State>) -> Void,
-        useHooks: @escaping () -> [Hook<State>]
+        onContainerDidLoad: @escaping @MainActor (EnvironmentStore<State>) -> Void,
+        onContainerDidUnload: @escaping @MainActor (EnvironmentStore<State>) -> Void,
+        onBindableReducerDidLoad: @escaping @MainActor (EnvironmentStore<State>) -> Void,
+        onBindableReducerDidUnload: @escaping @MainActor (EnvironmentStore<State>) -> Void,
+        useHooks: @escaping @MainActor () -> [Hook<State>]
     ) where BindedContainer.ID: Sendable {
         self.store = store
         self.map = map
         self.scope = scope
         self.onContainerAppear = onContainerAppear
         self.onContainerDisappear = onContainerDisappear
-        let wrappedUseHooks = {
+        let wrappedUseHooks: @MainActor @Sendable () -> [Hook<State>] = {
             var hooks = useHooks()
             if let syntheticHook = Self.makeStateDidLoadHook(
                 store: store,
@@ -235,7 +235,7 @@ extension ConnectedContainer {
         store: EnvironmentStore<State>,
         containerType: T.Type,
         id: T.ID,
-        onBindableReducerDidLoad: @escaping (EnvironmentStore<State>) -> Void
+        onBindableReducerDidLoad: @escaping @MainActor (EnvironmentStore<State>) -> Void
     ) -> Hook<State>? where T.ID: Sendable {
         guard getBoundReducer(
             from: store.state,
@@ -274,7 +274,7 @@ extension ConnectedContainer {
         containerType: T.Type,
         id: T.ID,
         store: EnvironmentStore<State>,
-        onContainerDidLoad: @escaping (EnvironmentStore<State>) -> Void
+        onContainerDidLoad: @escaping @MainActor (EnvironmentStore<State>) -> Void
     ) {
         let key = BaseContainerLifecycle.ActiveContainerKey(
             containerType: ObjectIdentifier(containerType),
@@ -319,7 +319,7 @@ extension ConnectedContainer {
         containerType: T.Type,
         id: T.ID,
         store: EnvironmentStore<State>,
-        onBindableReducerDidUnload: @escaping (EnvironmentStore<State>) -> Void
+        onBindableReducerDidUnload: @escaping @MainActor (EnvironmentStore<State>) -> Void
     ) {
         let key = BaseContainerLifecycle.ActiveContainerKey(
             containerType: ObjectIdentifier(containerType),
