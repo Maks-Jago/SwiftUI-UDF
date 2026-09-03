@@ -21,15 +21,21 @@ import SwiftUI
 #if canImport(UIKit)
     import UIKit.UIApplication
 
+    /// The platform's application type: `UIApplication` on UIKit platforms.
     public typealias PlatformApplication = UIApplication
+    /// The platform's launch-options type: `UIApplication`'s launch options dictionary on UIKit platforms.
     public typealias PlatformLaunchOptions = [UIApplication.LaunchOptionsKey: Any]?
 #else
     import AppKit.NSApplication
 
+    /// The platform's application type: `NSApplication` on AppKit platforms.
     public typealias PlatformApplication = NSApplication
+    /// The platform's launch-options type: the launch `Notification` on AppKit platforms.
     public typealias PlatformLaunchOptions = Notification
 #endif
 
+/// A namespace for the built-in actions shipped with the UDF architecture, covering forms,
+/// alerts, dialogs, pagination, navigation, and application lifecycle events.
 public enum Actions {
     /// `UpdateFormField` is an action used to update a specific field in a form within the UDF architecture.
     /// It captures the key path of the property to be updated along with its new value, and provides a way to
@@ -687,10 +693,10 @@ public extension Actions {
         /// A textual representation of the nested items.
         public var description: String {
             guard shortDescription else {
-                return "DidLoadNestedItems<\(Nested.self)> Parent \(String(reflecting: ParentId.self))(itemsCount: \(items.count), items:\n\t\t\t\t\t\(items.map { String(describing: $0) }.joined(separator: "\n\t\t\t\t\t")))\n"
+                return "DidLoadNestedItems<\(Nested.self)> Parent: \(String(reflecting: ParentId.self))(\(parentId)) (itemsCount: \(items.count), items:\n\t\t\t\t\t\(items.map { String(describing: $0) }.joined(separator: "\n\t\t\t\t\t")))\n"
             }
 
-            return "DidLoadNestedItems<\(Nested.self)> Parent \(String(reflecting: ParentId.self))(count: \(items.count), prefix(1): \(String(describing: items.prefix(1)))"
+            return "DidLoadNestedItems<\(Nested.self)> Parent: \(String(reflecting: ParentId.self))(\(parentId)) (count: \(items.count), prefix(1): \(String(describing: items.prefix(1))))"
         }
     }
 
@@ -729,11 +735,12 @@ public extension Actions {
 
         /// A textual representation of the nested items.
         public var description: String {
+            let parentKeys = dictionary.keys.map { String(describing: $0) }.joined(separator: ", ")
             guard shortDescription else {
-                return "DidLoadNestedByParents<\(Nested.self)> Parent \(String(reflecting: ParentId.self))(parentCount: \(dictionary.keys.count), items:\n\t\t\t\t\t\(dictionary.map { String(describing: $0) }.joined(separator: "\n\t\t\t\t\t")))\n"
+                return "DidLoadNestedByParents<\(Nested.self)> Parents: \(String(reflecting: ParentId.self)) [\(parentKeys)] (parentCount: \(dictionary.keys.count), items:\n\t\t\t\t\t\(dictionary.map { String(describing: $0) }.joined(separator: "\n\t\t\t\t\t")))\n"
             }
 
-            return "DidLoadNestedByParents<\(Nested.self)> Parent \(String(reflecting: ParentId.self))(parentCount: \(dictionary.keys.count), prefix(1): \(String(describing: dictionary.prefix(1)))"
+            return "DidLoadNestedByParents<\(Nested.self)> Parents: \(String(reflecting: ParentId.self)) [\(parentKeys)] (parentCount: \(dictionary.keys.count), prefix(1): \(String(describing: dictionary.prefix(1))))"
         }
     }
 
@@ -806,13 +813,25 @@ public extension Actions {
     }
 }
 
+// MARK: - Navigation Equality Helper
+private func arePathsEqual(_ lhs: [any Hashable & Sendable], _ rhs: [any Hashable & Sendable]) -> Bool {
+    guard lhs.count == rhs.count else { return false }
+    for (l, r) in zip(lhs, rhs) {
+        if AnyHashable(l) != AnyHashable(r) {
+            return false
+        }
+    }
+    return true
+}
+
 // MARK: - Global Navigation
 public extension Actions {
     /// `Navigate` is an action used to handle navigation to a specific path within the app.
     struct Navigate: Action {
         public static func == (lhs: Actions.Navigate, rhs: Actions.Navigate) -> Bool {
-            true
+            arePathsEqual(lhs.to, rhs.to)
         }
+
 
         /// An array representing the path to navigate to.
         public let to: [any Hashable & Sendable]
@@ -835,7 +854,7 @@ public extension Actions {
     /// `NavigateResetStack` is an action used to reset the navigation stack and navigate to a specified path.
     struct NavigateResetStack: Action {
         public static func == (lhs: Actions.NavigateResetStack, rhs: Actions.NavigateResetStack) -> Bool {
-            true
+            arePathsEqual(lhs.to, rhs.to)
         }
 
         /// An array representing the path to navigate to after resetting the stack.
@@ -868,8 +887,12 @@ public extension Actions {
 
     /// `NavigateBack` is an action used to handle navigation back a specified number of steps.
     struct NavigateStepsBack: Action {
+        /// The number of screens to pop off the navigation stack.
         public let stepsCount: Int
 
+        /// Initializes a `NavigateStepsBack` action.
+        ///
+        /// - Parameter stepsCount: The number of screens to pop off the navigation stack.
         public init(stepsCount: Int) {
             self.stepsCount = stepsCount
         }
@@ -881,7 +904,7 @@ public extension Actions {
     /// `NavigateTyped` is a generic action used to handle typed navigation to a specific path within the app.
     struct NavigateTyped<Routing>: Action {
         public static func == (lhs: Actions.NavigateTyped<Routing>, rhs: Actions.NavigateTyped<Routing>) -> Bool {
-            true
+            arePathsEqual(lhs.to, rhs.to)
         }
 
         /// An array representing the path to navigate to.
@@ -905,7 +928,7 @@ public extension Actions {
     /// `NavigateResetStackTyped` is a generic action used to reset the navigation stack and navigate to a specified path.
     struct NavigateResetStackTyped<Routing>: Action {
         public static func == (lhs: Actions.NavigateResetStackTyped<Routing>, rhs: Actions.NavigateResetStackTyped<Routing>) -> Bool {
-            true
+            arePathsEqual(lhs.to, rhs.to)
         }
 
         /// An array representing the path to navigate to after resetting the stack.
@@ -938,8 +961,12 @@ public extension Actions {
 
     /// `NavigateStepsBackTyped` is a generic action used to handle navigation back a specified number of steps.
     struct NavigateStepsBackTyped<Routing>: Action {
+        /// The number of screens to pop off the navigation stack.
         public let stepsCount: Int
 
+        /// Initializes a `NavigateStepsBackTyped` action.
+        ///
+        /// - Parameter stepsCount: The number of screens to pop off the navigation stack.
         public init(stepsCount: Int) {
             self.stepsCount = stepsCount
         }
@@ -952,56 +979,96 @@ extension Actions {
     ///
     /// This action is typically dispatched when a container of type `BindableContainer` is fully loaded and ready for interactions.
     ///
-    /// - Parameters:
-    ///   - BindedContainer: The container type conforming to `BindableContainer`.
-    struct _OnContainerDidLoad<BindedContainer: BindableContainer>: Action where BindedContainer.ID: Sendable {
-        static func == (lhs: Actions._OnContainerDidLoad<BindedContainer>, rhs: Actions._OnContainerDidLoad<BindedContainer>) -> Bool {
+    struct _OnContainerDidLoad<ID: Hashable & Sendable>: _AnyBindableContainerAction {
+        static func == (lhs: Actions._OnContainerDidLoad<ID>, rhs: Actions._OnContainerDidLoad<ID>) -> Bool {
             lhs.id == rhs.id && lhs.containerType == rhs.containerType
         }
 
         /// The type of the container that has loaded.
-        var containerType: BindedContainer.Type
+        var containerType: any BindableContainer.Type
 
         /// The unique identifier of the container.
-        var id: BindedContainer.ID
+        var id: ID
+
+        init(containerType: any BindableContainer.Type, id: ID) {
+            self.containerType = containerType
+            self.id = id
+        }
+
+        init<Container: BindableContainer>(
+            containerType: Container.Type,
+            id: Container.ID
+        ) where Container.ID == ID {
+            self.containerType = containerType
+            self.id = id
+        }
     }
 
     /// `_OnContainerDidUnLoad` is an internal action used to signal that a `BindableContainer` has unloaded.
     ///
     /// This action is typically dispatched when a container of type `BindableContainer` is unloaded, indicating the end of its lifecycle.
     ///
-    /// - Parameters:
-    ///   - BindedContainer: The container type conforming to `BindableContainer`.
-    struct _OnContainerDidUnLoad<BindedContainer: BindableContainer>: Action where BindedContainer.ID: Sendable {
-        static func == (lhs: Actions._OnContainerDidUnLoad<BindedContainer>, rhs: Actions._OnContainerDidUnLoad<BindedContainer>) -> Bool {
+    struct _OnContainerDidUnLoad<ID: Hashable & Sendable>: _AnyBindableContainerAction {
+        static func == (lhs: Actions._OnContainerDidUnLoad<ID>, rhs: Actions._OnContainerDidUnLoad<ID>) -> Bool {
             lhs.id == rhs.id && lhs.containerType == rhs.containerType
         }
 
         /// The type of the container that has unloaded.
-        var containerType: BindedContainer.Type
+        var containerType: any BindableContainer.Type
 
         /// The unique identifier of the container.
-        var id: BindedContainer.ID
+        var id: ID
+
+        init(containerType: any BindableContainer.Type, id: ID) {
+            self.containerType = containerType
+            self.id = id
+        }
+
+        init<Container: BindableContainer>(
+            containerType: Container.Type,
+            id: Container.ID
+        ) where Container.ID == ID {
+            self.containerType = containerType
+            self.id = id
+        }
     }
 
     /// `_BindableAction` is an internal action that wraps another action and associates it with a specific `BindableContainer`.
     ///
     /// This is useful for dispatching actions that need to be bound to a particular instance of a container.
     ///
-    /// - Parameters:
-    ///   - BindedContainer: The container type conforming to `BindableContainer`.
-    struct _BindableAction<BindedContainer: BindableContainer>: _AnyBindableAction where BindedContainer.ID: Sendable {
+    struct _BindableAction<ID: Hashable & Sendable>: _AnyBindableAction {
         /// The wrapped action that is being bound to the container.
         let value: any Action
 
         /// The type of the container that the action is bound to.
-        let containerType: BindedContainer.Type
+        let containerType: any BindableContainer.Type
 
         /// The unique identifier of the container.
-        let id: BindedContainer.ID
+        let id: ID
 
-        public static func == (lhs: _BindableAction<BindedContainer>, rhs: _BindableAction<BindedContainer>) -> Bool {
-            areEqual(lhs.value, rhs.value)
+        init(
+            value: any Action,
+            containerType: any BindableContainer.Type,
+            id: ID
+        ) {
+            self.value = value
+            self.containerType = containerType
+            self.id = id
+        }
+
+        init<Container: BindableContainer>(
+            value: any Action,
+            containerType: Container.Type,
+            id: Container.ID
+        ) where Container.ID == ID {
+            self.value = value
+            self.containerType = containerType
+            self.id = id
+        }
+
+        public static func == (lhs: _BindableAction, rhs: _BindableAction) -> Bool {
+            lhs.id == rhs.id && areEqual(lhs.value, rhs.value) && lhs.containerType == rhs.containerType
         }
 
         var description: String {

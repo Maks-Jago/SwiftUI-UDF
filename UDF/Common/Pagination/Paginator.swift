@@ -5,7 +5,7 @@
 // Copyright (c) 2024 You are launched
 // Licensed under Apache License v2.0
 //
-// See https://opensource.org/licenses/Apache License v2.0 for license information
+// See https://opensource.org/licenses/Apache-2.0 for license information
 //
 //===----------------------------------------------------------------------===//
 
@@ -105,7 +105,10 @@ public struct Paginator<Item: Hashable & Identifiable & Sendable, FlowId: Hashab
 
         self.page = .number(page)
         let itemsToRemove = items.count - (page * perPage)
-        items.removeLast(itemsToRemove)
+        
+        if itemsToRemove > 0 {
+            items.removeLast(itemsToRemove)
+        }
     }
 
     /// Removes all items from the paginator and sets the initial page number.

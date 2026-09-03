@@ -18,7 +18,15 @@ public protocol Mergeable {
     ///
     /// - Parameter newValue: The new value to merge with the current instance.
     /// - Returns: A new instance of the same type, containing the merged values of both instances.
+    @available(*, deprecated, message: "Use the static merging(new:old:) method instead.")
     func merging(_ newValue: Self) -> Self
+
+    /// Merges a new value with an old value and returns the merged instance.
+    ///
+    /// - Parameters:
+    ///   - newValue: The incoming instance containing updated values.
+    ///   - oldValue: The existing old instance containing previous values.
+    static func merging(new newValue: Self, old oldValue: Self) -> Self
 
     /// Fills the current instance using values from another instance, allowing for further mutation.
     ///
@@ -29,4 +37,29 @@ public protocol Mergeable {
     ///             - `old`: The original instance before filling.
     /// - Returns: A new instance of the same type, filled with values from the provided instance and modified as needed.
     func filled(from value: Self, mutate: (_ filled: inout Self, _ old: Self) -> Void) -> Self
+}
+
+public extension Mergeable {
+    /// Default implementation of the legacy instance method forwards to the new static method.
+    @available(*, deprecated, message: "Use the static merging(new:old:) method instead.")
+    func merging(_ newValue: Self) -> Self {
+        Self.merging(new: newValue, old: self)
+    }
+
+    /// Default implementation of the new static method forwards to the legacy instance method.
+    static func merging(new newValue: Self, old oldValue: Self) -> Self {
+        oldValue.merging(newValue)
+    }
+
+    /// Fills the current instance with values from another instance, and performs a custom mutation on the filled instance.
+    ///
+    /// - Parameters:
+    ///   - value: The instance to fill from.
+    ///   - mutate: A closure that allows for additional mutation on the filled instance.
+    /// - Returns: A new instance filled with values from the provided `value`.
+    func filled(from value: Self, mutate: (_ filled: inout Self, _ old: Self) -> Void) -> Self {
+        var mutableSelf = value
+        mutate(&mutableSelf, self)
+        return mutableSelf
+    }
 }

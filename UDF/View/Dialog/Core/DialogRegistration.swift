@@ -112,9 +112,8 @@ enum _DialogRegistry {
     /// Registers a type-safe ``Dialog`` (``AlertDialog``, ``Toast``, or ``ConfirmationDialog``)
     /// for the given identifier.
     ///
-    /// The `@MainActor` builder closure is evaluated eagerly at registration time
-    /// and the resulting ``Dialog`` value — which is `Sendable` — is captured and
-    /// stored in the registry for later retrieval.
+    /// The builder closure is evaluated when the dialog is requested,
+    /// allowing it to capture the latest state dynamically.
     ///
     /// ```swift
     /// Dialog.register(id: MyDialogs.error) {
@@ -129,14 +128,12 @@ enum _DialogRegistry {
     /// - Parameters:
     ///   - id: A unique, hashable identifier for this dialog.
     ///   - dialog: A closure that returns a ``Dialog`` conforming value.
-    @MainActor
     public static func register<ID: Hashable & Sendable, D: DialogProtocol>(
         id: ID,
-        dialog: @escaping @Sendable @MainActor () -> D
+        dialog: @escaping @Sendable () -> D
     ) {
-        let dialog = dialog()
         queue.async(flags: .barrier) {
-            registry[AnyHashable(id)] = { dialog }
+            registry[AnyHashable(id)] = { dialog() }
         }
     }
     

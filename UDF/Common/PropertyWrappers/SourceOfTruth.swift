@@ -5,11 +5,13 @@
 // Copyright (c) 2024 You are launched
 // Licensed under Apache License v2.0
 //
-// See https://opensource.org/licenses/Apache License v2.0 for license information
+// See https://opensource.org/licenses/Apache-2.0 for license information
 //
 //===----------------------------------------------------------------------===//
 
 import Foundation
+import os
+@preconcurrency import Runtime
 
 /// A property wrapper used to represent the central source of truth for the application state.
 /// It allows for dynamic member lookup to access reducers and bindable containers within the `AppState`.
@@ -20,6 +22,10 @@ import Foundation
 public final class SourceOfTruth<AppState: AppReducer> {
     /// The current value of the application state.
     public var wrappedValue: AppState
+
+    /// A thread-safe lock protecting the cache of resolved property metadata info.
+    /// Used by `ConnectedContainer` to optimize bindable reducer state lookups.
+    private let propertyCacheLock = OSAllocatedUnfairLock(initialState: [ObjectIdentifier: PropertyInfo]())
 
     /// A reference to the store that holds and manages the application state.
     private weak var store: Optional<any Store<AppState>>
@@ -40,9 +46,9 @@ public final class SourceOfTruth<AppState: AppReducer> {
     /// - Parameter keyPath: A key path to a `BindableReducer` in the application state.
     /// - Returns: A `BindableReducerReference` to the specified `BindableReducer`.
     public subscript<
-        C: BindableContainer,
+        ID: Hashable & Sendable,
         R: Reducible
-    >(dynamicMember keyPath: WritableKeyPath<AppState, BindableReducer<C, R>>) -> BindableReducerReference<AppState, C, R> {
+    >(dynamicMember keyPath: WritableKeyPath<AppState, BindableReducer<ID, R>>) -> BindableReducerReference<AppState, ID, R> {
         BindableReducerReference(reducer: wrappedValue[keyPath: keyPath]) { [weak self] action in
             self?.store?.dispatch(action, priority: .userInteractive)
         }
@@ -73,5 +79,19 @@ extension SourceOfTruth: Equatable {
     /// - Returns: A Boolean value indicating whether the two instances are equal.
     public static func == (lhs: SourceOfTruth<AppState>, rhs: SourceOfTruth<AppState>) -> Bool {
         lhs.wrappedValue == rhs.wrappedValue
+    }
+}
+
+extension SourceOfTruth {
+    /// Returns the cached property metadata for a given container type.
+    ///
+    /// This is used by `ConnectedContainer` to optimize state reflection lookups from O(N^2) to O(N) at scale.
+    func getPropertyMetadata(for containerType: Any.Type) -> PropertyInfo? {
+        propertyCacheLock.withLock { $0[ObjectIdentifier(containerType)] }
+    }
+    
+    /// Caches the property metadata for a given container type.
+    func setPropertyMetadata(_ property: PropertyInfo, for containerType: Any.Type) {
+        propertyCacheLock.withLock { $0[ObjectIdentifier(containerType)] = property }
     }
 }

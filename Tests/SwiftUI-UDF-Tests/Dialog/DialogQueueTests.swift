@@ -307,7 +307,7 @@ import UDFSwiftTesting
     }
 
     // MARK: - Auto-Dismiss Tests
-    @Test
+    @Test(.timeLimit(.minutes(1)))
     @MainActor
     func autoDismiss_RemovesToastAfterDuration() async {
         let config = ToastQueueConfiguration(displayMode: .sequential)
@@ -318,8 +318,9 @@ import UDFSwiftTesting
 
         #expect(queueManager.visibleToasts.count == 1)
 
-        // Wait for auto-dismiss
-        try? await Task.sleep(nanoseconds: 100_000_000) // 100ms
+        // Wait for auto-dismiss using publisher observation
+        let success = await waitForPublisherCondition(queueManager.$visibleToasts) { $0.isEmpty }
+        #expect(success)
 
         // Toast should be dismissed
         #expect(queueManager.visibleToasts.count == 0)
@@ -406,7 +407,7 @@ import UDFSwiftTesting
 
     // MARK: - Auto-Dismiss Callback Tests
 
-    @Test
+    @Test(.timeLimit(.minutes(1)))
     @MainActor
     func test_QueueManager_AutoDismissCallback_ExecutedOnTimerExpiry() async {
         let queueManager = ToastQueueManager()
@@ -423,11 +424,10 @@ import UDFSwiftTesting
 
             queueManager.enqueue(toast)
 
-            // Wait for auto-dismiss
-            await sleep(for: 0.3)
+            // Wait for auto-dismiss using publisher observation
+            let success = await waitForPublisherCondition(queueManager.$visibleToasts) { $0.isEmpty }
+            #expect(success)
         }
-
-        #expect(queueManager.visibleToasts.count == 0, "Toast should be dismissed")
     }
 
     @Test
@@ -459,7 +459,7 @@ import UDFSwiftTesting
         #expect(queueManager.visibleToasts.count == 0, "Toast should be dismissed")
     }
 
-    @Test
+    @Test(.timeLimit(.minutes(1)))
     @MainActor
     func test_QueueManager_AutoDismissCallback_SequentialMode() async {
         let config = ToastQueueConfiguration(displayMode: .sequential)
@@ -490,8 +490,11 @@ import UDFSwiftTesting
                 #expect(queueManager.visibleToasts.count == 1)
                 #expect(queueManager.queuedToasts.count == 1)
 
-                // Wait for both toasts to auto-dismiss
-                await sleep(for: 0.5)
+                // Wait for both toasts to auto-dismiss using publisher observation
+                let success = await waitForPublisherCondition(queueManager.$visibleToasts) {
+                    $0.isEmpty && queueManager.queuedToasts.isEmpty
+                }
+                #expect(success)
             }
         }
 
@@ -499,7 +502,7 @@ import UDFSwiftTesting
         #expect(queueManager.queuedToasts.count == 0)
     }
 
-    @Test
+    @Test(.timeLimit(.minutes(1)))
     @MainActor
     func test_QueueManager_AutoDismissCallback_StackedMode() async {
         let config = ToastQueueConfiguration(
@@ -533,8 +536,9 @@ import UDFSwiftTesting
                 #expect(queueManager.visibleToasts.count == 2)
                 #expect(queueManager.queuedToasts.count == 0)
 
-                // Wait for both toasts to auto-dismiss
-                await sleep(for: 0.2)
+                // Wait for both toasts to auto-dismiss using publisher observation
+                let success = await waitForPublisherCondition(queueManager.$visibleToasts) { $0.isEmpty }
+                #expect(success)
             }
         }
 

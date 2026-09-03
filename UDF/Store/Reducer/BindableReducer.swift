@@ -17,18 +17,18 @@ import Foundation
 /// of a `BindableContainer`. It allows actions to be dispatched and reduced in a dynamic, container-bound manner, facilitating
 /// the organization of complex state management in a SwiftUI application.
 @propertyWrapper
-public struct BindableReducer<BindedContainer: BindableContainer, Reducer: Reducible>: Reducible where BindedContainer.ID: Sendable {
+public struct BindableReducer<ID: Hashable & Sendable, Reducer: Reducible>: Reducible {
     /// A typealias representing a dictionary of reducers associated with container IDs.
-    public typealias Reducers = RCDictionary<BindedContainer.ID, Reducer>
+    public typealias Reducers = RCDictionary<ID, Reducer>
 
     /// The type of container this reducer is bound to.
-    public internal(set) var containerType: BindedContainer.Type
+    public internal(set) var containerType: any BindableContainer.Type
 
     /// The dictionary holding the reducers associated with each container ID.
     var reducers: Reducers = .init()
 
     /// The wrapped value, which returns `self`.
-    public var wrappedValue: BindableReducer<BindedContainer, Reducer> {
+    public var wrappedValue: BindableReducer<ID, Reducer> {
         get { self }
         set { /* do nothing */ }
     }
@@ -38,8 +38,17 @@ public struct BindableReducer<BindedContainer: BindableContainer, Reducer: Reduc
     /// - Parameters:
     ///   - reducerType: The type of reducer to manage.
     ///   - bindedTo: The type of container to bind this reducer to.
-    public init(_ reducerType: Reducer.Type, bindedTo: BindedContainer.Type) {
+    public init<C: BindableContainer>(_ reducerType: Reducer.Type, bindedTo: C.Type) where C.ID == ID {
         self.containerType = bindedTo
+    }
+
+    /// Initializes a new `BindableReducer` with a runtime container type.
+    ///
+    /// - Parameters:
+    ///   - reducerType: The type of reducer to manage.
+    ///   - containerType: The runtime type of the container to bind this reducer to.
+    public init(_ reducerType: Reducer.Type, containerType: any BindableContainer.Type) {
+        self.containerType = containerType
     }
 
     /// Throws a fatal error. Use `init(reducerType:bindedTo:)` instead.
@@ -49,7 +58,7 @@ public struct BindableReducer<BindedContainer: BindableContainer, Reducer: Reduc
     }
 
     /// Checks for equality between two `BindableReducer` instances by comparing their reducers.
-    public static func == (lhs: BindableReducer<BindedContainer, Reducer>, rhs: BindableReducer<BindedContainer, Reducer>) -> Bool {
+    public static func == (lhs: BindableReducer<ID, Reducer>, rhs: BindableReducer<ID, Reducer>) -> Bool {
         lhs.reducers == rhs.reducers
     }
 
@@ -57,7 +66,7 @@ public struct BindableReducer<BindedContainer: BindableContainer, Reducer: Reduc
     ///
     /// - Parameter id: The ID of the container.
     /// - Returns: The reducer associated with the given container ID, if it exists.
-    public subscript(_ id: BindedContainer.ID) -> Reducer? {
+    public subscript(_ id: ID) -> Reducer? {
         reducers[id]
     }
 
@@ -65,7 +74,7 @@ public struct BindableReducer<BindedContainer: BindableContainer, Reducer: Reduc
     ///
     /// - Parameter id: The ID of the container.
     /// - Returns: A `ReducerScope` for the associated reducer, or `nil` if no reducer is found.
-    public subscript(_ id: BindedContainer.ID) -> Scope {
+    public subscript(_ id: ID) -> Scope {
         ReducerScope(reducer: reducers[id])
     }
 }
@@ -74,7 +83,7 @@ public struct BindableReducer<BindedContainer: BindableContainer, Reducer: Reduc
 
 extension BindableReducer: Collection {
     public typealias Index = Reducers.Index
-    public typealias Element = (key: BindedContainer.ID, value: Reducer)
+    public typealias Element = (key: ID, value: Reducer)
 
     /// The starting index of the collection, used in iterations.
     public var startIndex: Index { reducers.startIndex }
@@ -110,22 +119,43 @@ public extension BindableReducer {
     /// adding, removing, or reducing the appropriate reducers based on the action's type.
     ///
     /// - Parameter action: The action to be reduced.
-    mutating func reduce(_ action: some Action) where BindedContainer.ID: Sendable {
+    mutating func reduce(_ action: some Action) {
         switch action {
-        case let action as Actions._OnContainerDidLoad<BindedContainer>:
+        case let action as Actions._OnContainerDidLoad<ID> where action.containerType == containerType:
             reducers.retainOrCreateValue(for: action.id)
 
-        case let action as Actions._OnContainerDidUnLoad<BindedContainer>:
+        case let action as Actions._OnContainerDidUnLoad<ID> where action.containerType == containerType:
             reducers.release(key: action.id)
 
-        case let action as Actions._BindableAction<BindedContainer>:
+        case let action as Actions._BindableAction<ID> where action.containerType == containerType:
             for (key, var reducer) in reducers where key == action.id {
                 _ = RuntimeReducing.bindableReduce(action.value, reducer: &reducer)
                 reducers.updateValue(reducer, forKey: key)
             }
-
+            
         default:
             break
         }
+    }
+}
+
+
+// MARK: - AnyBindableReducer
+extension BindableReducer: AnyBindableReducer {
+    /// The type of container this reducer is bound to.
+    var boundContainerType: any BindableContainer.Type {
+        containerType
+    }
+    
+    /// Checks if a reducer is registered for the specified container identifier.
+    ///
+    /// - Parameter id: The identifier of the container, expected to be of type `BindedContainer.ID`.
+    /// - Returns: `true` if a reducer exists for the given identifier; otherwise, `false`.
+    func hasReducer(for id: some Hashable) -> Bool {
+        guard let id = id as? ID else {
+            return false
+        }
+
+        return reducers.contains { $0.key == id }
     }
 }

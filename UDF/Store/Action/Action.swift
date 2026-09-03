@@ -36,11 +36,11 @@ public extension Action {
         lineNumber: Int = #line
     ) -> some Action {
         if let group = self as? ActionGroup {
-            ActionGroup(internalActions: group._actions.map { oldAction in
+            group.recursiveMap { oldAction in
                 var mutableCopy = oldAction
                 mutableCopy.animation = animation
                 return mutableCopy
-            })
+            }
         } else {
             ActionGroup(internalActions: [
                 InternalAction(
@@ -66,11 +66,11 @@ public extension Action {
     /// ```
     func silent(fileName: String = #file, functionName: String = #function, lineNumber: Int = #line) -> some Action {
         if let group = self as? ActionGroup {
-            ActionGroup(internalActions: group._actions.map { oldAction in
+            group.recursiveMap { oldAction in
                 var mutableCopy = oldAction
                 mutableCopy.silent = true
                 return mutableCopy
-            })
+            }
         } else {
             ActionGroup(internalActions: [
                 InternalAction(
@@ -104,6 +104,75 @@ public extension Action {
         functionName: String = #function,
         lineNumber: Int = #line
     ) -> some Action where BindedContainer.ID: Sendable {
+        binded(
+            to: containerType as any BindableContainer.Type,
+            by: id,
+            fileName: fileName,
+            functionName: functionName,
+            lineNumber: lineNumber
+        )
+    }
+
+    /// Binds the action to a specific `BindableContainer` instance.
+    ///
+    /// - Parameter container: The `BindableContainer` instance to bind to.
+    /// - Returns: A new `Action` bound to the specified container instance.
+    ///
+    /// Example:
+    /// ```swift
+    /// let action = MyAction().binded(to: myContainer)
+    /// ```
+    func binded<BindedContainer: BindableContainer>(
+        to container: BindedContainer,
+        fileName: String = #file,
+        functionName: String = #function,
+        lineNumber: Int = #line
+    ) -> some Action where BindedContainer.ID: Sendable {
+        return binded(
+            to: BindedContainer.self,
+            by: container.id,
+            fileName: fileName,
+            functionName: functionName,
+            lineNumber: lineNumber
+        )
+    }
+}
+
+public extension Action {
+    func with(
+        delay: TimeInterval,
+        fileName: String = #file,
+        functionName: String = #function,
+        lineNumber: Int = #line
+    ) -> some Action {
+        if let group = self as? ActionGroup {
+            group.recursiveMap { oldAction in
+                var mutableCopy = oldAction
+                mutableCopy.delay = Delay(delay)
+                return mutableCopy
+            }
+        } else {
+            ActionGroup(internalActions: [
+                InternalAction(
+                    self,
+                    delay: Delay(delay),
+                    fileName: fileName,
+                    functionName: functionName,
+                    lineNumber: lineNumber
+                ),
+            ])
+        }
+    }
+}
+
+extension Action {
+    func binded<ID: Hashable & Sendable>(
+        to containerType: any BindableContainer.Type,
+        by id: ID,
+        fileName: String = #file,
+        functionName: String = #function,
+        lineNumber: Int = #line
+    ) -> some Action {
         if let group = self as? ActionGroup {
             ActionGroup(internalActions: group._actions.map { oldAction in
                 InternalAction(
@@ -123,57 +192,6 @@ public extension Action {
                         containerType: containerType,
                         id: id
                     ),
-                    fileName: fileName,
-                    functionName: functionName,
-                    lineNumber: lineNumber
-                ),
-            ])
-        }
-    }
-
-    /// Binds the action to a specific `BindableContainer` instance.
-    ///
-    /// - Parameter container: The `BindableContainer` instance to bind to.
-    /// - Returns: A new `Action` bound to the specified container instance.
-    ///
-    /// Example:
-    /// ```swift
-    /// let action = MyAction().binded(to: myContainer)
-    /// ```
-    func binded<BindedContainer: BindableContainer>(
-        to container: BindedContainer,
-        fileName: String = #file,
-        functionName: String = #function,
-        lineNumber: Int = #line
-    ) -> some Action where BindedContainer.ID: Sendable {
-        binded(
-            to: BindedContainer.self,
-            by: container.id,
-            fileName: fileName,
-            functionName: functionName,
-            lineNumber: lineNumber
-        )
-    }
-}
-
-public extension Action {
-    func with(
-        delay: TimeInterval,
-        fileName: String = #file,
-        functionName: String = #function,
-        lineNumber: Int = #line
-    ) -> some Action {
-        if let group = self as? ActionGroup {
-            ActionGroup(internalActions: group._actions.map { oldAction in
-                var mutableCopy = oldAction
-                mutableCopy.delay = Delay(delay)
-                return mutableCopy
-            })
-        } else {
-            ActionGroup(internalActions: [
-                InternalAction(
-                    self,
-                    delay: Delay(delay),
                     fileName: fileName,
                     functionName: functionName,
                     lineNumber: lineNumber

@@ -11,6 +11,11 @@
 
 import Foundation
 
+/// A reference-counted dictionary that keeps a value alive for a key as long as at least one
+/// owner has retained it, releasing (and removing) the value once its reference count drops to zero.
+///
+/// Used internally by `BindableReducer` to share reducer state between multiple bindings to the
+/// same key without duplicating it, while still cleaning it up once nothing references it anymore.
 public struct RCDictionary<Key: Hashable & Sendable, Value: Initable & Equatable & Sendable>: Equatable, Sendable {
     private var keyValues: [Key: ReducerBox] = [:]
 
@@ -33,7 +38,12 @@ public struct RCDictionary<Key: Hashable & Sendable, Value: Initable & Equatable
         box.value = value
         keyValues[key] = box
     }
+    
+    func isUniquelyReferenced(key: Key) -> Bool {
+        keyValues[key]?.referenceCount == 1
+    }
 
+    /// Returns the value currently stored for the given key, or `nil` if no value is retained for it.
     public subscript(_ key: Key) -> Value? {
         keyValues[key]?.value
     }
@@ -43,7 +53,7 @@ public struct RCDictionary<Key: Hashable & Sendable, Value: Initable & Equatable
 public extension RCDictionary {
     struct ReducerBox: Equatable {
         var value: Value
-        private var referenceCount: Int = 1
+        private(set) var referenceCount: Int = 1
 
         init(value: Value) {
             self.value = value
@@ -62,7 +72,9 @@ public extension RCDictionary {
 
 // MARK: - Collection
 extension RCDictionary: Collection {
+    /// The index type used to traverse the dictionary's entries.
     public typealias Index = [Key: ReducerBox].Index
+    /// A key-value pair produced when iterating over the dictionary.
     public typealias Element = (key: Key, value: Value)
 
     /// The starting index of the collection, used in iterations.

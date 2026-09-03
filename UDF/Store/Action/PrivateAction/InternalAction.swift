@@ -14,7 +14,7 @@ struct InternalAction: Action {
     private let actionDescription: String
 
     init(
-        _ value: some Action,
+        _ value: any Action,
         animation: Animation? = nil,
         silent: Bool = false,
         delay: Delay? = nil,
@@ -58,7 +58,6 @@ extension InternalAction: CustomDebugStringConvertible {
 extension InternalAction {
     func unwrapActions(isIncluded: ((_ action: InternalAction) -> Bool) = { _ in true }) -> [InternalAction] {
         var result: [InternalAction] = []
-        var processedDescriptions = Set<String>()
         var stack = [self]
 
         while !stack.isEmpty {
@@ -67,9 +66,7 @@ extension InternalAction {
             switch current.value {
             case let bindableAction as any _AnyBindableAction:
                 // Add the bindable action
-                let bindableDescription = String(describing: current.value)
-                if !processedDescriptions.contains(bindableDescription) {
-                    processedDescriptions.insert(bindableDescription)
+                if !result.contains(where: { areEqual($0.value, current.value) }) {
                     result.append(current)
                 }
 
@@ -83,9 +80,7 @@ extension InternalAction {
                     lineNumber: current.lineNumber
                 )
 
-                let unwrappedDescription = String(describing: unwrapped.value)
-                if !processedDescriptions.contains(unwrappedDescription) {
-                    processedDescriptions.insert(unwrappedDescription)
+                if !result.contains(where: { areEqual($0.value, unwrapped.value) }) {
                     result.append(unwrapped)
                 }
 
@@ -94,9 +89,7 @@ extension InternalAction {
                 stack.append(contentsOf: actionGroup._actions)
 
             default:
-                let description = String(describing: current.value)
-                if !processedDescriptions.contains(description) {
-                    processedDescriptions.insert(description)
+                if !result.contains(where: { areEqual($0.value, current.value) }) {
                     result.append(current)
                 }
             }

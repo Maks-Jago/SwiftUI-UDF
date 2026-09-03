@@ -78,7 +78,7 @@ import Testing
         var itemReducible = ItemReducible()
     }
 
-    @Test func whenLoadingDataForBindableReducers_OnleConcreteInstanceOfBindableFormShouldBeUpdated() async throws {
+    @Test func whenLoadingDataForBindableReducers_OnlyConcreteInstanceOfBindableFormShouldBeUpdated() async throws {
         let store = await TestStore(initial: AppState())
         await store.subscribe(ItemsMiddleware.self)
 
