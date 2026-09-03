@@ -215,6 +215,53 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
         )
     }
 
+    /// Executes a `StateEffectable` and dispatches actions to the store, allowing for cancellation and mapping of actions.
+    ///
+    /// This method builds a publisher from the provided `StateEffectable` using the supplied `flowId` and a snapshot of the current
+    /// store state. It then subscribes to that publisher and dispatches its emitted actions to the store.
+    ///
+    /// - Parameters:
+    ///   - effect: The `StateEffectable` to execute.
+    ///   - flowId: The unique identifier for the flow associated with the effect.
+    ///   - cancellation: A unique identifier to track and cancel the effect.
+    ///   - mapAction: A closure that maps the output of the effect to an action. Defaults to an identity mapping (`{ $0 }`).
+    ///   - fileName: The name of the file from which the method is called. Defaults to the file in which this method is used.
+    ///   - functionName: The name of the function from which the method is called. Defaults to the function in which this method is used.
+    ///   - lineNumber: The line number from which the method is called. Defaults to the line in which this method is used.
+    ///
+    /// This method:
+    /// - Checks if an effect with the same `cancellation` identifier is already running. If it is, the method returns early.
+    /// - Captures the current store state and passes it to `publisher(flowId:state:)`.
+    /// - Subscribes to the resulting publisher on the specified `queue`.
+    /// - Dispatches actions emitted by the publisher to the store.
+    ///
+    /// - Note: This method uses Combine's `sink` and `handleEvents` to manage the effect's lifecycle, including cancellation and
+    /// completion.
+    open func execute<Effect: StateEffectable & Sendable>(
+        effect: Effect,
+        flowId: AnyHashable,
+        cancellation: some Hashable,
+        mapAction: @escaping (any Action) -> any Action = { $0 },
+        fileName: String = #file,
+        functionName: String = #function,
+        lineNumber: Int = #line
+    ) where Effect.AppState == State {
+        let publisher = stateEffectPublisher(
+            effect: effect,
+            flowId: flowId,
+            cancellation: cancellation
+        )
+        
+        execute(
+            publisher,
+            cancellation: cancellation,
+            mapAction: mapAction,
+            fileName: fileName,
+            functionName: functionName,
+            lineNumber: lineNumber
+        )
+    }
+
     /// Runs a `PureEffect` and conditionally dispatches actions to the store based on a filter.
     ///
     /// This method subscribes to the provided effect, allowing for its cancellation and mapping of actions. Additionally, it utilizes a
@@ -301,6 +348,48 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
         }
     }
 
+    /// Runs a `StateEffectable` and conditionally dispatches its actions to the store based on a filter.
+    ///
+    /// This method builds a publisher from the provided `StateEffectable` using a snapshot of the current store state and the supplied
+    /// `flowId`, then forwards the resulting publisher to the existing `run` pipeline with a dispatch filter.
+    ///
+    /// - Parameters:
+    ///   - effect: The `StateEffectable` to execute.
+    ///   - flowId: The unique identifier for the flow associated with the effect.
+    ///   - cancellation: A unique identifier used to track and cancel the effect.
+    ///   - mapAction: A closure that maps the output of the effect to an action. Defaults to an identity mapping (`{ $0 }`).
+    ///   - dispatchFilter: A closure that determines whether the action should be dispatched, based on the current state and the action
+    /// itself.
+    ///   - fileName: The name of the file from which the method is called. Defaults to the file in which this method is used.
+    ///   - functionName: The name of the function from which the method is called. Defaults to the function in which this method is used.
+    ///   - lineNumber: The line number from which the method is called. Defaults to the line in which this method is used.
+    open func run<Effect: StateEffectable & Sendable>(
+        effect: Effect,
+        flowId: AnyHashable,
+        cancellation: some Hashable,
+        mapAction: @escaping (any Action) -> any Action = { $0 },
+        dispatchFilter: @escaping DispatchFilter<any Action>,
+        fileName: String = #file,
+        functionName: String = #function,
+        lineNumber: Int = #line
+    ) where Effect.AppState == State {
+        let publisher = stateEffectPublisher(
+            effect: effect,
+            flowId: flowId,
+            cancellation: cancellation
+        )
+
+        run(
+            publisher,
+            cancellation: cancellation,
+            mapAction: mapAction,
+            dispatchFilter: dispatchFilter,
+            fileName: fileName,
+            functionName: functionName,
+            lineNumber: lineNumber
+        )
+    }
+
     /// Runs a `PureEffect` and dispatches its actions to the store.
     ///
     /// This method subscribes to the provided effect, allowing for its cancellation and mapping of actions. It handles the lifecycle of the
@@ -349,7 +438,7 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
                 self?.cancellationsBox.withLockUnchecked { box in
                     box.removeCancellation(forKey: anyId)
                 }
-                self?.dispatch(action: mapAction(Actions.DidCancelEffect(by: cancellation)), filePosition: filePosition )
+                self?.dispatch(action: mapAction(Actions.DidCancelEffect(by: cancellation)), filePosition: filePosition)
             })
             .sink(receiveCompletion: { [weak self] _ in
                 // Handle completion: Remove the task from cancellations
@@ -368,6 +457,67 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
         cancellationsBox.withLockUnchecked { box in
             box.set(cancellable: cancellable, forKey: anyId)
         }
+    }
+
+    /// Runs a `StateEffectable` and dispatches its actions to the store.
+    ///
+    /// This method builds a publisher from the provided `StateEffectable` using a snapshot of the current store state and the supplied
+    /// `flowId`, then forwards the resulting publisher to the existing `run` pipeline.
+    ///
+    /// - Parameters:
+    ///   - effect: The `StateEffectable` to execute.
+    ///   - flowId: The unique identifier for the flow associated with the effect.
+    ///   - cancellation: A unique identifier used to track and cancel the effect.
+    ///   - mapAction: A closure that maps the output of the effect to an action. Defaults to an identity mapping (`{ $0 }`).
+    ///   - fileName: The name of the file from which the method is called. Defaults to the file where this method is used.
+    ///   - functionName: The name of the function from which the method is called. Defaults to the function where this method is used.
+    ///   - lineNumber: The line number from which the method is called. Defaults to the line where this method is used.
+    open func run<Effect: StateEffectable & Sendable>(
+        effect: Effect,
+        flowId: AnyHashable,
+        cancellation: some Hashable,
+        mapAction: @escaping (any Action) -> any Action = { $0 },
+        fileName: String = #file,
+        functionName: String = #function,
+        lineNumber: Int = #line
+    ) where Effect.AppState == State {
+        let publisher = stateEffectPublisher(
+            effect: effect,
+            flowId: flowId,
+            cancellation: cancellation
+        )
+
+        run(
+            publisher,
+            cancellation: cancellation,
+            mapAction: mapAction,
+            fileName: fileName,
+            functionName: functionName,
+            lineNumber: lineNumber
+        )
+    }
+
+    private func stateEffectPublisher<Effect: StateEffectable>(
+        effect: Effect,
+        flowId: AnyHashable,
+        cancellation: some Hashable
+    ) -> AnyPublisher<any Action, Never> where Effect.AppState == State {
+        let effect = effectWithEnvironment(effect)
+
+        return Publishers
+            .IsolatedState(from: store)
+            .flatMap { state -> AnyPublisher<any Action, Never> in
+                do {
+                    return try effect.publisher(flowId: flowId, state: state)
+                } catch is CancellationError {
+                    return Just(Actions.DidCancelEffect(by: cancellation))
+                        .eraseToAnyPublisher()
+                } catch {
+                    return Just(Actions.Error(error: error.localizedDescription, id: flowId))
+                        .eraseToAnyPublisher()
+                }
+            }
+            .eraseToAnyPublisher()
     }
 
     // MARK: - Concurrency
@@ -404,18 +554,49 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
         lineNumber: Int = #line,
         _ task: @escaping @Sendable (AnyHashable) async throws -> any Action
     ) {
-        execute(
-            effect: ConcurrencyBlockEffect(
-                block: task,
-                fileName: fileName,
-                functionName: functionName,
-                lineNumber: lineNumber
-            ),
-            flowId: flowId,
-            cancellation: cancellation,
-            mapAction: mapAction,
-            mapError: mapError
-        )
+        let anyCancellationId = AnyHashable(cancellation)
+
+        // Prevent running the effect if an effect with the same cancellation ID is already in progress
+        guard cancellations[anyCancellationId] == nil else {
+            return
+        }
+
+        // Capture file name, function name, and line number for debugging and logging purposes
+        let filePosition: FileFunctionLineDescription = (fileName: fileName, functionName: functionName, lineNumber: lineNumber)
+        TestGroup.instance(for: store).enter()
+
+        // Start the task and store the cancellation token
+        let task = Task { @Sendable [weak self] in
+            do {
+                // Execute the effect's task, passing flowId
+                let action = try await task(flowId)
+
+                // Check if the task was cancelled and dispatch appropriate actions
+                if Task.isCancelled {
+                    self?.dispatch(action: mapAction(Actions.DidCancelEffect(by: cancellation)), filePosition: filePosition)
+                } else {
+                    self?.dispatch(action: mapAction(action), filePosition: filePosition)
+                }
+
+            } catch {
+                // Handle errors and task cancellation
+                if error is CancellationError {
+                    self?.dispatch(action: mapAction(Actions.DidCancelEffect(by: cancellation)), filePosition: filePosition)
+                } else if !Task.isCancelled {
+                    self?.dispatch(action: mapError(flowId, error), filePosition: filePosition)
+                }
+            }
+
+            // Remove the task from the cancellations dictionary
+            self?.cancellationsBox.withLockUnchecked { box in
+                box.removeCancellation(forKey: anyCancellationId)
+            }
+        }
+
+        // Store the task in the cancellations dictionary for future cancellation
+        cancellationsBox.withLockUnchecked { box in
+            box.set(cancellable: task, forKey: anyCancellationId)
+        }
     }
 
     private func dispatch(action: any Action, filePosition: FileFunctionLineDescription) {
@@ -464,48 +645,69 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
         functionName: String = #function,
         lineNumber: Int = #line
     ) {
-        let anyCancellationId = AnyHashable(cancellation)
-
-        // Prevent running the effect if an effect with the same cancellation ID is already in progress
-        guard cancellations[anyCancellationId] == nil else {
-            return
+        execute(
+            flowId: flowId,
+            cancellation: cancellation,
+            mapAction: mapAction,
+            mapError: mapError,
+            fileName: fileName,
+            functionName: functionName,
+            lineNumber: lineNumber
+        ) { flowID in
+            try await effect.task(flowId: flowId)
         }
-
-        // Capture file name, function name, and line number for debugging and logging purposes
-        let filePosition = fileFunctionLine(effect, fileName: fileName, functionName: functionName, lineNumber: lineNumber)
-        TestGroup.instance(for: store).enter()
-
-        // Start the task and store the cancellation token
-        let task = Task { @Sendable [weak self] in
-            do {
-                // Execute the effect's task, passing flowId
-                let action = try await effect.task(flowId: flowId)
-
-                // Check if the task was cancelled and dispatch appropriate actions
-                if Task.isCancelled {
-                    self?.dispatch(action: mapAction(Actions.DidCancelEffect(by: cancellation)), filePosition: filePosition)
-                } else {
-                    self?.dispatch(action: mapAction(action), filePosition: filePosition)
-                }
-
-            } catch {
-                // Handle errors and task cancellation
-                if error is CancellationError {
-                    self?.dispatch(action: mapAction(Actions.DidCancelEffect(by: cancellation)), filePosition: filePosition)
-                } else if !Task.isCancelled {
-                    self?.dispatch(action: mapError(flowId, error), filePosition: filePosition)
-                }
+    }
+    
+    /// Executes a `StateConcurrencyEffect` with support for cancellation and error handling.
+    ///
+    /// This method starts a new asynchronous task, invoking the provided `StateConcurrencyEffect`'s `task(flowId:state:)` method.
+    /// It captures the current store state at execution time and passes that state into the effect together with the provided `flowId`.
+    /// It supports cancellation, mapping of the resulting action, and error handling.
+    ///
+    /// - Parameters:
+    ///   - effect: The `StateConcurrencyEffect` to execute.
+    ///   - flowId: The unique identifier for the flow associated with the effect.
+    ///   - cancellation: A unique identifier for tracking and potentially canceling the task.
+    ///   - mapAction: A closure that maps the output action of the task to another action. Defaults to an identity mapping (`{ $0 }`).
+    ///   - mapError: A closure that maps errors thrown by the task to an action. Defaults to creating an `Actions.Error` using the error's
+    /// localized description.
+    ///   - fileName: The name of the file from which the method is called. Defaults to the file where this method is used.
+    ///   - functionName: The name of the function from which the method is called. Defaults to the function where this method is used.
+    ///   - lineNumber: The line number from which the method is called. Defaults to the line where this method is used.
+    ///
+    /// This method:
+    /// - Checks if a task with the same `cancellation` identifier is already running. If it is, the method returns early.
+    /// - Reads the current store state and passes it to the effect's asynchronous `task(flowId:state:)` method.
+    /// - Handles task cancellation and errors, dispatching appropriate actions to the store.
+    /// - Removes the task from the `cancellations` dictionary when it is completed.
+    ///
+    /// - Note: If the store is no longer available when the task starts, this method throws `CancellationError`.
+    /// - Note: This method uses the Swift `Task` API to run the asynchronous task.
+    open func execute<Effect: StateConcurrencyEffect & Sendable>(
+        effect: Effect,
+        flowId: AnyHashable,
+        cancellation: some Hashable & Sendable,
+        mapAction: @escaping @Sendable (any Action) -> any Action = { $0 },
+        mapError: @escaping ErrorMapper<AnyHashable> = { flowId, error in Actions.Error(error: error.localizedDescription, id: flowId) },
+        fileName: String = #file,
+        functionName: String = #function,
+        lineNumber: Int = #line
+    ) where Effect.AppState == State {
+        execute(
+            flowId: flowId,
+            cancellation: cancellation,
+            mapAction: mapAction,
+            mapError: mapError,
+            fileName: fileName,
+            functionName: functionName,
+            lineNumber: lineNumber
+        ) { [weak store] flowID in
+            guard let store else {
+                throw CancellationError()
             }
-
-            // Remove the task from the cancellations dictionary
-            self?.cancellationsBox.withLockUnchecked { box in
-                box.removeCancellation(forKey: anyCancellationId)
-            }
-        }
-
-        // Store the task in the cancellations dictionary for future cancellation
-        cancellationsBox.withLockUnchecked { box in
-            box.set(cancellable: task, forKey: anyCancellationId)
+            
+            let effect = self.effectWithEnvironment(effect)
+            return try await effect.task(flowId: flowId, state: store.state)
         }
     }
     
@@ -526,3 +728,29 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
     }
 }
 
+
+private extension _BaseMiddleware {
+    /// Returns a copy of a state-based Combine effect with the middleware environment injected when the types match.
+    ///
+    /// The middleware environment is stored behind `EnvironmentMiddleware`, so the cast happens at runtime.
+    /// If the middleware does not expose an environment of `Effect.Environment`, the original effect is returned unchanged.
+    func effectWithEnvironment<Effect: StateEffectable>(_ effect: Effect) -> Effect where Effect.AppState == State {
+        var effect = effect
+        if let middleware = self as? (any EnvironmentMiddleware<State>), let environment = middleware.environment as? Effect.Environment {
+            effect.environment = environment
+        }
+        return effect
+    }
+
+    /// Returns a copy of a state-based async effect with the middleware environment injected when the types match.
+    ///
+    /// This mirrors `effectWithEnvironment(_:)` for `StateEffectable`, ensuring concurrency effects receive the
+    /// middleware environment only when it can be safely cast to the effect's `Environment` type.
+    func effectWithEnvironment<Effect: StateConcurrencyEffect>(_ effect: Effect) -> Effect where Effect.AppState == State {
+        var effect = effect
+        if let middleware = self as? (any EnvironmentMiddleware<State>), let environment = middleware.environment as? Effect.Environment {
+            effect.environment = environment
+        }
+        return effect
+    }
+}
