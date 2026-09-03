@@ -35,9 +35,7 @@ public struct ConsoleDebugLogger: ActionLogger {
     ///   - action: The `LoggingAction` to be logged.
     ///   - description: A `String` representing the description of the action.
     public func log(_ action: LoggingAction, description: String) {
-        print(
-            "Reduce\t\t \(description)\n---------------------------------------------------------------------------------------------------------------------------------------------------------------------------"
-        )
+        print(description)
     }
 }
 
