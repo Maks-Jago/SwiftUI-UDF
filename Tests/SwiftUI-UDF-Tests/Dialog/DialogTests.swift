@@ -8,6 +8,8 @@ private extension Actions {
     struct PresentToastDialog: Action {}
     struct PresentCustomToastWithIcon: Action {}
     struct PresentCustomViewToast: Action {}
+    struct PresentDynamicDialog: Action {}
+    struct DismissDynamicDialog: Action {}
 }
 
 extension DialogType {
@@ -68,8 +70,16 @@ extension DialogRegistryTests {
                 case toastDialog
                 case customToastWithIcon
                 case customViewToast
+                case dynamicDialog
             }
             
+            enum ViewMode: Equatable {
+                case text(String)
+                case image
+            }
+            
+            var stringProperty: String = "Initial"
+            var viewMode: ViewMode = .text("Initial")
             var dialog: DialogStatus = .dismissed
             
             nonisolated mutating func reduce(_ action: some Action) {
@@ -85,6 +95,12 @@ extension DialogRegistryTests {
                     
                 case is Actions.PresentCustomViewToast:
                     dialog = .init(id: DialogId.customViewToast)
+                    
+                case is Actions.PresentDynamicDialog:
+                    dialog = .init(id: DialogId.dynamicDialog)
+                    
+                case is Actions.DismissDynamicDialog:
+                    dialog = .dismissed
                     
                 default:
                     break
@@ -438,6 +454,176 @@ extension DialogRegistryTests {
             } else {
                 Issue.record("Expected presented dialog from registry")
             }
+        }
+        @MainActor
+        @Test func dynamicDialogCustomIconCapturesLatestState() async throws {
+            ViewRenderTracker.renderHistory.removeAll()
+            let store = EnvironmentStore(initial: AppState(), loggers: [])
+            store.dispatch(UDF.Actions.UpdateFormField(keyPath: \FormWithDialog.viewMode, value: .text("TextMode")))
+            await waitForMainActorCondition { store.state.form.viewMode == .text("TextMode") }
+            
+            Dialog.register(id: FormWithDialog.DialogId.dynamicDialog) {
+                Toast {
+                    DialogIcon { 
+                        switch store.state.form.viewMode {
+                        case .image:
+                            Image(systemName: "star")
+                        case .text(let value):
+                            TrackerTestView(value: value)
+                        }
+                    }
+                    DialogMessage("Message")
+                }
+            }
+            
+            store.dispatch(Actions.PresentDynamicDialog())
+            await waitForMainActorCondition { store.state.form.dialog.status != .dismissed }
+            
+            if case .presented(let dialogType) = store.state.form.dialog.status {
+                let iconView = dialogType.getIconView(theme: .default)
+                #expect(iconView != nil)
+                #expect(ViewRenderTracker.renderHistory.last == "TextMode")
+            } else {
+                Issue.record("Expected presented dialog")
+            }
+            
+            store.dispatch(UDF.Actions.UpdateFormField(keyPath: \FormWithDialog.viewMode, value: .image))
+            await waitForMainActorCondition { store.state.form.viewMode == .image }
+            
+            store.dispatch(Actions.PresentDynamicDialog())
+            
+            await waitForMainActorCondition { 
+                if case .presented(let dialogType) = store.state.form.dialog.status {
+                    let iconView = dialogType.getIconView(theme: .default)
+                    return String(describing: iconView!).contains("Image")
+                }
+                return false
+            }
+            
+            if case .presented(let dialogType) = store.state.form.dialog.status {
+                let iconView = dialogType.getIconView(theme: .default)
+                let description = String(describing: iconView!)
+                #expect(description.contains("Image"))
+            } else {
+                Issue.record("Expected presented dialog")
+            }
+            
+            store.dispatch(UDF.Actions.UpdateFormField(keyPath: \FormWithDialog.viewMode, value: .text("NewText")))
+            await waitForMainActorCondition { store.state.form.viewMode == .text("NewText") }
+            
+            store.dispatch(Actions.PresentDynamicDialog())
+            
+            await waitForMainActorCondition { 
+                if case .presented(let dialogType) = store.state.form.dialog.status {
+                    let iconView = dialogType.getIconView(theme: .default)
+                    return String(describing: iconView!).contains("TrackerTestView")
+                }
+                return false
+            }
+            
+            if case .presented(let dialogType) = store.state.form.dialog.status {
+                let iconView = dialogType.getIconView(theme: .default)
+                #expect(iconView != nil)
+                #expect(ViewRenderTracker.renderHistory.last == "NewText")
+            } else {
+                Issue.record("Expected presented dialog")
+            }
+        }
+        
+        @MainActor
+        @Test func dynamicDialogCustomViewCapturesLatestState() async throws {
+            ViewRenderTracker.renderHistory.removeAll()
+            let store = EnvironmentStore(initial: AppState(), loggers: [])
+            store.dispatch(UDF.Actions.UpdateFormField(keyPath: \FormWithDialog.viewMode, value: .text("TextMode")))
+            await waitForMainActorCondition { store.state.form.viewMode == .text("TextMode") }
+            
+            Dialog.register(id: FormWithDialog.DialogId.dynamicDialog) {
+                Toast {
+                    DialogMessage("Message")
+                    DialogView { 
+                        switch store.state.form.viewMode {
+                        case .image:
+                            Image(systemName: "circle")
+                        case .text(let value):
+                            TrackerTestView(value: value)
+                        }
+                    }
+                }
+            }
+            
+            store.dispatch(Actions.PresentDynamicDialog())
+            await waitForMainActorCondition { store.state.form.dialog.status != .dismissed }
+            
+            if case .presented(let dialogType) = store.state.form.dialog.status {
+                let customView = dialogType.getCustomContentView()
+                #expect(customView != nil)
+                #expect(ViewRenderTracker.renderHistory.last == "TextMode")
+            } else {
+                Issue.record("Expected presented dialog")
+            }
+            
+            store.dispatch(UDF.Actions.UpdateFormField(keyPath: \FormWithDialog.viewMode, value: .image))
+            await waitForMainActorCondition { store.state.form.viewMode == .image }
+            
+            store.dispatch(Actions.PresentDynamicDialog())
+            
+            await waitForMainActorCondition { 
+                if case .presented(let dialogType) = store.state.form.dialog.status {
+                    let customView = dialogType.getCustomContentView()
+                    return String(describing: customView!).contains("Image")
+                }
+                return false
+            }
+            
+            if case .presented(let dialogType) = store.state.form.dialog.status {
+                let customView = dialogType.getCustomContentView()
+                let description = String(describing: customView!)
+                #expect(description.contains("Image"))
+            } else {
+                Issue.record("Expected presented dialog")
+            }
+            
+            store.dispatch(UDF.Actions.UpdateFormField(keyPath: \FormWithDialog.viewMode, value: .text("NextText")))
+            await waitForMainActorCondition { store.state.form.viewMode == .text("NextText") }
+            
+            store.dispatch(Actions.PresentDynamicDialog())
+            
+            await waitForMainActorCondition { 
+                if case .presented(let dialogType) = store.state.form.dialog.status {
+                    let customView = dialogType.getCustomContentView()
+                    return String(describing: customView!).contains("TrackerTestView")
+                }
+                return false
+            }
+            
+            if case .presented(let dialogType) = store.state.form.dialog.status {
+                let customView = dialogType.getCustomContentView()
+                #expect(customView != nil)
+                #expect(ViewRenderTracker.renderHistory.last == "NextText")
+            } else {
+                Issue.record("Expected presented dialog")
+            }
+        }
+
+    }
+}
+
+extension DialogRegistryTests.DialogTests {
+    @MainActor
+    class ViewRenderTracker {
+        static var renderHistory: [String] = []
+    }
+    
+    struct TrackerTestView: View {
+        let value: String
+        
+        init(value: String) {
+            self.value = value
+            ViewRenderTracker.renderHistory.append(value)
+        }
+        
+        var body: some View {
+            Text(value)
         }
     }
 }

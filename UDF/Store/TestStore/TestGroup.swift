@@ -4,9 +4,10 @@ import os
 public final class TestGroup: @unchecked Sendable {
     private var counters: OSAllocatedUnfairLock<(inCount: Int, outCount: Int)> = .init(initialState: (0, 0))
     private nonisolated(unsafe) static var shared = TestGroup()
+    private static let isRunningTests = ProcessInfo.processInfo.isRunningTests
 
     static func instance(for store: any Store) -> TestGroup {
-        guard ProcessInfo.processInfo.isRunningTests else {
+        guard isRunningTests else {
             return .shared
         }
 
@@ -15,7 +16,7 @@ public final class TestGroup: @unchecked Sendable {
     }
 
     static func instanceFor(key: String) -> TestGroup {
-        guard ProcessInfo.processInfo.isRunningTests else {
+        guard isRunningTests else {
             return .shared
         }
 
@@ -29,7 +30,7 @@ public final class TestGroup: @unchecked Sendable {
     }
 
     static func instanceKey(_ store: any Store) -> String {
-        guard ProcessInfo.processInfo.isRunningTests else {
+        guard isRunningTests else {
             return "ignore"
         }
 
@@ -41,7 +42,7 @@ public final class TestGroup: @unchecked Sendable {
         functionName: String = #function,
         lineNumber: Int = #line
     ) {
-        if ProcessInfo.processInfo.isRunningTests {
+        if TestGroup.isRunningTests {
             counters.withLock { counters in
                 counters.inCount &+= 1
 //                print("TestGroup.enter (counters.inCount: \(counters.inCount), counters.outCount: \(counters.outCount)): \(fileName) \(functionName) \(lineNumber)")
@@ -55,7 +56,7 @@ public final class TestGroup: @unchecked Sendable {
         functionName: String = #function,
         lineNumber: Int = #line
     ) -> String {
-        guard ProcessInfo.processInfo.isRunningTests else {
+        guard isRunningTests else {
             return "ignore"
         }
 
@@ -68,7 +69,7 @@ public final class TestGroup: @unchecked Sendable {
         functionName: String = #function,
         lineNumber: Int = #line
     ) {
-        if ProcessInfo.processInfo.isRunningTests {
+        if TestGroup.isRunningTests {
             counters.withLock { counters in
                 counters.outCount &+= 1
 //                print("TestGroup.leave (counters.inCount: \(counters.inCount), counters.outCount: \(counters.outCount)): \(fileName) \(functionName) \(lineNumber)")
@@ -82,7 +83,7 @@ public final class TestGroup: @unchecked Sendable {
         functionName: String = #function,
         lineNumber: Int = #line
     ) {
-        if ProcessInfo.processInfo.isRunningTests {
+        if TestGroup.isRunningTests {
             // Snapshot the number of entered operations at the time of waiting
             let deadline = DispatchTime.now() + .seconds(4)
 

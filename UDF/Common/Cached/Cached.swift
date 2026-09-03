@@ -106,6 +106,13 @@ public struct Cached<T: Codable & Sendable>: Initable, Sendable {
         storage.remove()
         wrappedValue = defaultValue
     }
+
+    /// Immediately persists the current in-memory value to storage, bypassing the debounce interval.
+    /// Use this at critical lifecycle points (app backgrounding, termination) where waiting
+    /// for the debounced write could lose data.
+    public func flush() {
+        storage.save(inMemoryValue)
+    }
 }
 
 /// Extends `Cached` to conform to `IsEquatable` where the cached type `T` conforms to both `Reducing` and `Equatable`.

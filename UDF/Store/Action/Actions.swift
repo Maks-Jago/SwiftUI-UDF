@@ -687,10 +687,10 @@ public extension Actions {
         /// A textual representation of the nested items.
         public var description: String {
             guard shortDescription else {
-                return "DidLoadNestedItems<\(Nested.self)> Parent \(String(reflecting: ParentId.self))(itemsCount: \(items.count), items:\n\t\t\t\t\t\(items.map { String(describing: $0) }.joined(separator: "\n\t\t\t\t\t")))\n"
+                return "DidLoadNestedItems<\(Nested.self)> Parent: \(String(reflecting: ParentId.self))(\(parentId)) (itemsCount: \(items.count), items:\n\t\t\t\t\t\(items.map { String(describing: $0) }.joined(separator: "\n\t\t\t\t\t")))\n"
             }
 
-            return "DidLoadNestedItems<\(Nested.self)> Parent \(String(reflecting: ParentId.self))(count: \(items.count), prefix(1): \(String(describing: items.prefix(1)))"
+            return "DidLoadNestedItems<\(Nested.self)> Parent: \(String(reflecting: ParentId.self))(\(parentId)) (count: \(items.count), prefix(1): \(String(describing: items.prefix(1))))"
         }
     }
 
@@ -729,11 +729,12 @@ public extension Actions {
 
         /// A textual representation of the nested items.
         public var description: String {
+            let parentKeys = dictionary.keys.map { String(describing: $0) }.joined(separator: ", ")
             guard shortDescription else {
-                return "DidLoadNestedByParents<\(Nested.self)> Parent \(String(reflecting: ParentId.self))(parentCount: \(dictionary.keys.count), items:\n\t\t\t\t\t\(dictionary.map { String(describing: $0) }.joined(separator: "\n\t\t\t\t\t")))\n"
+                return "DidLoadNestedByParents<\(Nested.self)> Parents: \(String(reflecting: ParentId.self)) [\(parentKeys)] (parentCount: \(dictionary.keys.count), items:\n\t\t\t\t\t\(dictionary.map { String(describing: $0) }.joined(separator: "\n\t\t\t\t\t")))\n"
             }
 
-            return "DidLoadNestedByParents<\(Nested.self)> Parent \(String(reflecting: ParentId.self))(parentCount: \(dictionary.keys.count), prefix(1): \(String(describing: dictionary.prefix(1)))"
+            return "DidLoadNestedByParents<\(Nested.self)> Parents: \(String(reflecting: ParentId.self)) [\(parentKeys)] (parentCount: \(dictionary.keys.count), prefix(1): \(String(describing: dictionary.prefix(1))))"
         }
     }
 
@@ -806,13 +807,25 @@ public extension Actions {
     }
 }
 
+// MARK: - Navigation Equality Helper
+private func arePathsEqual(_ lhs: [any Hashable & Sendable], _ rhs: [any Hashable & Sendable]) -> Bool {
+    guard lhs.count == rhs.count else { return false }
+    for (l, r) in zip(lhs, rhs) {
+        if AnyHashable(l) != AnyHashable(r) {
+            return false
+        }
+    }
+    return true
+}
+
 // MARK: - Global Navigation
 public extension Actions {
     /// `Navigate` is an action used to handle navigation to a specific path within the app.
     struct Navigate: Action {
         public static func == (lhs: Actions.Navigate, rhs: Actions.Navigate) -> Bool {
-            true
+            arePathsEqual(lhs.to, rhs.to)
         }
+
 
         /// An array representing the path to navigate to.
         public let to: [any Hashable & Sendable]
@@ -835,7 +848,7 @@ public extension Actions {
     /// `NavigateResetStack` is an action used to reset the navigation stack and navigate to a specified path.
     struct NavigateResetStack: Action {
         public static func == (lhs: Actions.NavigateResetStack, rhs: Actions.NavigateResetStack) -> Bool {
-            true
+            arePathsEqual(lhs.to, rhs.to)
         }
 
         /// An array representing the path to navigate to after resetting the stack.
@@ -881,7 +894,7 @@ public extension Actions {
     /// `NavigateTyped` is a generic action used to handle typed navigation to a specific path within the app.
     struct NavigateTyped<Routing>: Action {
         public static func == (lhs: Actions.NavigateTyped<Routing>, rhs: Actions.NavigateTyped<Routing>) -> Bool {
-            true
+            arePathsEqual(lhs.to, rhs.to)
         }
 
         /// An array representing the path to navigate to.
@@ -905,7 +918,7 @@ public extension Actions {
     /// `NavigateResetStackTyped` is a generic action used to reset the navigation stack and navigate to a specified path.
     struct NavigateResetStackTyped<Routing>: Action {
         public static func == (lhs: Actions.NavigateResetStackTyped<Routing>, rhs: Actions.NavigateResetStackTyped<Routing>) -> Bool {
-            true
+            arePathsEqual(lhs.to, rhs.to)
         }
 
         /// An array representing the path to navigate to after resetting the stack.
@@ -1001,7 +1014,7 @@ extension Actions {
         let id: BindedContainer.ID
 
         public static func == (lhs: _BindableAction<BindedContainer>, rhs: _BindableAction<BindedContainer>) -> Bool {
-            areEqual(lhs.value, rhs.value)
+            lhs.id == rhs.id && areEqual(lhs.value, rhs.value)
         }
 
         var description: String {

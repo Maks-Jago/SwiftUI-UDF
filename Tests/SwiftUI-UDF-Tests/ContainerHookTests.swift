@@ -4,7 +4,9 @@ import SwiftUI
 import Testing
 import UDFSwiftTesting
 
-@Suite(.serialized) struct ContainerHookTests {
+@MainActor
+@Suite(.serialized)
+struct ContainerHookTests {
     private struct TestStoreLogger: ActionLogger {
         var actionFilters: [ActionFilter] = [VerboseActionFilter()]
         var actionDescriptor: ActionDescriptor = StringDescribingActionDescriptor()
@@ -32,11 +34,11 @@ import UDFSwiftTesting
         let window = await PlatformWindow.render(view: rootContainer)
 
         #expect(store.state.hookForm.triggerValue == "")
-        await window.redraw()
+        window.redraw()
 
         store.dispatch(Actions.UpdateFormField<HookForm>(keyPath: \HookForm.triggerValue, value: "1"))
 
-        let success = await waitForCondition { store.state.hookForm.triggerValue == "2" }
+        let success = await waitForMainActorCondition { store.state.hookForm.triggerValue == "2" }
         #expect(success)
     }
 
@@ -46,12 +48,12 @@ import UDFSwiftTesting
         let window = await PlatformWindow.render(view: rootContainer)
 
         #expect(store.state.hookForm.triggerValue == "")
-        await window.redraw()
+        window.redraw()
 
         // Set triggerValue to "1" to activate the one-time hook
         store.dispatch(Actions.UpdateFormField<HookForm>(keyPath: \HookForm.triggerValue, value: "1"))
 
-        let success = await waitForCondition { store.state.hookForm.triggerValue == "2" }
+        let success = await waitForMainActorCondition { store.state.hookForm.triggerValue == "2" }
         #expect(success)
 
         // Change the state to cause a redraw
@@ -74,7 +76,7 @@ import UDFSwiftTesting
         let window = await PlatformWindow.render(view: rootContainer)
 
         #expect(store.state.hookForm.triggerValue == "")
-        await window.redraw()
+        window.redraw()
 
         // Reset the hook call counter
         store.dispatch(Actions.UpdateFormField<HookForm>(keyPath: \HookForm.callbacksCount, value: 0))
@@ -85,11 +87,11 @@ import UDFSwiftTesting
         for _ in 1 ... triggerCount {
             // Set triggerValue to "3" to meet the hook's condition
             store.dispatch(Actions.UpdateFormField<HookForm>(keyPath: \HookForm.triggerValue, value: "3"))
-            await waitForCondition { store.$state.hookForm.triggerValue.wrappedValue == "3" }
+            await waitForMainActorCondition { store.$state.hookForm.triggerValue.wrappedValue == "3" }
 
             // Reset triggerValue to allow the condition to be met again
             store.dispatch(Actions.UpdateFormField<HookForm>(keyPath: \HookForm.triggerValue, value: ""))
-            await waitForCondition { store.$state.hookForm.triggerValue.wrappedValue == "" }
+            await waitForMainActorCondition { store.$state.hookForm.triggerValue.wrappedValue == "" }
         }
 
         // Assert that the hook was called the expected number of times
@@ -104,22 +106,22 @@ import UDFSwiftTesting
         var window = await PlatformWindow.render(view: rootContainer)
 
         #expect(store.state.hookForm.triggerValue == "")
-        await window.redraw()
+        window.redraw()
 
         // Activate the one-time hook
         store.dispatch(Actions.UpdateFormField<HookForm>(keyPath: \HookForm.triggerValue, value: "1"))
 
-        var success = await waitForCondition { store.state.hookForm.triggerValue == "2" }
+        var success = await waitForMainActorCondition { store.state.hookForm.triggerValue == "2" }
         #expect(success)
 
         // Reset triggerValue for further testing
         store.dispatch(Actions.UpdateFormField<HookForm>(keyPath: \HookForm.triggerValue, value: ""))
-        success = await waitForCondition { store.state.hookForm.triggerValue == "" }
+        success = await waitForMainActorCondition { store.state.hookForm.triggerValue == "" }
         #expect(success)
 
         // Attempt to trigger the one-time hook again
         store.dispatch(Actions.UpdateFormField<HookForm>(keyPath: \HookForm.triggerValue, value: "1"))
-        success = await waitForCondition { store.state.hookForm.triggerValue == "1" }
+        success = await waitForMainActorCondition { store.state.hookForm.triggerValue == "1" }
         #expect(success)
 
         // The one-time hook should not fire again, so triggerValue should remain "1"
@@ -130,11 +132,11 @@ import UDFSwiftTesting
         window = await PlatformWindow.render(view: newRootContainer)
 
         #expect(store.state.hookForm.triggerValue == "1") // triggerValue from previous step
-        await window.redraw()
+        window.redraw()
 
         // One-time hooks are recreated with each new container instance
         // So the hook will fire again when the condition is met in the new container
-        success = await waitForCondition { store.state.hookForm.triggerValue == "2" }
+        success = await waitForMainActorCondition { store.state.hookForm.triggerValue == "2" }
         #expect(success)
     }
 
@@ -144,18 +146,18 @@ import UDFSwiftTesting
         // Set the trigger value BEFORE creating the container
         // This simulates the scenario where the condition is already true
         store.dispatch(Actions.UpdateFormField<HookForm>(keyPath: \HookForm.triggerValue, value: "1"))
-        var success = await waitForCondition { store.state.hookForm.triggerValue == "1" }
+        var success = await waitForMainActorCondition { store.state.hookForm.triggerValue == "1" }
         #expect(success)
 
         // Now create the container - the hook condition is already satisfied
         let rootContainer = RootContainer()
         let window = await PlatformWindow.render(view: rootContainer)
 
-        await window.redraw()
+        window.redraw()
 
         // The hook should have fired even though the condition was already true
         // when the container appeared, changing "1" to "2"
-        success = await waitForCondition { store.state.hookForm.triggerValue == "2" }
+        success = await waitForMainActorCondition { store.state.hookForm.triggerValue == "2" }
         #expect(success, "Hook should fire at least once even if condition was already true when container appeared")
     }
 
@@ -164,11 +166,11 @@ import UDFSwiftTesting
         let rootContainer = RemovableHookContainer()
 
         let window = await PlatformWindow.render(view: rootContainer)
-        await window.redraw()
+        window.redraw()
 
         // Trigger the hook that removes itself
         store.dispatch(Actions.UpdateFormField<HookForm>(keyPath: \HookForm.triggerValue, value: "remove"))
-        let success = await waitForCondition { store.state.hookForm.callbacksCount == 1 }
+        let success = await waitForMainActorCondition { store.state.hookForm.callbacksCount == 1 }
         #expect(success)
 
         // Try to trigger again - hook should be removed and not fire
@@ -186,7 +188,7 @@ import UDFSwiftTesting
         let rootContainer = AlwaysFalseHookContainer()
 
         let window = await PlatformWindow.render(view: rootContainer)
-        await window.redraw()
+        window.redraw()
 
         // Change state multiple times
         store.dispatch(Actions.UpdateFormField<HookForm>(keyPath: \HookForm.triggerValue, value: "1"))
@@ -204,14 +206,14 @@ import UDFSwiftTesting
         let rootContainer = MultipleHooksContainer()
 
         let window = await PlatformWindow.render(view: rootContainer)
-        await window.redraw()
+        window.redraw()
 
         // Reset counters
         store.dispatch(Actions.UpdateFormField<HookForm>(keyPath: \HookForm.callbacksCount, value: 0))
 
         // Trigger first hook condition
         store.dispatch(Actions.UpdateFormField<HookForm>(keyPath: \HookForm.triggerValue, value: "first"))
-        var success = await waitForCondition { store.state.hookForm.callbacksCount == 1 }
+        var success = await waitForMainActorCondition { store.state.hookForm.callbacksCount == 1 }
         #expect(success)
 
         // Reset and trigger second hook condition
@@ -220,7 +222,7 @@ import UDFSwiftTesting
         await sleep()
 
         store.dispatch(Actions.UpdateFormField<HookForm>(keyPath: \HookForm.triggerValue, value: "second"))
-        success = await waitForCondition { store.state.hookForm.callbacksCount == 10 }
+        success = await waitForMainActorCondition { store.state.hookForm.callbacksCount == 10 }
         #expect(success) // Second hook adds 10
     }
 
@@ -229,7 +231,7 @@ import UDFSwiftTesting
         let rootContainer = ComplexConditionHookContainer()
 
         let window = await PlatformWindow.render(view: rootContainer)
-        await window.redraw()
+        window.redraw()
 
         // Reset counters
         store.dispatch(Actions.UpdateFormField<HookForm>(keyPath: \HookForm.callbacksCount, value: 0))
@@ -239,7 +241,7 @@ import UDFSwiftTesting
         store.dispatch(Actions.UpdateFormField<HookForm>(keyPath: \HookForm.callbacksCount, value: 5))
 
         // Hook should have fired and incremented callbacksCount
-        let success = await waitForCondition { store.state.hookForm.callbacksCount == 6 }
+        let success = await waitForMainActorCondition { store.state.hookForm.callbacksCount == 6 }
         #expect(success)
     }
 
@@ -248,14 +250,14 @@ import UDFSwiftTesting
         let rootContainer = TransitionTestContainer()
 
         let window = await PlatformWindow.render(view: rootContainer)
-        await window.redraw()
+        window.redraw()
 
         // Start with condition false, then true
         store.dispatch(Actions.UpdateFormField<HookForm>(keyPath: \HookForm.triggerValue, value: "false"))
         store.dispatch(Actions.UpdateFormField<HookForm>(keyPath: \HookForm.callbacksCount, value: 0))
 
         store.dispatch(Actions.UpdateFormField<HookForm>(keyPath: \HookForm.triggerValue, value: "true"))
-        var success = await waitForCondition { store.state.hookForm.callbacksCount == 1 }
+        var success = await waitForMainActorCondition { store.state.hookForm.callbacksCount == 1 }
         #expect(success)
 
         // Keep condition true - hook should not fire again
@@ -266,14 +268,14 @@ import UDFSwiftTesting
 
         // Change to false, then true again - hook should fire
         store.dispatch(Actions.UpdateFormField<HookForm>(keyPath: \HookForm.triggerValue, value: "false"))
-        success = await waitForCondition { store.state.hookForm.triggerValue == "false" }
+        success = await waitForMainActorCondition { store.state.hookForm.triggerValue == "false" }
         #expect(success)
 
         store.dispatch(Actions.UpdateFormField<HookForm>(keyPath: \HookForm.triggerValue, value: "true"))
-        success = await waitForCondition { store.state.hookForm.triggerValue == "true" }
+        success = await waitForMainActorCondition { store.state.hookForm.triggerValue == "true" }
         #expect(success)
 
-        success = await waitForCondition { store.state.hookForm.callbacksCount == 2 }
+        success = await waitForMainActorCondition { store.state.hookForm.callbacksCount == 2 }
         #expect(success, "Hook should fire on false->true transition")
     }
 
@@ -283,18 +285,18 @@ import UDFSwiftTesting
         let rootContainer = NilSafeHookContainer()
 
         let window = await PlatformWindow.render(view: rootContainer)
-        await window.redraw()
+        window.redraw()
 
         // This tests hooks that might deal with optional values safely
         store.dispatch(Actions.UpdateFormField<HookForm>(keyPath: \HookForm.triggerValue, value: ""))
-        var success = await waitForCondition { store.state.hookForm.triggerValue.isEmpty }
+        var success = await waitForMainActorCondition { store.state.hookForm.triggerValue.isEmpty }
         #expect(success)
 
         store.dispatch(Actions.UpdateFormField<HookForm>(keyPath: \HookForm.triggerValue, value: "valid"))
-        success = await waitForCondition { store.state.hookForm.triggerValue == "valid" }
+        success = await waitForMainActorCondition { store.state.hookForm.triggerValue == "valid" }
         #expect(success)
 
-        success = await waitForCondition { store.state.hookForm.callbacksCount == 1 }
+        success = await waitForMainActorCondition { store.state.hookForm.callbacksCount == 1 }
         #expect(success)
     }
 
@@ -303,7 +305,7 @@ import UDFSwiftTesting
         let rootContainer = RollbackHookContainer()
 
         let window = await PlatformWindow.render(view: rootContainer)
-        await window.redraw()
+        window.redraw()
 
         // Set up initial state
         store.dispatch(Actions.UpdateFormField<HookForm>(keyPath: \HookForm.triggerValue, value: "initial"))
@@ -313,7 +315,7 @@ import UDFSwiftTesting
         store.dispatch(Actions.UpdateFormField<HookForm>(keyPath: \HookForm.triggerValue, value: "rollback"))
 
         // Hook should have reset the counter
-        let success = await waitForCondition {
+        let success = await waitForMainActorCondition {
             store.state.hookForm.callbacksCount == 0 &&
             store.state.hookForm.triggerValue == "reset"
         }
@@ -325,7 +327,7 @@ import UDFSwiftTesting
         let rootContainer = ConditionalHookContainer()
 
         let window = await PlatformWindow.render(view: rootContainer)
-        await window.redraw()
+        window.redraw()
 
         // Reset counters
         store.dispatch(Actions.UpdateFormField<HookForm>(keyPath: \HookForm.callbacksCount, value: 0))
@@ -333,12 +335,12 @@ import UDFSwiftTesting
         // Only trigger when callbacksCount is even
         store.dispatch(Actions.UpdateFormField<HookForm>(keyPath: \HookForm.callbacksCount, value: 2))
         store.dispatch(Actions.UpdateFormField<HookForm>(keyPath: \HookForm.triggerValue, value: "trigger"))
-        var success = await waitForCondition { store.state.hookForm.callbacksCount == 3 } // 2 + 1
+        var success = await waitForMainActorCondition { store.state.hookForm.callbacksCount == 3 } // 2 + 1
         #expect(success)
 
         // Reset triggerValue and try with odd number
         store.dispatch(Actions.UpdateFormField<HookForm>(keyPath: \HookForm.triggerValue, value: ""))
-        success = await waitForCondition { store.state.hookForm.triggerValue.isEmpty }
+        success = await waitForMainActorCondition { store.state.hookForm.triggerValue.isEmpty }
         #expect(success)
 
         store.dispatch(Actions.UpdateFormField<HookForm>(keyPath: \HookForm.triggerValue, value: "trigger"))
