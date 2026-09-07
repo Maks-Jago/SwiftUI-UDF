@@ -191,3 +191,91 @@ enum RuntimeReducing {
     }
 }
 
+// MARK: - Middleware Registration
+
+/// Discovering and calling ``MiddlewareRegistering`` conformers mounted in the app state.
+///
+/// Kept apart from the reducer machinery above: registration is a separate concern that the store
+/// performs once at launch, and it reads the reducer graph without ever mutating it.
+extension RuntimeReducing {
+    /// Registers the middleware of every reducer in the app state that conforms to `MiddlewareRegistering`.
+    ///
+    /// Only the app state's own properties are inspected. A feature module mounts its state directly in the
+    /// app state, so that is the only place a conformer can appear, and walking the whole reducer graph to
+    /// confirm it would cost launch time for nothing.
+    ///
+    /// - Parameters:
+    ///   - rootReducer: The root reducer to inspect.
+    ///   - store: The store to register middleware with.
+    static func registerMiddlewares<R: AppReducer>(reducer rootReducer: R, store: EnvironmentStore<R>) {
+        guard let info = try? typeInfo(of: R.self) else {
+            return
+        }
+
+        for property in info.properties {
+            guard let reducer = try? property.get(from: rootReducer) as? Reducing else {
+                continue
+            }
+
+            tryToRegisterMiddlewares(reducer, store: store)
+
+            #if DEBUG
+                assertNoNestedRegistering(in: reducer, ofType: property.type, mountedAt: property.name)
+            #endif
+        }
+    }
+
+    /// Attempts to register middleware for a reducer that conforms to `MiddlewareRegistering`.
+    ///
+    /// - Parameters:
+    ///   - reducer: The reducer to test for conformance.
+    ///   - store: The store to register middleware with.
+    private static func tryToRegisterMiddlewares<R: AppReducer>(_ reducer: Reducing, store: EnvironmentStore<R>) {
+        func registerMiddlewares<M: MiddlewareRegistering>(_ reducer: M, store: EnvironmentStore<R>) {
+            M.registerMiddlewares(in: store as! EnvironmentStore<M.AppState>)
+        }
+
+        if let registering = reducer as? any MiddlewareRegistering {
+            registerMiddlewares(registering, store: store)
+        }
+    }
+
+    #if DEBUG
+        /// Traps on a `MiddlewareRegistering` conformer mounted below the app state's own properties.
+        ///
+        /// Registration visits only the app state's properties, so a nested conformer is never called and its
+        /// middleware never subscribed. Nothing about that failure is visible at runtime, which makes it
+        /// expensive to diagnose. This walk exists purely to turn that silence into a message while
+        /// developing, and is compiled out of release builds.
+        ///
+        /// - Parameters:
+        ///   - reducer: The reducer whose properties are inspected.
+        ///   - reducerType: The type of that reducer.
+        ///   - path: The property path walked so far, used to point at the offending mount.
+        private static func assertNoNestedRegistering(in reducer: Reducing, ofType reducerType: Any.Type, mountedAt path: String) {
+            guard let info = try? typeInfo(of: reducerType) else {
+                return
+            }
+
+            for property in info.properties {
+                guard let nested = try? property.get(from: reducer) as? Reducing else {
+                    continue
+                }
+
+                let nestedPath = "\(path).\(property.name)"
+
+                if nested is any MiddlewareRegistering {
+                    assertionFailure(
+                        """
+                        \(type(of: nested)) conforms to MiddlewareRegistering but is mounted at '\(nestedPath)'.
+                        Middleware registration visits only the app state's own properties, so this reducer's \
+                        middleware will never be subscribed. Mount it directly in the app state instead.
+                        """
+                    )
+                }
+
+                assertNoNestedRegistering(in: nested, ofType: property.type, mountedAt: nestedPath)
+            }
+        }
+    #endif
+}

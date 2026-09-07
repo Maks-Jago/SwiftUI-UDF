@@ -73,7 +73,7 @@ public final class TestStore<State: AppReducer> {
     /// Subscribes a single middleware, built from a closure, to the test store.
     ///
     /// - Parameter build: A closure that creates the middleware instance for the given store.
-    public func subscribe(build: (_ store: any Store<State>) -> some Middleware<State>) async {
+    public func subscribe(build: (_ store: any Store<State>) -> some FeatureMiddleware<State>) async {
         await store.subscribe(build(store))
     }
 
@@ -112,8 +112,8 @@ public extension TestStore {
         }
     }
 
-    func subscribe<M: Middleware<State>>(_ middlewareType: M.Type, environment: M.Environment) async where M.State == State,
-        M: EnvironmentMiddleware
+    func subscribe<M: FeatureMiddleware<State>>(_ middlewareType: M.Type, environment: M.Environment) async
+        where M.State == State
     {
         await self.subscribe { store in
             middlewareType.init(store: store, environment: environment)

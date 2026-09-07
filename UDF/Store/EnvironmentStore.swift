@@ -47,6 +47,8 @@ public final class EnvironmentStore<State: AppReducer>: @unchecked Sendable {
 
         sinkSubject()
         GlobalValue.set(self)
+
+        RuntimeReducing.registerMiddlewares(reducer: mutableState, store: self)
     }
 
     /// Convenience initializer with a single action logger.
@@ -224,8 +226,8 @@ public extension EnvironmentStore {
     /// - Parameters:
     ///   - middlewareType: The middleware type to subscribe to. Must conform to `Middleware` and `EnvironmentMiddleware`.
     ///   - environment: The environment to be used by the middleware.
-    func subscribe<M: Middleware<State>>(_ middlewareType: M.Type, environment: M.Environment) where M.State == State,
-        M: EnvironmentMiddleware
+    func subscribe<M: FeatureMiddleware<State>>(_ middlewareType: M.Type, environment: M.Environment)
+        where M.State == State
     {
         self.subscribe { store in
             middlewareType.init(store: store, environment: environment)
@@ -257,8 +259,8 @@ public extension EnvironmentStore {
     ///   - middlewareType: The middleware type to subscribe to. Must conform to `Middleware` and `EnvironmentMiddleware`.
     ///   - environment: The environment to use for the middleware.
     ///   - queue: The dispatch queue on which the middleware operates.
-    func subscribe<M: Middleware<State>>(_ middlewareType: M.Type, environment: M.Environment, on queue: DispatchQueue)
-        where M.State == State, M: EnvironmentMiddleware
+    func subscribe<M: FeatureMiddleware<State>>(_ middlewareType: M.Type, environment: M.Environment, on queue: DispatchQueue)
+        where M.State == State
     {
         self.subscribe { store in
             middlewareType.init(store: store, environment: environment, queue: queue)
