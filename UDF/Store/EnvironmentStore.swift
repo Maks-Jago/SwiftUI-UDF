@@ -23,11 +23,6 @@ public final class EnvironmentStore<State: AppReducer>: @unchecked Sendable {
     private var store: InternalStore<State>
     private var cancelation: Cancellable?
 
-    /// Non-nil only while the launch-time registration walk is running.
-    ///
-    /// `subscribe` records into this instead of hopping onto the store actor, so N features cost one
-    /// hop at the end of the walk rather than N blocking round trips.
-    private var pendingRegistrations: [MiddlewareWrapper<State>]?
     private let subscribersCoordinator: SubscribersCoordinator<StateSubscriber<State>> = SubscribersCoordinator()
     private let storeQueue: DispatchQueue = .init(label: "EnvironmentStore")
     
@@ -54,19 +49,10 @@ public final class EnvironmentStore<State: AppReducer>: @unchecked Sendable {
         sinkSubject()
         GlobalValue.set(self)
 
-        pendingRegistrations = []
-        RuntimeReducing.registerMiddlewares(reducer: mutableState, store: self)
-        let pending = pendingRegistrations ?? []
-        pendingRegistrations = nil
+        let registrar = FeatureMiddlewareRegistrar<State>()
+        RuntimeReducing.registerMiddlewares(reducer: mutableState, registrar: registrar)
 
-        if !pending.isEmpty {
-            let middlewares = pending.map { wrapper in
-                wrapper.instance ?? self.middleware(store: store, type: wrapper.type)
-            }
-            executeSynchronously {
-                await store.subscribe(middlewares)
-            }
-        }
+        registrar.register(in: store)
     }
 
     /// Convenience initializer with a single action logger.
@@ -289,11 +275,6 @@ public extension EnvironmentStore {
     ///
     /// - Parameter build: A closure that takes the store and returns an array of middleware wrappers.
     func subscribe(@MiddlewareBuilder<State> build: @escaping @Sendable (_ store: any Store<State>) -> [MiddlewareWrapper<State>]) {
-        if pendingRegistrations != nil {
-            pendingRegistrations?.append(contentsOf: build(self.store))
-            return
-        }
-
         executeSynchronously {
             await self.store.subscribe(
                 build(self.store).map { wrapper in

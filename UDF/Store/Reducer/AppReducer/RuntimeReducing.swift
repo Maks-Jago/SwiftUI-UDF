@@ -207,7 +207,7 @@ extension RuntimeReducing {
     /// - Parameters:
     ///   - rootReducer: The root reducer to inspect.
     ///   - store: The store to register middleware with.
-    static func registerMiddlewares<R: AppReducer>(reducer rootReducer: R, store: EnvironmentStore<R>) {
+    static func registerMiddlewares<R: AppReducer>(reducer rootReducer: R, registrar: FeatureMiddlewareRegistrar<R>) {
         guard let info = try? typeInfo(of: R.self) else {
             return
         }
@@ -217,7 +217,7 @@ extension RuntimeReducing {
                 continue
             }
 
-            tryToRegisterMiddlewares(reducer, store: store)
+            tryToRegisterMiddlewares(reducer, registrar: registrar)
 
             #if DEBUG
                 assertNoNestedRegistering(in: reducer, ofType: property.type, mountedAt: property.name)
@@ -230,13 +230,13 @@ extension RuntimeReducing {
     /// - Parameters:
     ///   - reducer: The reducer to test for conformance.
     ///   - store: The store to register middleware with.
-    private static func tryToRegisterMiddlewares<R: AppReducer>(_ reducer: Reducing, store: EnvironmentStore<R>) {
-        func registerMiddlewares<M: MiddlewareRegistering>(_ reducer: M, store: EnvironmentStore<R>) {
-            M.registerMiddlewares(in: store as! EnvironmentStore<M.AppState>)
+    private static func tryToRegisterMiddlewares<R: AppReducer>(_ reducer: Reducing, registrar: FeatureMiddlewareRegistrar<R>) {
+        func registerMiddlewares<M: MiddlewareRegistering>(_ reducer: M, registrar: FeatureMiddlewareRegistrar<R>) {
+            M.registerMiddlewares(in: registrar as! FeatureMiddlewareRegistrar<M.AppState>)
         }
 
         if let registering = reducer as? any MiddlewareRegistering {
-            registerMiddlewares(registering, store: store)
+            registerMiddlewares(registering, registrar: registrar)
         }
     }
 

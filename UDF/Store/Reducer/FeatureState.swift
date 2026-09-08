@@ -50,8 +50,8 @@ import SwiftUI
 ///         ProfileContainer<AppState>(id: input)
 ///     }
 ///
-///     public static func registerMiddlewares(in store: EnvironmentStore<AppState>) {
-///         store.subscribe(ProfileMiddleware<AppState>.self, environment: AppState.Environments.profile)
+///     public static func registerMiddlewares(in registrar: FeatureMiddlewareRegistrar<AppState>) {
+///         registrar.add(ProfileMiddleware<AppState>.self, environment: AppState.Environments.profile)
 ///     }
 /// }
 /// ```
@@ -97,5 +97,5 @@ public extension FeatureState {
     ///
     /// A feature with no side effects of its own, one that only holds state and presents it, needs no
     /// middleware and says so by leaving this alone.
-    static func registerMiddlewares(in store: EnvironmentStore<AppState>) {}
+    static func registerMiddlewares(in registrar: FeatureMiddlewareRegistrar<AppState>) {}
 }

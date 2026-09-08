@@ -13,16 +13,18 @@ import Foundation
 
 /// A reducer that subscribes the middleware it owns.
 ///
-/// `EnvironmentStore` inspects the app state once, after the store is created, and calls
-/// `registerMiddlewares(in:)` on every conforming property it finds. Mounting the reducer in the app
-/// state is therefore the whole integration; nothing has to be wired by hand.
+/// `EnvironmentStore` inspects the app state once, while the store is being created, and calls
+/// `registerMiddlewares(in:)` on every conforming property it finds. Each call names middleware to a
+/// ``FeatureMiddlewareRegistrar`` rather than subscribing it, so the whole app's middleware is subscribed in a
+/// single pass no matter how many features there are. Mounting the reducer in the app state is
+/// therefore the whole integration; nothing has to be wired by hand.
 ///
 /// One call registers as many middleware as the feature owns:
 ///
 /// ```swift
-/// public static func registerMiddlewares(in store: EnvironmentStore<AppState>) {
-///     store.subscribe(ProfileMiddleware<AppState>.self, environment: AppState.Environments.profile)
-///     store.subscribe(ProfileAnalyticsMiddleware<AppState>.self, environment: AppState.Environments.analytics)
+/// public static func registerMiddlewares(in registrar: FeatureMiddlewareRegistrar<AppState>) {
+///     registrar.add(ProfileMiddleware<AppState>.self, environment: AppState.Environments.profile)
+///     registrar.add(ProfileAnalyticsMiddleware<AppState>.self, environment: AppState.Environments.analytics)
 /// }
 /// ```
 ///
@@ -38,8 +40,8 @@ import Foundation
 ///
 ///     public init() {}
 ///
-///     public static func registerMiddlewares(in store: EnvironmentStore<AppState>) {
-///         store.subscribe(ProfileMiddleware<AppState>.self, environment: AppState.Environments.profile)
+///     public static func registerMiddlewares(in registrar: FeatureMiddlewareRegistrar<AppState>) {
+///         registrar.add(ProfileMiddleware<AppState>.self, environment: AppState.Environments.profile)
 ///     }
 /// }
 /// ```
@@ -71,10 +73,11 @@ public protocol MiddlewareRegistering: Reducing {
     /// The root reducer the store was created with.
     associatedtype AppState: AppReducer
 
-    /// Subscribes the middleware this reducer owns.
+    /// Names the middleware this reducer owns.
     ///
-    /// Called once per conforming reducer, after the store exists.
+    /// Called once per conforming reducer, while the store is being built. Nothing is subscribed here:
+    /// the buffer holds every feature's middleware and the store subscribes the whole set at once.
     ///
-    /// - Parameter store: The store to subscribe against.
-    static func registerMiddlewares(in store: EnvironmentStore<AppState>)
+    /// - Parameter registrar: The buffer to name this reducer's middleware to.
+    static func registerMiddlewares(in registrar: FeatureMiddlewareRegistrar<AppState>)
 }
