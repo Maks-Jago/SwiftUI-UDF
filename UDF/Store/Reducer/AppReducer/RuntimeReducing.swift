@@ -194,6 +194,34 @@ enum RuntimeReducing {
 // MARK: - Middleware Registration
 
 extension RuntimeReducing {
+    /// Collects middleware from the root reducer's own properties without subscribing it.
+    /// Nested providers are diagnosed in debug builds, but never registered.
+    static func collectMiddlewareWrappers<State: AppReducer>(
+        reducer rootReducer: State,
+        store: any Store<State>,
+        into wrappers: inout [MiddlewareWrapper<State>]
+    ) {
+        guard let info = try? typeInfo(of: State.self) else {
+            return
+        }
+
+        for property in info.properties {
+            guard let reducer = try? property.get(from: rootReducer) as? any Reducing else {
+                continue
+            }
+
+            if let provider = reducer as? any MiddlewareRegistering<State> {
+                wrappers.append(contentsOf: type(of: provider).registerMiddlewares(in: store))
+            } else if reducer is any MiddlewareRegistering {
+                preconditionFailure("Middleware provider \(type(of: reducer)) must use \(State.self) as its AppState.")
+            }
+
+            #if DEBUG
+                assertNoNestedRegistering(in: reducer, ofType: property.type, mountedAt: property.name)
+            #endif
+        }
+    }
+
     #if DEBUG
         /// Traps on a `MiddlewareRegistering` conformer mounted below the app state's own properties.
         ///
@@ -206,7 +234,7 @@ extension RuntimeReducing {
         ///   - reducer: The reducer whose properties are inspected.
         ///   - reducerType: The type of that reducer.
         ///   - path: The property path walked so far, used to point at the offending mount.
-        static func assertNoNestedRegistering(in reducer: Reducing, ofType reducerType: Any.Type, mountedAt path: String) {
+        private static func assertNoNestedRegistering(in reducer: Reducing, ofType reducerType: Any.Type, mountedAt path: String) {
             guard let info = try? typeInfo(of: reducerType) else {
                 return
             }

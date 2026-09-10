@@ -11,7 +11,6 @@
 
 import Combine
 import Foundation
-import Runtime
 import SwiftUI
 
 /// A store that manages the global state of the application and provides a centralized way to dispatch actions and manage middleware.
@@ -320,26 +319,8 @@ public extension EnvironmentStore {
 private extension EnvironmentStore {
     /// Collects root-level feature middleware and subscribes the complete batch once.
     func subscribeFeatureMiddlewares(in state: State) {
-        guard let info = try? typeInfo(of: State.self) else {
-            return
-        }
-
         var wrappers: [MiddlewareWrapper<State>] = []
-        for property in info.properties {
-            guard let reducer = try? property.get(from: state) as? any Reducing else {
-                continue
-            }
-
-            if let provider = reducer as? any MiddlewareRegistering<State> {
-                wrappers.append(contentsOf: type(of: provider).registerMiddlewares(in: store))
-            } else if reducer is any MiddlewareRegistering {
-                preconditionFailure("Middleware provider \(type(of: reducer)) must use \(State.self) as its AppState.")
-            }
-
-            #if DEBUG
-                RuntimeReducing.assertNoNestedRegistering(in: reducer, ofType: property.type, mountedAt: property.name)
-            #endif
-        }
+        RuntimeReducing.collectMiddlewareWrappers(reducer: state, store: store, into: &wrappers)
 
         guard !wrappers.isEmpty else {
             return
