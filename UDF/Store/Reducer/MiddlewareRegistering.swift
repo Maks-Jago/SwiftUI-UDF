@@ -76,8 +76,8 @@ public protocol MiddlewareRegistering: Reducing {
     /// Names the middleware this reducer owns.
     ///
     /// Called once per conforming reducer, while the store is being built. Nothing is subscribed here:
-    /// the buffer holds every feature's middleware and the store subscribes the whole set at once.
+    /// the registrar gathers every feature's middleware and subscribes the whole set at once.
     ///
-    /// - Parameter registrar: The buffer to name this reducer's middleware to.
+    /// - Parameter registrar: The registrar to name this reducer's middleware to.
     static func registerMiddlewares(in registrar: FeatureMiddlewareRegistrar<AppState>)
 }
