@@ -14,23 +14,24 @@ import Foundation
 /// A reducer that subscribes the middleware it owns.
 ///
 /// `EnvironmentStore` inspects the app state once, while the store is being created, and calls
-/// `registerMiddlewares(in:)` on every conforming property it finds. Each call names middleware to a
-/// ``FeatureMiddlewareRegistrar`` rather than subscribing it, so the whole app's middleware is subscribed in a
-/// single pass no matter how many features there are. Mounting the reducer in the app state is
+/// `registerMiddlewares(in:)` on every conforming property it finds. Each call returns middleware wrappers
+/// without subscribing them, so the whole app's middleware is subscribed in a single pass no matter how
+/// many features there are. Mounting the reducer in the app state is
 /// therefore the whole integration; nothing has to be wired by hand.
 ///
 /// One call registers as many middleware as the feature owns:
 ///
 /// ```swift
-/// public static func registerMiddlewares(in registrar: FeatureMiddlewareRegistrar<AppState>) {
-///     registrar.add(ProfileMiddleware<AppState>.self, environment: AppState.Environments.profile)
-///     registrar.add(ProfileAnalyticsMiddleware<AppState>.self, environment: AppState.Environments.analytics)
+/// @MiddlewareBuilder<AppState>
+/// public static func registerMiddlewares(in store: any Store<AppState>) -> [MiddlewareWrapper<AppState>] {
+///     ProfileMiddleware<AppState>(store: store, environment: AppState.Environments.profile)
+///     ProfileAnalyticsMiddleware<AppState>(store: store, environment: AppState.Environments.analytics)
 /// }
 /// ```
 ///
 /// A feature module declares its reducer generic over the app state that hosts it, constrained to the
 /// protocol the feature requires. Because the host is a generic parameter, the reducer can name
-/// `EnvironmentStore<AppState>` and its own middleware without knowing the concrete app state, and it
+/// `Store<AppState>` and its own middleware without knowing the concrete app state, and it
 /// reaches its environment through the host rather than building one:
 ///
 /// ```swift
@@ -40,8 +41,9 @@ import Foundation
 ///
 ///     public init() {}
 ///
-///     public static func registerMiddlewares(in registrar: FeatureMiddlewareRegistrar<AppState>) {
-///         registrar.add(ProfileMiddleware<AppState>.self, environment: AppState.Environments.profile)
+///     @MiddlewareBuilder<AppState>
+///     public static func registerMiddlewares(in store: any Store<AppState>) -> [MiddlewareWrapper<AppState>] {
+///         ProfileMiddleware<AppState>(store: store, environment: AppState.Environments.profile)
 ///     }
 /// }
 /// ```
@@ -69,15 +71,16 @@ import Foundation
 ///   `ProfileFeatureState<Self>`, which pins the two together at compile time.
 ///
 /// - SeeAlso: ``FeatureState``, which pairs this with a feature's entry point.
-public protocol MiddlewareRegistering: Reducing {
+public protocol MiddlewareRegistering<AppState>: Reducing {
     /// The root reducer the store was created with.
     associatedtype AppState: AppReducer
 
-    /// Names the middleware this reducer owns.
+    /// Builds the middleware this reducer owns.
     ///
     /// Called once per conforming reducer, while the store is being built. Nothing is subscribed here:
-    /// the registrar gathers every feature's middleware and subscribes the whole set at once.
+    /// the environment store collects the returned wrappers and subscribes the whole set at once.
     ///
-    /// - Parameter registrar: The registrar to name this reducer's middleware to.
-    static func registerMiddlewares(in registrar: FeatureMiddlewareRegistrar<AppState>)
+    /// - Parameter store: The store supplied to middleware initializers.
+    @MiddlewareBuilder<AppState>
+    static func registerMiddlewares(in store: any Store<AppState>) -> [MiddlewareWrapper<AppState>]
 }

@@ -11,6 +11,7 @@
 
 import Combine
 import Foundation
+import Runtime
 import SwiftUI
 
 /// A store that manages the global state of the application and provides a centralized way to dispatch actions and manage middleware.
@@ -49,10 +50,7 @@ public final class EnvironmentStore<State: AppReducer>: @unchecked Sendable {
         sinkSubject()
         GlobalValue.set(self)
 
-        let registrar = FeatureMiddlewareRegistrar<State>()
-        RuntimeReducing.registerMiddlewares(reducer: mutableState, registrar: registrar)
-
-        registrar.register(in: store)
+        subscribeFeatureMiddlewares(in: mutableState)
     }
 
     /// Convenience initializer with a single action logger.
@@ -314,6 +312,44 @@ public extension EnvironmentStore {
             type.init(store: store, environment: type.buildTestEnvironment(for: store))
         } else {
             type.init(store: store, environment: type.buildLiveEnvironment(for: store))
+        }
+    }
+}
+
+// MARK: - Feature Middleware Registration
+private extension EnvironmentStore {
+    /// Collects root-level feature middleware and subscribes the complete batch once.
+    func subscribeFeatureMiddlewares(in state: State) {
+        guard let info = try? typeInfo(of: State.self) else {
+            return
+        }
+
+        var wrappers: [MiddlewareWrapper<State>] = []
+        for property in info.properties {
+            guard let reducer = try? property.get(from: state) as? any Reducing else {
+                continue
+            }
+
+            if let provider = reducer as? any MiddlewareRegistering<State> {
+                wrappers.append(contentsOf: type(of: provider).registerMiddlewares(in: store))
+            } else if reducer is any MiddlewareRegistering {
+                preconditionFailure("Middleware provider \(type(of: reducer)) must use \(State.self) as its AppState.")
+            }
+
+            #if DEBUG
+                RuntimeReducing.assertNoNestedRegistering(in: reducer, ofType: property.type, mountedAt: property.name)
+            #endif
+        }
+
+        guard !wrappers.isEmpty else {
+            return
+        }
+
+        let middlewares = wrappers.map { wrapper in
+            wrapper.instance ?? middleware(store: store, type: wrapper.type)
+        }
+        executeSynchronously {
+            await self.store.subscribe(middlewares)
         }
     }
 }
