@@ -29,7 +29,7 @@ public enum MiddlewareBuilder<State: AppReducer> {
     ///
     /// - Parameter expression: An instance of a middleware.
     /// - Returns: A `MiddlewareWrapper` containing the middleware instance.
-    public static func buildExpression(_ expression: some Middleware<State>) -> MiddlewareWrapper<State> {
+    public static func buildExpression(_ expression: some FeatureMiddleware<State>) -> MiddlewareWrapper<State> {
         .init(instance: expression)
     }
 

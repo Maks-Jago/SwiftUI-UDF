@@ -90,7 +90,7 @@ private extension InternalStore {
             let middleware = anyMiddleware.middleware
 
             switch middleware {
-            case let middleware as any Middleware<State>:
+            case let middleware as any MiddlewareProtocol<State>:
                 notify(middleware: middleware, actions: unwrappedActions, oldState: reduceResult.oldState, newState: reduceResult.newState)
 
             default:
@@ -164,7 +164,7 @@ private extension InternalStore {
             let middleware = anyMiddleware.middleware
 
             switch middleware {
-            case let middleware as any Middleware<State>:
+            case let middleware as any MiddlewareProtocol<State>:
                 notify(middleware: middleware, actions: actions, oldState: oldState, newState: newState)
 
             default:
@@ -219,7 +219,7 @@ private extension InternalStore {
             return
         }
 
-        if let unifiedMiddleware = middleware as? any Middleware<State> {
+        if let unifiedMiddleware = middleware as? any MiddlewareProtocol<State> {
             middleware.queue.async {
                 unifiedMiddleware.observe(state: state)
             }

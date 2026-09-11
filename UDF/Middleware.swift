@@ -149,6 +149,38 @@ public extension MiddlewareProtocol {
 /// A typealias for backward compatibility.
 public typealias Middleware<State: AppReducer> = _BaseMiddleware<State> & EnvironmentMiddleware & MiddlewareProtocol
 
+/// A middleware belonging to a feature module, whose environment is supplied at registration.
+///
+/// `FeatureMiddleware` is `Middleware` without the requirement to build its own environment. A feature
+/// module has no dependency on the app's API layer and therefore cannot construct live dependencies;
+/// the composition root builds the environment and hands it over at registration.
+///
+/// Declare the environment as a type of its own rather than nesting it in the middleware. A nested type
+/// is parameterised by the middleware's generic host, so extending it from the data layer would mean
+/// naming a concrete app state, which a module sitting below the app cannot see.
+///
+/// ```swift
+/// public struct ProfileEnvironment: Sendable {
+///     public var loadProfile: @Sendable (_ id: User.ID) async throws -> Profile
+/// }
+///
+/// public final class ProfileMiddleware<State: ProfileFeature>: FeatureMiddleware<State>, @unchecked Sendable {
+///     public typealias Environment = ProfileEnvironment
+///
+///     public var environment: Environment!
+/// }
+///
+/// store.subscribe(ProfileMiddleware<AppState>.self, environment: AppState.Environments.profile)
+/// ```
+///
+/// Registering one with `subscribe(_:)` is a compile-time error, as the environment builders that
+/// overload requires are not part of ``FeatureEnvironmentMiddleware``.
+///
+/// - SeeAlso: ``Middleware``, for middleware that builds its own environment.
+/// - SeeAlso: ``FeatureState``, which registers this middleware for the feature that owns it.
+public typealias FeatureMiddleware<State: AppReducer> =
+    _BaseMiddleware<State> & FeatureEnvironmentMiddleware & MiddlewareProtocol
+
 /// Legacy support for `ObservableMiddleware` and `ReducibleMiddleware` to maintain backward compatibility.
 @available(*, deprecated, message: "Use Middleware instead.")
 public typealias ObservableMiddleware<State: AppReducer> = Middleware<State>
