@@ -41,6 +41,14 @@ let package = Package(
             path: "UDFSwiftTesting"
         ),
 
+        .target(
+            name: "UDFModularizationTestFeature",
+            dependencies: [
+                .target(name: "UDF"),
+            ],
+            path: "Tests/Fixtures/UDFModularizationTestFeature"
+        ),
+
         .testTarget(
             name: "SwiftUI-UDF-Tests",
             dependencies: [
@@ -51,6 +59,7 @@ let package = Package(
         .testTarget(
             name: "SwiftUI-UDF-ConcurrencyTests",
             dependencies: [
+                .target(name: "UDFModularizationTestFeature"),
                 .target(name: "UDFSwiftTesting"),
             ]
         ),

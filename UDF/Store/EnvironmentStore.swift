@@ -22,6 +22,7 @@ public final class EnvironmentStore<State: AppReducer>: @unchecked Sendable {
 
     private var store: InternalStore<State>
     private var cancelation: Cancellable?
+
     private let subscribersCoordinator: SubscribersCoordinator<StateSubscriber<State>> = SubscribersCoordinator()
     private let storeQueue: DispatchQueue = .init(label: "EnvironmentStore")
     
@@ -47,6 +48,8 @@ public final class EnvironmentStore<State: AppReducer>: @unchecked Sendable {
 
         sinkSubject()
         GlobalValue.set(self)
+
+        subscribeFeatureMiddlewares(in: mutableState)
     }
 
     /// Convenience initializer with a single action logger.
@@ -308,6 +311,26 @@ public extension EnvironmentStore {
             type.init(store: store, environment: type.buildTestEnvironment(for: store))
         } else {
             type.init(store: store, environment: type.buildLiveEnvironment(for: store))
+        }
+    }
+}
+
+// MARK: - Feature Middleware Registration
+private extension EnvironmentStore {
+    /// Collects root-level feature middleware and subscribes the complete batch once.
+    func subscribeFeatureMiddlewares(in state: State) {
+        var wrappers: [MiddlewareWrapper<State>] = []
+        RuntimeReducing.collectMiddlewareWrappers(reducer: state, store: store, into: &wrappers)
+
+        guard !wrappers.isEmpty else {
+            return
+        }
+
+        let middlewares = wrappers.map { wrapper in
+            wrapper.instance ?? middleware(store: store, type: wrapper.type)
+        }
+        executeSynchronously {
+            await self.store.subscribe(middlewares)
         }
     }
 }
