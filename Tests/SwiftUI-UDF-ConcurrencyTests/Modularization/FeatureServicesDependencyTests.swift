@@ -20,8 +20,8 @@ import UDFSwiftTesting
 struct FeatureServicesDependencyTests {
     @TestStoreActor
     @Test("AppServices injects the same service singleton into multiple feature environments")
-    func appServicesInjectsSameSingletonAcrossFeatures() async throws {
-        let service = SharedToggleService()
+    func appServicesInjectsSameSingletonAcrossFeatures() async {
+        let service = SharedSwitchService()
 
         await AppServicesContext.$service.withValue(service) {
             let store = TestStore(
@@ -31,28 +31,33 @@ struct FeatureServicesDependencyTests {
             var wrappers: [MiddlewareWrapper<AppState>] = []
 
             await store.subscribe { store in
-                wrappers = FeatureAState<AppState>.registerMiddlewares(in: store)
-                    + FeatureBState<AppState>.registerMiddlewares(in: store)
+                wrappers = SwitchControlFeatureState<AppState>.registerMiddlewares(in: store)
+                    + SwitchStatusFeatureState<AppState>.registerMiddlewares(in: store)
                 return wrappers
             }
 
             #expect(wrappers.count == 2)
 
-            guard let middlewareA = wrappers.compactMap({ $0.instance as? FeatureAMiddleware<AppState> }).first,
-                  let middlewareB = wrappers.compactMap({ $0.instance as? FeatureBMiddleware<AppState> }).first else {
+            guard let controlMiddleware = wrappers.compactMap({
+                $0.instance as? SwitchControlMiddleware<AppState>
+            }).first,
+                let statusMiddleware = wrappers.compactMap({
+                    $0.instance as? SwitchStatusMiddleware<AppState>
+                }).first
+            else {
                 Issue.record("Expected both middlewares to be present")
                 return
             }
 
-            #expect(middlewareA.environment.service === service)
-            #expect(middlewareB.environment.service === service)
-            #expect(middlewareA.environment.service === middlewareB.environment.service)
+            #expect(controlMiddleware.environment.service === service)
+            #expect(statusMiddleware.environment.service === service)
+            #expect(controlMiddleware.environment.service === statusMiddleware.environment.service)
         }
     }
 
     @Test("Cross-feature coordination via shared service reflects in EnvironmentStore state")
     func crossFeatureServiceCoordinationInEnvironmentStore() async {
-        let service = SharedToggleService()
+        let service = SharedSwitchService()
 
         await AppServicesContext.$service.withValue(service) {
             let store = EnvironmentStore(
@@ -60,105 +65,105 @@ struct FeatureServicesDependencyTests {
                 loggers: []
             )
 
-            // 1. Feature A toggles the shared service on
-            store.dispatch(Actions.ToggleFeatureA())
+            // 1. The control feature toggles the shared service on
+            store.dispatch(Actions.ToggleSwitchControl())
 
-            let aToggled = await waitForCondition(timeout: 2) {
-                store.state.featureA.form.isToggled == true
+            let controlToggled = await waitForCondition(timeout: 2) {
+                store.state.switchControl.form.isToggled == true
                     && service.isToggled == true
             }
-            #expect(aToggled)
+            #expect(controlToggled)
 
-            // 2. Feature B syncs with the shared service and observes the change
-            store.dispatch(Actions.SyncFeatureB())
+            // 2. The status feature syncs with the shared service and observes the change
+            store.dispatch(Actions.SyncSwitchStatus())
 
-            let bSynced = await waitForCondition(timeout: 2) {
-                store.state.featureB.form.isToggled == true
+            let statusSynced = await waitForCondition(timeout: 2) {
+                store.state.switchStatus.form.isToggled == true
             }
-            #expect(bSynced)
+            #expect(statusSynced)
 
-            // 3. Feature A toggles the shared service off
-            store.dispatch(Actions.ToggleFeatureA())
+            // 3. The control feature toggles the shared service off
+            store.dispatch(Actions.ToggleSwitchControl())
 
-            let aToggledOff = await waitForCondition(timeout: 2) {
-                store.state.featureA.form.isToggled == false
+            let controlToggledOff = await waitForCondition(timeout: 2) {
+                store.state.switchControl.form.isToggled == false
                     && service.isToggled == false
             }
-            #expect(aToggledOff)
+            #expect(controlToggledOff)
 
-            // 4. Feature B syncs again and observes it is now off
-            store.dispatch(Actions.SyncFeatureB())
+            // 4. The status feature syncs again and observes it is now off
+            store.dispatch(Actions.SyncSwitchStatus())
 
-            let bSyncedOff = await waitForCondition(timeout: 2) {
-                store.state.featureB.form.isToggled == false
+            let statusSyncedOff = await waitForCondition(timeout: 2) {
+                store.state.switchStatus.form.isToggled == false
             }
-            #expect(bSyncedOff)
+            #expect(statusSyncedOff)
         }
     }
 
     @Test("Concurrent calls on shared service from different middleware queues maintain consistency")
     func concurrentSharedServiceAccess() async {
-        let service = SharedToggleService()
+        let service = SharedSwitchService()
         let store = await TestStore(
             initial: AppState(),
             registerFeatureMiddlewares: false
         )
 
         await store.subscribe(build: { store in
-            FeatureAMiddleware<AppState>(
+            SwitchControlMiddleware<AppState>(
                 store: store,
-                environment: FeatureAEnvironment(service: service),
-                queue: DispatchQueue(label: "test.featureA.queue", attributes: .concurrent)
+                environment: SwitchControlEnvironment(service: service),
+                queue: DispatchQueue(label: "test.switch-control.queue", attributes: .concurrent)
             )
-            FeatureBMiddleware<AppState>(
+            SwitchStatusMiddleware<AppState>(
                 store: store,
-                environment: FeatureBEnvironment(service: service),
-                queue: DispatchQueue(label: "test.featureB.queue", attributes: .concurrent)
+                environment: SwitchStatusEnvironment(service: service),
+                queue: DispatchQueue(label: "test.switch-status.queue", attributes: .concurrent)
             )
         })
 
         // Concurrently dispatch actions to both features
         await withTaskGroup(of: Void.self) { group in
             group.addTask {
-                await store.dispatch(Actions.ToggleFeatureA())
+                await store.dispatch(Actions.ToggleSwitchControl())
             }
             group.addTask {
-                await store.dispatch(Actions.ToggleFeatureB())
+                await store.dispatch(Actions.ToggleSwitchStatus())
             }
         }
 
         await store.wait()
 
         let state = await store.state
-        #expect(state.featureA.form.executionCount == 1)
-        #expect(state.featureB.form.executionCount == 1)
+        #expect(state.switchControl.form.executionCount == 1)
+        #expect(state.switchStatus.form.executionCount == 1)
         // Two toggles on an initially false boolean returns false
         #expect(service.isToggled == false)
     }
 
     @Test("Separate store instances share AppServices but maintain isolated middleware instances")
-    func separateStoresShareServicesButIsolateMiddlewares() async throws {
-        let service = SharedToggleService()
+    func separateStoresShareServicesButIsolateMiddlewares() async {
+        let service = SharedSwitchService()
 
         await AppServicesContext.$service.withValue(service) {
             let firstStore = EnvironmentStore(initial: AppState(), loggers: [])
             let secondStore = EnvironmentStore(initial: AppState(), loggers: [])
 
-            firstStore.dispatch(Actions.ToggleFeatureA())
+            firstStore.dispatch(Actions.ToggleSwitchControl())
 
             let firstToggled = await waitForCondition(timeout: 2) {
-                firstStore.state.featureA.form.isToggled == true
+                firstStore.state.switchControl.form.isToggled == true
             }
             #expect(firstToggled)
 
             // Second store's state is independent and isolated
-            #expect(secondStore.state.featureA.form.isToggled == false)
+            #expect(secondStore.state.switchControl.form.isToggled == false)
 
             // But the underlying AppServices service was invoked by store 1
             #expect(service.isToggled == true)
 
             // Cleanup / Toggle back
-            firstStore.dispatch(Actions.ToggleFeatureA())
+            firstStore.dispatch(Actions.ToggleSwitchControl())
             let cleaned = await waitForCondition(timeout: 2) {
                 service.isToggled == false
             }
@@ -170,15 +175,15 @@ struct FeatureServicesDependencyTests {
 // MARK: - AppServices & AppQueues Definitions
 
 private enum AppServicesContext {
-    @TaskLocal static var service: SharedToggleService?
+    @TaskLocal static var service: SharedSwitchService?
 }
 
 private enum AppQueues {
-    static let featureA = DispatchQueue(label: "app.featureA.queue")
-    static let featureB = DispatchQueue(label: "app.featureB.queue")
+    static let switchControl = DispatchQueue(label: "app.switch-control.queue")
+    static let switchStatus = DispatchQueue(label: "app.switch-status.queue")
 }
 
-private final class SharedToggleService: @unchecked Sendable {
+private final class SharedSwitchService: @unchecked Sendable {
     private let lock = OSAllocatedUnfairLock(initialState: false)
 
     var isToggled: Bool {
@@ -191,70 +196,70 @@ private final class SharedToggleService: @unchecked Sendable {
 }
 
 private enum AppServices {
-    static var service: SharedToggleService {
+    static var service: SharedSwitchService {
         AppServicesContext.service ?? defaultService
     }
-    private static let defaultService = SharedToggleService()
+    private static let defaultService = SharedSwitchService()
 }
 
 // MARK: - Actions
 
 private extension Actions {
-    struct ToggleFeatureA: Action {}
-    struct DidToggleFeatureA: Action {
+    struct ToggleSwitchControl: Action {}
+    struct DidToggleSwitchControl: Action {
         let isToggled: Bool
     }
 
-    struct ToggleFeatureB: Action {}
-    struct DidToggleFeatureB: Action {
+    struct ToggleSwitchStatus: Action {}
+    struct DidToggleSwitchStatus: Action {
         let isToggled: Bool
     }
 
-    struct SyncFeatureB: Action {}
-    struct DidSyncFeatureB: Action {
+    struct SyncSwitchStatus: Action {}
+    struct DidSyncSwitchStatus: Action {
         let isToggled: Bool
     }
 }
 
-// MARK: - Feature A
+// MARK: - Switch Control Feature
 
-private struct FeatureAEnvironment: Sendable {
-    let service: SharedToggleService
+private struct SwitchControlEnvironment: Sendable {
+    let service: SharedSwitchService
 }
 
-private protocol FeatureAEnvironmentProviding {
-    static var featureA: FeatureAEnvironment { get }
+private protocol SwitchControlEnvironmentProviding {
+    static var switchControl: SwitchControlEnvironment { get }
 }
 
-private protocol FeatureA: AppReducer {
-    associatedtype Environments: FeatureAEnvironmentProviding
+private protocol SwitchControlFeature: AppReducer {
+    associatedtype Environments: SwitchControlEnvironmentProviding
 
-    var featureA: FeatureAState<Self> { get }
+    var switchControl: SwitchControlFeatureState<Self> { get }
 }
 
-private struct FeatureAState<State: FeatureA>: FeatureState {
-    var form = FeatureAForm()
+private struct SwitchControlFeatureState<State: SwitchControlFeature>: FeatureState {
+    var form = SwitchControlForm()
 
     static func entryPoint(input: Void) -> some View {
         EmptyView()
     }
 
     static func registerMiddlewares(in store: any Store<State>) -> [MiddlewareWrapper<State>] {
-        FeatureAMiddleware<State>(
+        SwitchControlMiddleware<State>(
             store: store,
-            environment: State.Environments.featureA,
-            queue: AppQueues.featureA
+            environment: State.Environments.switchControl,
+            queue: AppQueues.switchControl
         )
     }
 }
 
-private struct FeatureAForm: UDF.Form, Equatable {
+private struct SwitchControlForm: UDF.Form, Equatable {
     var isToggled = false
     var executionCount = 0
 
     mutating func reduce(_ action: some Action) {
         switch action {
-        case let action as Actions.DidToggleFeatureA:
+        case let action as Actions.DidToggleSwitchControl:
             isToggled = action.isToggled
             executionCount += 1
 
@@ -264,27 +269,27 @@ private struct FeatureAForm: UDF.Form, Equatable {
     }
 }
 
-private final class FeatureAMiddleware<State: FeatureA>:
+private final class SwitchControlMiddleware<State: SwitchControlFeature>:
     Middleware<State>,
     @unchecked Sendable
 {
-    typealias Environment = FeatureAEnvironment
+    typealias Environment = SwitchControlEnvironment
 
     var environment: Environment!
 
     static func buildLiveEnvironment(for store: some Store<State>) -> Environment {
-        State.Environments.featureA
+        State.Environments.switchControl
     }
 
     static func buildTestEnvironment(for store: some Store<State>) -> Environment {
-        State.Environments.featureA
+        State.Environments.switchControl
     }
 
     func reduce(_ action: some Action, for state: State) {
         switch action {
-        case is Actions.ToggleFeatureA:
+        case is Actions.ToggleSwitchControl:
             environment.service.toggle()
-            store.dispatch(Actions.DidToggleFeatureA(isToggled: environment.service.isToggled))
+            store.dispatch(Actions.DidToggleSwitchControl(isToggled: environment.service.isToggled))
 
         default:
             break
@@ -292,49 +297,49 @@ private final class FeatureAMiddleware<State: FeatureA>:
     }
 }
 
-// MARK: - Feature B
+// MARK: - Switch Status Feature
 
-private struct FeatureBEnvironment: Sendable {
-    let service: SharedToggleService
+private struct SwitchStatusEnvironment: Sendable {
+    let service: SharedSwitchService
 }
 
-private protocol FeatureBEnvironmentProviding {
-    static var featureB: FeatureBEnvironment { get }
+private protocol SwitchStatusEnvironmentProviding {
+    static var switchStatus: SwitchStatusEnvironment { get }
 }
 
-private protocol FeatureB: AppReducer {
-    associatedtype Environments: FeatureBEnvironmentProviding
+private protocol SwitchStatusFeature: AppReducer {
+    associatedtype Environments: SwitchStatusEnvironmentProviding
 
-    var featureB: FeatureBState<Self> { get }
+    var switchStatus: SwitchStatusFeatureState<Self> { get }
 }
 
-private struct FeatureBState<State: FeatureB>: FeatureState {
-    var form = FeatureBForm()
+private struct SwitchStatusFeatureState<State: SwitchStatusFeature>: FeatureState {
+    var form = SwitchStatusForm()
 
     static func entryPoint(input: Void) -> some View {
         EmptyView()
     }
 
     static func registerMiddlewares(in store: any Store<State>) -> [MiddlewareWrapper<State>] {
-        FeatureBMiddleware<State>(
+        SwitchStatusMiddleware<State>(
             store: store,
-            environment: State.Environments.featureB,
-            queue: AppQueues.featureB
+            environment: State.Environments.switchStatus,
+            queue: AppQueues.switchStatus
         )
     }
 }
 
-private struct FeatureBForm: UDF.Form, Equatable {
+private struct SwitchStatusForm: UDF.Form, Equatable {
     var isToggled = false
     var executionCount = 0
 
     mutating func reduce(_ action: some Action) {
         switch action {
-        case let action as Actions.DidToggleFeatureB:
+        case let action as Actions.DidToggleSwitchStatus:
             isToggled = action.isToggled
             executionCount += 1
 
-        case let action as Actions.DidSyncFeatureB:
+        case let action as Actions.DidSyncSwitchStatus:
             isToggled = action.isToggled
             executionCount += 1
 
@@ -344,30 +349,30 @@ private struct FeatureBForm: UDF.Form, Equatable {
     }
 }
 
-private final class FeatureBMiddleware<State: FeatureB>:
+private final class SwitchStatusMiddleware<State: SwitchStatusFeature>:
     Middleware<State>,
     @unchecked Sendable
 {
-    typealias Environment = FeatureBEnvironment
+    typealias Environment = SwitchStatusEnvironment
 
     var environment: Environment!
 
     static func buildLiveEnvironment(for store: some Store<State>) -> Environment {
-        State.Environments.featureB
+        State.Environments.switchStatus
     }
 
     static func buildTestEnvironment(for store: some Store<State>) -> Environment {
-        State.Environments.featureB
+        State.Environments.switchStatus
     }
 
     func reduce(_ action: some Action, for state: State) {
         switch action {
-        case is Actions.ToggleFeatureB:
+        case is Actions.ToggleSwitchStatus:
             environment.service.toggle()
-            store.dispatch(Actions.DidToggleFeatureB(isToggled: environment.service.isToggled))
+            store.dispatch(Actions.DidToggleSwitchStatus(isToggled: environment.service.isToggled))
 
-        case is Actions.SyncFeatureB:
-            store.dispatch(Actions.DidSyncFeatureB(isToggled: environment.service.isToggled))
+        case is Actions.SyncSwitchStatus:
+            store.dispatch(Actions.DidSyncSwitchStatus(isToggled: environment.service.isToggled))
 
         default:
             break
@@ -377,19 +382,19 @@ private final class FeatureBMiddleware<State: FeatureB>:
 
 // MARK: - Composing App State & Environments
 
-private enum AppEnvironments: FeatureAEnvironmentProviding, FeatureBEnvironmentProviding {
-    static var featureA: FeatureAEnvironment {
-        FeatureAEnvironment(service: AppServices.service)
+private enum AppEnvironments: SwitchControlEnvironmentProviding, SwitchStatusEnvironmentProviding {
+    static var switchControl: SwitchControlEnvironment {
+        SwitchControlEnvironment(service: AppServices.service)
     }
 
-    static var featureB: FeatureBEnvironment {
-        FeatureBEnvironment(service: AppServices.service)
+    static var switchStatus: SwitchStatusEnvironment {
+        SwitchStatusEnvironment(service: AppServices.service)
     }
 }
 
-private struct AppState: AppReducer, FeatureA, FeatureB {
+private struct AppState: AppReducer, SwitchControlFeature, SwitchStatusFeature {
     typealias Environments = AppEnvironments
 
-    var featureA = FeatureAState<AppState>()
-    var featureB = FeatureBState<AppState>()
+    var switchControl = SwitchControlFeatureState<AppState>()
+    var switchStatus = SwitchStatusFeatureState<AppState>()
 }

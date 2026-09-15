@@ -3,7 +3,7 @@ import UDF
 
 // MARK: - Public feature integration surface
 
-public struct ModularizationTestItem: StorageItem, Hashable {
+public struct TestItem: StorageItem, Hashable {
     public let id: Int
     public let title: String
 
@@ -15,23 +15,23 @@ public struct ModularizationTestItem: StorageItem, Hashable {
     public static let empty = Self(id: -1, title: "")
 }
 
-public struct ModularizationTestEnvironment: Sendable {
-    public var loadItems: @Sendable (_ page: Int) async throws -> [ModularizationTestItem]
+public struct TestEnvironment: Sendable {
+    public var loadItems: @Sendable (_ page: Int) async throws -> [TestItem]
 
     public init(
-        loadItems: @escaping @Sendable (_ page: Int) async throws -> [ModularizationTestItem]
+        loadItems: @escaping @Sendable (_ page: Int) async throws -> [TestItem]
     ) {
         self.loadItems = loadItems
     }
 }
 
-public extension ModularizationTestEnvironment {
+public extension TestEnvironment {
     static func test(
-        loadItems: @escaping @Sendable (_ page: Int) async throws -> [ModularizationTestItem] = { page in
+        loadItems: @escaping @Sendable (_ page: Int) async throws -> [TestItem] = { page in
             let firstID = ((page - 1) * 2) + 1
             return [
-                ModularizationTestItem(id: firstID, title: "Test item \(firstID)"),
-                ModularizationTestItem(id: firstID + 1, title: "Test item \(firstID + 1)"),
+                TestItem(id: firstID, title: "Test item \(firstID)"),
+                TestItem(id: firstID + 1, title: "Test item \(firstID + 1)"),
             ]
         }
     ) -> Self {
@@ -39,19 +39,19 @@ public extension ModularizationTestEnvironment {
     }
 }
 
-public protocol ModularizationTestEnvironmentProviding {
-    static var modularizationTestFeature: ModularizationTestEnvironment { get }
+public protocol TestEnvironmentProviding {
+    static var testFeature: TestEnvironment { get }
 }
 
-public protocol ModularizationTestFeature: AppReducer {
-    associatedtype Environments: ModularizationTestEnvironmentProviding
-    associatedtype ModularizationTestItemsStorage: Storage<ModularizationTestItem>
+public protocol TestFeature: AppReducer {
+    associatedtype Environments: TestEnvironmentProviding
+    associatedtype TestItemsStorage: Storage<TestItem>
 
-    var allModularizationTestItems: ModularizationTestItemsStorage { get }
-    var modularizationTestFeature: ModularizationTestFeatureState<Self> { get }
+    var allTestItems: TestItemsStorage { get }
+    var testFeature: TestFeatureState<Self> { get }
 }
 
-public struct ModularizationTestFeatureInput: Equatable, Sendable {
+public struct TestFeatureInput: Equatable, Sendable {
     public let title: String
 
     public init(title: String) {
@@ -59,10 +59,10 @@ public struct ModularizationTestFeatureInput: Equatable, Sendable {
     }
 }
 
-public struct ModularizationTestFeatureDestination: View {
-    nonisolated public let input: ModularizationTestFeatureInput
+public struct TestFeatureDestination: View {
+    public nonisolated let input: TestFeatureInput
 
-    nonisolated public init(input: ModularizationTestFeatureInput) {
+    public nonisolated init(input: TestFeatureInput) {
         self.input = input
     }
 
@@ -71,35 +71,35 @@ public struct ModularizationTestFeatureDestination: View {
     }
 }
 
-public struct ModularizationTestFeatureState<AppState: ModularizationTestFeature>: FeatureState {
-    public var form = ModularizationTestForm()
-    public var flow = ModularizationTestFlow()
+public struct TestFeatureState<AppState: TestFeature>: FeatureState {
+    public var form = TestForm()
+    public var flow = TestFlow()
 
     public init() {}
 
     public static func entryPoint(
-        input: ModularizationTestFeatureInput
-    ) -> ModularizationTestFeatureDestination {
+        input: TestFeatureInput
+    ) -> TestFeatureDestination {
         .init(input: input)
     }
 
     public static func registerMiddlewares(
         in store: any Store<AppState>
     ) -> [MiddlewareWrapper<AppState>] {
-        ModularizationTestMiddleware<AppState>.self
+        TestMiddleware<AppState>.self
     }
 }
 
 // MARK: - Internal feature implementation
 
-public enum ModularizationTestMiddlewareCancellation: Hashable, Sendable {
+public enum TestMiddlewareCancellation: Hashable, Sendable {
     case loadItems
 }
 
-public struct ModularizationTestForm: UDF.Form, Equatable {
+public struct TestForm: UDF.Form, Equatable {
     public var paginator = Paginator(
-        ModularizationTestItem.self,
-        flowId: ModularizationTestFlow.id,
+        TestItem.self,
+        flowId: TestFlow.id,
         perPage: 2
     )
 
@@ -108,7 +108,7 @@ public struct ModularizationTestForm: UDF.Form, Equatable {
     public mutating func reduce(_ action: some Action) {}
 }
 
-public enum ModularizationTestFlow: IdentifiableFlow, Equatable {
+public enum TestFlow: IdentifiableFlow, Equatable {
     case none
     case loading(Int)
 
@@ -121,11 +121,11 @@ public enum ModularizationTestFlow: IdentifiableFlow, Equatable {
         case let action as Actions.LoadPage where action.id == Self.id:
             self = .loading(action.pageNumber)
 
-        case let action as Actions.DidLoadItems<ModularizationTestItem>
+        case let action as Actions.DidLoadItems<TestItem>
             where action.id == Self.id:
             self = .none
 
-        case let action as Actions.DidLoadItem<ModularizationTestItem>
+        case let action as Actions.DidLoadItem<TestItem>
             where action.id == Self.id:
             self = .none
 
@@ -133,7 +133,7 @@ public enum ModularizationTestFlow: IdentifiableFlow, Equatable {
             self = .none
 
         case let action as Actions.DidCancelEffect
-            where action.cancellation == AnyHashable(ModularizationTestMiddlewareCancellation.loadItems):
+            where action.cancellation == AnyHashable(TestMiddlewareCancellation.loadItems):
             self = .none
 
         default:
@@ -142,16 +142,16 @@ public enum ModularizationTestFlow: IdentifiableFlow, Equatable {
     }
 }
 
-final class ModularizationTestMiddleware<AppState: ModularizationTestFeature>:
+final class TestMiddleware<AppState: TestFeature>:
     Middleware<AppState>,
     @unchecked Sendable
 {
-    typealias Environment = ModularizationTestEnvironment
+    typealias Environment = TestEnvironment
 
     var environment: Environment!
 
     static func buildLiveEnvironment(for store: some Store<AppState>) -> Environment {
-        AppState.Environments.modularizationTestFeature
+        AppState.Environments.testFeature
     }
 
     static func buildTestEnvironment(for store: some Store<AppState>) -> Environment {
@@ -159,17 +159,17 @@ final class ModularizationTestMiddleware<AppState: ModularizationTestFeature>:
     }
 
     func scope(for state: AppState) -> Scope {
-        state.modularizationTestFeature.flow
+        state.testFeature.flow
     }
 
     func observe(state: AppState) {
-        switch state.modularizationTestFeature.flow {
+        switch state.testFeature.flow {
         case let .loading(page):
             execute(
-                flowId: ModularizationTestFlow.id,
-                cancellation: ModularizationTestMiddlewareCancellation.loadItems
+                flowId: TestFlow.id,
+                cancellation: TestMiddlewareCancellation.loadItems
             ) { [unowned self] flowID in
-                guard case let .loading(currentPage) = state.modularizationTestFeature.flow, currentPage == page else {
+                guard case let .loading(currentPage) = state.testFeature.flow, currentPage == page else {
                     throw CancellationError()
                 }
 
@@ -185,11 +185,11 @@ final class ModularizationTestMiddleware<AppState: ModularizationTestFeature>:
 
 // MARK: - Settings-style empty feature
 
-public protocol ModularizationTestSettingsFeature: AppReducer {
-    var modularizationTestSettings: ModularizationTestSettingsFeatureState<Self> { get }
+public protocol TestSettingsFeature: AppReducer {
+    var testSettings: TestSettingsFeatureState<Self> { get }
 }
 
-public struct ModularizationTestSettingsInput: Equatable, Sendable {
+public struct TestSettingsInput: Equatable, Sendable {
     public let title: String
 
     public init(title: String) {
@@ -197,10 +197,10 @@ public struct ModularizationTestSettingsInput: Equatable, Sendable {
     }
 }
 
-public struct ModularizationTestSettingsDestination: View {
-    nonisolated public let input: ModularizationTestSettingsInput
+public struct TestSettingsDestination: View {
+    public nonisolated let input: TestSettingsInput
 
-    nonisolated public init(input: ModularizationTestSettingsInput) {
+    public nonisolated init(input: TestSettingsInput) {
         self.input = input
     }
 
@@ -209,14 +209,14 @@ public struct ModularizationTestSettingsDestination: View {
     }
 }
 
-public struct ModularizationTestSettingsFeatureState<AppState: ModularizationTestSettingsFeature>:
+public struct TestSettingsFeatureState<AppState: TestSettingsFeature>:
     FeatureState
 {
     public init() {}
 
     public static func entryPoint(
-        input: ModularizationTestSettingsInput
-    ) -> ModularizationTestSettingsDestination {
+        input: TestSettingsInput
+    ) -> TestSettingsDestination {
         .init(input: input)
     }
 }

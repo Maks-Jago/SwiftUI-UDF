@@ -9,13 +9,12 @@
 //
 //===----------------------------------------------------------------------===//
 
-@testable import UDF
 import Foundation
 import os
 import Testing
+@testable import UDF
 import UDFSwiftTesting
 
-@Suite
 struct FeatureMiddlewareDependencyTests {
     @TestStoreActor
     @Test("Feature registration preserves shared services and exact queue instances")
@@ -40,15 +39,15 @@ struct FeatureMiddlewareDependencyTests {
         let secondMiddleware = try #require(
             wrappers.compactMap { $0.instance as? SecondFeatureMiddleware }.first
         )
-        let firstEnvironment: FirstEnvironment = try #require(firstMiddleware.environment)
-        let secondEnvironment: SecondEnvironment = try #require(secondMiddleware.environment)
+        let firstEnvironment: FirstFeatureEnvironment = try #require(firstMiddleware.environment)
+        let secondEnvironment: SecondFeatureEnvironment = try #require(secondMiddleware.environment)
 
-        #expect(firstEnvironment.service === AppDependencies.sharedService)
-        #expect(secondEnvironment.service === AppDependencies.sharedService)
-        #expect(firstEnvironment.service === secondEnvironment.service)
+        #expect(firstEnvironment.dependency === AppDependencies.sharedDependency)
+        #expect(secondEnvironment.dependency === AppDependencies.sharedDependency)
+        #expect(firstEnvironment.dependency === secondEnvironment.dependency)
 
-        #expect(firstMiddleware.queue === AppDependencies.firstQueue)
-        #expect(secondMiddleware.queue === AppDependencies.secondQueue)
+        #expect(firstMiddleware.queue === AppDependencies.firstFeatureQueue)
+        #expect(secondMiddleware.queue === AppDependencies.secondFeatureQueue)
     }
 
     @Test(
@@ -64,8 +63,8 @@ struct FeatureMiddlewareDependencyTests {
         )
 
         await confirmation("All callbacks execute on their injected queue", expectedCount: 4) { confirm in
-            let firstEnv = FirstEnvironment(
-                service: AppDependencies.sharedService,
+            let firstEnvironment = FirstFeatureEnvironment(
+                dependency: AppDependencies.sharedDependency,
                 onReduce: {
                     dispatchPrecondition(condition: .onQueue(firstQueue))
                     confirm()
@@ -75,8 +74,8 @@ struct FeatureMiddlewareDependencyTests {
                     confirm()
                 }
             )
-            let secondEnv = SecondEnvironment(
-                service: AppDependencies.sharedService,
+            let secondEnvironment = SecondFeatureEnvironment(
+                dependency: AppDependencies.sharedDependency,
                 onReduce: {
                     dispatchPrecondition(condition: .onQueue(secondQueue))
                     confirm()
@@ -87,22 +86,22 @@ struct FeatureMiddlewareDependencyTests {
                 }
             )
 
-            #expect(firstEnv.service === secondEnv.service)
+            #expect(firstEnvironment.dependency === secondEnvironment.dependency)
 
             await store.subscribe(build: { store in
                 FirstFeatureMiddleware(
                     store: store,
-                    environment: firstEnv,
+                    environment: firstEnvironment,
                     queue: firstQueue
                 )
                 SecondFeatureMiddleware(
                     store: store,
-                    environment: secondEnv,
+                    environment: secondEnvironment,
                     queue: secondQueue
                 )
             })
 
-            await store.dispatch(TriggerAction())
+            await store.dispatch(InvokeMiddlewareCallbacks())
             await store.wait()
         }
     }
@@ -112,14 +111,14 @@ struct FeatureMiddlewareDependencyTests {
         .timeLimit(.minutes(1))
     )
     func environmentStoreExecutesCallbacksOnExactInjectedQueues() async {
-        let firstQueue = AppDependencies.firstQueue
-        let secondQueue = AppDependencies.secondQueue
+        let firstQueue = AppDependencies.firstFeatureQueue
+        let secondQueue = AppDependencies.secondFeatureQueue
         let callbackCount = OSAllocatedUnfairLock(initialState: 0)
 
         await confirmation("EnvironmentStore callbacks execute on exact queues", expectedCount: 4) { confirm in
             let testEnvironment = TestEnvironment(
-                first: FirstEnvironment(
-                    service: AppDependencies.sharedService,
+                first: FirstFeatureEnvironment(
+                    dependency: AppDependencies.sharedDependency,
                     onReduce: {
                         dispatchPrecondition(condition: .onQueue(firstQueue))
                         confirm()
@@ -131,8 +130,8 @@ struct FeatureMiddlewareDependencyTests {
                         callbackCount.withLock { $0 += 1 }
                     }
                 ),
-                second: SecondEnvironment(
-                    service: AppDependencies.sharedService,
+                second: SecondFeatureEnvironment(
+                    dependency: AppDependencies.sharedDependency,
                     onReduce: {
                         dispatchPrecondition(condition: .onQueue(secondQueue))
                         confirm()
@@ -148,7 +147,7 @@ struct FeatureMiddlewareDependencyTests {
 
             await TestEnvironmentContext.$environment.withValue(testEnvironment) {
                 let store = EnvironmentStore(initial: AppState(), loggers: [])
-                store.dispatch(TriggerAction())
+                store.dispatch(InvokeMiddlewareCallbacks())
 
                 let executed = await waitForCondition(timeout: 5) {
                     callbackCount.withLock { $0 == 4 }
@@ -170,8 +169,8 @@ struct FeatureMiddlewareDependencyTests {
         )
 
         await confirmation("Shared queue callbacks execute on shared queue", expectedCount: 4) { confirm in
-            let firstEnv = FirstEnvironment(
-                service: AppDependencies.sharedService,
+            let firstEnvironment = FirstFeatureEnvironment(
+                dependency: AppDependencies.sharedDependency,
                 onReduce: {
                     dispatchPrecondition(condition: .onQueue(sharedQueue))
                     confirm()
@@ -181,8 +180,8 @@ struct FeatureMiddlewareDependencyTests {
                     confirm()
                 }
             )
-            let secondEnv = SecondEnvironment(
-                service: AppDependencies.sharedService,
+            let secondEnvironment = SecondFeatureEnvironment(
+                dependency: AppDependencies.sharedDependency,
                 onReduce: {
                     dispatchPrecondition(condition: .onQueue(sharedQueue))
                     confirm()
@@ -194,11 +193,11 @@ struct FeatureMiddlewareDependencyTests {
             )
 
             await store.subscribe(build: { store in
-                FirstFeatureMiddleware(store: store, environment: firstEnv, queue: sharedQueue)
-                SecondFeatureMiddleware(store: store, environment: secondEnv, queue: sharedQueue)
+                FirstFeatureMiddleware(store: store, environment: firstEnvironment, queue: sharedQueue)
+                SecondFeatureMiddleware(store: store, environment: secondEnvironment, queue: sharedQueue)
             })
 
-            await store.dispatch(TriggerAction())
+            await store.dispatch(InvokeMiddlewareCallbacks())
             await store.wait()
         }
     }
@@ -211,26 +210,26 @@ private extension FeatureMiddlewareDependencyTests {
         static let shared = "FeatureMiddlewareDependencyTests.same-label"
     }
 
-    final class SharedService: Sendable {}
+    final class SharedDependency: Sendable {}
 
     enum AppDependencies {
-        static let sharedService = SharedService()
+        static let sharedDependency = SharedDependency()
 
-        static let firstQueue = DispatchQueue(label: QueueLabel.shared)
-        static let secondQueue = DispatchQueue(label: QueueLabel.shared)
+        static let firstFeatureQueue = DispatchQueue(label: QueueLabel.shared)
+        static let secondFeatureQueue = DispatchQueue(label: QueueLabel.shared)
     }
 
     struct AppState: AppReducer {
-        var triggerForm = TriggerForm()
+        var callbackInvocation = CallbackInvocationForm()
         var firstFeature = FirstFeatureState()
         var secondFeature = SecondFeatureState()
     }
 
-    struct TriggerForm: Reducible {
+    struct CallbackInvocationForm: Reducible {
         var isTriggered = false
 
         mutating func reduce(_ action: some Action) {
-            guard action is TriggerAction else {
+            guard action is InvokeMiddlewareCallbacks else {
                 return
             }
 
@@ -243,8 +242,9 @@ private extension FeatureMiddlewareDependencyTests {
         static func registerMiddlewares(in store: any Store<AppState>) -> [MiddlewareWrapper<AppState>] {
             FirstFeatureMiddleware(
                 store: store,
-                environment: TestEnvironmentContext.environment?.first ?? FirstEnvironment(service: AppDependencies.sharedService),
-                queue: AppDependencies.firstQueue
+                environment: TestEnvironmentContext.environment?.first
+                    ?? FirstFeatureEnvironment(dependency: AppDependencies.sharedDependency),
+                queue: AppDependencies.firstFeatureQueue
             )
         }
     }
@@ -254,8 +254,9 @@ private extension FeatureMiddlewareDependencyTests {
         static func registerMiddlewares(in store: any Store<AppState>) -> [MiddlewareWrapper<AppState>] {
             SecondFeatureMiddleware(
                 store: store,
-                environment: TestEnvironmentContext.environment?.second ?? SecondEnvironment(service: AppDependencies.sharedService),
-                queue: AppDependencies.secondQueue
+                environment: TestEnvironmentContext.environment?.second
+                    ?? SecondFeatureEnvironment(dependency: AppDependencies.sharedDependency),
+                queue: AppDependencies.secondFeatureQueue
             )
         }
     }
@@ -264,46 +265,46 @@ private extension FeatureMiddlewareDependencyTests {
 // MARK: - Middleware Fixtures
 
 private extension FeatureMiddlewareDependencyTests {
-    struct FirstEnvironment: Sendable {
-        let service: SharedService
+    struct FirstFeatureEnvironment: Sendable {
+        let dependency: SharedDependency
         var onReduce: (@Sendable () -> Void)?
         var onObserve: (@Sendable () -> Void)?
     }
 
-    struct SecondEnvironment: Sendable {
-        let service: SharedService
+    struct SecondFeatureEnvironment: Sendable {
+        let dependency: SharedDependency
         var onReduce: (@Sendable () -> Void)?
         var onObserve: (@Sendable () -> Void)?
     }
 
     struct TestEnvironment: Sendable {
-        let first: FirstEnvironment
-        let second: SecondEnvironment
+        let first: FirstFeatureEnvironment
+        let second: SecondFeatureEnvironment
     }
 
     enum TestEnvironmentContext {
         @TaskLocal static var environment: TestEnvironment?
     }
 
-    struct TriggerAction: Action {}
+    struct InvokeMiddlewareCallbacks: Action {}
 
     final class FirstFeatureMiddleware: Middleware<AppState>, @unchecked Sendable {
-        var environment: FirstEnvironment!
+        var environment: FirstFeatureEnvironment!
 
-        static func buildLiveEnvironment(for store: some Store<AppState>) -> FirstEnvironment {
-            FirstEnvironment(service: AppDependencies.sharedService)
+        static func buildLiveEnvironment(for store: some Store<AppState>) -> FirstFeatureEnvironment {
+            FirstFeatureEnvironment(dependency: AppDependencies.sharedDependency)
         }
 
-        static func buildTestEnvironment(for store: some Store<AppState>) -> FirstEnvironment {
-            FirstEnvironment(service: AppDependencies.sharedService)
+        static func buildTestEnvironment(for store: some Store<AppState>) -> FirstFeatureEnvironment {
+            FirstFeatureEnvironment(dependency: AppDependencies.sharedDependency)
         }
 
         func scope(for state: AppState) -> Scope {
-            state.triggerForm
+            state.callbackInvocation
         }
 
         func reduce(_ action: some Action, for state: AppState) {
-            guard action is TriggerAction else {
+            guard action is InvokeMiddlewareCallbacks else {
                 return
             }
 
@@ -311,7 +312,7 @@ private extension FeatureMiddlewareDependencyTests {
         }
 
         func observe(state: AppState) {
-            guard state.triggerForm.isTriggered else {
+            guard state.callbackInvocation.isTriggered else {
                 return
             }
 
@@ -320,22 +321,22 @@ private extension FeatureMiddlewareDependencyTests {
     }
 
     final class SecondFeatureMiddleware: Middleware<AppState>, @unchecked Sendable {
-        var environment: SecondEnvironment!
+        var environment: SecondFeatureEnvironment!
 
-        static func buildLiveEnvironment(for store: some Store<AppState>) -> SecondEnvironment {
-            SecondEnvironment(service: AppDependencies.sharedService)
+        static func buildLiveEnvironment(for store: some Store<AppState>) -> SecondFeatureEnvironment {
+            SecondFeatureEnvironment(dependency: AppDependencies.sharedDependency)
         }
 
-        static func buildTestEnvironment(for store: some Store<AppState>) -> SecondEnvironment {
-            SecondEnvironment(service: AppDependencies.sharedService)
+        static func buildTestEnvironment(for store: some Store<AppState>) -> SecondFeatureEnvironment {
+            SecondFeatureEnvironment(dependency: AppDependencies.sharedDependency)
         }
 
         func scope(for state: AppState) -> Scope {
-            state.triggerForm
+            state.callbackInvocation
         }
 
         func reduce(_ action: some Action, for state: AppState) {
-            guard action is TriggerAction else {
+            guard action is InvokeMiddlewareCallbacks else {
                 return
             }
 
@@ -343,7 +344,7 @@ private extension FeatureMiddlewareDependencyTests {
         }
 
         func observe(state: AppState) {
-            guard state.triggerForm.isTriggered else {
+            guard state.callbackInvocation.isTriggered else {
                 return
             }
 

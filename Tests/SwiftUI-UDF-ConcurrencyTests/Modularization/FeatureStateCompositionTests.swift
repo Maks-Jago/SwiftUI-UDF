@@ -3,7 +3,7 @@ import Testing
 @testable import UDF
 import UDFSwiftTesting
 
-@Suite struct FeatureStateCompositionTests {
+struct FeatureStateCompositionTests {
     @TestStoreActor
     @Test("FeatureState forwards its entry payload and defaults to no middleware")
     func entryPointAndEmptyRegistration() async {
@@ -22,11 +22,11 @@ import UDFSwiftTesting
     }
 
     @TestStoreActor
-    @Test("TestStore discovers public feature middleware and builds its test environment")
-    func testStoreDiscoversPublicFeatureMiddleware() async {
-        let store = TestStore(initial: PublicHostState())
+    @Test("TestStore discovers registered feature middleware and builds its test environment")
+    func storeDiscoversRegisteredFeatureMiddleware() async {
+        let store = TestStore(initial: AutoRegistrationHostState())
 
-        await store.dispatch(RecordEnvironment())
+        await store.dispatch(CaptureMiddlewareEnvironment())
         store.wait()
 
         #expect(store.state.result.marker == "test")
@@ -56,17 +56,17 @@ import UDFSwiftTesting
     }
 
     @Test("TestStore accepts a feature-only middleware with an explicit environment")
-    func testStoreExplicitFeatureEnvironment() async {
+    func storeExplicitFeatureEnvironment() async {
         let store = await TestStore(
-            initial: PublicHostState(),
+            initial: AutoRegistrationHostState(),
             registerFeatureMiddlewares: false
         )
         await store.subscribe(
-            PublicFeatureMiddleware<PublicHostState>.self,
-            environment: PublicFeatureEnvironment(marker: "injected")
+            AutoRegisteredFeatureMiddleware<AutoRegistrationHostState>.self,
+            environment: AutoRegisteredFeatureEnvironment(marker: "injected")
         )
 
-        await store.dispatch(RecordEnvironment())
+        await store.dispatch(CaptureMiddlewareEnvironment())
         await store.wait()
 
         #expect(await store.state.result.marker == "injected")
@@ -91,19 +91,19 @@ import UDFSwiftTesting
 
     @Test("Multiple feature states mutate independently without cross-feature interference")
     func multipleFeatureStatesMutateIndependently() async {
-        let store = await TestStore(initial: DualFeatureHostState())
+        let store = await TestStore(initial: CounterFeaturesHostState())
 
-        await store.dispatch(IncrementFeatureOne())
+        await store.dispatch(IncrementFirstCounter())
 
         var state = await store.state
-        #expect(state.feature1.value == 1)
-        #expect(state.feature2.value == 0)
+        #expect(state.firstCounter.value == 1)
+        #expect(state.secondCounter.value == 0)
 
-        await store.dispatch(IncrementFeatureTwo())
+        await store.dispatch(IncrementSecondCounter())
 
         state = await store.state
-        #expect(state.feature1.value == 1)
-        #expect(state.feature2.value == 1)
+        #expect(state.firstCounter.value == 1)
+        #expect(state.secondCounter.value == 1)
     }
 }
 
@@ -134,25 +134,25 @@ private struct EntryHostState: AppReducer {
     var feature = EmptyFeatureState<EntryHostState>()
 }
 
-private protocol PublicFeatureHost: AppReducer {
-    associatedtype Environments: PublicFeatureEnvironmentProviding
+private protocol AutoRegisteredFeatureHost: AppReducer {
+    associatedtype Environments: AutoRegisteredFeatureEnvironmentProviding
 
-    var feature: PublicFeatureState<Self> { get }
+    var feature: AutoRegisteredFeatureState<Self> { get }
 }
 
-private protocol PublicFeatureEnvironmentProviding {
-    static var feature: PublicFeatureEnvironment { get }
+private protocol AutoRegisteredFeatureEnvironmentProviding {
+    static var feature: AutoRegisteredFeatureEnvironment { get }
 }
 
-private struct PublicFeatureEnvironment: Sendable {
+private struct AutoRegisteredFeatureEnvironment: Sendable {
     let marker: String
 }
 
-private enum PublicEnvironments: PublicFeatureEnvironmentProviding {
-    static let feature = PublicFeatureEnvironment(marker: "registered")
+private enum AutoRegisteredEnvironments: AutoRegisteredFeatureEnvironmentProviding {
+    static let feature = AutoRegisteredFeatureEnvironment(marker: "registered")
 }
 
-private struct PublicFeatureState<Host: PublicFeatureHost>: FeatureState {
+private struct AutoRegisteredFeatureState<Host: AutoRegisteredFeatureHost>: FeatureState {
     static func entryPoint(input: Void) -> EmptyView {
         EmptyView()
     }
@@ -160,27 +160,27 @@ private struct PublicFeatureState<Host: PublicFeatureHost>: FeatureState {
     static func registerMiddlewares(
         in store: any Store<Host>
     ) -> [MiddlewareWrapper<Host>] {
-        PublicFeatureMiddleware<Host>.self
-        PublicLegacyMiddleware<Host>.self
+        AutoRegisteredFeatureMiddleware<Host>.self
+        AutoRegisteredLegacyMiddleware<Host>.self
     }
 }
 
-private struct PublicHostState: AppReducer, PublicFeatureHost {
-    typealias Environments = PublicEnvironments
+private struct AutoRegistrationHostState: AppReducer, AutoRegisteredFeatureHost {
+    typealias Environments = AutoRegisteredEnvironments
 
-    var feature = PublicFeatureState<PublicHostState>()
-    var result = PublicResultForm()
+    var feature = AutoRegisteredFeatureState<AutoRegistrationHostState>()
+    var result = MiddlewareResultForm()
 }
 
-private struct PublicResultForm: UDF.Form {
+private struct MiddlewareResultForm: UDF.Form {
     var marker: String?
     var legacyHandled = false
 }
 
-private struct RecordEnvironment: Action {}
+private struct CaptureMiddlewareEnvironment: Action {}
 
-private final class PublicFeatureMiddleware<State: PublicFeatureHost>: Middleware<State>, @unchecked Sendable {
-    typealias Environment = PublicFeatureEnvironment
+private final class AutoRegisteredFeatureMiddleware<State: AutoRegisteredFeatureHost>: Middleware<State>, @unchecked Sendable {
+    typealias Environment = AutoRegisteredFeatureEnvironment
 
     var environment: Environment!
 
@@ -189,34 +189,34 @@ private final class PublicFeatureMiddleware<State: PublicFeatureHost>: Middlewar
     }
 
     static func buildTestEnvironment(for store: some Store<State>) -> Environment {
-        PublicFeatureEnvironment(marker: "test")
+        AutoRegisteredFeatureEnvironment(marker: "test")
     }
 
     func reduce(_ action: some Action, for state: State) {
-        guard action is RecordEnvironment else {
+        guard action is CaptureMiddlewareEnvironment else {
             return
         }
 
         store.dispatch(
             Actions.UpdateFormField(
-                keyPath: \PublicResultForm.marker,
+                keyPath: \MiddlewareResultForm.marker,
                 value: environment.marker
             )
         )
     }
 }
 
-private final class PublicLegacyMiddleware<State: PublicFeatureHost>: Middleware<State>, @unchecked Sendable {
+private final class AutoRegisteredLegacyMiddleware<State: AutoRegisteredFeatureHost>: Middleware<State>, @unchecked Sendable {
     var environment: Void!
 
     func reduce(_ action: some Action, for state: State) {
-        guard action is RecordEnvironment else {
+        guard action is CaptureMiddlewareEnvironment else {
             return
         }
 
         store.dispatch(
             Actions.UpdateFormField(
-                keyPath: \PublicResultForm.legacyHandled,
+                keyPath: \MiddlewareResultForm.legacyHandled,
                 value: true
             )
         )
@@ -336,24 +336,22 @@ private struct SetupLeafForm<Host: SetupFeatureHost>: UDF.Form, InitialSetup {
     }
 }
 
-
-
 // MARK: - Dual feature fixtures
 
-private struct IncrementFeatureOne: Action {}
-private struct IncrementFeatureTwo: Action {}
+private struct IncrementFirstCounter: Action {}
+private struct IncrementSecondCounter: Action {}
 
-private struct DualFeatureHostState: AppReducer {
-    var feature1 = FeatureOneState<DualFeatureHostState>()
-    var feature2 = FeatureTwoState<DualFeatureHostState>()
+private struct CounterFeaturesHostState: AppReducer {
+    var firstCounter = FirstCounterFeatureState<CounterFeaturesHostState>()
+    var secondCounter = SecondCounterFeatureState<CounterFeaturesHostState>()
 }
 
-private struct FeatureOneState<Host: AppReducer>: FeatureState {
+private struct FirstCounterFeatureState<Host: AppReducer>: FeatureState {
     typealias AppState = Host
     var value = 0
 
     mutating func reduce(_ action: some Action) {
-        if action is IncrementFeatureOne {
+        if action is IncrementFirstCounter {
             value += 1
         }
     }
@@ -363,12 +361,12 @@ private struct FeatureOneState<Host: AppReducer>: FeatureState {
     }
 }
 
-private struct FeatureTwoState<Host: AppReducer>: FeatureState {
+private struct SecondCounterFeatureState<Host: AppReducer>: FeatureState {
     typealias AppState = Host
     var value = 0
 
     mutating func reduce(_ action: some Action) {
-        if action is IncrementFeatureTwo {
+        if action is IncrementSecondCounter {
             value += 1
         }
     }

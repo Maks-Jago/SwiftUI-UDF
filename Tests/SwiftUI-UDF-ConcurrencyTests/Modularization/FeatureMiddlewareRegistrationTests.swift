@@ -63,11 +63,11 @@ struct FeatureMiddlewareRegistrationTests {
 
     @Test("Multiple root features register across an empty feature")
     func multipleRootFeaturesRegisterAcrossEmptyFeature() async {
-        let store = EnvironmentStore(initial: FeatureHostAppState(), loggers: [])
+        let store = EnvironmentStore(initial: RegistrationHostState(), loggers: [])
         let registered = await waitForCondition(timeout: 2) {
-            store.state.firstFeature.form.marker == "first-feature-test"
+            store.state.replaceableFeature.form.marker == "replaceable-feature-test"
                 && store.state.empty.form.marker == nil
-                && store.state.secondFeature.form.marker == "second-feature-test"
+                && store.state.companionFeature.form.marker == "companion-feature-test"
         }
 
         #expect(registered)
@@ -75,129 +75,129 @@ struct FeatureMiddlewareRegistrationTests {
 
     @Test("Initial observation receives state after nested InitialSetup")
     func initialObservationReceivesInitializedFeatureState() async {
-        let store = EnvironmentStore(initial: FeatureHostAppState(), loggers: [])
+        let store = EnvironmentStore(initial: RegistrationHostState(), loggers: [])
 
-        #expect(store.state.firstFeature.form.preparedValue == "prepared")
+        #expect(store.state.replaceableFeature.form.preparedValue == "prepared")
 
         let observedInitializedState = await waitForCondition(timeout: 2) {
-            store.state.firstFeature.form.observedValue == "prepared"
+            store.state.replaceableFeature.form.observedValue == "prepared"
         }
 
         #expect(observedInitializedState)
     }
 
     @Test("TestStore automatically builds test environments for type-registered feature middleware")
-    func testStoreAutomaticallyBuildsFeatureTestEnvironments() async {
-        let store = await TestStore(initial: FeatureHostAppState())
+    func storeAutomaticallyBuildsFeatureTestEnvironments() async {
+        let store = await TestStore(initial: RegistrationHostState())
 
-        await store.dispatch(Actions.TriggerFirstFeature())
+        await store.dispatch(Actions.InvokeReplaceableFeatureMiddleware())
         await store.wait()
 
         let state = await store.state
-        #expect(state.firstFeature.form.marker == "first-feature-test")
-        #expect(state.secondFeature.form.marker == "second-feature-test")
+        #expect(state.replaceableFeature.form.marker == "replaceable-feature-test")
+        #expect(state.companionFeature.form.marker == "companion-feature-test")
     }
 
     @Test("TestStore allows re-registering and replacing an auto-registered middleware with custom environment")
-    func testStoreReplacesAutoRegisteredMiddleware() async {
-        let store = await TestStore(initial: FeatureHostAppState())
+    func storeReplacesAutoRegisteredMiddleware() async {
+        let store = await TestStore(initial: RegistrationHostState())
 
         let automaticallyRegistered = await waitForCondition(timeout: 2) {
             let state = await store.state
-            return state.firstFeature.form.marker == "first-feature-test"
-                && state.secondFeature.form.marker == "second-feature-test"
+            return state.replaceableFeature.form.marker == "replaceable-feature-test"
+                && state.companionFeature.form.marker == "companion-feature-test"
         }
         #expect(automaticallyRegistered)
 
         await store.subscribe(
-            FirstFeatureMiddleware<FeatureHostAppState>.self,
-            environment: MarkerEnvironment(marker: "first-feature-custom-override")
+            ReplaceableFeatureMiddleware<RegistrationHostState>.self,
+            environment: MarkerEnvironment(marker: "replaceable-feature-custom-override")
         )
 
         let replacementRegistered = await waitForCondition(timeout: 2) {
-            await store.state.firstFeature.form.marker == "first-feature-custom-override"
+            await store.state.replaceableFeature.form.marker == "replaceable-feature-custom-override"
         }
         #expect(replacementRegistered)
 
-        await store.dispatch(Actions.ResetFirstFeatureMiddlewareRuns())
+        await store.dispatch(Actions.ResetReplaceableMiddlewareRuns())
         await store.wait()
 
-        await store.dispatch(Actions.TriggerFirstFeature())
+        await store.dispatch(Actions.InvokeReplaceableFeatureMiddleware())
         await store.wait()
 
         let state = await store.state
-        #expect(state.firstFeature.form.marker == "first-feature-custom-override")
-        #expect(state.firstFeature.form.handledMarkers == ["first-feature-custom-override"])
-        #expect(state.secondFeature.form.marker == "second-feature-test")
+        #expect(state.replaceableFeature.form.marker == "replaceable-feature-custom-override")
+        #expect(state.replaceableFeature.form.handledMarkers == ["replaceable-feature-custom-override"])
+        #expect(state.companionFeature.form.marker == "companion-feature-test")
     }
 
     @Test("EnvironmentStore allows re-registering and replacing an auto-registered middleware with custom environment")
     func environmentStoreReplacesAutoRegisteredMiddleware() async {
-        let store = EnvironmentStore(initial: FeatureHostAppState(), loggers: [])
+        let store = EnvironmentStore(initial: RegistrationHostState(), loggers: [])
 
         let automaticallyRegistered = await waitForCondition(timeout: 2) {
-            store.state.firstFeature.form.marker == "first-feature-test"
-                && store.state.secondFeature.form.marker == "second-feature-test"
+            store.state.replaceableFeature.form.marker == "replaceable-feature-test"
+                && store.state.companionFeature.form.marker == "companion-feature-test"
         }
         #expect(automaticallyRegistered)
 
         store.subscribe(
-            FirstFeatureMiddleware<FeatureHostAppState>.self,
-            environment: MarkerEnvironment(marker: "first-feature-custom-override")
+            ReplaceableFeatureMiddleware<RegistrationHostState>.self,
+            environment: MarkerEnvironment(marker: "replaceable-feature-custom-override")
         )
 
         let replacementRegistered = await waitForCondition(timeout: 2) {
-            store.state.firstFeature.form.marker == "first-feature-custom-override"
+            store.state.replaceableFeature.form.marker == "replaceable-feature-custom-override"
         }
         #expect(replacementRegistered)
 
-        store.dispatch(Actions.ResetFirstFeatureMiddlewareRuns())
+        store.dispatch(Actions.ResetReplaceableMiddlewareRuns())
         let recordsReset = await waitForCondition(timeout: 2) {
-            store.state.firstFeature.form.handledMarkers.isEmpty
+            store.state.replaceableFeature.form.handledMarkers.isEmpty
         }
         #expect(recordsReset)
 
-        store.dispatch(Actions.TriggerFirstFeature())
+        store.dispatch(Actions.InvokeReplaceableFeatureMiddleware())
         let replacementHandledAction = await waitForCondition(timeout: 2) {
-            !store.state.firstFeature.form.handledMarkers.isEmpty
+            !store.state.replaceableFeature.form.handledMarkers.isEmpty
         }
         #expect(replacementHandledAction)
 
         let duplicateHandledAction = await waitForCondition(timeout: 0.2) {
-            store.state.firstFeature.form.handledMarkers.count > 1
+            store.state.replaceableFeature.form.handledMarkers.count > 1
         }
         #expect(!duplicateHandledAction)
-        #expect(store.state.firstFeature.form.marker == "first-feature-custom-override")
-        #expect(store.state.firstFeature.form.handledMarkers == ["first-feature-custom-override"])
-        #expect(store.state.secondFeature.form.marker == "second-feature-test")
+        #expect(store.state.replaceableFeature.form.marker == "replaceable-feature-custom-override")
+        #expect(store.state.replaceableFeature.form.handledMarkers == ["replaceable-feature-custom-override"])
+        #expect(store.state.companionFeature.form.marker == "companion-feature-test")
     }
 
     @Test("Feature live environment builders forward to the app environment namespace")
     func liveEnvironmentBuildersForwardToAppEnvironments() {
-        let store = InternalStore(initial: FeatureHostAppState(), loggers: [])
+        let store = InternalStore(initial: RegistrationHostState(), loggers: [])
 
-        let firstFeatureEnvironment = FirstFeatureMiddleware<FeatureHostAppState>.buildLiveEnvironment(for: store)
-        let secondFeatureEnvironment = SecondFeatureMiddleware<FeatureHostAppState>.buildLiveEnvironment(for: store)
+        let replaceableEnvironment = ReplaceableFeatureMiddleware<RegistrationHostState>.buildLiveEnvironment(for: store)
+        let companionEnvironment = CompanionFeatureMiddleware<RegistrationHostState>.buildLiveEnvironment(for: store)
 
-        #expect(firstFeatureEnvironment.marker == "first-feature")
-        #expect(secondFeatureEnvironment.marker == "second-feature")
+        #expect(replaceableEnvironment.marker == "replaceable-feature")
+        #expect(companionEnvironment.marker == "companion-feature")
     }
 
     @Test("Each EnvironmentStore receives a fresh feature middleware instance")
     func eachEnvironmentStoreReceivesFreshMiddleware() async throws {
-        let firstStore = EnvironmentStore(initial: FeatureHostAppState(), loggers: [])
+        let firstStore = EnvironmentStore(initial: RegistrationHostState(), loggers: [])
         let firstObserved = await waitForCondition(timeout: 2) {
-            firstStore.state.firstFeature.form.middlewareID != nil
+            firstStore.state.replaceableFeature.form.middlewareID != nil
         }
         #expect(firstObserved)
-        let firstID = try #require(firstStore.state.firstFeature.form.middlewareID)
+        let firstID = try #require(firstStore.state.replaceableFeature.form.middlewareID)
 
-        let secondStore = EnvironmentStore(initial: FeatureHostAppState(), loggers: [])
+        let secondStore = EnvironmentStore(initial: RegistrationHostState(), loggers: [])
         let secondObserved = await waitForCondition(timeout: 2) {
-            secondStore.state.firstFeature.form.middlewareID != nil
+            secondStore.state.replaceableFeature.form.middlewareID != nil
         }
         #expect(secondObserved)
-        let secondID = try #require(secondStore.state.firstFeature.form.middlewareID)
+        let secondID = try #require(secondStore.state.replaceableFeature.form.middlewareID)
 
         #expect(firstID != secondID)
     }
@@ -214,17 +214,17 @@ private extension Actions {
         let marker: String
     }
 
-    struct TriggerFirstFeature: Action {}
+    struct InvokeReplaceableFeatureMiddleware: Action {}
 
-    struct ResetFirstFeatureMiddlewareRuns: Action {}
+    struct ResetReplaceableMiddlewareRuns: Action {}
 
-    struct RecordFirstFeatureMiddlewareRun: Action {
+    struct RecordReplaceableMiddlewareRun: Action {
         let marker: String
         let middlewareID: UUID
         let preparedValue: String
     }
 
-    struct RecordSecondFeatureMiddlewareRun: Action {
+    struct RecordCompanionMiddlewareRun: Action {
         let marker: String
     }
 }
@@ -335,36 +335,36 @@ private final class LegacyRegistrationMiddleware<State: RegistrationFeatureHost>
 
 // MARK: - Feature Host AppState
 
-private protocol FirstFeatureEnvironmentProviding {
-    static var firstFeature: MarkerEnvironment { get }
+private protocol ReplaceableFeatureEnvironmentProviding {
+    static var replaceableFeature: MarkerEnvironment { get }
 }
 
-private protocol SecondFeatureEnvironmentProviding {
-    static var secondFeature: MarkerEnvironment { get }
+private protocol CompanionFeatureEnvironmentProviding {
+    static var companionFeature: MarkerEnvironment { get }
 }
 
-private enum FeatureHostEnvironments: FirstFeatureEnvironmentProviding, SecondFeatureEnvironmentProviding {
-    static let firstFeature = MarkerEnvironment(marker: "first-feature")
-    static let secondFeature = MarkerEnvironment(marker: "second-feature")
+private enum RegistrationHostEnvironments: ReplaceableFeatureEnvironmentProviding, CompanionFeatureEnvironmentProviding {
+    static let replaceableFeature = MarkerEnvironment(marker: "replaceable-feature")
+    static let companionFeature = MarkerEnvironment(marker: "companion-feature")
 }
 
-private struct FeatureHostAppState: AppReducer {
-    typealias Environments = FeatureHostEnvironments
+private struct RegistrationHostState: AppReducer {
+    typealias Environments = RegistrationHostEnvironments
 
-    var firstFeature = FirstFeatureState<FeatureHostAppState>()
-    var empty = EmptyFeatureState<FeatureHostAppState>()
-    var secondFeature = SecondFeatureState<FeatureHostAppState>()
+    var replaceableFeature = ReplaceableFeatureState<RegistrationHostState>()
+    var empty = EmptyFeatureState<RegistrationHostState>()
+    var companionFeature = CompanionFeatureState<RegistrationHostState>()
 }
 
-private struct FirstFeatureState<State: AppReducer>: FeatureState {
-    var form = FirstFeatureForm()
+private struct ReplaceableFeatureState<State: AppReducer>: FeatureState {
+    var form = ReplaceableFeatureForm()
 
     static func entryPoint(input: Void) -> some View {
         EmptyView()
     }
 
     static func registerMiddlewares(in store: any Store<State>) -> [MiddlewareWrapper<State>] {
-        FirstFeatureMiddleware<State>.self
+        ReplaceableFeatureMiddleware<State>.self
     }
 }
 
@@ -377,20 +377,20 @@ private struct EmptyFeatureState<State: AppReducer>: FeatureState {
     }
 }
 
-private struct SecondFeatureState<State: AppReducer>: FeatureState {
-    var form = SecondFeatureForm()
+private struct CompanionFeatureState<State: AppReducer>: FeatureState {
+    var form = CompanionFeatureForm()
 
     static func entryPoint(input: Void) -> some View {
         EmptyView()
     }
 
     static func registerMiddlewares(in store: any Store<State>) -> [MiddlewareWrapper<State>] {
-        SecondFeatureMiddleware<State>.self
+        CompanionFeatureMiddleware<State>.self
     }
 }
 
-private struct FirstFeatureForm: UDF.Form, InitialSetup, Equatable {
-    typealias AppState = FeatureHostAppState
+private struct ReplaceableFeatureForm: UDF.Form, InitialSetup, Equatable {
+    typealias AppState = RegistrationHostState
 
     var marker: String?
     var handledMarkers: [String] = []
@@ -398,19 +398,19 @@ private struct FirstFeatureForm: UDF.Form, InitialSetup, Equatable {
     var preparedValue = "unprepared"
     var observedValue: String?
 
-    mutating func initialSetup(with state: FeatureHostAppState) {
+    mutating func initialSetup(with state: RegistrationHostState) {
         preparedValue = "prepared"
     }
 
     mutating func reduce(_ action: some Action) {
         switch action {
-        case let action as Actions.RecordFirstFeatureMiddlewareRun:
+        case let action as Actions.RecordReplaceableMiddlewareRun:
             marker = action.marker
             handledMarkers.append(action.marker)
             middlewareID = action.middlewareID
             observedValue = action.preparedValue
 
-        case is Actions.ResetFirstFeatureMiddlewareRuns:
+        case is Actions.ResetReplaceableMiddlewareRuns:
             handledMarkers = []
 
         default:
@@ -423,34 +423,34 @@ private struct EmptyRegistrationForm: UDF.Form, Equatable {
     var marker: String?
 }
 
-private struct SecondFeatureForm: UDF.Form, Equatable {
+private struct CompanionFeatureForm: UDF.Form, Equatable {
     var marker: String?
 
     mutating func reduce(_ action: some Action) {
-        if let action = action as? Actions.RecordSecondFeatureMiddlewareRun {
+        if let action = action as? Actions.RecordCompanionMiddlewareRun {
             marker = action.marker
         }
     }
 }
 
-private final class FirstFeatureMiddleware<State: AppReducer>: Middleware<State>, @unchecked Sendable {
+private final class ReplaceableFeatureMiddleware<State: AppReducer>: Middleware<State>, @unchecked Sendable {
     typealias Environment = MarkerEnvironment
 
     var environment: Environment!
     private let instanceID = UUID()
 
     static func buildLiveEnvironment(for store: some Store<State>) -> Environment {
-        FeatureHostEnvironments.firstFeature
+        RegistrationHostEnvironments.replaceableFeature
     }
 
     static func buildTestEnvironment(for store: some Store<State>) -> Environment {
-        MarkerEnvironment(marker: "first-feature-test")
+        MarkerEnvironment(marker: "replaceable-feature-test")
     }
 
     func reduce(_ action: some Action, for state: State) {
-        if action is Actions.TriggerFirstFeature {
-            let prepared = (state as? FeatureHostAppState)?.firstFeature.form.preparedValue ?? ""
-            store.dispatch(Actions.RecordFirstFeatureMiddlewareRun(
+        if action is Actions.InvokeReplaceableFeatureMiddleware {
+            let prepared = (state as? RegistrationHostState)?.replaceableFeature.form.preparedValue ?? ""
+            store.dispatch(Actions.RecordReplaceableMiddlewareRun(
                 marker: environment.marker,
                 middlewareID: instanceID,
                 preparedValue: prepared
@@ -459,32 +459,32 @@ private final class FirstFeatureMiddleware<State: AppReducer>: Middleware<State>
     }
 
     func observe(state: State) {
-        guard let featureHostState = state as? FeatureHostAppState else {
+        guard let registrationHostState = state as? RegistrationHostState else {
             return
         }
 
-        store.dispatch(Actions.RecordFirstFeatureMiddlewareRun(
+        store.dispatch(Actions.RecordReplaceableMiddlewareRun(
             marker: environment.marker,
             middlewareID: instanceID,
-            preparedValue: featureHostState.firstFeature.form.preparedValue
+            preparedValue: registrationHostState.replaceableFeature.form.preparedValue
         ))
     }
 }
 
-private final class SecondFeatureMiddleware<State: AppReducer>: Middleware<State>, @unchecked Sendable {
+private final class CompanionFeatureMiddleware<State: AppReducer>: Middleware<State>, @unchecked Sendable {
     typealias Environment = MarkerEnvironment
 
     var environment: Environment!
 
     static func buildLiveEnvironment(for store: some Store<State>) -> Environment {
-        FeatureHostEnvironments.secondFeature
+        RegistrationHostEnvironments.companionFeature
     }
 
     static func buildTestEnvironment(for store: some Store<State>) -> Environment {
-        MarkerEnvironment(marker: "second-feature-test")
+        MarkerEnvironment(marker: "companion-feature-test")
     }
 
     func observe(state: State) {
-        store.dispatch(Actions.RecordSecondFeatureMiddlewareRun(marker: environment.marker))
+        store.dispatch(Actions.RecordCompanionMiddlewareRun(marker: environment.marker))
     }
 }

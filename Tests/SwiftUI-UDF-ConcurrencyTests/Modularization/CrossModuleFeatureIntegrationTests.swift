@@ -20,22 +20,22 @@ struct CrossModuleFeatureIntegrationTests {
     func externallyComposedFeatureCompletesLoadingPath() async throws {
         let page = 2
         let expectedItems = [
-            ModularizationTestItem(id: 3, title: "Test item 3"),
-            ModularizationTestItem(id: 4, title: "Test item 4"),
+            TestItem(id: 3, title: "Test item 3"),
+            TestItem(id: 4, title: "Test item 4"),
         ]
         let store = await TestStore(initial: AppState())
 
-        await store.dispatch(Actions.LoadPage(pageNumber: page, id: ModularizationTestFlow.id))
+        await store.dispatch(Actions.LoadPage(pageNumber: page, id: TestFlow.id))
         await store.wait()
 
         let state = await store.state
-        #expect(state.modularizationTestFeature.flow == .none)
-        #expect(state.modularizationTestFeature.form.paginator.elements == expectedItems.map(\.id))
-        #expect(state.modularizationTestFeature.form.paginator.page == .number(page))
-        #expect(state.allModularizationTestItems.byId.count == expectedItems.count)
+        #expect(state.testFeature.flow == .none)
+        #expect(state.testFeature.form.paginator.elements == expectedItems.map(\.id))
+        #expect(state.testFeature.form.paginator.page == .number(page))
+        #expect(state.allTestItems.byId.count == expectedItems.count)
 
         for expectedItem in expectedItems {
-            let storedItem = try #require(state.allModularizationTestItems.byId[expectedItem.id])
+            let storedItem = try #require(state.allTestItems.byId[expectedItem.id])
             #expect(storedItem == expectedItem)
         }
     }
@@ -43,14 +43,14 @@ struct CrossModuleFeatureIntegrationTests {
     @TestStoreActor
     @Test("A stateless feature has empty registration and preserves entry input")
     func statelessFeatureUsesDefaultsAndPreservesInput() async {
-        let input = ModularizationTestSettingsInput(title: "Settings payload")
-        let destination = ModularizationTestSettingsFeatureState<AppState>.entryPoint(
+        let input = TestSettingsInput(title: "Settings payload")
+        let destination = TestSettingsFeatureState<AppState>.entryPoint(
             input: input
         )
         let store = TestStore(initial: AppState())
         var wrappers: [MiddlewareWrapper<AppState>] = []
         await store.subscribe { store in
-            wrappers = ModularizationTestSettingsFeatureState<AppState>.registerMiddlewares(in: store)
+            wrappers = TestSettingsFeatureState<AppState>.registerMiddlewares(in: store)
             return wrappers
         }
 
@@ -59,7 +59,7 @@ struct CrossModuleFeatureIntegrationTests {
     }
 
     @Test("An externally composed feature recovers from errors and resets flow")
-    func externallyComposedFeatureHandlesErrorAndResetsFlow() async throws {
+    func externallyComposedFeatureHandlesErrorAndResetsFlow() async {
         struct TestError: Error, Equatable {}
 
         let store = await TestStore(
@@ -67,70 +67,70 @@ struct CrossModuleFeatureIntegrationTests {
             registerFeatureMiddlewares: false
         )
         await store.subscribe(
-            ModularizationTestMiddleware<AppState>.self,
+            TestMiddleware<AppState>.self,
             environment: .test { _ in throw TestError() }
         )
 
-        await store.dispatch(Actions.LoadPage(pageNumber: 1, id: ModularizationTestFlow.id))
+        await store.dispatch(Actions.LoadPage(pageNumber: 1, id: TestFlow.id))
         await store.wait()
 
         let state = await store.state
-        #expect(state.modularizationTestFeature.flow == .none)
+        #expect(state.testFeature.flow == .none)
         #expect(state.actionTracker.didCatchError)
-        #expect(state.modularizationTestFeature.form.paginator.elements.isEmpty)
+        #expect(state.testFeature.form.paginator.elements.isEmpty)
     }
 
     @Test("An externally composed feature cancels in-flight load and resets flow")
-    func externallyComposedFeatureHandlesCancellation() async throws {
+    func externallyComposedFeatureHandlesCancellation() async {
         let store = await TestStore(
             initial: AppState(),
             registerFeatureMiddlewares: false
         )
         await store.subscribe(
-            ModularizationTestMiddleware<AppState>.self,
+            TestMiddleware<AppState>.self,
             environment: .test { _ in throw CancellationError() }
         )
 
-        await store.dispatch(Actions.LoadPage(pageNumber: 1, id: ModularizationTestFlow.id))
+        await store.dispatch(Actions.LoadPage(pageNumber: 1, id: TestFlow.id))
         await store.wait()
 
         let state = await store.state
-        #expect(state.modularizationTestFeature.flow == .none)
+        #expect(state.testFeature.flow == .none)
         #expect(state.actionTracker.didCancel)
-        #expect(state.modularizationTestFeature.form.paginator.elements.isEmpty)
+        #expect(state.testFeature.form.paginator.elements.isEmpty)
     }
 
     @Test("An externally composed feature loads subsequent pages accumulating items")
     func externallyComposedFeatureLoadsSubsequentPages() async throws {
         let page1Items = [
-            ModularizationTestItem(id: 1, title: "Test item 1"),
-            ModularizationTestItem(id: 2, title: "Test item 2"),
+            TestItem(id: 1, title: "Test item 1"),
+            TestItem(id: 2, title: "Test item 2"),
         ]
         let page2Items = [
-            ModularizationTestItem(id: 3, title: "Test item 3"),
-            ModularizationTestItem(id: 4, title: "Test item 4"),
+            TestItem(id: 3, title: "Test item 3"),
+            TestItem(id: 4, title: "Test item 4"),
         ]
         let store = await TestStore(initial: AppState())
 
-        await store.dispatch(Actions.LoadPage(pageNumber: 1, id: ModularizationTestFlow.id))
+        await store.dispatch(Actions.LoadPage(pageNumber: 1, id: TestFlow.id))
         await store.wait()
 
         var state = await store.state
-        #expect(state.modularizationTestFeature.flow == .none)
-        #expect(state.modularizationTestFeature.form.paginator.elements == [1, 2])
-        #expect(state.modularizationTestFeature.form.paginator.page == .number(1))
+        #expect(state.testFeature.flow == .none)
+        #expect(state.testFeature.form.paginator.elements == [1, 2])
+        #expect(state.testFeature.form.paginator.page == .number(1))
 
-        await store.dispatch(Actions.LoadPage(pageNumber: 2, id: ModularizationTestFlow.id))
+        await store.dispatch(Actions.LoadPage(pageNumber: 2, id: TestFlow.id))
         await store.wait()
 
         state = await store.state
-        #expect(state.modularizationTestFeature.flow == .none)
-        #expect(state.modularizationTestFeature.form.paginator.elements == [1, 2, 3, 4])
-        #expect(state.modularizationTestFeature.form.paginator.page == .number(2))
-        #expect(state.allModularizationTestItems.byId.count == 4)
+        #expect(state.testFeature.flow == .none)
+        #expect(state.testFeature.form.paginator.elements == [1, 2, 3, 4])
+        #expect(state.testFeature.form.paginator.page == .number(2))
+        #expect(state.allTestItems.byId.count == 4)
 
         for item in page1Items + page2Items {
-            let storedItem = try #require(state.allModularizationTestItems.byId[item.id])
+            let storedItem = try #require(state.allTestItems.byId[item.id])
             #expect(storedItem == item)
         }
     }
@@ -140,14 +140,14 @@ struct CrossModuleFeatureIntegrationTests {
 
 private struct AppState:
     AppReducer,
-    ModularizationTestFeature,
-    ModularizationTestSettingsFeature
+    TestFeature,
+    TestSettingsFeature
 {
     typealias Environments = TestEnvironments
 
-    var allModularizationTestItems = AllModularizationTestItems()
-    var modularizationTestFeature = ModularizationTestFeatureState<AppState>()
-    var modularizationTestSettings = ModularizationTestSettingsFeatureState<AppState>()
+    var allTestItems = AllTestItems()
+    var testFeature = TestFeatureState<AppState>()
+    var testSettings = TestSettingsFeatureState<AppState>()
     var actionTracker = ActionTrackerForm()
 }
 
@@ -157,11 +157,11 @@ private struct ActionTrackerForm: Form {
 
     mutating func reduce(_ action: some Action) {
         switch action {
-        case let action as Actions.Error where action.id == ModularizationTestFlow.id:
+        case let action as Actions.Error where action.id == TestFlow.id:
             didCatchError = true
 
         case let action as Actions.DidCancelEffect
-            where action.cancellation == AnyHashable(ModularizationTestMiddlewareCancellation.loadItems):
+            where action.cancellation == AnyHashable(TestMiddlewareCancellation.loadItems):
             didCancel = true
 
         default:
@@ -170,11 +170,11 @@ private struct ActionTrackerForm: Form {
     }
 }
 
-private struct AllModularizationTestItems: Storage {
-    var byId: [ModularizationTestItem.ID: ModularizationTestItem] = [:]
+private struct AllTestItems: Storage {
+    var byId: [TestItem.ID: TestItem] = [:]
 
     mutating func reduce(_ action: some Action) {
-        guard let action = action as? Actions.DidLoadItems<ModularizationTestItem> else {
+        guard let action = action as? Actions.DidLoadItems<TestItem> else {
             return
         }
 
@@ -184,8 +184,8 @@ private struct AllModularizationTestItems: Storage {
     }
 }
 
-private enum TestEnvironments: ModularizationTestEnvironmentProviding {
-    static let modularizationTestFeature = ModularizationTestEnvironment { page in
-        [ModularizationTestItem(id: page * 1_000, title: "Live namespace sentinel")]
+private enum TestEnvironments: TestEnvironmentProviding {
+    static let testFeature = TestEnvironment { page in
+        [TestItem(id: page * 1000, title: "Live namespace sentinel")]
     }
 }
