@@ -51,7 +51,26 @@ import SwiftUI
 ///     }
 ///
 ///     public static func registerMiddlewares(in store: any Store<AppState>) -> [MiddlewareWrapper<AppState>] {
-///         ProfileMiddleware<AppState>(store: store, environment: AppState.Environments.profile)
+///         ProfileMiddleware<AppState>.self
+///     }
+/// }
+/// ```
+///
+/// The middleware keeps the live composition boundary explicit while owning its feature-local test
+/// default. `EnvironmentStore` and `TestStore` initialize the registered type with the appropriate
+/// builder:
+///
+/// ```swift
+/// final class ProfileMiddleware<AppState: ProfileFeature>: Middleware<AppState> {
+///     typealias Environment = ProfileEnvironment
+///     var environment: Environment!
+///
+///     static func buildLiveEnvironment(for store: some Store<AppState>) -> Environment {
+///         AppState.Environments.profile
+///     }
+///
+///     static func buildTestEnvironment(for store: some Store<AppState>) -> Environment {
+///         .test()
 ///     }
 /// }
 /// ```

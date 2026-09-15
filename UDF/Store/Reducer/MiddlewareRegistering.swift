@@ -13,7 +13,7 @@ import Foundation
 
 /// A reducer that subscribes the middleware it owns.
 ///
-/// `EnvironmentStore` inspects the app state once, while the store is being created, and calls
+/// `EnvironmentStore` and `TestStore` inspect the app state once, while the store is being created, and call
 /// `registerMiddlewares(in:)` on every conforming property it finds. Each call returns middleware wrappers
 /// without subscribing them, so the whole app's middleware is subscribed in a single pass no matter how
 /// many features there are. Mounting the reducer in the app state is
@@ -24,15 +24,15 @@ import Foundation
 /// ```swift
 /// @MiddlewareBuilder<AppState>
 /// public static func registerMiddlewares(in store: any Store<AppState>) -> [MiddlewareWrapper<AppState>] {
-///     ProfileMiddleware<AppState>(store: store, environment: AppState.Environments.profile)
-///     ProfileAnalyticsMiddleware<AppState>(store: store, environment: AppState.Environments.analytics)
+///     ProfileMiddleware<AppState>.self
+///     ProfileAnalyticsMiddleware<AppState>.self
 /// }
 /// ```
 ///
 /// A feature module declares its reducer generic over the app state that hosts it, constrained to the
 /// protocol the feature requires. Because the host is a generic parameter, the reducer can name
 /// `Store<AppState>` and its own middleware without knowing the concrete app state, and it
-/// reaches its environment through the host rather than building one:
+/// names its middleware types without constructing them:
 ///
 /// ```swift
 /// public struct ProfileFeatureState<AppState: ProfileFeature>: Reducible, MiddlewareRegistering {
@@ -43,10 +43,14 @@ import Foundation
 ///
 ///     @MiddlewareBuilder<AppState>
 ///     public static func registerMiddlewares(in store: any Store<AppState>) -> [MiddlewareWrapper<AppState>] {
-///         ProfileMiddleware<AppState>(store: store, environment: AppState.Environments.profile)
+///         ProfileMiddleware<AppState>.self
 ///     }
 /// }
 /// ```
+///
+/// Environment-aware middleware forwards `buildLiveEnvironment(for:)` to the app's static environment
+/// namespace and supplies its own `buildTestEnvironment(for:)`. This keeps the feature independent of
+/// the app's data layer while preserving automatic test defaults.
 ///
 /// The app mounts it as it mounts any reducer, and registration follows from that:
 ///
@@ -78,7 +82,8 @@ public protocol MiddlewareRegistering<AppState>: Reducing {
     /// Builds the middleware this reducer owns.
     ///
     /// Called once per conforming reducer, while the store is being built. Nothing is subscribed here:
-    /// the environment store collects the returned wrappers and subscribes the whole set at once.
+    /// the store collects the returned wrappers and subscribes the whole set at once. Type wrappers are
+    /// initialized with `buildLiveEnvironment(for:)` in production and `buildTestEnvironment(for:)` in tests.
     ///
     /// - Parameter store: The store supplied to middleware initializers.
     @MiddlewareBuilder<AppState>

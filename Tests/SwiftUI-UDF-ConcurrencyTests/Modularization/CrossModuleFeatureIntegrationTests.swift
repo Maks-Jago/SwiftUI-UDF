@@ -11,7 +11,7 @@
 
 import Testing
 import UDF
-import UDFModularizationTestFeature
+@testable import UDFModularizationTestFeature
 import UDFSwiftTesting
 
 @Suite("Cross-module feature integration")
@@ -20,33 +20,23 @@ struct CrossModuleFeatureIntegrationTests {
     func externallyComposedFeatureCompletesLoadingPath() async throws {
         let page = 2
         let expectedItems = [
-            ModularizationTestItem(id: 21, title: "Data-layer item 21"),
-            ModularizationTestItem(id: 22, title: "Data-layer item 22"),
+            ModularizationTestItem(id: 3, title: "Test item 3"),
+            ModularizationTestItem(id: 4, title: "Test item 4"),
         ]
-        let environment = ModularizationTestEnvironment { requestedPage in
-            expectedItems
-        }
+        let store = await TestStore(initial: AppState())
 
-        try await ModularizationTestEnvironmentContext.$environment.withValue(environment) {
-            let store = EnvironmentStore(initial: AppState(), loggers: [])
+        await store.dispatch(Actions.LoadPage(pageNumber: page, id: ModularizationTestFlow.id))
+        await store.wait()
 
-            store.dispatch(Actions.LoadPage(pageNumber: page, id: ModularizationTestFlow.id))
+        let state = await store.state
+        #expect(state.modularizationTestFeature.flow == .none)
+        #expect(state.modularizationTestFeature.form.paginator.elements == expectedItems.map(\.id))
+        #expect(state.modularizationTestFeature.form.paginator.page == .number(page))
+        #expect(state.allModularizationTestItems.byId.count == expectedItems.count)
 
-            let completedLoadingPath = await waitForCondition {
-                let state = store.state
-                return state.modularizationTestFeature.flow == .none
-                    && state.modularizationTestFeature.form.paginator.elements == expectedItems.map(\.id)
-                    && state.modularizationTestFeature.form.paginator.page == .number(page)
-                    && state.allModularizationTestItems.byId.count == expectedItems.count
-            }
-            #expect(completedLoadingPath)
-
-            for expectedItem in expectedItems {
-                let storedItem = try #require(
-                    store.state.allModularizationTestItems.byId[expectedItem.id]
-                )
-                #expect(storedItem == expectedItem)
-            }
+        for expectedItem in expectedItems {
+            let storedItem = try #require(state.allModularizationTestItems.byId[expectedItem.id])
+            #expect(storedItem == expectedItem)
         }
     }
 
@@ -72,86 +62,76 @@ struct CrossModuleFeatureIntegrationTests {
     func externallyComposedFeatureHandlesErrorAndResetsFlow() async throws {
         struct TestError: Error, Equatable {}
 
-        let environment = ModularizationTestEnvironment { _ in
-            throw TestError()
-        }
+        let store = await TestStore(
+            initial: AppState(),
+            registerFeatureMiddlewares: false
+        )
+        await store.subscribe(
+            ModularizationTestMiddleware<AppState>.self,
+            environment: .test { _ in throw TestError() }
+        )
 
-        await ModularizationTestEnvironmentContext.$environment.withValue(environment) {
-            let store = EnvironmentStore(initial: AppState(), loggers: [])
+        await store.dispatch(Actions.LoadPage(pageNumber: 1, id: ModularizationTestFlow.id))
+        await store.wait()
 
-            store.dispatch(Actions.LoadPage(pageNumber: 1, id: ModularizationTestFlow.id))
-
-            let resetToIdle = await waitForCondition {
-                store.state.modularizationTestFeature.flow == .none
-                    && store.state.actionTracker.didCatchError
-            }
-            #expect(resetToIdle)
-            #expect(store.state.modularizationTestFeature.form.paginator.elements.isEmpty)
-        }
+        let state = await store.state
+        #expect(state.modularizationTestFeature.flow == .none)
+        #expect(state.actionTracker.didCatchError)
+        #expect(state.modularizationTestFeature.form.paginator.elements.isEmpty)
     }
 
     @Test("An externally composed feature cancels in-flight load and resets flow")
     func externallyComposedFeatureHandlesCancellation() async throws {
-        let environment = ModularizationTestEnvironment { _ in
-            throw CancellationError()
-        }
+        let store = await TestStore(
+            initial: AppState(),
+            registerFeatureMiddlewares: false
+        )
+        await store.subscribe(
+            ModularizationTestMiddleware<AppState>.self,
+            environment: .test { _ in throw CancellationError() }
+        )
 
-        await ModularizationTestEnvironmentContext.$environment.withValue(environment) {
-            let store = EnvironmentStore(initial: AppState(), loggers: [])
+        await store.dispatch(Actions.LoadPage(pageNumber: 1, id: ModularizationTestFlow.id))
+        await store.wait()
 
-            store.dispatch(Actions.LoadPage(pageNumber: 1, id: ModularizationTestFlow.id))
-
-            let resetToIdle = await waitForCondition {
-                store.state.modularizationTestFeature.flow == .none
-                    && store.state.actionTracker.didCancel
-            }
-            #expect(resetToIdle)
-            #expect(store.state.modularizationTestFeature.form.paginator.elements.isEmpty)
-        }
+        let state = await store.state
+        #expect(state.modularizationTestFeature.flow == .none)
+        #expect(state.actionTracker.didCancel)
+        #expect(state.modularizationTestFeature.form.paginator.elements.isEmpty)
     }
 
     @Test("An externally composed feature loads subsequent pages accumulating items")
     func externallyComposedFeatureLoadsSubsequentPages() async throws {
         let page1Items = [
-            ModularizationTestItem(id: 1, title: "Item 1"),
-            ModularizationTestItem(id: 2, title: "Item 2"),
+            ModularizationTestItem(id: 1, title: "Test item 1"),
+            ModularizationTestItem(id: 2, title: "Test item 2"),
         ]
         let page2Items = [
-            ModularizationTestItem(id: 3, title: "Item 3"),
-            ModularizationTestItem(id: 4, title: "Item 4"),
+            ModularizationTestItem(id: 3, title: "Test item 3"),
+            ModularizationTestItem(id: 4, title: "Test item 4"),
         ]
-        let environment = ModularizationTestEnvironment { page in
-            page == 1 ? page1Items : page2Items
-        }
+        let store = await TestStore(initial: AppState())
 
-        try await ModularizationTestEnvironmentContext.$environment.withValue(environment) {
-            let store = EnvironmentStore(initial: AppState(), loggers: [])
+        await store.dispatch(Actions.LoadPage(pageNumber: 1, id: ModularizationTestFlow.id))
+        await store.wait()
 
-            // Load Page 1
-            store.dispatch(Actions.LoadPage(pageNumber: 1, id: ModularizationTestFlow.id))
+        var state = await store.state
+        #expect(state.modularizationTestFeature.flow == .none)
+        #expect(state.modularizationTestFeature.form.paginator.elements == [1, 2])
+        #expect(state.modularizationTestFeature.form.paginator.page == .number(1))
 
-            let completedPage1 = await waitForCondition {
-                store.state.modularizationTestFeature.flow == .none
-                    && store.state.modularizationTestFeature.form.paginator.elements == [1, 2]
-                    && store.state.modularizationTestFeature.form.paginator.page == .number(1)
-            }
-            #expect(completedPage1)
+        await store.dispatch(Actions.LoadPage(pageNumber: 2, id: ModularizationTestFlow.id))
+        await store.wait()
 
-            // Load Page 2
-            store.dispatch(Actions.LoadPage(pageNumber: 2, id: ModularizationTestFlow.id))
+        state = await store.state
+        #expect(state.modularizationTestFeature.flow == .none)
+        #expect(state.modularizationTestFeature.form.paginator.elements == [1, 2, 3, 4])
+        #expect(state.modularizationTestFeature.form.paginator.page == .number(2))
+        #expect(state.allModularizationTestItems.byId.count == 4)
 
-            let completedPage2 = await waitForCondition {
-                store.state.modularizationTestFeature.flow == .none
-                    && store.state.modularizationTestFeature.form.paginator.elements == [1, 2, 3, 4]
-                    && store.state.modularizationTestFeature.form.paginator.page == .number(2)
-                    && store.state.allModularizationTestItems.byId.count == 4
-            }
-            #expect(completedPage2)
-
-            for item in page1Items + page2Items {
-                let storedItem = try #require(store.state.allModularizationTestItems.byId[item.id])
-                #expect(storedItem == item)
-            }
+        for item in page1Items + page2Items {
+            let storedItem = try #require(state.allModularizationTestItems.byId[item.id])
+            #expect(storedItem == item)
         }
     }
 }
@@ -205,14 +185,7 @@ private struct AllModularizationTestItems: Storage {
 }
 
 private enum TestEnvironments: ModularizationTestEnvironmentProviding {
-    static var modularizationTestFeature: ModularizationTestEnvironment {
-        guard let environment = ModularizationTestEnvironmentContext.environment else {
-            fatalError("A test environment must be scoped before creating the store.")
-        }
-        return environment
+    static let modularizationTestFeature = ModularizationTestEnvironment { page in
+        [ModularizationTestItem(id: page * 1_000, title: "Live namespace sentinel")]
     }
-}
-
-private enum ModularizationTestEnvironmentContext {
-    @TaskLocal static var environment: ModularizationTestEnvironment?
 }

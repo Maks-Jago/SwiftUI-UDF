@@ -24,7 +24,10 @@ struct FeatureServicesDependencyTests {
         let service = SharedToggleService()
 
         await AppServicesContext.$service.withValue(service) {
-            let store = TestStore(initial: AppState())
+            let store = TestStore(
+                initial: AppState(),
+                registerFeatureMiddlewares: false
+            )
             var wrappers: [MiddlewareWrapper<AppState>] = []
 
             await store.subscribe { store in
@@ -96,7 +99,10 @@ struct FeatureServicesDependencyTests {
     @Test("Concurrent calls on shared service from different middleware queues maintain consistency")
     func concurrentSharedServiceAccess() async {
         let service = SharedToggleService()
-        let store = await TestStore(initial: AppState())
+        let store = await TestStore(
+            initial: AppState(),
+            registerFeatureMiddlewares: false
+        )
 
         await store.subscribe(build: { store in
             FeatureAMiddleware<AppState>(
@@ -259,12 +265,20 @@ private struct FeatureAForm: UDF.Form, Equatable {
 }
 
 private final class FeatureAMiddleware<State: FeatureA>:
-    FeatureMiddleware<State>,
+    Middleware<State>,
     @unchecked Sendable
 {
     typealias Environment = FeatureAEnvironment
 
     var environment: Environment!
+
+    static func buildLiveEnvironment(for store: some Store<State>) -> Environment {
+        State.Environments.featureA
+    }
+
+    static func buildTestEnvironment(for store: some Store<State>) -> Environment {
+        State.Environments.featureA
+    }
 
     func reduce(_ action: some Action, for state: State) {
         switch action {
@@ -331,12 +345,20 @@ private struct FeatureBForm: UDF.Form, Equatable {
 }
 
 private final class FeatureBMiddleware<State: FeatureB>:
-    FeatureMiddleware<State>,
+    Middleware<State>,
     @unchecked Sendable
 {
     typealias Environment = FeatureBEnvironment
 
     var environment: Environment!
+
+    static func buildLiveEnvironment(for store: some Store<State>) -> Environment {
+        State.Environments.featureB
+    }
+
+    static func buildTestEnvironment(for store: some Store<State>) -> Environment {
+        State.Environments.featureB
+    }
 
     func reduce(_ action: some Action, for state: State) {
         switch action {

@@ -69,9 +69,27 @@ public extension _Middleware {
     }
 }
 
-// MARK: - Initializers with a Supplied Environment
+// MARK: - Environment _Middleware Extensions
 
-public extension _Middleware where Self: FeatureEnvironmentMiddleware {
+public extension _Middleware where Self: EnvironmentMiddleware {
+    /// Initializes the middleware with a store, using a live environment.
+    ///
+    /// This initializer creates a middleware with a live environment built from the provided store.
+    /// - Parameter store: The store that the middleware will interact with.
+    init(store: some Store<State>) {
+        self.init(store: store, environment: Self.buildLiveEnvironment(for: store))
+    }
+
+    /// Initializes the middleware with a store and a specific dispatch queue, using a live environment.
+    ///
+    /// This initializer creates a middleware with a live environment built from the provided store and a specific queue.
+    /// - Parameters:
+    ///   - store: The store that the middleware will interact with.
+    ///   - queue: The dispatch queue for performing middleware operations.
+    init(store: some Store<State>, queue: DispatchQueue) {
+        self.init(store: store, environment: Self.buildLiveEnvironment(for: store), queue: queue)
+    }
+
     /// Initializes the middleware with a store and a custom environment.
     ///
     /// This initializer creates a middleware with a custom environment and a queue using the middleware's type name as the label.
@@ -93,28 +111,6 @@ public extension _Middleware where Self: FeatureEnvironmentMiddleware {
     init(store: some Store<State>, environment: Environment, queue: DispatchQueue) {
         self.init(store: store, queue: queue)
         self.environment = environment
-    }
-}
-
-// MARK: - Initializers with a Built Environment
-
-public extension _Middleware where Self: EnvironmentMiddleware {
-    /// Initializes the middleware with a store, using a live environment.
-    ///
-    /// This initializer creates a middleware with a live environment built from the provided store.
-    /// - Parameter store: The store that the middleware will interact with.
-    init(store: some Store<State>) {
-        self.init(store: store, environment: Self.buildLiveEnvironment(for: store))
-    }
-
-    /// Initializes the middleware with a store and a specific dispatch queue, using a live environment.
-    ///
-    /// This initializer creates a middleware with a live environment built from the provided store and a specific queue.
-    /// - Parameters:
-    ///   - store: The store that the middleware will interact with.
-    ///   - queue: The dispatch queue for performing middleware operations.
-    init(store: some Store<State>, queue: DispatchQueue) {
-        self.init(store: store, environment: Self.buildLiveEnvironment(for: store), queue: queue)
     }
 }
 

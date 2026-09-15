@@ -20,7 +20,10 @@ struct FeatureMiddlewareRegistrationTests {
     @TestStoreActor
     @Test("Collection preserves explicit feature instances and legacy type wrappers")
     func collectionPreservesExplicitInstancesAndLegacyTypes() async throws {
-        let store = TestStore(initial: RegistrationAppState())
+        let store = TestStore(
+            initial: RegistrationAppState(),
+            registerFeatureMiddlewares: false
+        )
         var wrappers: [MiddlewareWrapper<RegistrationAppState>] = []
 
         await store.subscribe { store in
@@ -62,9 +65,9 @@ struct FeatureMiddlewareRegistrationTests {
     func multipleRootFeaturesRegisterAcrossEmptyFeature() async {
         let store = EnvironmentStore(initial: CompositeAppState(), loggers: [])
         let registered = await waitForCondition(timeout: 2) {
-            store.state.alpha.form.marker == "alpha"
+            store.state.alpha.form.marker == "alpha-test"
                 && store.state.empty.form.marker == nil
-                && store.state.beta.form.marker == "beta"
+                && store.state.beta.form.marker == "beta-test"
         }
 
         #expect(registered)
@@ -83,22 +86,27 @@ struct FeatureMiddlewareRegistrationTests {
         #expect(observedInitializedState)
     }
 
-    @Test("TestStore requires explicit feature middleware subscription")
-    func testStoreRequiresExplicitFeatureMiddlewareSubscription() async {
+    @Test("TestStore automatically builds test environments for type-registered feature middleware")
+    func testStoreAutomaticallyBuildsFeatureTestEnvironments() async {
         let store = await TestStore(initial: CompositeAppState())
 
         await store.dispatch(Actions.TriggerAlpha())
         await store.wait()
-        #expect(await store.state.alpha.form.marker == nil)
 
-        await store.subscribe(
-            AlphaMiddleware.self,
-            environment: MarkerEnvironment(marker: "explicit-test-store")
-        )
-        await store.dispatch(Actions.TriggerAlpha())
-        await store.wait()
+        let state = await store.state
+        #expect(state.alpha.form.marker == "alpha-test")
+        #expect(state.beta.form.marker == "beta-test")
+    }
 
-        #expect(await store.state.alpha.form.marker == "explicit-test-store")
+    @Test("Feature live environment builders forward to the app environment namespace")
+    func liveEnvironmentBuildersForwardToAppEnvironments() {
+        let store = InternalStore(initial: CompositeAppState(), loggers: [])
+
+        let alpha = AlphaMiddleware<CompositeAppState>.buildLiveEnvironment(for: store)
+        let beta = BetaMiddleware<CompositeAppState>.buildLiveEnvironment(for: store)
+
+        #expect(alpha.marker == "alpha")
+        #expect(beta.marker == "beta")
     }
 
     @Test("Each EnvironmentStore receives a fresh feature middleware instance")
@@ -206,12 +214,20 @@ private struct RegistrationForm: UDF.Form, Equatable {
 }
 
 private final class ExplicitRegistrationMiddleware<State: RegistrationFeatureHost>:
-    FeatureMiddleware<State>,
+    Middleware<State>,
     @unchecked Sendable
 {
     typealias Environment = MarkerEnvironment
 
     var environment: Environment!
+
+    static func buildLiveEnvironment(for store: some Store<State>) -> Environment {
+        State.Environments.explicit
+    }
+
+    static func buildTestEnvironment(for store: some Store<State>) -> Environment {
+        MarkerEnvironment(marker: "explicit-test")
+    }
 
     func observe(state: State) {
         store.dispatch(Actions.RecordExplicitRegistration(marker: environment.marker))
@@ -272,7 +288,7 @@ private struct AlphaFeatureState<State: AppReducer>: FeatureState {
     }
 
     static func registerMiddlewares(in store: any Store<State>) -> [MiddlewareWrapper<State>] {
-        AlphaMiddleware<State>(store: store, environment: CompositeEnvironments.alpha)
+        AlphaMiddleware<State>.self
     }
 }
 
@@ -293,7 +309,7 @@ private struct BetaFeatureState<State: AppReducer>: FeatureState {
     }
 
     static func registerMiddlewares(in store: any Store<State>) -> [MiddlewareWrapper<State>] {
-        BetaMiddleware<State>(store: store, environment: CompositeEnvironments.beta)
+        BetaMiddleware<State>.self
     }
 }
 
@@ -336,11 +352,19 @@ private struct BetaForm: UDF.Form, Equatable {
     }
 }
 
-private final class AlphaMiddleware<State: AppReducer>: FeatureMiddleware<State>, @unchecked Sendable {
+private final class AlphaMiddleware<State: AppReducer>: Middleware<State>, @unchecked Sendable {
     typealias Environment = MarkerEnvironment
 
     var environment: Environment!
     private let instanceID = UUID()
+
+    static func buildLiveEnvironment(for store: some Store<State>) -> Environment {
+        CompositeEnvironments.alpha
+    }
+
+    static func buildTestEnvironment(for store: some Store<State>) -> Environment {
+        MarkerEnvironment(marker: "alpha-test")
+    }
 
     func reduce(_ action: some Action, for state: State) {
         if action is Actions.TriggerAlpha {
@@ -366,10 +390,18 @@ private final class AlphaMiddleware<State: AppReducer>: FeatureMiddleware<State>
     }
 }
 
-private final class BetaMiddleware<State: AppReducer>: FeatureMiddleware<State>, @unchecked Sendable {
+private final class BetaMiddleware<State: AppReducer>: Middleware<State>, @unchecked Sendable {
     typealias Environment = MarkerEnvironment
 
     var environment: Environment!
+
+    static func buildLiveEnvironment(for store: some Store<State>) -> Environment {
+        CompositeEnvironments.beta
+    }
+
+    static func buildTestEnvironment(for store: some Store<State>) -> Environment {
+        MarkerEnvironment(marker: "beta-test")
+    }
 
     func observe(state: State) {
         store.dispatch(Actions.RecordBeta(marker: environment.marker))

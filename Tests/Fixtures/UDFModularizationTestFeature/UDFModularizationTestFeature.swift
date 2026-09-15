@@ -25,6 +25,20 @@ public struct ModularizationTestEnvironment: Sendable {
     }
 }
 
+public extension ModularizationTestEnvironment {
+    static func test(
+        loadItems: @escaping @Sendable (_ page: Int) async throws -> [ModularizationTestItem] = { page in
+            let firstID = ((page - 1) * 2) + 1
+            return [
+                ModularizationTestItem(id: firstID, title: "Test item \(firstID)"),
+                ModularizationTestItem(id: firstID + 1, title: "Test item \(firstID + 1)"),
+            ]
+        }
+    ) -> Self {
+        Self(loadItems: loadItems)
+    }
+}
+
 public protocol ModularizationTestEnvironmentProviding {
     static var modularizationTestFeature: ModularizationTestEnvironment { get }
 }
@@ -72,10 +86,7 @@ public struct ModularizationTestFeatureState<AppState: ModularizationTestFeature
     public static func registerMiddlewares(
         in store: any Store<AppState>
     ) -> [MiddlewareWrapper<AppState>] {
-        ModularizationTestMiddleware<AppState>(
-            store: store,
-            environment: AppState.Environments.modularizationTestFeature
-        )
+        ModularizationTestMiddleware<AppState>.self
     }
 }
 
@@ -131,13 +142,21 @@ public enum ModularizationTestFlow: IdentifiableFlow, Equatable {
     }
 }
 
-private final class ModularizationTestMiddleware<AppState: ModularizationTestFeature>:
-    FeatureMiddleware<AppState>,
+final class ModularizationTestMiddleware<AppState: ModularizationTestFeature>:
+    Middleware<AppState>,
     @unchecked Sendable
 {
     typealias Environment = ModularizationTestEnvironment
 
     var environment: Environment!
+
+    static func buildLiveEnvironment(for store: some Store<AppState>) -> Environment {
+        AppState.Environments.modularizationTestFeature
+    }
+
+    static func buildTestEnvironment(for store: some Store<AppState>) -> Environment {
+        .test()
+    }
 
     func scope(for state: AppState) -> Scope {
         state.modularizationTestFeature.flow

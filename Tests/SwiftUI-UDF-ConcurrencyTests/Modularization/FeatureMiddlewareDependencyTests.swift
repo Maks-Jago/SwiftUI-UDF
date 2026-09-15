@@ -20,7 +20,10 @@ struct FeatureMiddlewareDependencyTests {
     @TestStoreActor
     @Test("Feature registration preserves shared services and exact queue instances")
     func registrationPreservesDependencyIdentity() async throws {
-        let store = TestStore(initial: AppState())
+        let store = TestStore(
+            initial: AppState(),
+            registerFeatureMiddlewares: false
+        )
         var wrappers: [MiddlewareWrapper<AppState>] = []
 
         await store.subscribe { store in
@@ -55,7 +58,10 @@ struct FeatureMiddlewareDependencyTests {
     func callbacksExecuteOnExactInjectedQueues() async {
         let firstQueue = DispatchQueue(label: QueueLabel.shared)
         let secondQueue = DispatchQueue(label: QueueLabel.shared)
-        let store = await TestStore(initial: AppState())
+        let store = await TestStore(
+            initial: AppState(),
+            registerFeatureMiddlewares: false
+        )
 
         await confirmation("All callbacks execute on their injected queue", expectedCount: 4) { confirm in
             let firstEnv = FirstEnvironment(
@@ -158,7 +164,10 @@ struct FeatureMiddlewareDependencyTests {
     )
     func sharedQueueExecutesCallbacksOnSameQueueInstance() async {
         let sharedQueue = DispatchQueue(label: "FeatureMiddlewareDependencyTests.shared-work-queue")
-        let store = await TestStore(initial: AppState())
+        let store = await TestStore(
+            initial: AppState(),
+            registerFeatureMiddlewares: false
+        )
 
         await confirmation("Shared queue callbacks execute on shared queue", expectedCount: 4) { confirm in
             let firstEnv = FirstEnvironment(
@@ -278,8 +287,16 @@ private extension FeatureMiddlewareDependencyTests {
 
     struct TriggerAction: Action {}
 
-    final class FirstFeatureMiddleware: FeatureMiddleware<AppState>, @unchecked Sendable {
+    final class FirstFeatureMiddleware: Middleware<AppState>, @unchecked Sendable {
         var environment: FirstEnvironment!
+
+        static func buildLiveEnvironment(for store: some Store<AppState>) -> FirstEnvironment {
+            FirstEnvironment(service: AppDependencies.sharedService)
+        }
+
+        static func buildTestEnvironment(for store: some Store<AppState>) -> FirstEnvironment {
+            FirstEnvironment(service: AppDependencies.sharedService)
+        }
 
         func scope(for state: AppState) -> Scope {
             state.triggerForm
@@ -302,8 +319,16 @@ private extension FeatureMiddlewareDependencyTests {
         }
     }
 
-    final class SecondFeatureMiddleware: FeatureMiddleware<AppState>, @unchecked Sendable {
+    final class SecondFeatureMiddleware: Middleware<AppState>, @unchecked Sendable {
         var environment: SecondEnvironment!
+
+        static func buildLiveEnvironment(for store: some Store<AppState>) -> SecondEnvironment {
+            SecondEnvironment(service: AppDependencies.sharedService)
+        }
+
+        static func buildTestEnvironment(for store: some Store<AppState>) -> SecondEnvironment {
+            SecondEnvironment(service: AppDependencies.sharedService)
+        }
 
         func scope(for state: AppState) -> Scope {
             state.triggerForm

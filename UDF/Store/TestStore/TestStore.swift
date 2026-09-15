@@ -51,9 +51,15 @@ public final class TestStore<State: AppReducer> {
     private var cancelation: Cancellable?
 
     /// Creates a `TestStore` with the given initial state, running `initialSetup()` on it before use.
+    /// Root-level feature middleware is discovered automatically and environment-aware middleware
+    /// is initialized with its `buildTestEnvironment(for:)` implementation.
     ///
-    /// - Parameter state: The initial `State` value to seed the store with.
-    public init(initial state: State) {
+    /// - Parameters:
+    ///   - state: The initial `State` value to seed the store with.
+    ///   - registerFeatureMiddlewares: Whether root-level feature middleware should be discovered
+    ///     and subscribed automatically. Disable this only when a test needs to inject an explicit
+    ///     middleware environment instead.
+    public init(initial state: State, registerFeatureMiddlewares: Bool = true) {
         guard ProcessInfo.processInfo.isRunningTests else {
             fatalError("TestStore is only for using in Test targets")
         }
@@ -68,12 +74,16 @@ public final class TestStore<State: AppReducer> {
         self.cancelation = store.subject.publisher
             .map(\.0)
             .assign(to: \.state, on: self)
+
+        if registerFeatureMiddlewares {
+            subscribeFeatureMiddlewares(in: mutableState, store: store)
+        }
     }
 
     /// Subscribes a single middleware, built from a closure, to the test store.
     ///
     /// - Parameter build: A closure that creates the middleware instance for the given store.
-    public func subscribe(build: (_ store: any Store<State>) -> some FeatureMiddleware<State>) async {
+    public func subscribe(build: (_ store: any Store<State>) -> some Middleware<State>) async {
         await store.subscribe(build(store))
     }
 
@@ -105,6 +115,31 @@ public final class TestStore<State: AppReducer> {
     }
 }
 
+private extension TestStore {
+    /// Collects root-level feature middleware and subscribes the complete batch once, resolving
+    /// type registrations with their test environments.
+    func subscribeFeatureMiddlewares(
+        in state: State,
+        store: InternalStore<State>
+    ) {
+        var wrappers: [MiddlewareWrapper<State>] = []
+        RuntimeReducing.collectMiddlewareWrappers(reducer: state, store: store, into: &wrappers)
+
+        guard !wrappers.isEmpty else {
+            return
+        }
+
+        let middlewares = wrappers.map { wrapper in
+            wrapper.instance ?? middleware(store: store, type: wrapper.type)
+        }
+        // Prepare middleware before the bridge so subscription does not need to hop back
+        // to TestStoreActor while initialization waits.
+        executeSynchronously {
+            await store.subscribe(middlewares)
+        }
+    }
+}
+
 public extension TestStore {
     func subscribe<M: Middleware<State>>(_ middlewareType: M.Type) async where M.State == State, M: EnvironmentMiddleware {
         await self.subscribe { store in
@@ -112,8 +147,8 @@ public extension TestStore {
         }
     }
 
-    func subscribe<M: FeatureMiddleware<State>>(_ middlewareType: M.Type, environment: M.Environment) async
-        where M.State == State
+    func subscribe<M: Middleware<State>>(_ middlewareType: M.Type, environment: M.Environment) async where M.State == State,
+        M: EnvironmentMiddleware
     {
         await self.subscribe { store in
             middlewareType.init(store: store, environment: environment)

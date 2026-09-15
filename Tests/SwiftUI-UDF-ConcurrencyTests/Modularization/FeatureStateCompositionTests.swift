@@ -22,22 +22,14 @@ import UDFSwiftTesting
     }
 
     @TestStoreActor
-    @Test("A public registration witness inherits MiddlewareBuilder")
-    func registrationWitnessUsesInheritedBuilder() async {
+    @Test("TestStore discovers public feature middleware and builds its test environment")
+    func testStoreDiscoversPublicFeatureMiddleware() async {
         let store = TestStore(initial: PublicHostState())
-        var wrappers: [MiddlewareWrapper<PublicHostState>] = []
-
-        await store.subscribe { store in
-            wrappers = PublicFeatureState<PublicHostState>.registerMiddlewares(in: store)
-            return wrappers
-        }
-
-        #expect(wrappers.count == 2)
 
         await store.dispatch(RecordEnvironment())
         store.wait()
 
-        #expect(store.state.result.marker == "registered")
+        #expect(store.state.result.marker == "test")
         #expect(store.state.result.legacyHandled == true)
     }
 
@@ -65,7 +57,10 @@ import UDFSwiftTesting
 
     @Test("TestStore accepts a feature-only middleware with an explicit environment")
     func testStoreExplicitFeatureEnvironment() async {
-        let store = await TestStore(initial: PublicHostState())
+        let store = await TestStore(
+            initial: PublicHostState(),
+            registerFeatureMiddlewares: false
+        )
         await store.subscribe(
             PublicFeatureMiddleware<PublicHostState>.self,
             environment: PublicFeatureEnvironment(marker: "injected")
@@ -165,10 +160,7 @@ private struct PublicFeatureState<Host: PublicFeatureHost>: FeatureState {
     static func registerMiddlewares(
         in store: any Store<Host>
     ) -> [MiddlewareWrapper<Host>] {
-        PublicFeatureMiddleware<Host>(
-            store: store,
-            environment: Host.Environments.feature
-        )
+        PublicFeatureMiddleware<Host>.self
         PublicLegacyMiddleware<Host>.self
     }
 }
@@ -187,10 +179,18 @@ private struct PublicResultForm: UDF.Form {
 
 private struct RecordEnvironment: Action {}
 
-private final class PublicFeatureMiddleware<State: PublicFeatureHost>: FeatureMiddleware<State>, @unchecked Sendable {
+private final class PublicFeatureMiddleware<State: PublicFeatureHost>: Middleware<State>, @unchecked Sendable {
     typealias Environment = PublicFeatureEnvironment
 
     var environment: Environment!
+
+    static func buildLiveEnvironment(for store: some Store<State>) -> Environment {
+        State.Environments.feature
+    }
+
+    static func buildTestEnvironment(for store: some Store<State>) -> Environment {
+        PublicFeatureEnvironment(marker: "test")
+    }
 
     func reduce(_ action: some Action, for state: State) {
         guard action is RecordEnvironment else {
