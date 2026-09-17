@@ -72,6 +72,8 @@ public struct TestFeatureDestination: View {
 }
 
 public struct TestFeatureState<AppState: TestFeature>: FeatureState {
+    public typealias FeatureRouting = EmptyRouting
+
     public var form = TestForm()
     public var flow = TestFlow()
 
@@ -212,6 +214,8 @@ public struct TestSettingsDestination: View {
 public struct TestSettingsFeatureState<AppState: TestSettingsFeature>:
     FeatureState
 {
+    public typealias FeatureRouting = EmptyRouting
+
     public init() {}
 
     public static func entryPoint(

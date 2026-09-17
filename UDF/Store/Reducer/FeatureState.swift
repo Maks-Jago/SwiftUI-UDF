@@ -13,10 +13,10 @@ import SwiftUI
 
 /// The reducer a feature module mounts into a host app state.
 ///
-/// A `FeatureState` groups everything a feature owns, its forms and its flows, names the middleware that
-/// belongs to it, and exposes the single view the composing app presents to enter the feature. Mounting
-/// it as a property of the app state is the only step that app performs: the store finds it there at
-/// launch and registers its middleware.
+/// A `FeatureState` groups everything a feature owns, its forms and its flows, names the middleware and
+/// routing implementation that belong to it, and exposes the single view the composing app presents to
+/// enter the feature. Mounting it as a property of the app state is the only step that app performs: the
+/// store finds it there at launch and registers its middleware.
 ///
 /// A feature states what it needs from its host in a single protocol and reaches the outside world only
 /// through it. `Environments` carries the same name in every feature, so Swift merges the requirements
@@ -25,8 +25,9 @@ import SwiftUI
 /// ```swift
 /// public protocol ProfileFeature: AppReducer {
 ///     associatedtype Environments: ProfileEnvironmentProviding
+///     associatedtype ProfileRouting: Routing<ProfileRoute>
 ///
-///     var profile: ProfileFeatureState<Self> { get }
+///     var profile: ProfileFeatureState<Self, ProfileRouting> { get }
 /// }
 ///
 /// public protocol ProfileEnvironmentProviding {
@@ -34,20 +35,23 @@ import SwiftUI
 /// }
 /// ```
 ///
-/// Requiring the reducer as `ProfileFeatureState<Self>` is what keeps the feature's `AppState` and the
-/// store's root reducer provably the same type.
+/// Requiring the reducer as `ProfileFeatureState<Self, ProfileRouting>` is what keeps the feature's
+/// `AppState`, routing implementation and the store's root reducer connected at compile time.
 ///
 /// The module then owns its state, its entry point and its registration, and never names a concrete app:
 ///
 /// ```swift
-/// public struct ProfileFeatureState<AppState: ProfileFeature>: FeatureState {
+/// public struct ProfileFeatureState<
+///     AppState: ProfileFeature,
+///     FeatureRouting: Routing<ProfileRoute>
+/// >: FeatureState {
 ///     var form = ProfileForm()
 ///     var flow = ProfileFlow()
 ///
 ///     public init() {}
 ///
 ///     public static func entryPoint(input: User.ID) -> some View {
-///         ProfileContainer<AppState>(id: input)
+///         ProfileContainer<AppState, FeatureRouting>(id: input)
 ///     }
 ///
 ///     public static func registerMiddlewares(in store: any Store<AppState>) -> [MiddlewareWrapper<AppState>] {
@@ -82,13 +86,20 @@ import SwiftUI
 ///
 /// struct AppState: AppReducer {
 ///     typealias Environments = AppEnvironments
-///     var profile = ProfileFeatureState<AppState>()
+///     var profile = ProfileFeatureState<AppState, AppProfileRouting>()
 /// }
 /// ```
 ///
 /// - Note: `FeatureState` belongs to the modular protocol set. An app composed as a single module places
 ///   `Form`, `Flow` and `Storage` reducers in its app state directly and never adopts it.
-public protocol FeatureState<AppState>: Reducible, MiddlewareRegistering {
+public protocol FeatureState<AppState, FeatureRouting>: Reducible, MiddlewareRegistering {
+    /// The routing implementation used by this feature's containers and components.
+    ///
+    /// Keeping routing as part of the feature state contract lets a composing app provide the concrete
+    /// navigation implementation without the feature module depending on the app target. A feature
+    /// with no internal destinations uses ``EmptyRouting``.
+    associatedtype FeatureRouting: Routing
+
     /// The view the composing app presents to enter this feature.
     ///
     /// Inferred from the return type of ``FeatureState/entryPoint(input:)``, so a conforming feature

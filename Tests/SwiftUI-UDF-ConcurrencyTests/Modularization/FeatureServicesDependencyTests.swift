@@ -238,6 +238,8 @@ private protocol SwitchControlFeature: AppReducer {
 }
 
 private struct SwitchControlFeatureState<State: SwitchControlFeature>: FeatureState {
+    typealias FeatureRouting = EmptyRouting
+
     var form = SwitchControlForm()
 
     static func entryPoint(input: Void) -> some View {
@@ -314,6 +316,8 @@ private protocol SwitchStatusFeature: AppReducer {
 }
 
 private struct SwitchStatusFeatureState<State: SwitchStatusFeature>: FeatureState {
+    typealias FeatureRouting = EmptyRouting
+
     var form = SwitchStatusForm()
 
     static func entryPoint(input: Void) -> some View {

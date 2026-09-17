@@ -18,6 +18,10 @@ let package = Package(
             name: "UDFSwiftTesting",
             targets: ["UDFSwiftTesting"]
         ),
+        .library(
+            name: "UDFModularizationTestFeature",
+            targets: ["UDFModularizationTestFeature"]
+        ),
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-collections", from: "1.4.1"),
