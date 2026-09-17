@@ -57,7 +57,15 @@ actor InternalStore<State: AppReducer>: Store {
     }
 
     func subscribe(_ middleware: some _Middleware<State>) async {
-        middlewares.append(AnyMiddleware(middleware))
+        let anyMiddleware = AnyMiddleware(middleware)
+
+        if let existingIndex = indexOfMiddleware(withSameTypeAs: middleware) {
+            let oldAnyMiddleware = middlewares.remove(at: existingIndex)
+            oldAnyMiddleware.middleware.cancelAll()
+            middlewares.insert(anyMiddleware, at: existingIndex)
+        } else {
+            middlewares.append(anyMiddleware)
+        }
 
         initialNotify(middleware: middleware, state: self.state)
     }
@@ -71,6 +79,14 @@ actor InternalStore<State: AppReducer>: Store {
 
 // MARK: Help Methods
 private extension InternalStore {
+    func indexOfMiddleware(withSameTypeAs middleware: some _Middleware<State>) -> Int? {
+        let middlewareType = ObjectIdentifier(type(of: middleware))
+
+        return middlewares.firstIndex {
+            ObjectIdentifier(type(of: $0.middleware)) == middlewareType
+        }
+    }
+
     func mutate(state: State, animation: Animation?) {
         let old = self.state
         self.state = state
@@ -90,7 +106,7 @@ private extension InternalStore {
             let middleware = anyMiddleware.middleware
 
             switch middleware {
-            case let middleware as any Middleware<State>:
+            case let middleware as any MiddlewareProtocol<State>:
                 notify(middleware: middleware, actions: unwrappedActions, oldState: reduceResult.oldState, newState: reduceResult.newState)
 
             default:
@@ -164,7 +180,7 @@ private extension InternalStore {
             let middleware = anyMiddleware.middleware
 
             switch middleware {
-            case let middleware as any Middleware<State>:
+            case let middleware as any MiddlewareProtocol<State>:
                 notify(middleware: middleware, actions: actions, oldState: oldState, newState: newState)
 
             default:
@@ -219,7 +235,7 @@ private extension InternalStore {
             return
         }
 
-        if let unifiedMiddleware = middleware as? any Middleware<State> {
+        if let unifiedMiddleware = middleware as? any MiddlewareProtocol<State> {
             middleware.queue.async {
                 unifiedMiddleware.observe(state: state)
             }

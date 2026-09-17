@@ -18,6 +18,10 @@ let package = Package(
             name: "UDFSwiftTesting",
             targets: ["UDFSwiftTesting"]
         ),
+        .library(
+            name: "UDFModularizationTestFeature",
+            targets: ["UDFModularizationTestFeature"]
+        ),
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-collections", from: "1.4.1"),
@@ -41,6 +45,14 @@ let package = Package(
             path: "UDFSwiftTesting"
         ),
 
+        .target(
+            name: "UDFModularizationTestFeature",
+            dependencies: [
+                .target(name: "UDF"),
+            ],
+            path: "Tests/Fixtures/UDFModularizationTestFeature"
+        ),
+
         .testTarget(
             name: "SwiftUI-UDF-Tests",
             dependencies: [
@@ -51,6 +63,7 @@ let package = Package(
         .testTarget(
             name: "SwiftUI-UDF-ConcurrencyTests",
             dependencies: [
+                .target(name: "UDFModularizationTestFeature"),
                 .target(name: "UDFSwiftTesting"),
             ]
         ),

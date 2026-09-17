@@ -191,3 +191,73 @@ enum RuntimeReducing {
     }
 }
 
+// MARK: - Middleware Registration
+
+extension RuntimeReducing {
+    /// Collects middleware from the root reducer's own properties without subscribing it.
+    /// Nested providers are diagnosed in debug builds, but never registered.
+    static func collectMiddlewareWrappers<State: AppReducer>(
+        reducer rootReducer: State,
+        store: any Store<State>,
+        into wrappers: inout [MiddlewareWrapper<State>]
+    ) {
+        guard let info = try? typeInfo(of: State.self) else {
+            return
+        }
+
+        for property in info.properties {
+            guard let reducer = try? property.get(from: rootReducer) as? any Reducing else {
+                continue
+            }
+
+            if let provider = reducer as? any MiddlewareRegistering<State> {
+                wrappers.append(contentsOf: type(of: provider).registerMiddlewares(in: store))
+            } else if reducer is any MiddlewareRegistering {
+                preconditionFailure("Middleware provider \(type(of: reducer)) must use \(State.self) as its AppState.")
+            }
+
+            #if DEBUG
+                assertNoNestedRegistering(in: reducer, ofType: property.type, mountedAt: property.name)
+            #endif
+        }
+    }
+
+    #if DEBUG
+        /// Traps on a `MiddlewareRegistering` conformer mounted below the app state's own properties.
+        ///
+        /// Registration visits only the app state's properties, so a nested conformer is never called and its
+        /// middleware never subscribed. Nothing about that failure is visible at runtime, which makes it
+        /// expensive to diagnose. This walk exists purely to turn that silence into a message while
+        /// developing, and is compiled out of release builds.
+        ///
+        /// - Parameters:
+        ///   - reducer: The reducer whose properties are inspected.
+        ///   - reducerType: The type of that reducer.
+        ///   - path: The property path walked so far, used to point at the offending mount.
+        private static func assertNoNestedRegistering(in reducer: Reducing, ofType reducerType: Any.Type, mountedAt path: String) {
+            guard let info = try? typeInfo(of: reducerType) else {
+                return
+            }
+
+            for property in info.properties {
+                guard let nested = try? property.get(from: reducer) as? Reducing else {
+                    continue
+                }
+
+                let nestedPath = "\(path).\(property.name)"
+
+                if nested is any MiddlewareRegistering {
+                    assertionFailure(
+                        """
+                        \(type(of: nested)) conforms to MiddlewareRegistering but is mounted at '\(nestedPath)'.
+                        Middleware registration visits only the app state's own properties, so this reducer's \
+                        middleware will never be subscribed. Mount it directly in the app state instead.
+                        """
+                    )
+                }
+
+                assertNoNestedRegistering(in: nested, ofType: property.type, mountedAt: nestedPath)
+            }
+        }
+    #endif
+}
