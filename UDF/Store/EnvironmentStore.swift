@@ -317,20 +317,9 @@ public extension EnvironmentStore {
 
 // MARK: - Feature Middleware Registration
 private extension EnvironmentStore {
-    /// Collects root-level feature middleware and subscribes the complete batch once.
     func subscribeFeatureMiddlewares(in state: State) {
-        var wrappers: [MiddlewareWrapper<State>] = []
-        RuntimeReducing.collectMiddlewareWrappers(reducer: state, store: store, into: &wrappers)
-
-        guard !wrappers.isEmpty else {
-            return
-        }
-
-        let middlewares = wrappers.map { wrapper in
-            wrapper.instance ?? middleware(store: store, type: wrapper.type)
-        }
-        executeSynchronously {
-            await self.store.subscribe(middlewares)
+        RuntimeReducing.subscribeFeatureMiddlewares(in: state, store: store) { wrapper in
+            middleware(store: store, type: wrapper.type)
         }
     }
 }

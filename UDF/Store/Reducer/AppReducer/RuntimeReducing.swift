@@ -222,6 +222,29 @@ extension RuntimeReducing {
         }
     }
 
+    /// Collects root-level feature middleware, resolves type registrations, and subscribes the batch.
+    /// Middleware is resolved before the synchronous bridge so it stays on the caller's executor.
+    static func subscribeFeatureMiddlewares<State: AppReducer>(
+        in state: State,
+        store: InternalStore<State>,
+        makeMiddleware: (MiddlewareWrapper<State>) -> any _Middleware<State>
+    ) {
+        var wrappers: [MiddlewareWrapper<State>] = []
+        collectMiddlewareWrappers(reducer: state, store: store, into: &wrappers)
+
+        guard !wrappers.isEmpty else {
+            return
+        }
+
+        let middlewares = wrappers.map { wrapper in
+            wrapper.instance ?? makeMiddleware(wrapper)
+        }
+
+        executeSynchronously {
+            await store.subscribe(middlewares)
+        }
+    }
+
     #if DEBUG
         /// Traps on a `MiddlewareRegistering` conformer mounted below the app state's own properties.
         ///

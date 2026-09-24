@@ -76,7 +76,9 @@ public final class TestStore<State: AppReducer> {
             .assign(to: \.state, on: self)
 
         if registerFeatureMiddlewares {
-            subscribeFeatureMiddlewares(in: mutableState, store: store)
+            RuntimeReducing.subscribeFeatureMiddlewares(in: mutableState, store: store) { wrapper in
+                middleware(store: store, type: wrapper.type)
+            }
         }
     }
 
@@ -112,31 +114,6 @@ public final class TestStore<State: AppReducer> {
     /// - Parameter additionalSleepFor: An extra delay, in seconds, to wait after all effects complete. Defaults to `0`.
     public func wait(additionalSleepFor: TimeInterval = 0) {
         TestGroup.instance(for: store).wait(additionalSleepFor: additionalSleepFor)
-    }
-}
-
-private extension TestStore {
-    /// Collects root-level feature middleware and subscribes the complete batch once, resolving
-    /// type registrations with their test environments.
-    func subscribeFeatureMiddlewares(
-        in state: State,
-        store: InternalStore<State>
-    ) {
-        var wrappers: [MiddlewareWrapper<State>] = []
-        RuntimeReducing.collectMiddlewareWrappers(reducer: state, store: store, into: &wrappers)
-
-        guard !wrappers.isEmpty else {
-            return
-        }
-
-        let middlewares = wrappers.map { wrapper in
-            wrapper.instance ?? middleware(store: store, type: wrapper.type)
-        }
-        // Prepare middleware before the bridge so subscription does not need to hop back
-        // to TestStoreActor while initialization waits.
-        executeSynchronously {
-            await store.subscribe(middlewares)
-        }
     }
 }
 
