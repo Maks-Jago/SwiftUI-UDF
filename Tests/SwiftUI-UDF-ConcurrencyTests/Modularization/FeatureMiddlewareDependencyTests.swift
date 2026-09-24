@@ -243,7 +243,6 @@ private extension FeatureMiddlewareDependencyTests {
             EmptyView()
         }
 
-        @MiddlewareBuilder<FeatureMiddlewareDependencyTests.AppState>
         static func registerMiddlewares(
             in store: any Store<FeatureMiddlewareDependencyTests.AppState>
         ) -> [MiddlewareWrapper<FeatureMiddlewareDependencyTests.AppState>] {
@@ -261,7 +260,6 @@ private extension FeatureMiddlewareDependencyTests {
             EmptyView()
         }
 
-        @MiddlewareBuilder<FeatureMiddlewareDependencyTests.AppState>
         static func registerMiddlewares(
             in store: any Store<FeatureMiddlewareDependencyTests.AppState>
         ) -> [MiddlewareWrapper<FeatureMiddlewareDependencyTests.AppState>] {
