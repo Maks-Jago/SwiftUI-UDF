@@ -11,6 +11,7 @@
 
 import Foundation
 import os
+import SwiftUI
 import Testing
 @testable import UDF
 import UDFSwiftTesting
@@ -237,9 +238,15 @@ private extension FeatureMiddlewareDependencyTests {
         }
     }
 
-    struct FirstFeatureState: Reducible, MiddlewareRegistering {
-        @MiddlewareBuilder<AppState>
-        static func registerMiddlewares(in store: any Store<AppState>) -> [MiddlewareWrapper<AppState>] {
+    struct FirstFeatureState: FeatureState<FeatureMiddlewareDependencyTests.AppState> {
+        static func entryPoint(input: Void) -> some View {
+            EmptyView()
+        }
+
+        @MiddlewareBuilder<FeatureMiddlewareDependencyTests.AppState>
+        static func registerMiddlewares(
+            in store: any Store<FeatureMiddlewareDependencyTests.AppState>
+        ) -> [MiddlewareWrapper<FeatureMiddlewareDependencyTests.AppState>] {
             FirstFeatureMiddleware(
                 store: store,
                 environment: TestEnvironmentContext.environment?.first
@@ -249,9 +256,15 @@ private extension FeatureMiddlewareDependencyTests {
         }
     }
 
-    struct SecondFeatureState: Reducible, MiddlewareRegistering {
-        @MiddlewareBuilder<AppState>
-        static func registerMiddlewares(in store: any Store<AppState>) -> [MiddlewareWrapper<AppState>] {
+    struct SecondFeatureState: FeatureState<FeatureMiddlewareDependencyTests.AppState> {
+        static func entryPoint(input: Void) -> some View {
+            EmptyView()
+        }
+
+        @MiddlewareBuilder<FeatureMiddlewareDependencyTests.AppState>
+        static func registerMiddlewares(
+            in store: any Store<FeatureMiddlewareDependencyTests.AppState>
+        ) -> [MiddlewareWrapper<FeatureMiddlewareDependencyTests.AppState>] {
             SecondFeatureMiddleware(
                 store: store,
                 environment: TestEnvironmentContext.environment?.second
