@@ -5,7 +5,7 @@ import UDFSwiftTesting
 
 struct FeatureStateCompositionTests {
     @TestStoreActor
-    @Test("FeatureState forwards its entry payload and defaults to no middleware")
+    @Test("FeatureState forwards its entry payload and explicitly registers no middleware")
     func entryPointAndEmptyRegistration() async {
         let input = EntryInput(id: 42, title: "Favorites")
         let destination = EmptyFeatureState<EntryHostState>.entryPoint(input: input)
@@ -124,6 +124,9 @@ private struct EntryDestination: View {
 
 private struct EmptyFeatureState<Host: AppReducer>: FeatureState {
     typealias AppState = Host
+
+    static func registerMiddlewares(in store: any Store<Host>) -> [MiddlewareWrapper<Host>] {
+    }
 
     static func entryPoint(input: EntryInput) -> EntryDestination {
         EntryDestination(input: input)
@@ -249,6 +252,8 @@ private struct NestedFeatureState<Host: AppReducer>: FeatureState {
     var form = NestedFeatureForm()
     var flow = NestedFeatureFlow()
 
+    static func registerMiddlewares(in store: any Store<Host>) -> [MiddlewareWrapper<Host>] {}
+
     static func entryPoint(input: Void) -> EmptyView {
         EmptyView()
     }
@@ -314,6 +319,8 @@ private struct SetupFeatureState<Host: SetupFeatureHost>: FeatureState {
 
     var form = SetupFeatureForm<Host>()
 
+    static func registerMiddlewares(in store: any Store<Host>) -> [MiddlewareWrapper<Host>] {}
+
     static func entryPoint(input: Void) -> EmptyView {
         EmptyView()
     }
@@ -350,6 +357,8 @@ private struct FirstCounterFeatureState<Host: AppReducer>: FeatureState {
     typealias AppState = Host
     var value = 0
 
+    static func registerMiddlewares(in store: any Store<Host>) -> [MiddlewareWrapper<Host>] {}
+
     mutating func reduce(_ action: some Action) {
         if action is IncrementFirstCounter {
             value += 1
@@ -364,6 +373,8 @@ private struct FirstCounterFeatureState<Host: AppReducer>: FeatureState {
 private struct SecondCounterFeatureState<Host: AppReducer>: FeatureState {
     typealias AppState = Host
     var value = 0
+
+    static func registerMiddlewares(in store: any Store<Host>) -> [MiddlewareWrapper<Host>] {}
 
     mutating func reduce(_ action: some Action) {
         if action is IncrementSecondCounter {

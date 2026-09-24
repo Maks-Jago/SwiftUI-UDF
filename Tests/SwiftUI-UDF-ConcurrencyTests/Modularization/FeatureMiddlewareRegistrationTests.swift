@@ -372,6 +372,9 @@ private struct EmptyFeatureState<State: AppReducer>: FeatureState {
     typealias AppState = State
     var form = EmptyRegistrationForm()
 
+    static func registerMiddlewares(in store: any Store<State>) -> [MiddlewareWrapper<State>] {
+    }
+
     static func entryPoint(input: Void) -> some View {
         EmptyView()
     }

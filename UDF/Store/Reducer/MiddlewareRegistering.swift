@@ -64,6 +64,10 @@ import Foundation
 /// Adoption is optional. A reducer that does not conform is left untouched, and middleware may still be
 /// subscribed directly against the store.
 ///
+/// `FeatureState` inherits this capability because every modular feature participates in registration.
+/// The protocol remains separate so reducers that do not provide a feature entry point can register
+/// middleware without adopting the rest of the modular feature contract.
+///
 /// - Important: Mount a conforming reducer directly in the app state. Only the app state's own
 ///   properties are inspected, so a conformer nested inside another reducer is never called and its
 ///   middleware never subscribed. Debug builds walk deeper solely to trap on that mistake rather than

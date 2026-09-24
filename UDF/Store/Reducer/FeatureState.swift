@@ -18,6 +18,9 @@ import SwiftUI
 /// it as a property of the app state is the only step that app performs: the store finds it there at
 /// launch and registers its middleware.
 ///
+/// Every feature explicitly implements middleware registration. A feature with no middleware leaves the
+/// registration method's body empty, making that choice visible at the conformance site.
+///
 /// A feature states what it needs from its host in a single protocol and reaches the outside world only
 /// through it. `Environments` carries the same name in every feature, so Swift merges the requirements
 /// into one associated type and the app satisfies all of them with a single `typealias`:
@@ -109,14 +112,4 @@ public protocol FeatureState<AppState>: Reducible, MiddlewareRegistering {
     /// - Parameter input: The values the feature needs in order to be entered.
     /// - Returns: The feature's entry view.
     static func entryPoint(input: Input) -> Destination
-}
-
-public extension FeatureState {
-    /// Registers nothing.
-    ///
-    /// A feature with no side effects of its own, one that only holds state and presents it, needs no
-    /// middleware and says so by leaving this alone.
-    static func registerMiddlewares(in store: any Store<AppState>) -> [MiddlewareWrapper<AppState>] {
-        []
-    }
 }
