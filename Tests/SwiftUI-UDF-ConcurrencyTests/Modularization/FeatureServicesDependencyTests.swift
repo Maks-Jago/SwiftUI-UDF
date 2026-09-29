@@ -24,10 +24,7 @@ struct FeatureServicesDependencyTests {
         let service = SharedSwitchService()
 
         await AppServicesContext.$service.withValue(service) {
-            let store = TestStore(
-                initial: AppState(),
-                registerFeatureMiddlewares: false
-            )
+            let store = TestStore(initial: AppState())
             var wrappers: [MiddlewareWrapper<AppState>] = []
 
             await store.subscribe { store in
@@ -104,10 +101,7 @@ struct FeatureServicesDependencyTests {
     @Test("Concurrent calls on shared service from different middleware queues maintain consistency")
     func concurrentSharedServiceAccess() async {
         let service = SharedSwitchService()
-        let store = await TestStore(
-            initial: AppState(),
-            registerFeatureMiddlewares: false
-        )
+        let store = await TestStore(initial: AppState())
 
         await store.subscribe(build: { store in
             SwitchControlMiddleware<AppState>(

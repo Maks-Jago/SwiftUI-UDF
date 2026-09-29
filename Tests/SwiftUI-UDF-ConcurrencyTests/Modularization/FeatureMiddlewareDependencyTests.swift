@@ -20,10 +20,7 @@ struct FeatureMiddlewareDependencyTests {
     @TestStoreActor
     @Test("Feature registration preserves shared services and exact queue instances")
     func registrationPreservesDependencyIdentity() async throws {
-        let store = TestStore(
-            initial: AppState(),
-            registerFeatureMiddlewares: false
-        )
+        let store = TestStore(initial: AppState())
         var wrappers: [MiddlewareWrapper<AppState>] = []
 
         await store.subscribe { store in
@@ -58,10 +55,7 @@ struct FeatureMiddlewareDependencyTests {
     func callbacksExecuteOnExactInjectedQueues() async {
         let firstQueue = DispatchQueue(label: QueueLabel.shared)
         let secondQueue = DispatchQueue(label: QueueLabel.shared)
-        let store = await TestStore(
-            initial: AppState(),
-            registerFeatureMiddlewares: false
-        )
+        let store = await TestStore(initial: AppState())
 
         await confirmation("All callbacks execute on their injected queue", expectedCount: 4) { confirm in
             let firstEnvironment = FirstFeatureEnvironment(
@@ -164,10 +158,7 @@ struct FeatureMiddlewareDependencyTests {
     )
     func sharedQueueExecutesCallbacksOnSameQueueInstance() async {
         let sharedQueue = DispatchQueue(label: "FeatureMiddlewareDependencyTests.shared-work-queue")
-        let store = await TestStore(
-            initial: AppState(),
-            registerFeatureMiddlewares: false
-        )
+        let store = await TestStore(initial: AppState())
 
         await confirmation("Shared queue callbacks execute on shared queue", expectedCount: 4) { confirm in
             let firstEnvironment = FirstFeatureEnvironment(

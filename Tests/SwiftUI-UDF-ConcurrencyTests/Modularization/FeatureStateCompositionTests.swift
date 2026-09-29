@@ -57,10 +57,7 @@ struct FeatureStateCompositionTests {
 
     @Test("TestStore accepts a feature-only middleware with an explicit environment")
     func storeExplicitFeatureEnvironment() async {
-        let store = await TestStore(
-            initial: AutoRegistrationHostState(),
-            registerFeatureMiddlewares: false
-        )
+        let store = await TestStore(initial: AutoRegistrationHostState())
         await store.subscribe(
             AutoRegisteredFeatureMiddleware<AutoRegistrationHostState>.self,
             environment: AutoRegisteredFeatureEnvironment(marker: "injected")

@@ -62,10 +62,7 @@ struct CrossModuleFeatureIntegrationTests {
     func externallyComposedFeatureHandlesErrorAndResetsFlow() async {
         struct TestError: Error, Equatable {}
 
-        let store = await TestStore(
-            initial: AppState(),
-            registerFeatureMiddlewares: false
-        )
+        let store = await TestStore(initial: AppState())
         await store.subscribe(
             TestMiddleware<AppState>.self,
             environment: .test { _ in throw TestError() }
@@ -82,10 +79,7 @@ struct CrossModuleFeatureIntegrationTests {
 
     @Test("An externally composed feature cancels in-flight load and resets flow")
     func externallyComposedFeatureHandlesCancellation() async {
-        let store = await TestStore(
-            initial: AppState(),
-            registerFeatureMiddlewares: false
-        )
+        let store = await TestStore(initial: AppState())
         await store.subscribe(
             TestMiddleware<AppState>.self,
             environment: .test { _ in throw CancellationError() }

@@ -54,12 +54,8 @@ public final class TestStore<State: AppReducer> {
     /// Root-level feature middleware is discovered automatically and environment-aware middleware
     /// is initialized with its `buildTestEnvironment(for:)` implementation.
     ///
-    /// - Parameters:
-    ///   - state: The initial `State` value to seed the store with.
-    ///   - registerFeatureMiddlewares: Whether root-level feature middleware should be discovered
-    ///     and subscribed automatically. Disable this only when a test needs to inject an explicit
-    ///     middleware environment instead.
-    public init(initial state: State, registerFeatureMiddlewares: Bool = true) {
+    /// - Parameter state: The initial `State` value to seed the store with.
+    public init(initial state: State) {
         guard ProcessInfo.processInfo.isRunningTests else {
             fatalError("TestStore is only for using in Test targets")
         }
@@ -75,10 +71,8 @@ public final class TestStore<State: AppReducer> {
             .map(\.0)
             .assign(to: \.state, on: self)
 
-        if registerFeatureMiddlewares {
-            RuntimeReducing.subscribeFeatureMiddlewares(in: mutableState, store: store) { wrapper in
-                middleware(store: store, type: wrapper.type)
-            }
+        RuntimeReducing.subscribeFeatureMiddlewares(in: mutableState, store: store) { wrapper in
+            middleware(store: store, type: wrapper.type)
         }
     }
 

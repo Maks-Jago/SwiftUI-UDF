@@ -20,10 +20,7 @@ struct FeatureMiddlewareRegistrationTests {
     @TestStoreActor
     @Test("Collection preserves explicit feature instances and legacy type wrappers")
     func collectionPreservesExplicitInstancesAndLegacyTypes() async throws {
-        let store = TestStore(
-            initial: RegistrationAppState(),
-            registerFeatureMiddlewares: false
-        )
+        let store = TestStore(initial: RegistrationAppState())
         var wrappers: [MiddlewareWrapper<RegistrationAppState>] = []
 
         await store.subscribe { store in
