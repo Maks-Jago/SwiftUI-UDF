@@ -29,9 +29,9 @@ struct CrossModuleFeatureIntegrationTests {
         await store.wait()
 
         let state = await store.state
-        #expect(state.testFeature.flow == .none)
-        #expect(state.testFeature.form.paginator.elements == expectedItems.map(\.id))
-        #expect(state.testFeature.form.paginator.page == .number(page))
+        #expect(state.testFeatureState.flow == .none)
+        #expect(state.testFeatureState.form.paginator.elements == expectedItems.map(\.id))
+        #expect(state.testFeatureState.form.paginator.page == .number(page))
         #expect(state.allTestItems.byId.count == expectedItems.count)
 
         for expectedItem in expectedItems {
@@ -75,9 +75,9 @@ struct CrossModuleFeatureIntegrationTests {
         await store.wait()
 
         let state = await store.state
-        #expect(state.testFeature.flow == .none)
+        #expect(state.testFeatureState.flow == .none)
         #expect(state.actionTracker.didCatchError)
-        #expect(state.testFeature.form.paginator.elements.isEmpty)
+        #expect(state.testFeatureState.form.paginator.elements.isEmpty)
     }
 
     @Test("An externally composed feature cancels in-flight load and resets flow")
@@ -95,9 +95,9 @@ struct CrossModuleFeatureIntegrationTests {
         await store.wait()
 
         let state = await store.state
-        #expect(state.testFeature.flow == .none)
+        #expect(state.testFeatureState.flow == .none)
         #expect(state.actionTracker.didCancel)
-        #expect(state.testFeature.form.paginator.elements.isEmpty)
+        #expect(state.testFeatureState.form.paginator.elements.isEmpty)
     }
 
     @Test("An externally composed feature loads subsequent pages accumulating items")
@@ -116,17 +116,17 @@ struct CrossModuleFeatureIntegrationTests {
         await store.wait()
 
         var state = await store.state
-        #expect(state.testFeature.flow == .none)
-        #expect(state.testFeature.form.paginator.elements == [1, 2])
-        #expect(state.testFeature.form.paginator.page == .number(1))
+        #expect(state.testFeatureState.flow == .none)
+        #expect(state.testFeatureState.form.paginator.elements == [1, 2])
+        #expect(state.testFeatureState.form.paginator.page == .number(1))
 
         await store.dispatch(Actions.LoadPage(pageNumber: 2, id: TestFlow.id))
         await store.wait()
 
         state = await store.state
-        #expect(state.testFeature.flow == .none)
-        #expect(state.testFeature.form.paginator.elements == [1, 2, 3, 4])
-        #expect(state.testFeature.form.paginator.page == .number(2))
+        #expect(state.testFeatureState.flow == .none)
+        #expect(state.testFeatureState.form.paginator.elements == [1, 2, 3, 4])
+        #expect(state.testFeatureState.form.paginator.page == .number(2))
         #expect(state.allTestItems.byId.count == 4)
 
         for item in page1Items + page2Items {
@@ -146,7 +146,7 @@ private struct AppState:
     typealias Environments = TestEnvironments
 
     var allTestItems = AllTestItems()
-    var testFeature = TestFeatureState<AppState>()
+    var testFeatureState = TestFeatureState<AppState>()
     var testSettings = TestSettingsFeatureState<AppState>()
     var actionTracker = ActionTrackerForm()
 }
