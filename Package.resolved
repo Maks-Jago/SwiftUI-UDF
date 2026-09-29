@@ -1,6 +1,15 @@
 {
-  "originHash" : "5760991a85987a1b5cfe95c180105868dad16ced2b70ab3630b04133cfa1c514",
+  "originHash" : "ba26264ff733afc14574755163bfe931c0295e83f05716ad7d76b0aed92b59ef",
   "pins" : [
+    {
+      "identity" : "limn",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/diogopribeiro/Limn.git",
+      "state" : {
+        "revision" : "b998ebc7cb997188a7ac7afb12a756a9006dc490",
+        "version" : "0.9.3"
+      }
+    },
     {
       "identity" : "runtime",
       "kind" : "remoteSourceControl",
