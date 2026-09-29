@@ -97,26 +97,49 @@ public extension Action {
     /// ```swift
     /// let action = MyAction().binded(to: MyContainer.self, by: itemId)
     /// ```
-    func binded<BindedContainer: BindableContainer>(
-        to containerType: BindedContainer.Type,
-        by id: BindedContainer.ID,
+    func binded<ID: Hashable & Sendable>(
+        to containerType: any BindableContainer.Type,
+        by id: ID,
         fileName: String = #file,
         functionName: String = #function,
         lineNumber: Int = #line
-    ) -> some Action where BindedContainer.ID: Sendable {
-        binded(
-            to: containerType as any BindableContainer.Type,
-            by: id,
-            fileName: fileName,
-            functionName: functionName,
-            lineNumber: lineNumber
-        )
+    ) -> some Action {
+        if let group = self as? ActionGroup {
+            ActionGroup(internalActions: group._actions.map { oldAction in
+                InternalAction(
+                    oldAction.value.binded(to: containerType, by: id, fileName: fileName, functionName: functionName, lineNumber: lineNumber),
+                    animation: oldAction.animation,
+                    silent: oldAction.silent,
+                    fileName: oldAction.fileName,
+                    functionName: oldAction.functionName,
+                    lineNumber: oldAction.lineNumber
+                )
+            })
+        } else {
+            ActionGroup(internalActions: [
+                InternalAction(
+                    Actions._BindableAction(
+                        value: self,
+                        containerType: containerType,
+                        id: id
+                    ),
+                    fileName: fileName,
+                    functionName: functionName,
+                    lineNumber: lineNumber
+                ),
+            ])
+        }
     }
 
     /// Binds the action to a specific `BindableContainer` instance.
     ///
-    /// - Parameter container: The `BindableContainer` instance to bind to.
-    /// - Returns: A new `Action` bound to the specified container instance.
+    /// The container's type and identifier are used to scope the action to that
+    /// container instance. This is useful when multiple instances of the same
+    /// `BindableContainer` type are active at the same time.
+    ///
+    /// - Parameters:
+    ///   - container: The `BindableContainer` instance to bind the action to.
+    /// - Returns: An action scoped to the specified container instance.
     ///
     /// Example:
     /// ```swift
@@ -156,42 +179,6 @@ public extension Action {
                 InternalAction(
                     self,
                     delay: Delay(delay),
-                    fileName: fileName,
-                    functionName: functionName,
-                    lineNumber: lineNumber
-                ),
-            ])
-        }
-    }
-}
-
-extension Action {
-    func binded<ID: Hashable & Sendable>(
-        to containerType: any BindableContainer.Type,
-        by id: ID,
-        fileName: String = #file,
-        functionName: String = #function,
-        lineNumber: Int = #line
-    ) -> some Action {
-        if let group = self as? ActionGroup {
-            ActionGroup(internalActions: group._actions.map { oldAction in
-                InternalAction(
-                    oldAction.value.binded(to: containerType, by: id, fileName: fileName, functionName: functionName, lineNumber: lineNumber),
-                    animation: oldAction.animation,
-                    silent: oldAction.silent,
-                    fileName: oldAction.fileName,
-                    functionName: oldAction.functionName,
-                    lineNumber: oldAction.lineNumber
-                )
-            })
-        } else {
-            ActionGroup(internalActions: [
-                InternalAction(
-                    Actions._BindableAction(
-                        value: self,
-                        containerType: containerType,
-                        id: id
-                    ),
                     fileName: fileName,
                     functionName: functionName,
                     lineNumber: lineNumber
