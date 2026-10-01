@@ -21,6 +21,8 @@ import SwiftUI
 /// and assert on the resulting state changes in isolation.
 ///
 /// - Important: `TestStore` calls `fatalError` if it is initialized outside of a test target.
+/// - Important: Register each concrete middleware type only once per store. Duplicate registration
+///   traps in debug builds; release builds retain both instances without replacing either one.
 ///
 /// Example usage:
 /// ```swift
@@ -51,6 +53,7 @@ public final class TestStore<State: AppReducer> {
     private var cancelation: Cancellable?
 
     /// Creates a `TestStore` with the given initial state, running `initialSetup()` on it before use.
+    /// Middleware is registered explicitly with `subscribe`, so each test chooses its dependencies.
     ///
     /// - Parameter state: The initial `State` value to seed the store with.
     public init(initial state: State) {
@@ -123,11 +126,11 @@ public extension TestStore {
 
 public extension TestStore {
     func subscribe(@MiddlewareBuilder<State> build: (_ store: any Store<State>) -> [MiddlewareWrapper<State>]) async {
-        await self.subscribe(buildMiddlewares: { store in
+        await self.subscribe { store in
             build(store).map { wrapper in
                 wrapper.instance ?? middleware(store: store, type: wrapper.type)
             }
-        })
+        }
     }
 
     private func middleware<M: _Middleware<State>>(store: any Store<State>, type: M.Type) -> any _Middleware<State> where M.State == State {
