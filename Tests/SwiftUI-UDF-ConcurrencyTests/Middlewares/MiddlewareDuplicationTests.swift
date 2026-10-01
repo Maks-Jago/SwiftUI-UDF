@@ -11,22 +11,19 @@ import Testing
         var reduceCallCount = 0
 
         mutating func reduce(_ action: some Action) {
-            if action is RecordMiddlewareCall {
+            if action is Actions.RecordMiddlewareCall {
                 reduceCallCount += 1
             }
         }
     }
-
-    struct TestAction: Action {}
-    struct RecordMiddlewareCall: Action {}
 
     final class TestMiddleware: Middleware<AppState>, @unchecked Sendable {
         var environment: Void!
 
         func reduce(_ action: some Action, for state: AppState) {
             switch action {
-            case is TestAction:
-                store.dispatch(RecordMiddlewareCall())
+            case is Actions.TestAction:
+                store.dispatch(Actions.RecordMiddlewareCall())
 
             default:
                 break
@@ -42,10 +39,10 @@ import Testing
                 observing: [\.standardErrorContent]
             ) {
                 let store = await TestStore(initial: AppState())
-                await store.subscribe(buildMiddlewares: { store in
+                await store.subscribe { store in
                     let middleware = TestMiddleware(store: store, environment: ())
                     return [middleware, middleware]
-                })
+                }
             }
 
             let standardError = String(decoding: result.standardErrorContent, as: UTF8.self)
@@ -59,16 +56,23 @@ import Testing
         func duplicateMiddlewareInstancesHandleActionsInRelease() async {
             let store = await TestStore(initial: AppState())
 
-            await store.subscribe(build: { _ in
+            await store.subscribe { _ -> [MiddlewareWrapper<AppState>] in
                 TestMiddleware.self
                 TestMiddleware.self
-            })
+            }
 
-            await store.dispatch(TestAction())
+            await store.dispatch(Actions.TestAction())
             await store.wait()
 
             let middlewaresCount = await store.state.testForm.reduceCallCount
             #expect(middlewaresCount == 2)
         }
     #endif
+}
+
+// MARK: - Actions
+
+private extension Actions {
+    struct TestAction: Action {}
+    struct RecordMiddlewareCall: Action {}
 }

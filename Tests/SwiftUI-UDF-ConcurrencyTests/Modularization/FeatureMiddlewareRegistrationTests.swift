@@ -100,10 +100,10 @@ struct FeatureMiddlewareRegistrationTests {
     @Test("TestStore builds test environments for explicitly subscribed middleware types")
     func testStoreBuildsExplicitMiddlewareTestEnvironments() async {
         let store = await TestStore(initial: RegistrationHostState())
-        await store.subscribe(build: { _ in
+        await store.subscribe { _ -> [MiddlewareWrapper<RegistrationHostState>] in
             ReplaceableFeatureMiddleware<RegistrationHostState>.self
             CompanionFeatureMiddleware<RegistrationHostState>.self
-        })
+        }
         let subscribed = await waitForCondition(timeout: 2) {
             let state = await store.state
             return state.replaceableFeature.form.marker == "replaceable-feature-test"
@@ -166,10 +166,10 @@ struct FeatureMiddlewareRegistrationTests {
                 observing: [\.standardErrorContent]
             ) {
                 let store = await TestStore(initial: RegistrationAppState())
-                await store.subscribe(build: { _ in
+                await store.subscribe { _ -> [MiddlewareWrapper<RegistrationAppState>] in
                     LegacyRegistrationMiddleware<RegistrationAppState>.self
                     LegacyRegistrationMiddleware<RegistrationAppState>.self
-                })
+                }
             }
 
             let standardError = String(decoding: result.standardErrorContent, as: UTF8.self)

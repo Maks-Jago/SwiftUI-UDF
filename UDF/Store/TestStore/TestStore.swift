@@ -126,11 +126,11 @@ public extension TestStore {
 
 public extension TestStore {
     func subscribe(@MiddlewareBuilder<State> build: (_ store: any Store<State>) -> [MiddlewareWrapper<State>]) async {
-        await self.subscribe(buildMiddlewares: { store in
+        await self.subscribe { store in
             build(store).map { wrapper in
                 wrapper.instance ?? middleware(store: store, type: wrapper.type)
             }
-        })
+        }
     }
 
     private func middleware<M: _Middleware<State>>(store: any Store<State>, type: M.Type) -> any _Middleware<State> where M.State == State {

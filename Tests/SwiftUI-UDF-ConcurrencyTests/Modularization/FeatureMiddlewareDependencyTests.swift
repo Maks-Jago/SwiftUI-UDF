@@ -83,7 +83,7 @@ struct FeatureMiddlewareDependencyTests {
 
             #expect(firstEnvironment.dependency === secondEnvironment.dependency)
 
-            await store.subscribe(build: { store in
+            await store.subscribe { store -> [MiddlewareWrapper<AppState>] in
                 FirstFeatureMiddleware(
                     store: store,
                     environment: firstEnvironment,
@@ -94,9 +94,9 @@ struct FeatureMiddlewareDependencyTests {
                     environment: secondEnvironment,
                     queue: secondQueue
                 )
-            })
+            }
 
-            await store.dispatch(InvokeMiddlewareCallbacks())
+            await store.dispatch(Actions.InvokeMiddlewareCallbacks())
             await store.wait()
         }
     }
@@ -142,7 +142,7 @@ struct FeatureMiddlewareDependencyTests {
 
             await TestEnvironmentContext.$environment.withValue(testEnvironment) {
                 let store = EnvironmentStore(initial: AppState(), loggers: [])
-                store.dispatch(InvokeMiddlewareCallbacks())
+                store.dispatch(Actions.InvokeMiddlewareCallbacks())
 
                 let executed = await waitForCondition(timeout: 5) {
                     callbackCount.withLock { $0 == 4 }
@@ -184,15 +184,21 @@ struct FeatureMiddlewareDependencyTests {
                 }
             )
 
-            await store.subscribe(build: { store in
+            await store.subscribe { store -> [MiddlewareWrapper<AppState>] in
                 FirstFeatureMiddleware(store: store, environment: firstEnvironment, queue: sharedQueue)
                 SecondFeatureMiddleware(store: store, environment: secondEnvironment, queue: sharedQueue)
-            })
+            }
 
-            await store.dispatch(InvokeMiddlewareCallbacks())
+            await store.dispatch(Actions.InvokeMiddlewareCallbacks())
             await store.wait()
         }
     }
+}
+
+// MARK: - Actions
+
+private extension Actions {
+    struct InvokeMiddlewareCallbacks: Action {}
 }
 
 // MARK: - Feature Composition Fixtures
@@ -221,7 +227,7 @@ private extension FeatureMiddlewareDependencyTests {
         var isTriggered = false
 
         mutating func reduce(_ action: some Action) {
-            guard action is InvokeMiddlewareCallbacks else {
+            guard action is Actions.InvokeMiddlewareCallbacks else {
                 return
             }
 
@@ -288,8 +294,6 @@ private extension FeatureMiddlewareDependencyTests {
         @TaskLocal static var environment: TestEnvironment?
     }
 
-    struct InvokeMiddlewareCallbacks: Action {}
-
     final class FirstFeatureMiddleware: Middleware<AppState>, @unchecked Sendable {
         var environment: FirstFeatureEnvironment!
 
@@ -306,7 +310,7 @@ private extension FeatureMiddlewareDependencyTests {
         }
 
         func reduce(_ action: some Action, for state: AppState) {
-            guard action is InvokeMiddlewareCallbacks else {
+            guard action is Actions.InvokeMiddlewareCallbacks else {
                 return
             }
 
@@ -338,7 +342,7 @@ private extension FeatureMiddlewareDependencyTests {
         }
 
         func reduce(_ action: some Action, for state: AppState) {
-            guard action is InvokeMiddlewareCallbacks else {
+            guard action is Actions.InvokeMiddlewareCallbacks else {
                 return
             }
 

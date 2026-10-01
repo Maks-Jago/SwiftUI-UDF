@@ -103,7 +103,7 @@ struct FeatureServicesDependencyTests {
         let service = SharedSwitchService()
         let store = await TestStore(initial: AppState())
 
-        await store.subscribe(build: { store in
+        await store.subscribe { store -> [MiddlewareWrapper<AppState>] in
             SwitchControlMiddleware<AppState>(
                 store: store,
                 environment: SwitchControlEnvironment(service: service),
@@ -114,7 +114,7 @@ struct FeatureServicesDependencyTests {
                 environment: SwitchStatusEnvironment(service: service),
                 queue: DispatchQueue(label: "test.switch-status.queue", attributes: .concurrent)
             )
-        })
+        }
 
         // Concurrently dispatch actions to both features
         await withTaskGroup(of: Void.self) { group in
