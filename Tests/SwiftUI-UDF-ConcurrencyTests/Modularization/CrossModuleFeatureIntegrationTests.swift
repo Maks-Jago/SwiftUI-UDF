@@ -11,7 +11,7 @@
 
 import Testing
 import UDF
-@testable import UDFModularizationTestFeature
+@testable import UDFTestFeatures
 import UDFSwiftTesting
 
 @Suite("Cross-module feature integration")
