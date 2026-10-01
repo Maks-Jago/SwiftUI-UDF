@@ -54,10 +54,11 @@ public struct Paginator<Item: Hashable & Identifiable & Sendable, FlowId: Hashab
         self.page = .number(initialPage)
     }
 
-    /// Disallowed initializer to prevent improper usage.
-    @available(*, deprecated, message: "use init(flowId:perPage:initialPage:) instead of init")
+    /// This initializer is retained because `Paginator` conforms to `Reducible`,
+    /// which requires `Initable` conformance.
+    @available(*, deprecated, message: "Use `init(_:flowId:perPage:initialPage:)` instead.")
     public init() {
-        fatalError("use init(flowId:perPage:initialPage:) instead of init")
+        fatalError("use init(_:flowId:perPage:initialPage:) instead")
     }
 
     /// Sets the paginator's items.

@@ -51,7 +51,8 @@ public struct BindableReducer<ID: Hashable & Sendable, Reducer: Reducible>: Redu
         self.containerType = containerType
     }
 
-    /// Throws a fatal error. Use `init(reducerType:bindedTo:)` instead.
+    /// This initializer is retained because `BindableReducer` conforms to `Reducible`,
+    /// which requires `Initable` conformance.
     @available(*, deprecated, message: "Use `init(reducerType:bindedTo:)` instead.")
     public init() {
         fatalError("use init(containerType:reducerType:) instead")

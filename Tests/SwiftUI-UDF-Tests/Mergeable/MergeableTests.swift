@@ -20,20 +20,20 @@ struct MergeableTests {
         var text: String
         var number: Double
 
-        func merging(_ newValue: Item) -> Item {
-            self.filled(from: newValue) { filledValue, oldValue in
+        static func merging(new newValue: Item, old oldValue: Item) -> Item {
+            oldValue.filled(from: newValue) { filledValue, oldValue in
                 filledValue.number = newValue.number == 0 ? oldValue.number : newValue.number
             }
         }
     }
 
     @Test func itemMerging() {
-        var item = Item(id: .init(value: 1), title: "title 1", text: "text", number: 12.23)
+        let item = Item(id: .init(value: 1), title: "title 1", text: "text", number: 12.23)
         let item2 = Item(id: .init(value: 1), title: "title 2", text: "new text", number: 0)
-        item = item.merging(item2)
+        let mergedItem = Item.merging(new: item2, old: item)
 
-        #expect(item.title == "title 2")
-        #expect(item.text == "new text")
-        #expect(item.number > 0)
+        #expect(mergedItem.title == "title 2")
+        #expect(mergedItem.text == "new text")
+        #expect(mergedItem.number > 0)
     }
 }

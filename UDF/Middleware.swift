@@ -148,14 +148,3 @@ public extension MiddlewareProtocol {
 
 /// A typealias for backward compatibility.
 public typealias Middleware<State: AppReducer> = _BaseMiddleware<State> & EnvironmentMiddleware & MiddlewareProtocol
-
-/// Legacy support for `ObservableMiddleware` and `ReducibleMiddleware` to maintain backward compatibility.
-@available(*, deprecated, message: "Use Middleware instead.")
-public typealias ObservableMiddleware<State: AppReducer> = Middleware<State>
-@available(*, deprecated, message: "Use Middleware instead.")
-public typealias ReducibleMiddleware<State: AppReducer> = Middleware<State>
-
-@available(*, deprecated, message: "Use Middleware instead.")
-public typealias BaseObservableMiddleware<State: AppReducer> = Middleware<State>
-@available(*, deprecated, message: "Use Middleware instead.")
-public typealias BaseReducibleMiddleware<State: AppReducer> = Middleware<State>

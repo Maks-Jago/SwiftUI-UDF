@@ -18,8 +18,7 @@ import SwiftUI
 /// configure the title, role, disabled state, and action. It conforms to both `DialogAction` and `View`,
 /// allowing it to be used directly in SwiftUI view hierarchies and within dialog action builders.
 ///
-/// This is a direct migration from `AlertButton` with the same API surface, ensuring compatibility
-/// with existing code while extending support to all dialog styles.
+/// A button action that can be used in any dialog style.
 ///
 /// ## Properties:
 /// - `title`: The title of the button.

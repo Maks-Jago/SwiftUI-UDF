@@ -25,7 +25,8 @@ public struct Cached<T: Codable & Sendable>: Initable, Sendable {
 
     private var debouncer: Debouncer<T>
 
-    /// This initializer should not be used. Use one of the other initializers instead.
+    /// This initializer is retained because `Cached` conditionally conforms to `Reducing`,
+    /// which requires `Initable` conformance.
     @available(*, deprecated, message: "Use `init(key:defaultValue:intervalToSync:storage)` instead.")
     public init() {
         fatalError("use init(key:defaultValue:intervalToSync:storage)")

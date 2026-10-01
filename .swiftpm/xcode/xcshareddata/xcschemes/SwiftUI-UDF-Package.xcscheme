@@ -58,7 +58,8 @@
       shouldUseLaunchSchemeArgsEnv = "YES">
       <TestPlans>
          <TestPlanReference
-            reference = "container:SwiftUI-UDF-Package.xctestplan">
+            reference = "container:SwiftUI-UDF-Package.xctestplan"
+            default = "YES">
          </TestPlanReference>
       </TestPlans>
       <Testables>

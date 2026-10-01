@@ -260,7 +260,7 @@ public struct DialogStatus: Equatable, Identifiable, Sendable {
     /// ## Example:
     /// ```swift
     /// // First, register a dialog
-    /// DialogRegistry.register(id: "networkError") {
+    /// Dialog.register(id: "networkError") {
     ///     .error("No internet connection", style: .toast(.center))
     /// }
     /// 

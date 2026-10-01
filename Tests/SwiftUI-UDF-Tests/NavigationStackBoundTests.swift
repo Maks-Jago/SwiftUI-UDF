@@ -40,31 +40,4 @@ struct NavigationStackBoundTests {
         #expect(desc.contains("NavigationStackBound"))
     }
     
-    @Test
-    @MainActor
-    func deprecatedNavigationStackWithNavigationPathResolves() {
-        let path = Binding.constant(NavigationPath())
-
-        let view = NavigationStack(path: path) {
-            Text("Root")
-        }
-        
-        let desc = "\(view)"
-        // The shadowed function delegates to the standard native NavigationStack
-        #expect(desc.contains("NavigationStack"))
-    }
-    
-    @Test
-    @MainActor
-    func deprecatedNavigationStackWithCollectionResolves() {
-        let path = Binding.constant([String]())
-
-        let view = NavigationStack(path: path) {
-            Text("Root")
-        }
-        
-        let desc = "\(view)"
-        // The shadowed function delegates to the standard native NavigationStack
-        #expect(desc.contains("NavigationStack"))
-    }
 }
