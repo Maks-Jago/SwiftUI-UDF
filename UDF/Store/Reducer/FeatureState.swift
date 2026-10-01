@@ -15,7 +15,7 @@ import SwiftUI
 ///
 /// A `FeatureState` groups everything a feature owns, its forms and its flows, names the middleware that
 /// belongs to it, and exposes the single view the composing app presents to enter the feature. Mounting
-/// it as a property of the app state is the only step that app performs: the store finds it there at
+/// it as a property of the app state is the only step that app performs: `EnvironmentStore` finds it there at
 /// launch and registers its middleware.
 ///
 /// Every feature explicitly implements middleware registration. A feature with no middleware leaves the
@@ -60,8 +60,8 @@ import SwiftUI
 /// ```
 ///
 /// The middleware keeps the live composition boundary explicit while owning its feature-local test
-/// default. `EnvironmentStore` and `TestStore` initialize the registered type with the appropriate
-/// builder:
+/// default. `EnvironmentStore` initializes automatically registered middleware with the appropriate
+/// builder. Tests using `TestStore` subscribe middleware explicitly and can supply custom environments:
 ///
 /// ```swift
 /// final class ProfileMiddleware<AppState: ProfileFeature>: Middleware<AppState> {

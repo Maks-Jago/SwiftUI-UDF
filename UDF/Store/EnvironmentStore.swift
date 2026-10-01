@@ -17,6 +17,9 @@ import SwiftUI
 ///
 /// The `EnvironmentStore` class is responsible for handling application state, managing subscribers, and dispatching actions.
 /// It works in conjunction with the `AppReducer` to provide unidirectional data flow throughout the app.
+///
+/// - Important: Register each concrete middleware type only once per store. Duplicate registration
+///   traps in debug builds; release builds retain both instances without replacing either one.
 public final class EnvironmentStore<State: AppReducer>: @unchecked Sendable {
     @SourceOfTruth public private(set) var state: State
 

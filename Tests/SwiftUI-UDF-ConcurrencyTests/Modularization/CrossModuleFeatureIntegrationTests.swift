@@ -24,6 +24,7 @@ struct CrossModuleFeatureIntegrationTests {
             TestItem(id: 4, title: "Test item 4"),
         ]
         let store = await TestStore(initial: AppState())
+        await store.subscribe(TestMiddleware<AppState>.self)
 
         await store.dispatch(Actions.LoadPage(pageNumber: page, id: TestFlow.id))
         await store.wait()
@@ -105,6 +106,7 @@ struct CrossModuleFeatureIntegrationTests {
             TestItem(id: 4, title: "Test item 4"),
         ]
         let store = await TestStore(initial: AppState())
+        await store.subscribe(TestMiddleware<AppState>.self)
 
         await store.dispatch(Actions.LoadPage(pageNumber: 1, id: TestFlow.id))
         await store.wait()

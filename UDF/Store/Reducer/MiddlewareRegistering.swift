@@ -13,11 +13,12 @@ import Foundation
 
 /// A reducer that subscribes the middleware it owns.
 ///
-/// `EnvironmentStore` and `TestStore` inspect the app state once, while the store is being created, and call
+/// `EnvironmentStore` inspects the app state once, while the store is being created, and calls
 /// `registerMiddlewares(in:)` on every conforming property it finds. Each call returns middleware wrappers
 /// without subscribing them, so the whole app's middleware is subscribed in a single pass no matter how
 /// many features there are. Mounting the reducer in the app state is
 /// therefore the whole integration; nothing has to be wired by hand.
+/// `TestStore` does not discover feature middleware; tests subscribe the middleware they need explicitly.
 ///
 /// One call registers as many middleware as the feature owns:
 ///
@@ -88,6 +89,7 @@ public protocol MiddlewareRegistering<AppState>: Reducing {
     /// Called once per conforming reducer, while the store is being built. Nothing is subscribed here:
     /// the store collects the returned wrappers and subscribes the whole set at once. Type wrappers are
     /// initialized with `buildLiveEnvironment(for:)` in production and `buildTestEnvironment(for:)` in tests.
+    /// `TestStore` does not call this method automatically.
     ///
     /// - Parameter store: The store supplied to middleware initializers.
     @MiddlewareBuilder<AppState>

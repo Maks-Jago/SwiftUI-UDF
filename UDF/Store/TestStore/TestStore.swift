@@ -21,6 +21,8 @@ import SwiftUI
 /// and assert on the resulting state changes in isolation.
 ///
 /// - Important: `TestStore` calls `fatalError` if it is initialized outside of a test target.
+/// - Important: Register each concrete middleware type only once per store. Duplicate registration
+///   traps in debug builds; release builds retain both instances without replacing either one.
 ///
 /// Example usage:
 /// ```swift
@@ -51,8 +53,7 @@ public final class TestStore<State: AppReducer> {
     private var cancelation: Cancellable?
 
     /// Creates a `TestStore` with the given initial state, running `initialSetup()` on it before use.
-    /// Root-level feature middleware is discovered automatically and environment-aware middleware
-    /// is initialized with its `buildTestEnvironment(for:)` implementation.
+    /// Middleware is registered explicitly with `subscribe`, so each test chooses its dependencies.
     ///
     /// - Parameter state: The initial `State` value to seed the store with.
     public init(initial state: State) {
@@ -70,10 +71,6 @@ public final class TestStore<State: AppReducer> {
         self.cancelation = store.subject.publisher
             .map(\.0)
             .assign(to: \.state, on: self)
-
-        RuntimeReducing.subscribeFeatureMiddlewares(in: mutableState, store: store) { wrapper in
-            middleware(store: store, type: wrapper.type)
-        }
     }
 
     /// Subscribes a single middleware, built from a closure, to the test store.

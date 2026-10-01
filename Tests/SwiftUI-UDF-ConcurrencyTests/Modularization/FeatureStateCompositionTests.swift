@@ -22,9 +22,13 @@ struct FeatureStateCompositionTests {
     }
 
     @TestStoreActor
-    @Test("TestStore discovers registered feature middleware and builds its test environment")
-    func storeDiscoversRegisteredFeatureMiddleware() async {
+    @Test("TestStore explicitly subscribes feature and legacy middleware with test environments")
+    func storeExplicitlySubscribesFeatureMiddleware() async {
         let store = TestStore(initial: AutoRegistrationHostState())
+        await store.subscribe(build: { _ in
+            AutoRegisteredFeatureMiddleware<AutoRegistrationHostState>.self
+            AutoRegisteredLegacyMiddleware<AutoRegistrationHostState>.self
+        })
 
         await store.dispatch(CaptureMiddlewareEnvironment())
         store.wait()
