@@ -94,15 +94,3 @@ public struct DialogActionCapability: OptionSet {
     /// Action triggers immediate dialog dismissal.
     nonisolated(unsafe) public static let dismissesDialog = DialogActionCapability(rawValue: 1 << 4)
 }
-
-// MARK: - Action Classification Protocol
-
-/// Protocol for classifying dialog action types and capabilities.
-/// This is used internally for presentation logic.
-protocol DialogActionClassification {
-    /// The type of this action.
-    var actionType: DialogActionType { get }
-    
-    /// The capabilities of this action.
-    var capabilities: DialogActionCapability { get }
-}

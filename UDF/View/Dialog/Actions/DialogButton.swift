@@ -113,23 +113,6 @@ public struct DialogButton: DialogAction, AlertDialogComponent, ToastComponent, 
 // MARK: - View Conformance
 extension DialogButton: View {}
 
-// MARK: - Action Classification
-extension DialogButton: DialogActionClassification {
-    nonisolated var actionType: DialogActionType {
-        .button
-    }
-    
-    nonisolated var capabilities: DialogActionCapability {
-        var caps: DialogActionCapability = [.requiresInteraction, .canBeDisabled, .dismissesDialog]
-        
-        if role != nil {
-            caps.insert(.hasRole)
-        }
-        
-        return caps
-    }
-}
-
 // MARK: - Modifiers
 public extension DialogButton {
     /// Sets the role of the button and returns a new `DialogButton`.
