@@ -16,7 +16,7 @@ import SwiftUI
 ///
 /// The `DialogAction` protocol defines interactive elements that can be used
 /// within dialogs, such as buttons or text fields. Since it conforms to `Hashable`,
-/// any types implementing this protocol can be uniquely identified and stored in
+/// types implementing this protocol can be compared and stored in
 /// collections like sets or used as dictionary keys.
 ///
 /// ## Conforming Types:
@@ -43,7 +43,7 @@ extension DialogAction {
     ///
     /// ## Example:
     /// ```swift
-    /// let button = DialogAction(title: "Save", action: {})
+    /// let button = DialogButton(title: "Save", action: {})
     /// let disabledButton = button.mutate { button in
     ///     button.disabled = true
     /// }

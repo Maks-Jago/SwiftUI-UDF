@@ -18,8 +18,7 @@ import SwiftUI
 /// configure the title, role, disabled state, and action. It conforms to both `DialogAction` and `View`,
 /// allowing it to be used directly in SwiftUI view hierarchies and within dialog action builders.
 ///
-/// This is a direct migration from `AlertButton` with the same API surface, ensuring compatibility
-/// with existing code while extending support to all dialog styles.
+/// Use it in ``AlertDialog``, ``Toast``, or ``ConfirmationDialog`` component builders.
 ///
 /// ## Properties:
 /// - `title`: The title of the button.
@@ -28,7 +27,7 @@ import SwiftUI
 /// - `action`: A closure to execute when the button is tapped.
 ///
 /// ## Initializers:
-/// - `init(title:action:)`: Creates a `DialogButton` with a specified title and an optional action.
+/// - `init(title:role:action:)`: Creates a `DialogButton` with a specified title, optional role, and action.
 ///
 /// ## Methods:
 /// - `role(_:)`: Sets the role of the button and returns a new `DialogButton`.

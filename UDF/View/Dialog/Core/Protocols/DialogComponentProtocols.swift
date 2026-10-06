@@ -12,25 +12,25 @@
 /// A marker protocol for all dialog components that can be used within a dialog's result builder.
 ///
 /// Concrete components like ``DialogTitle``, ``DialogMessage``, ``DialogIcon``,
-/// ``DialogView``, and any ``DialogAction`` conform to this protocol
+/// ``DialogView``, ``DialogButton``, and ``DialogTextField`` conform to this protocol
 /// (or one of its sub-protocols) to participate in the DSL-based dialog construction.
 public protocol DialogComponent {}
 
 /// A component that is valid inside an ``AlertDialog`` builder.
 ///
 /// Types conforming to this protocol can be used with ``AlertDialogComponentBuilder``.
-/// Supported components include ``DialogTitle``, ``DialogMessage``, and any ``DialogAction``.
+/// Supported components include ``DialogTitle``, ``DialogMessage``, ``DialogButton``, and ``DialogTextField``.
 public protocol AlertDialogComponent: DialogComponent {}
 
 /// A component that is valid inside a ``Toast`` builder.
 ///
 /// Types conforming to this protocol can be used with ``ToastComponentBuilder``.
 /// Supported components include ``DialogMessage``, ``DialogIcon``,
-/// ``DialogView``, and any ``DialogAction``.
+/// ``DialogView``, and ``DialogButton``.
 public protocol ToastComponent: DialogComponent {}
 
 /// A component that is valid inside a ``ConfirmationDialog`` builder.
 ///
 /// Types conforming to this protocol can be used with ``ConfirmationDialogComponentBuilder``.
-/// Supported components include ``DialogTitle``, ``DialogMessage``, and any ``DialogAction``.
+/// Supported components include ``DialogTitle``, ``DialogMessage``, and ``DialogButton``.
 public protocol ConfirmationDialogComponent: DialogComponent {}

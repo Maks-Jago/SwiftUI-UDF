@@ -81,19 +81,19 @@ public enum Actions {
     /// ## Usage:
     /// ```swift
     /// // Update with a specific dialog state
-    /// let action = UpdateDialogStatus(
-    ///     state: .init(error: "Something went wrong"),
+    /// let errorAction = Actions.UpdateDialogStatus(
+    ///     status: .init(error: "Something went wrong"),
     ///     id: "errorDialog"
     /// )
     /// 
     /// // Update with a dialog type
-    /// let action = UpdateDialogStatus(
-    ///     dialog: .success("Operation completed"),
+    /// let successAction = Actions.UpdateDialogStatus(
+    ///     dialog: .success(message: "Operation completed", style: .alert),
     ///     id: "successdialog"
     /// )
     /// 
     /// // Update with custom content
-    /// let action = UpdateDialogStatus(
+    /// let deleteAction = Actions.UpdateDialogStatus(
     ///     dialog: AlertDialog {
     ///         DialogTitle("Delete Item")
     ///         DialogMessage("This cannot be undone")
@@ -115,7 +115,7 @@ public enum Actions {
         /// Initializes a new `UpdateDialogStatus` action with a specific dialog state.
         ///
         /// - Parameters:
-        ///   - state: The new state of the dialog.
+        ///   - status: The new state of the dialog.
         ///   - id: The unique identifier for the dialog.
         public init(status: DialogStatus, id: some Hashable) {
             self.status = status

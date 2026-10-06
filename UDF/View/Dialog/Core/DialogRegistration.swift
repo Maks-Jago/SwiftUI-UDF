@@ -44,7 +44,7 @@ enum _DialogRegistry {
     // MARK: - Private Storage
     
     /// Internal registry storage for dialog builders.
-    /// Protected by registrationQueue for thread safety.
+    /// Protected by queue for thread safety.
     nonisolated(unsafe) private static var registry: [AnyHashable: () -> any DialogTypeProtocol] = [:]
 
     /// Concurrent queue for thread-safe registry access.
@@ -74,14 +74,14 @@ enum _DialogRegistry {
         }
     }
     
-    /// Registers a type-safe ``Dialog`` (``AlertDialog``, ``Toast``, or ``ConfirmationDialog``)
+    /// Registers a type-safe ``DialogProtocol`` (``AlertDialog``, ``Toast``, or ``ConfirmationDialog``)
     /// for the given identifier.
     ///
     /// The builder closure is evaluated when the dialog is requested,
     /// allowing it to capture the latest state dynamically.
     ///
     /// ```swift
-    /// Dialog.register(id: MyDialogs.error) {
+    /// Dialog.register(id: MyDialogs.error, store: store) { _ in
     ///     AlertDialog {
     ///         DialogTitle("Error")
     ///         DialogMessage("Something went wrong.")
@@ -92,7 +92,7 @@ enum _DialogRegistry {
     ///
     /// - Parameters:
     ///   - id: A unique, hashable identifier for this dialog.
-    ///   - dialog: A closure that returns a ``Dialog`` conforming value.
+    ///   - dialog: A closure that returns a ``DialogProtocol`` conforming value.
     public static func register<ID: Hashable & Sendable, D: DialogProtocol>(
         id: ID,
         dialog: @escaping @Sendable () -> D

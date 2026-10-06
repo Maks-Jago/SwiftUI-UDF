@@ -33,7 +33,7 @@ public extension View {
     ///                 dialog = .init(error: "Something went wrong")
     ///             }
     ///         }
-    ///         .dialog(state: $dialog)
+    ///         .dialog(status: $dialog)
     ///     }
     /// }
     /// ```

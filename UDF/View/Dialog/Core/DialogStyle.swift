@@ -18,22 +18,23 @@ import SwiftUI
 /// of dialogs. Each style has different capabilities and behavior patterns.
 ///
 /// ## Available Styles:
-/// - `.alert` - Native iOS system alerts using UIAlertController
+/// - `.alert` - Native alerts presented through SwiftUI
 /// - `.toast` - Custom overlay dialogs with full theming support
 /// - `.confirmationDialog` - Native confirmation dialogs with no theming
 ///
 /// ## Usage:
 /// ```swift
-/// // Alert style (Phase 1)
-/// let dialog = DialogType.success("Message", style: .alert)
+/// // Alert style
+/// let alert = DialogType.success(message: "Message", style: .alert)
 ///
-/// // Toast style (Phase 2)
-/// let dialog = DialogType.success("Message", style: .toast())
+/// // Toast style
+/// let toast = DialogType.success(message: "Message", style: .toast())
 ///
-/// // Confirmation dialog style (Phase 3)
-/// dialog = .init {
+/// // Confirmation dialog style
+/// let config = ConfirmationDialogConfiguration(titleVisibility: .visible)
+/// let confirmation = DialogStatus {
 ///     ConfirmationDialog(config: config) {
-///         DialogMessage("Share Photo")
+///         DialogTitle("Share Photo")
 ///         DialogButton.default("AirDrop") {
 ///             print("Sharing via AirDrop")
 ///         }
@@ -51,8 +52,8 @@ import SwiftUI
 /// }
 ///
 /// // Toast with custom configuration
-/// let dialog = DialogType.success("Message", style: .toast(
-///     ToastConfiguration(position: .bottom, theme: .vibrant)
+/// let configuredToast = DialogType.success(message: "Message", style: .toast(
+///     ToastConfiguration(theme: .vibrant, position: .bottom)
 /// ))
 /// ```
 public enum DialogStyle: Hashable, Sendable {

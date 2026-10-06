@@ -49,7 +49,7 @@ public enum ColorStyle: Hashable, Sendable {
     /// .solid(.red)                    // Standard red
     /// .solid(.red.opacity(0.3))       // Translucent red
     /// .solid(Color.accentColor)       // System accent color
-    /// .solid(Color(hex: "FF5733"))    // Custom hex color
+    /// .solid(Color(red: 1, green: 0.34, blue: 0.2)) // Custom RGB color
     /// ```
     case solid(Color)
     

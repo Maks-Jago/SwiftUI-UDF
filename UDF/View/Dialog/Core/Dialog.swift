@@ -18,7 +18,7 @@ public enum Dialog {}
 public extension Dialog {
     /// Registers a convenient standard dialog factory for a given identifier.
     ///
-    /// The builder closure will be called each time the dialog is requested,
+    /// The builder closure is called each time `DialogStatus(id:)` resolves the identifier,
     /// allowing for dynamic content based on current application state.
     ///
     /// - Parameters:
@@ -34,9 +34,9 @@ public extension Dialog {
     /// Registers a type-safe ``DialogProtocol`` (``AlertDialog``, ``Toast``, or ``ConfirmationDialog``)
     /// for the given identifier, explicitly passing the environment store to the builder closure.
     ///
-    /// This is required in Swift 6 to avoid strict concurrency warnings when capturing
-    /// variables from a `@MainActor` context (like a View). By passing the store explicitly,
-    /// it is safely evaluated before being passed to the `@Sendable` builder closure.
+    /// The registry retains the factory and passes the supplied store to it each time
+    /// `DialogStatus(id:)` resolves the identifier. Read current state inside the factory
+    /// to build fresh content for each lookup. The factory is not evaluated at registration.
     ///
     /// ```swift
     /// Dialog.register(id: MyDialogs.error, store: store) { store in

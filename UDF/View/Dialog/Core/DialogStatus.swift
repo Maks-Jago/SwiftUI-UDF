@@ -208,8 +208,7 @@ public struct DialogStatus: Equatable, Identifiable, Sendable {
     ///
     /// ## Example:
     /// ```swift
-    /// let dialogType = DialogType.success("Done!", style: .toast(.vibrant))
-    /// dialog = .init(dialog: dialogType)
+    /// let dialog = DialogStatus(success: "Done!", style: .toast(.vibrant))
     /// ```
     internal init(dialog: any DialogTypeProtocol) {
         self.id = UUID()
@@ -218,9 +217,9 @@ public struct DialogStatus: Equatable, Identifiable, Sendable {
     
     /// Initializes a dialog state using a type-safe DialogProtocol instance.
     ///
-    /// The builder closure is evaluated eagerly and the resulting
-    /// dialog is captured for presentation. This mirrors the registration
-    /// pattern used in `Dialog.register(id:dialog:)`.
+    /// The builder closure is evaluated immediately and the resulting dialog is
+    /// captured for presentation. To rebuild content on each registered lookup,
+    /// use `Dialog.register(id:store:dialog:)` and create a new `DialogStatus(id:)`.
     ///
     /// - Parameter dialog: A closure that returns a `DialogProtocol` conforming value
     ///   (e.g., `AlertDialog`, `Toast`, `ConfirmationDialog`).
@@ -242,7 +241,8 @@ public struct DialogStatus: Equatable, Identifiable, Sendable {
     /// Initializes a dismissed dialog status.
     ///
     /// Creates a dialog state that represents no active dialog.
-    /// This is equivalent to using the static `.dismissed` property.
+    /// Creates a dismissed status with a new identifier. The static `.dismissed`
+    /// property instead uses a fixed identifier.
     ///
     /// ## Example:
     /// ```swift

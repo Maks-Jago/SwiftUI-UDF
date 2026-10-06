@@ -16,6 +16,9 @@ import SwiftUI
 /// `DialogPayload` is produced by ``DialogComponentParser`` and consumed
 /// by ``AlertDialog``, ``Toast``, and ``ConfirmationDialog`` to construct
 /// their content for presentation through ``DialogProtocol``.
+///
+/// Title and message closures return the strings captured when the components were parsed.
+/// Icon and custom content closures are evaluated on the main actor when their views are requested.
 public struct DialogPayload: Sendable {
     /// A closure returning the dialog title string. Defaults to an empty string.
     var title: @Sendable () -> String = { "" }

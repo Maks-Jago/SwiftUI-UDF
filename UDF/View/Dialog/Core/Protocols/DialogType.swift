@@ -60,8 +60,8 @@ extension DialogTypeProtocol {
 /// ## Usage:
 /// ```swift
 /// // Simple message dialogs
-/// let successDialog = DialogType.success("File saved!", style: .alert)
-/// let errorDialog = DialogType.error("Upload failed", style: .alert)
+/// let successDialog = DialogType.success(message: "File saved!", style: .alert)
+/// let errorDialog = DialogType.error(message: "Upload failed", style: .alert)
 ///
 /// // Complex dialog with custom content
 /// let customDialog = AlertDialog {
@@ -96,8 +96,7 @@ public enum DialogType: Sendable, DialogTypeProtocol {
         }
     }
     
-    /// The primary message for simple dialog types.
-    /// Returns nil for custom dialogs.
+    /// The message carried by the semantic dialog case.
     public var message: String? {
         switch self {
         case .success(let message, _),

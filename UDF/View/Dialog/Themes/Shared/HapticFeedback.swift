@@ -14,23 +14,17 @@ import Foundation
 import UIKit
 #endif
 
-/// Defines haptic feedback types for toast dialogs.
+/// A utility for manually triggering semantic or impact haptic feedback.
 ///
-/// `HapticFeedback` provides tactile feedback options that enhance the user
-/// experience by providing physical sensations that correspond to different
-/// dialog types and importance levels. Haptic feedback helps users
-/// understand the nature of dialogs even when they can't see the screen.
+/// Call ``trigger()`` from the main actor to produce feedback on iOS.
+/// ``forCategory(_:)`` and ``forDialogType(_:)`` select a feedback type without triggering it.
+/// Toast presentation does not trigger haptics automatically, and neither
+/// ``ToastConfiguration`` nor ``ToastTheme`` has haptic configuration properties.
 ///
 /// ## Usage:
 /// ```swift
-/// // Semantic feedback for dialog types
-/// let config = ToastConfiguration(
-///     theme: ToastTheme(
-///         errorHaptic: .error,
-///         successHaptic: .success,
-///         warningHaptic: .warning
-///     )
-/// )
+/// // Select and trigger feedback for a dialog category
+/// HapticFeedback.forCategory(.success).trigger()
 /// 
 /// // Manual haptic triggering
 /// HapticFeedback.success.trigger()
@@ -64,7 +58,8 @@ public enum HapticFeedback: CaseIterable, Hashable {
     /// 
     /// ## Example:
     /// ```swift
-    /// dialog = .toastSuccess("File saved!", haptic: .success)
+    /// HapticFeedback.success.trigger()
+    /// dialog = .init(success: "File saved!", style: .toast())
     /// ```
     case success
     
@@ -88,7 +83,8 @@ public enum HapticFeedback: CaseIterable, Hashable {
     /// 
     /// ## Example:
     /// ```swift
-    /// dialog = .toastWarning("Storage almost full", haptic: .warning)
+    /// HapticFeedback.warning.trigger()
+    /// dialog = .init(warning: "Storage almost full", style: .toast())
     /// ```
     case warning
     
@@ -112,7 +108,8 @@ public enum HapticFeedback: CaseIterable, Hashable {
     /// 
     /// ## Example:
     /// ```swift
-    /// dialog = .toastError("Upload failed", haptic: .error)
+    /// HapticFeedback.error.trigger()
+    /// dialog = .init(error: "Upload failed", style: .toast())
     /// ```
     case error
     
@@ -138,7 +135,8 @@ public enum HapticFeedback: CaseIterable, Hashable {
     /// 
     /// ## Example:
     /// ```swift
-    /// dialog = .toastInfo("3 new messages", haptic: .light)
+    /// HapticFeedback.light.trigger()
+    /// dialog = .init(info: "3 new messages", style: .toast())
     /// ```
     case light
     
@@ -162,7 +160,8 @@ public enum HapticFeedback: CaseIterable, Hashable {
     /// 
     /// ## Example:
     /// ```swift
-    /// dialog = .toastInfo("Settings updated", haptic: .medium)
+    /// HapticFeedback.medium.trigger()
+    /// dialog = .init(info: "Settings updated", style: .toast())
     /// ```
     case medium
     
@@ -186,7 +185,8 @@ public enum HapticFeedback: CaseIterable, Hashable {
     ///
     /// ## Example:
     /// ```swift
-    /// dialog = .toastError("Data will be permanently deleted", haptic: .heavy)
+    /// HapticFeedback.heavy.trigger()
+    /// dialog = .init(error: "Data will be permanently deleted", style: .toast())
     /// ```
     case heavy
 }
@@ -289,7 +289,7 @@ public extension HapticFeedback {
     ///
     /// ## Example:
     /// ```swift
-    /// let dialog = DialogType.success("Done!", style: .toast())
+    /// let dialog = DialogType.success(message: "Done!", style: .toast())
     /// let haptic = HapticFeedback.forDialogType(dialog) // Returns .success
     /// ```
     static func forDialogType(_ dialogType: DialogType) -> HapticFeedback {
