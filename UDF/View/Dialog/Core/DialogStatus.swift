@@ -26,8 +26,10 @@ import SwiftUI
 /// dialog = .init(error: "Something went wrong")
 ///
 /// // Complex dialog with actions
-/// dialog = .init(style: .alert) {
-///     DialogContent("Delete Item", message: "This cannot be undone") {
+/// dialog = .init {
+///     AlertDialog {
+///         DialogTitle("Delete Item")
+///         DialogMessage("This cannot be undone")
 ///         DialogButton.destructive("Delete") { /* action */ }
 ///         DialogButton.cancel("Cancel")
 ///     }
@@ -170,85 +172,6 @@ public struct DialogStatus: Equatable, Identifiable, Sendable {
         }
     }
     
-    /// Initializes a dialog state with a title, message, actions, and style.
-    ///
-    /// Creates a custom dialog with the specified title, message, and interactive
-    /// actions. This initializer provides a convenient way to create dialogs with
-    /// both informational content and user interaction options.
-    ///
-    /// - Parameters:
-    ///   - title: The title text to display at the top of the dialog.
-    ///   - message: The main message content to display in the dialog body.
-    ///   - actions: A closure that returns an array of dialog actions using the
-    ///     `DialogContentBuilder`. These typically include buttons for user interaction.
-    ///   - style: The dialog style for presentation. Defaults to `.alert`.
-    ///
-    /// ## Example:
-    /// ```swift
-    /// dialog = .init(
-    ///     title: "Delete Item",
-    ///     message: "Are you sure you want to delete this item? This action cannot be undone.",
-    ///     style: .alert
-    /// ) {
-    ///     DialogButton.destructive("Delete") { performDelete() }
-    ///     DialogButton.cancel("Cancel")
-    /// }
-    /// ```
-    public init(
-        title: String,
-        message: String,
-        style: DialogStyle = .alert,
-        @DialogActionsBuilder _ actions: () -> [any DialogAction]
-    ) {
-        let content = DialogContent(
-            title: title,
-            message: message,
-            actions: actions
-        )
-        
-        self = .init(
-            dialog: DialogCustomType.custom(content: content, style: style)
-        )
-    }
-    
-    // MARK: - Advanced Initializers
-    
-    /// Initializes a dialog state with custom content using a result builder.
-    ///
-    /// Creates a dialog with complex content including actions, using the
-    /// `DialogContentBuilder` for a declarative API. This enables rich
-    /// dialogs with buttons and other interactive elements.
-    ///
-    /// - Parameters:
-    ///   - style: The dialog style for presentation. Defaults to `.alert`.
-    ///   - content: A closure that returns `DialogContent` with actions.
-    ///
-    /// ## Example:
-    /// ```swift
-    /// dialog = .init(style: .alert) {
-    ///     DialogContent("Delete Item", message: "This cannot be undone") {
-    ///         DialogButton.destructive("Delete") { performDelete() }
-    ///         DialogButton.cancel("Cancel")
-    ///     }
-    /// }
-    /// ```
-    public init<Icon: View, Content: View>(
-        style: DialogStyle,
-        @DialogContentBuilder content: () -> DialogContent<Icon, Content>
-    ) {
-        let dialogContent = content()
-        let dialog = DialogCustomType.custom(content: dialogContent, style: style)
-        self = .init(dialog: dialog)
-    }
-    
-    /// Convenience initializer for common case with EmptyView generics
-    public init(
-        style: DialogStyle,
-        @DialogContentBuilder content: () -> DialogContent<EmptyView, EmptyView>
-    ) {
-        self = .init(dialog: DialogCustomType.custom(content: content(), style: style))
-    }
-    
     /// Initializes a dialog state using a registered dialog identified by a unique ID.
     ///
     /// Looks up a pre-registered dialog by its identifier and creates a state
@@ -337,20 +260,5 @@ public struct DialogStatus: Equatable, Identifiable, Sendable {
     private init(dismissedUUID: String) {
         self.id = UUID(uuidString: dismissedUUID)!
         self.status = .dismissed
-    }
-}
-
-// MARK: - DialogContentBuilder
-
-/// A result builder for creating DialogContent in a declarative way.
-@resultBuilder
-public enum DialogContentBuilder {
-    public static func buildBlock<Icon: View, Content: View>(_ content: DialogContent<Icon, Content>) -> DialogContent<Icon, Content> {
-        content
-    }
-    
-    // Add overload for EmptyView cases to help with type inference
-    public static func buildBlock(_ content: DialogContent<EmptyView, EmptyView>) -> DialogContent<EmptyView, EmptyView> {
-        content
     }
 }

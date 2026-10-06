@@ -31,22 +31,23 @@ import SwiftUI
 /// let dialog = DialogType.success("Message", style: .toast())
 ///
 /// // Confirmation dialog style (Phase 3)
-/// dialog = .init(style: .confirmationDialog(config)) {
-/// DialogContent("Share Photo") {
-///     DialogButton.default("AirDrop") {
-///         print("Sharing via AirDrop")
+/// dialog = .init {
+///     ConfirmationDialog(config: config) {
+///         DialogMessage("Share Photo")
+///         DialogButton.default("AirDrop") {
+///             print("Sharing via AirDrop")
+///         }
+///         DialogButton.default("Messages") {
+///             print("Sharing via Messages")
+///         }
+///         DialogButton.default("Mail") {
+///             print("Sharing via Mail")
+///         }
+///         DialogButton.default("Save to Files") {
+///             print("Saving to Files")
+///         }
+///         DialogButton.cancel("Cancel")
 ///     }
-///     DialogButton.default("Messages") {
-///         print("Sharing via Messages")
-///     }
-///     DialogButton.default("Mail") {
-///         print("Sharing via Mail")
-///     }
-///     DialogButton.default("Save to Files") {
-///         print("Saving to Files")
-///     }
-///     DialogButton.cancel("Cancel")
-/// }
 /// }
 ///
 /// // Toast with custom configuration

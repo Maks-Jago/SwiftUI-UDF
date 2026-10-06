@@ -14,7 +14,7 @@ import SwiftUI
 
 /// Describes the shape of a dialog's content and presentation.
 ///
-/// Conforming types (such as `DialogType` and `DialogCustomType`) define what a dialog displays —
+/// Conforming types (such as `DialogType`, `AlertDialog`, and `Toast`) define what a dialog displays —
 /// its style, semantic category, title, message and actions — and how it renders its icon and any
 /// custom content. This is the core protocol every dialog type in the Dialog subsystem conforms to.
 public protocol DialogTypeProtocol: Sendable, IsEquatable, Hashable {
@@ -51,84 +51,6 @@ extension DialogTypeProtocol {
     
 }
 
-public enum DialogCustomType<Icon: View, Content: View>: DialogTypeProtocol {
-    case custom(content: DialogContent<Icon, Content>, style: DialogStyle)
-    
-    public var style: DialogStyle {
-        switch self {
-        case .custom(_, style: let style):
-            return style
-        }
-    }
-    
-    public var title: String {
-        switch self {
-        case let .custom(content, _):
-            return content.title()
-        }
-    }
-    
-    public var message: String? {
-        switch self {
-        case let .custom(content, _):
-            return content.message()
-        }
-    }
-    
-    public var actions: [any DialogAction] {
-        switch self {
-        case let .custom(content, _):
-            return content.actions
-        }
-    }
-    
-    public var category: DialogCategory {
-        .custom
-    }
-    
-    public func getIconView(theme: ToastTheme) -> AnyView? {
-        switch self {
-        case let .custom(content, _):
-            return content.renderIcon()
-        }
-    }
-    
-    public func getCustomContentView() -> AnyView? {
-        switch self {
-        case let .custom(content, _):
-            if let customContentView = content.customContentView {
-                return AnyView(customContentView())
-            }
-            return nil
-        }
-    }
-}
-
-extension DialogCustomType: DialogProtocol {
-    public var payload: DialogPayload {
-        let icon: @MainActor () -> AnyView = {
-            getIconView(theme: .default) ?? AnyView(EmptyView())
-        }
-        let content: @MainActor () -> AnyView = {
-            getCustomContentView() ?? AnyView(EmptyView())
-        }
-        let title: @Sendable () -> String = { [title] in title }
-        let message: @Sendable () -> String? = { [message] in message }
-        
-        return DialogPayload(
-            title: title,
-            message: message,
-            actions: actions,
-            icon: icon,
-            customContentView: content
-        )
-    }
-    
-    public var dialogStyle: DialogStyle {
-        style
-    }
-}
-
 /// Defines the type and content of a dialog.
 ///
 /// `DialogType` represents different categories of dialogs with their
@@ -142,12 +64,11 @@ extension DialogCustomType: DialogProtocol {
 /// let errorDialog = DialogType.error("Upload failed", style: .alert)
 ///
 /// // Complex dialog with custom content
-/// let customDialog = DialogType.custom(
-///     content: DialogContent("Title", message: "Message") {
-///         DialogButton.default("OK")
-///     },
-///     style: .alert
-/// )
+/// let customDialog = AlertDialog {
+///     DialogTitle("Title")
+///     DialogMessage("Message")
+///     DialogButton.default("OK")
+/// }
 /// ```
 public enum DialogType: Sendable, DialogTypeProtocol {
     /// A success dialog with a message.

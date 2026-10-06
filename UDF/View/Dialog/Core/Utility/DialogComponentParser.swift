@@ -14,7 +14,7 @@ import SwiftUI
 /// A helper utility that converts an array of ``DialogComponent`` values into a ``DialogPayload``.
 ///
 /// Used internally by ``AlertDialog``, ``Toast``, and ``ConfirmationDialog`` to transform
-/// the result builder output into structured data suitable for ``DialogCustomType`` construction.
+/// the result builder output into the shared payload consumed by these DSL dialog types.
 ///
 /// When multiple components of the same type are provided (e.g., two ``DialogTitle`` instances),
 /// the **last** one wins.

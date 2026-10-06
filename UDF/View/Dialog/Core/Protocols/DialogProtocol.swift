@@ -18,8 +18,8 @@ import SwiftUI
 /// at compile time, producing clear error messages for unsupported usage.
 ///
 /// `DialogProtocol` extends ``DialogTypeProtocol`` directly, meaning each conforming type
-/// is a first-class dialog type that the presentation layer can consume without
-/// any intermediate conversion through `DialogCustomType` or `DialogContent`.
+/// is a first-class dialog type that the presentation layer consumes directly
+/// through the default implementations below.
 ///
 /// Conforming types must provide a ``payload`` (the parsed builder output) and a
 /// ``dialogStyle`` (`.alert`, `.toast(config)`, or `.confirmationDialog(config)`).

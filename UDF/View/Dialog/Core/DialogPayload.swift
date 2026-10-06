@@ -15,7 +15,7 @@ import SwiftUI
 ///
 /// `DialogPayload` is produced by ``DialogComponentParser`` and consumed
 /// by ``AlertDialog``, ``Toast``, and ``ConfirmationDialog`` to construct
-/// the final ``DialogCustomType`` for presentation.
+/// their content for presentation through ``DialogProtocol``.
 public struct DialogPayload: Sendable {
     /// A closure returning the dialog title string. Defaults to an empty string.
     var title: @Sendable () -> String = { "" }

@@ -94,7 +94,9 @@ public enum Actions {
     /// 
     /// // Update with custom content
     /// let action = UpdateDialogStatus(
-    ///     content: DialogContent("Delete Item", message: "This cannot be undone") {
+    ///     dialog: AlertDialog {
+    ///         DialogTitle("Delete Item")
+    ///         DialogMessage("This cannot be undone")
     ///         DialogButton.destructive("Delete") { performDelete() }
     ///         DialogButton.cancel("Cancel")
     ///     },
@@ -127,17 +129,6 @@ public enum Actions {
         ///   - id: The unique identifier for the dialog.
         public init(dialog: DialogType, id: some Hashable) {
             self.status = .init(dialog: dialog)
-            self.id = AnyHashable(id)
-        }
-        
-        /// Initializes a new `UpdateDialogStatus` action with custom dialog content.
-        ///
-        /// - Parameters:
-        ///   - content: The custom content for the dialog.
-        ///   - id: The unique identifier for the dialog.
-        ///   - style: The dialog style (defaults to .alert).
-        public init<Icon: View, Content: View>(content: DialogContent<Icon, Content>, id: some Hashable, style: DialogStyle = .alert) {
-            self.status = .init(dialog: DialogCustomType.custom(content: content, style: style))
             self.id = AnyHashable(id)
         }
         

@@ -6,7 +6,9 @@ import SwiftUI
 
     // MARK: - Basic Builder Tests
     @Test func whenVoid_ActionGroupShouldBeEmpty() {
-        let content = DialogContent(title: "", message: "") {
+        let content = AlertDialog {
+            DialogTitle("")
+            DialogMessage("")
             ()
         }
 
@@ -16,9 +18,11 @@ import SwiftUI
     @Test
     @MainActor
     func dialogButton() {
-        let content = DialogContent(title: "", message: "", actions: {
+        let content = AlertDialog {
+            DialogTitle("")
+            DialogMessage("")
             DialogButton.cancel("Cancel")
-        })
+        }
 
         #expect(content.actions.count == 1)
 
@@ -35,11 +39,13 @@ import SwiftUI
     @Test
     @MainActor
     func multipleDialogButtons() {
-        let content = DialogContent(title: "Test", message: "Multiple buttons", actions: {
+        let content = AlertDialog {
+            DialogTitle("Test")
+            DialogMessage("Multiple buttons")
             DialogButton.default("OK")
             DialogButton.cancel("Cancel")
             DialogButton.destructive("Delete")
-        })
+        }
 
         #expect(content.actions.count == 3)
 
@@ -62,7 +68,8 @@ import SwiftUI
     func dialogTextField() {
         @State var testText = ""
 
-        let content = DialogContent("Input Required") {
+        let content = AlertDialog {
+            DialogMessage("Input Required")
             DialogTextField(title: "Enter name", text: $testText)
         }
 
@@ -81,7 +88,8 @@ import SwiftUI
         @State var name = ""
         @State var email = ""
 
-        let content = DialogContent("User Registration") {
+        let content = AlertDialog {
+            DialogMessage("User Registration")
             DialogTextField(title: "Name", text: $name)
             DialogTextField(title: "Email", text: $email)
             DialogButton.default("Register")
@@ -109,7 +117,8 @@ import SwiftUI
         let showCancel = true
         let showDelete = false
 
-        let content = DialogContent("Conditional Actions") {
+        let content = AlertDialog {
+            DialogMessage("Conditional Actions")
             DialogButton.default("OK")
 
             if showCancel {
@@ -133,7 +142,8 @@ import SwiftUI
     func conditionalActionsWhenFalse() {
         let showOptionalActions = false
 
-        let content = DialogContent("Basic Action") {
+        let content = AlertDialog {
+            DialogMessage("Basic Action")
             DialogButton.default("OK")
 
             if showOptionalActions {
@@ -154,7 +164,8 @@ import SwiftUI
     @Test func actionWithCustomAction() {
         var actionExecuted = false
 
-        let content = DialogContent("Action Test") {
+        let content = AlertDialog {
+            DialogMessage("Action Test")
             DialogButton(title: "Custom Action") {
                 actionExecuted = true
             }
@@ -174,7 +185,8 @@ import SwiftUI
     @Test
     @MainActor
     func buttonModifiers() {
-        let content = DialogContent("Modified Button") {
+        let content = AlertDialog {
+            DialogMessage("Modified Button")
             DialogButton(title: "Disabled Button")
                 .disabled(true)
                 .role(.destructive)
@@ -190,12 +202,12 @@ import SwiftUI
 
     // MARK: - Edge Cases
     @Test func emptyBuilder() {
-        let content = DialogContent("Empty actions") {
+        let content = AlertDialog {
+            DialogMessage("Empty actions")
             // Empty builder should work
         }
 
         #expect(content.actions.isEmpty)
-        #expect(!content.hasActions)
     }
 
     @MainActor
