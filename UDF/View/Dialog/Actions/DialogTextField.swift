@@ -148,9 +148,6 @@ private struct DialogTextFieldInternal: View {
     }
 }
 
-// MARK: - View Conformance
-extension DialogTextField: View {}
-
 // MARK: - Modifiers
 public extension DialogTextField {
     /// Sets the autocapitalization behavior for the text field and returns a new `DialogTextField`.

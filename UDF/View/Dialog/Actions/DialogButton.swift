@@ -110,9 +110,6 @@ public struct DialogButton: DialogAction, AlertDialogComponent, ToastComponent, 
     }
 }
 
-// MARK: - View Conformance
-extension DialogButton: View {}
-
 // MARK: - Modifiers
 public extension DialogButton {
     /// Sets the role of the button and returns a new `DialogButton`.
