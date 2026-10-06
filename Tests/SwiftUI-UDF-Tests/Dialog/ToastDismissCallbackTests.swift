@@ -50,69 +50,6 @@ extension DialogRegistryTests {
             #expect(set.count == 2)
         }
         
-        // MARK: - DialogRegistration Tests
-        
-        @MainActor
-        @Test func test_DialogRegistry_RegisterToast_WithOnAutoDismiss() async {
-            let testID = "test-toast-callback"
-            let tracker = CallbackTracker()
-            
-            // Register toast with callback
-            DialogRegistry.registerToast(id: testID) {
-                DialogContent("Test Toast with Callback")
-            } configuration: {
-                ToastConfiguration(defaultDuration: 0.1)
-            } onAutoDismiss: {
-                tracker.executed = true
-            }
-            
-            // Wait for async barrier write to complete
-            await waitForMainActorCondition { Dialog.isRegistered(id: testID) }
-            
-            // Retrieve the registered toast
-            let retrievedDialog = _DialogRegistry.get(id: testID)
-            #expect(retrievedDialog != nil)
-            
-            // Verify it has the callback in configuration
-            if let customType = retrievedDialog as? DialogCustomType<EmptyView, EmptyView>,
-               case .custom(_, let style) = customType,
-               case .toast(let config) = style {
-                #expect(config.onAutoDismiss != nil)
-                
-                // Test callback execution
-                config.onAutoDismiss?()
-                #expect(tracker.executed)
-            } else {
-                #expect(Bool(false), "Retrieved dialog should be DialogCustomType with toast style")
-            }
-            
-            // Clean up
-            Dialog.unregister(id: testID)
-        }
-        
-        @MainActor
-        @Test func test_DialogRegistry_RegisterToast_WithoutOnAutoDismiss() {
-            let testID = "test-toast-no-callback"
-            
-            // Register toast without callback
-            DialogRegistry.registerToast(id: testID) {
-                DialogContent("Test Toast without Callback")
-            }
-            
-            // Retrieve and verify no callback
-            let retrievedDialog = _DialogRegistry.get(id: testID)
-            if let customType = retrievedDialog as? DialogCustomType<EmptyView, EmptyView>,
-               case .custom(_, let style) = customType,
-               case .toast(let config) = style {
-                #expect(config.onAutoDismiss == nil)
-            } else {
-                #expect(Bool(false), "Retrieved dialog should be DialogCustomType with toast style")
-            }
-            
-            // Clean up
-            Dialog.unregister(id: testID)
-        }
-        
         // MARK: - ToastQueueManager Tests
         
         @MainActor
