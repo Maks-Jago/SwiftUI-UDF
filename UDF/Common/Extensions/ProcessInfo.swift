@@ -35,9 +35,4 @@ public extension ProcessInfo {
         if arguments.contains("-ui_testing") { return true }
         return false
     }
-
-    @available(*, deprecated, renamed: "isRunningTests", message: "use `isRunningTests` instead of xcTest")
-    var xcTest: Bool {
-        isRunningTests
-    }
 }
