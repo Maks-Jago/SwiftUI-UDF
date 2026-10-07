@@ -57,16 +57,13 @@ actor InternalStore<State: AppReducer>: Store {
     }
 
     func subscribe(_ middleware: some _Middleware<State>) async {
-        let anyMiddleware = AnyMiddleware(middleware)
+        #if DEBUG
+            if indexOfMiddleware(withSameTypeAs: middleware) != nil {
+                assertionFailure("Middleware \(type(of: middleware)) is already registered. Register each middleware type only once per store.")
+            }
+        #endif
 
-        if let existingIndex = indexOfMiddleware(withSameTypeAs: middleware) {
-            let oldAnyMiddleware = middlewares.remove(at: existingIndex)
-            oldAnyMiddleware.middleware.cancelAll()
-            middlewares.insert(anyMiddleware, at: existingIndex)
-        } else {
-            middlewares.append(anyMiddleware)
-        }
-
+        middlewares.append(AnyMiddleware(middleware))
         initialNotify(middleware: middleware, state: self.state)
     }
 
@@ -79,13 +76,15 @@ actor InternalStore<State: AppReducer>: Store {
 
 // MARK: Help Methods
 private extension InternalStore {
-    func indexOfMiddleware(withSameTypeAs middleware: some _Middleware<State>) -> Int? {
-        let middlewareType = ObjectIdentifier(type(of: middleware))
+    #if DEBUG
+        func indexOfMiddleware(withSameTypeAs middleware: some _Middleware<State>) -> Int? {
+            let middlewareType = ObjectIdentifier(type(of: middleware))
 
-        return middlewares.firstIndex {
-            ObjectIdentifier(type(of: $0.middleware)) == middlewareType
+            return middlewares.firstIndex {
+                ObjectIdentifier(type(of: $0.middleware)) == middlewareType
+            }
         }
-    }
+    #endif
 
     func mutate(state: State, animation: Animation?) {
         let old = self.state

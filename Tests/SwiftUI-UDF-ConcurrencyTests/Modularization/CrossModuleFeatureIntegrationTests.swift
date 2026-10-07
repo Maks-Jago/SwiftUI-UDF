@@ -11,7 +11,7 @@
 
 import Testing
 import UDF
-@testable import UDFModularizationTestFeature
+@testable import UDFTestFeatures
 import UDFSwiftTesting
 
 @Suite("Cross-module feature integration")
@@ -24,6 +24,7 @@ struct CrossModuleFeatureIntegrationTests {
             TestItem(id: 4, title: "Test item 4"),
         ]
         let store = await TestStore(initial: AppState())
+        await store.subscribe(TestMiddleware<AppState>.self)
 
         await store.dispatch(Actions.LoadPage(pageNumber: page, id: TestFlow.id))
         await store.wait()
@@ -62,10 +63,7 @@ struct CrossModuleFeatureIntegrationTests {
     func externallyComposedFeatureHandlesErrorAndResetsFlow() async {
         struct TestError: Error, Equatable {}
 
-        let store = await TestStore(
-            initial: AppState(),
-            registerFeatureMiddlewares: false
-        )
+        let store = await TestStore(initial: AppState())
         await store.subscribe(
             TestMiddleware<AppState>.self,
             environment: .test { _ in throw TestError() }
@@ -82,10 +80,7 @@ struct CrossModuleFeatureIntegrationTests {
 
     @Test("An externally composed feature cancels in-flight load and resets flow")
     func externallyComposedFeatureHandlesCancellation() async {
-        let store = await TestStore(
-            initial: AppState(),
-            registerFeatureMiddlewares: false
-        )
+        let store = await TestStore(initial: AppState())
         await store.subscribe(
             TestMiddleware<AppState>.self,
             environment: .test { _ in throw CancellationError() }
@@ -111,6 +106,7 @@ struct CrossModuleFeatureIntegrationTests {
             TestItem(id: 4, title: "Test item 4"),
         ]
         let store = await TestStore(initial: AppState())
+        await store.subscribe(TestMiddleware<AppState>.self)
 
         await store.dispatch(Actions.LoadPage(pageNumber: 1, id: TestFlow.id))
         await store.wait()

@@ -5,7 +5,7 @@ import UDFSwiftTesting
 
 struct FeatureStateCompositionTests {
     @TestStoreActor
-    @Test("FeatureState forwards its entry payload and defaults to no middleware")
+    @Test("FeatureState forwards its entry payload and explicitly registers no middleware")
     func entryPointAndEmptyRegistration() async {
         let input = EntryInput(id: 42, title: "Favorites")
         let destination = EmptyFeatureState<EntryHostState>.entryPoint(input: input)
@@ -22,11 +22,15 @@ struct FeatureStateCompositionTests {
     }
 
     @TestStoreActor
-    @Test("TestStore discovers registered feature middleware and builds its test environment")
-    func storeDiscoversRegisteredFeatureMiddleware() async {
+    @Test("TestStore explicitly subscribes feature and legacy middleware with test environments")
+    func storeExplicitlySubscribesFeatureMiddleware() async {
         let store = TestStore(initial: AutoRegistrationHostState())
+        await store.subscribe { _ -> [MiddlewareWrapper<AutoRegistrationHostState>] in
+            AutoRegisteredFeatureMiddleware<AutoRegistrationHostState>.self
+            AutoRegisteredLegacyMiddleware<AutoRegistrationHostState>.self
+        }
 
-        await store.dispatch(CaptureMiddlewareEnvironment())
+        await store.dispatch(Actions.CaptureMiddlewareEnvironment())
         store.wait()
 
         #expect(store.state.result.marker == "test")
@@ -37,7 +41,7 @@ struct FeatureStateCompositionTests {
     func nestedReducersReceiveActions() async {
         let store = await TestStore(initial: NestedHostState())
 
-        await store.dispatch(IncrementEveryLevel())
+        await store.dispatch(Actions.IncrementEveryLevel())
 
         let state = await store.state
         #expect(state.root.value == 1)
@@ -57,16 +61,13 @@ struct FeatureStateCompositionTests {
 
     @Test("TestStore accepts a feature-only middleware with an explicit environment")
     func storeExplicitFeatureEnvironment() async {
-        let store = await TestStore(
-            initial: AutoRegistrationHostState(),
-            registerFeatureMiddlewares: false
-        )
+        let store = await TestStore(initial: AutoRegistrationHostState())
         await store.subscribe(
             AutoRegisteredFeatureMiddleware<AutoRegistrationHostState>.self,
             environment: AutoRegisteredFeatureEnvironment(marker: "injected")
         )
 
-        await store.dispatch(CaptureMiddlewareEnvironment())
+        await store.dispatch(Actions.CaptureMiddlewareEnvironment())
         await store.wait()
 
         #expect(await store.state.result.marker == "injected")
@@ -93,18 +94,27 @@ struct FeatureStateCompositionTests {
     func multipleFeatureStatesMutateIndependently() async {
         let store = await TestStore(initial: CounterFeaturesHostState())
 
-        await store.dispatch(IncrementFirstCounter())
+        await store.dispatch(Actions.IncrementFirstCounter())
 
         var state = await store.state
         #expect(state.firstCounter.value == 1)
         #expect(state.secondCounter.value == 0)
 
-        await store.dispatch(IncrementSecondCounter())
+        await store.dispatch(Actions.IncrementSecondCounter())
 
         state = await store.state
         #expect(state.firstCounter.value == 1)
         #expect(state.secondCounter.value == 1)
     }
+}
+
+// MARK: - Actions
+
+private extension Actions {
+    struct CaptureMiddlewareEnvironment: Action {}
+    struct IncrementEveryLevel: Action {}
+    struct IncrementFirstCounter: Action {}
+    struct IncrementSecondCounter: Action {}
 }
 
 // MARK: - Public API fixtures
@@ -125,6 +135,9 @@ private struct EntryDestination: View {
 private struct EmptyFeatureState<Host: AppReducer>: FeatureState {
     typealias AppState = Host
     typealias FeatureRouting = EmptyRouting
+
+    static func registerMiddlewares(in store: any Store<Host>) -> [MiddlewareWrapper<Host>] {
+    }
 
     static func entryPoint(input: EntryInput) -> EntryDestination {
         EntryDestination(input: input)
@@ -180,8 +193,6 @@ private struct MiddlewareResultForm: UDF.Form {
     var legacyHandled = false
 }
 
-private struct CaptureMiddlewareEnvironment: Action {}
-
 private final class AutoRegisteredFeatureMiddleware<State: AutoRegisteredFeatureHost>: Middleware<State>, @unchecked Sendable {
     typealias Environment = AutoRegisteredFeatureEnvironment
 
@@ -196,7 +207,7 @@ private final class AutoRegisteredFeatureMiddleware<State: AutoRegisteredFeature
     }
 
     func reduce(_ action: some Action, for state: State) {
-        guard action is CaptureMiddlewareEnvironment else {
+        guard action is Actions.CaptureMiddlewareEnvironment else {
             return
         }
 
@@ -213,7 +224,7 @@ private final class AutoRegisteredLegacyMiddleware<State: AutoRegisteredFeatureH
     var environment: Void!
 
     func reduce(_ action: some Action, for state: State) {
-        guard action is CaptureMiddlewareEnvironment else {
+        guard action is Actions.CaptureMiddlewareEnvironment else {
             return
         }
 
@@ -228,8 +239,6 @@ private final class AutoRegisteredLegacyMiddleware<State: AutoRegisteredFeatureH
 
 // MARK: - Nested reducer fixtures
 
-private struct IncrementEveryLevel: Action {}
-
 private struct NestedHostState: AppReducer {
     var root = RootCounter()
     var feature = NestedFeatureState<NestedHostState>()
@@ -239,7 +248,7 @@ private struct RootCounter: UDF.Form {
     var value = 0
 
     mutating func reduce(_ action: some Action) {
-        guard action is IncrementEveryLevel else {
+        guard action is Actions.IncrementEveryLevel else {
             return
         }
         value += 1
@@ -253,6 +262,8 @@ private struct NestedFeatureState<Host: AppReducer>: FeatureState {
     var form = NestedFeatureForm()
     var flow = NestedFeatureFlow()
 
+    static func registerMiddlewares(in store: any Store<Host>) -> [MiddlewareWrapper<Host>] {}
+
     static func entryPoint(input: Void) -> EmptyView {
         EmptyView()
     }
@@ -263,7 +274,7 @@ private struct NestedFeatureForm: UDF.Form {
     var child = DeepCounter()
 
     mutating func reduce(_ action: some Action) {
-        guard action is IncrementEveryLevel else {
+        guard action is Actions.IncrementEveryLevel else {
             return
         }
         value += 1
@@ -274,7 +285,7 @@ private struct DeepCounter: UDF.Form {
     var value = 0
 
     mutating func reduce(_ action: some Action) {
-        guard action is IncrementEveryLevel else {
+        guard action is Actions.IncrementEveryLevel else {
             return
         }
         value += 1
@@ -290,7 +301,7 @@ private enum NestedFeatureFlow: Flow {
     }
 
     mutating func reduce(_ action: some Action) {
-        guard action is IncrementEveryLevel else {
+        guard action is Actions.IncrementEveryLevel else {
             return
         }
         self = .handled
@@ -319,6 +330,8 @@ private struct SetupFeatureState<Host: SetupFeatureHost>: FeatureState {
 
     var form = SetupFeatureForm<Host>()
 
+    static func registerMiddlewares(in store: any Store<Host>) -> [MiddlewareWrapper<Host>] {}
+
     static func entryPoint(input: Void) -> EmptyView {
         EmptyView()
     }
@@ -343,9 +356,6 @@ private struct SetupLeafForm<Host: SetupFeatureHost>: UDF.Form, InitialSetup {
 
 // MARK: - Dual feature fixtures
 
-private struct IncrementFirstCounter: Action {}
-private struct IncrementSecondCounter: Action {}
-
 private struct CounterFeaturesHostState: AppReducer {
     var firstCounter = FirstCounterFeatureState<CounterFeaturesHostState>()
     var secondCounter = SecondCounterFeatureState<CounterFeaturesHostState>()
@@ -357,8 +367,10 @@ private struct FirstCounterFeatureState<Host: AppReducer>: FeatureState {
 
     var value = 0
 
+    static func registerMiddlewares(in store: any Store<Host>) -> [MiddlewareWrapper<Host>] {}
+
     mutating func reduce(_ action: some Action) {
-        if action is IncrementFirstCounter {
+        if action is Actions.IncrementFirstCounter {
             value += 1
         }
     }
@@ -374,8 +386,10 @@ private struct SecondCounterFeatureState<Host: AppReducer>: FeatureState {
 
     var value = 0
 
+    static func registerMiddlewares(in store: any Store<Host>) -> [MiddlewareWrapper<Host>] {}
+
     mutating func reduce(_ action: some Action) {
-        if action is IncrementSecondCounter {
+        if action is Actions.IncrementSecondCounter {
             value += 1
         }
     }

@@ -11,6 +11,7 @@
 
 import Foundation
 import os
+import SwiftUI
 import Testing
 @testable import UDF
 import UDFSwiftTesting
@@ -19,10 +20,7 @@ struct FeatureMiddlewareDependencyTests {
     @TestStoreActor
     @Test("Feature registration preserves shared services and exact queue instances")
     func registrationPreservesDependencyIdentity() async throws {
-        let store = TestStore(
-            initial: AppState(),
-            registerFeatureMiddlewares: false
-        )
+        let store = TestStore(initial: AppState())
         var wrappers: [MiddlewareWrapper<AppState>] = []
 
         await store.subscribe { store in
@@ -57,10 +55,7 @@ struct FeatureMiddlewareDependencyTests {
     func callbacksExecuteOnExactInjectedQueues() async {
         let firstQueue = DispatchQueue(label: QueueLabel.shared)
         let secondQueue = DispatchQueue(label: QueueLabel.shared)
-        let store = await TestStore(
-            initial: AppState(),
-            registerFeatureMiddlewares: false
-        )
+        let store = await TestStore(initial: AppState())
 
         await confirmation("All callbacks execute on their injected queue", expectedCount: 4) { confirm in
             let firstEnvironment = FirstFeatureEnvironment(
@@ -88,7 +83,7 @@ struct FeatureMiddlewareDependencyTests {
 
             #expect(firstEnvironment.dependency === secondEnvironment.dependency)
 
-            await store.subscribe(build: { store in
+            await store.subscribe { store -> [MiddlewareWrapper<AppState>] in
                 FirstFeatureMiddleware(
                     store: store,
                     environment: firstEnvironment,
@@ -99,9 +94,9 @@ struct FeatureMiddlewareDependencyTests {
                     environment: secondEnvironment,
                     queue: secondQueue
                 )
-            })
+            }
 
-            await store.dispatch(InvokeMiddlewareCallbacks())
+            await store.dispatch(Actions.InvokeMiddlewareCallbacks())
             await store.wait()
         }
     }
@@ -147,7 +142,7 @@ struct FeatureMiddlewareDependencyTests {
 
             await TestEnvironmentContext.$environment.withValue(testEnvironment) {
                 let store = EnvironmentStore(initial: AppState(), loggers: [])
-                store.dispatch(InvokeMiddlewareCallbacks())
+                store.dispatch(Actions.InvokeMiddlewareCallbacks())
 
                 let executed = await waitForCondition(timeout: 5) {
                     callbackCount.withLock { $0 == 4 }
@@ -163,10 +158,7 @@ struct FeatureMiddlewareDependencyTests {
     )
     func sharedQueueExecutesCallbacksOnSameQueueInstance() async {
         let sharedQueue = DispatchQueue(label: "FeatureMiddlewareDependencyTests.shared-work-queue")
-        let store = await TestStore(
-            initial: AppState(),
-            registerFeatureMiddlewares: false
-        )
+        let store = await TestStore(initial: AppState())
 
         await confirmation("Shared queue callbacks execute on shared queue", expectedCount: 4) { confirm in
             let firstEnvironment = FirstFeatureEnvironment(
@@ -192,15 +184,21 @@ struct FeatureMiddlewareDependencyTests {
                 }
             )
 
-            await store.subscribe(build: { store in
+            await store.subscribe { store -> [MiddlewareWrapper<AppState>] in
                 FirstFeatureMiddleware(store: store, environment: firstEnvironment, queue: sharedQueue)
                 SecondFeatureMiddleware(store: store, environment: secondEnvironment, queue: sharedQueue)
-            })
+            }
 
-            await store.dispatch(InvokeMiddlewareCallbacks())
+            await store.dispatch(Actions.InvokeMiddlewareCallbacks())
             await store.wait()
         }
     }
+}
+
+// MARK: - Actions
+
+private extension Actions {
+    struct InvokeMiddlewareCallbacks: Action {}
 }
 
 // MARK: - Feature Composition Fixtures
@@ -229,7 +227,7 @@ private extension FeatureMiddlewareDependencyTests {
         var isTriggered = false
 
         mutating func reduce(_ action: some Action) {
-            guard action is InvokeMiddlewareCallbacks else {
+            guard action is Actions.InvokeMiddlewareCallbacks else {
                 return
             }
 
@@ -237,9 +235,14 @@ private extension FeatureMiddlewareDependencyTests {
         }
     }
 
-    struct FirstFeatureState: Reducible, MiddlewareRegistering {
-        @MiddlewareBuilder<AppState>
-        static func registerMiddlewares(in store: any Store<AppState>) -> [MiddlewareWrapper<AppState>] {
+    struct FirstFeatureState: FeatureState<FeatureMiddlewareDependencyTests.AppState> {
+        static func entryPoint(input: Void) -> some View {
+            EmptyView()
+        }
+
+        static func registerMiddlewares(
+            in store: any Store<FeatureMiddlewareDependencyTests.AppState>
+        ) -> [MiddlewareWrapper<FeatureMiddlewareDependencyTests.AppState>] {
             FirstFeatureMiddleware(
                 store: store,
                 environment: TestEnvironmentContext.environment?.first
@@ -249,9 +252,14 @@ private extension FeatureMiddlewareDependencyTests {
         }
     }
 
-    struct SecondFeatureState: Reducible, MiddlewareRegistering {
-        @MiddlewareBuilder<AppState>
-        static func registerMiddlewares(in store: any Store<AppState>) -> [MiddlewareWrapper<AppState>] {
+    struct SecondFeatureState: FeatureState<FeatureMiddlewareDependencyTests.AppState> {
+        static func entryPoint(input: Void) -> some View {
+            EmptyView()
+        }
+
+        static func registerMiddlewares(
+            in store: any Store<FeatureMiddlewareDependencyTests.AppState>
+        ) -> [MiddlewareWrapper<FeatureMiddlewareDependencyTests.AppState>] {
             SecondFeatureMiddleware(
                 store: store,
                 environment: TestEnvironmentContext.environment?.second
@@ -286,8 +294,6 @@ private extension FeatureMiddlewareDependencyTests {
         @TaskLocal static var environment: TestEnvironment?
     }
 
-    struct InvokeMiddlewareCallbacks: Action {}
-
     final class FirstFeatureMiddleware: Middleware<AppState>, @unchecked Sendable {
         var environment: FirstFeatureEnvironment!
 
@@ -304,7 +310,7 @@ private extension FeatureMiddlewareDependencyTests {
         }
 
         func reduce(_ action: some Action, for state: AppState) {
-            guard action is InvokeMiddlewareCallbacks else {
+            guard action is Actions.InvokeMiddlewareCallbacks else {
                 return
             }
 
@@ -336,7 +342,7 @@ private extension FeatureMiddlewareDependencyTests {
         }
 
         func reduce(_ action: some Action, for state: AppState) {
-            guard action is InvokeMiddlewareCallbacks else {
+            guard action is Actions.InvokeMiddlewareCallbacks else {
                 return
             }
 

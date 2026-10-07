@@ -20,10 +20,7 @@ struct FeatureMiddlewareRegistrationTests {
     @TestStoreActor
     @Test("Collection preserves explicit feature instances and legacy type wrappers")
     func collectionPreservesExplicitInstancesAndLegacyTypes() async throws {
-        let store = TestStore(
-            initial: RegistrationAppState(),
-            registerFeatureMiddlewares: false
-        )
+        let store = TestStore(initial: RegistrationAppState())
         var wrappers: [MiddlewareWrapper<RegistrationAppState>] = []
 
         await store.subscribe { store in
@@ -86,11 +83,33 @@ struct FeatureMiddlewareRegistrationTests {
         #expect(observedInitializedState)
     }
 
-    @Test("TestStore automatically builds test environments for type-registered feature middleware")
-    func storeAutomaticallyBuildsFeatureTestEnvironments() async {
+    @Test("TestStore leaves feature middleware unregistered until explicitly subscribed")
+    func testStoreDoesNotAutomaticallyRegisterFeatureMiddleware() async {
         let store = await TestStore(initial: RegistrationHostState())
 
         await store.dispatch(Actions.InvokeReplaceableFeatureMiddleware())
+        await store.wait()
+
+        let state = await store.state
+        #expect(state.replaceableFeature.form.marker == nil)
+        #expect(state.replaceableFeature.form.handledMarkers.isEmpty)
+        #expect(state.companionFeature.form.marker == nil)
+        #expect(state.replaceableFeature.form.preparedValue == "prepared")
+    }
+
+    @Test("TestStore builds test environments for explicitly subscribed middleware types")
+    func testStoreBuildsExplicitMiddlewareTestEnvironments() async {
+        let store = await TestStore(initial: RegistrationHostState())
+        await store.subscribe { _ -> [MiddlewareWrapper<RegistrationHostState>] in
+            ReplaceableFeatureMiddleware<RegistrationHostState>.self
+            CompanionFeatureMiddleware<RegistrationHostState>.self
+        }
+        let subscribed = await waitForCondition(timeout: 2) {
+            let state = await store.state
+            return state.replaceableFeature.form.marker == "replaceable-feature-test"
+                && state.companionFeature.form.marker == "companion-feature-test"
+        }
+        #expect(subscribed)
         await store.wait()
 
         let state = await store.state
@@ -98,79 +117,127 @@ struct FeatureMiddlewareRegistrationTests {
         #expect(state.companionFeature.form.marker == "companion-feature-test")
     }
 
-    @Test("TestStore allows re-registering and replacing an auto-registered middleware with custom environment")
-    func storeReplacesAutoRegisteredMiddleware() async {
+    @Test("TestStore subscribes only the selected middleware with its custom environment")
+    func testStoreRegistersSelectedMiddlewareWithCustomEnvironment() async {
         let store = await TestStore(initial: RegistrationHostState())
-
-        let automaticallyRegistered = await waitForCondition(timeout: 2) {
-            let state = await store.state
-            return state.replaceableFeature.form.marker == "replaceable-feature-test"
-                && state.companionFeature.form.marker == "companion-feature-test"
-        }
-        #expect(automaticallyRegistered)
-
         await store.subscribe(
             ReplaceableFeatureMiddleware<RegistrationHostState>.self,
-            environment: MarkerEnvironment(marker: "replaceable-feature-custom-override")
+            environment: MarkerEnvironment(marker: "custom-test-environment")
         )
-
-        let replacementRegistered = await waitForCondition(timeout: 2) {
-            await store.state.replaceableFeature.form.marker == "replaceable-feature-custom-override"
+        let subscribed = await waitForCondition(timeout: 2) {
+            await store.state.replaceableFeature.form.marker == "custom-test-environment"
         }
-        #expect(replacementRegistered)
+        #expect(subscribed)
+        await store.wait()
 
         await store.dispatch(Actions.ResetReplaceableMiddlewareRuns())
         await store.wait()
-
         await store.dispatch(Actions.InvokeReplaceableFeatureMiddleware())
         await store.wait()
 
         let state = await store.state
-        #expect(state.replaceableFeature.form.marker == "replaceable-feature-custom-override")
-        #expect(state.replaceableFeature.form.handledMarkers == ["replaceable-feature-custom-override"])
-        #expect(state.companionFeature.form.marker == "companion-feature-test")
+        #expect(state.replaceableFeature.form.handledMarkers == ["custom-test-environment"])
+        #expect(state.companionFeature.form.marker == nil)
     }
 
-    @Test("EnvironmentStore allows re-registering and replacing an auto-registered middleware with custom environment")
-    func environmentStoreReplacesAutoRegisteredMiddleware() async {
-        let store = EnvironmentStore(initial: RegistrationHostState(), loggers: [])
+    #if os(macOS) && DEBUG
+        @Test("EnvironmentStore traps when an automatically registered middleware is subscribed again")
+        func environmentStoreRejectsDuplicateMiddlewareInDebug() async throws {
+            let result = try await #require(
+                processExitsWith: .failure,
+                observing: [\.standardErrorContent]
+            ) {
+                let store = EnvironmentStore(initial: RegistrationAppState(), loggers: [])
+                store.subscribe(
+                    ExplicitRegistrationMiddleware<RegistrationAppState>.self,
+                    environment: MarkerEnvironment(marker: "duplicate")
+                )
+            }
 
-        let automaticallyRegistered = await waitForCondition(timeout: 2) {
-            store.state.replaceableFeature.form.marker == "replaceable-feature-test"
-                && store.state.companionFeature.form.marker == "companion-feature-test"
+            let standardError = String(decoding: result.standardErrorContent, as: UTF8.self)
+            #expect(standardError.contains("ExplicitRegistrationMiddleware"))
+            #expect(standardError.contains("is already registered"))
         }
-        #expect(automaticallyRegistered)
 
-        store.subscribe(
-            ReplaceableFeatureMiddleware<RegistrationHostState>.self,
-            environment: MarkerEnvironment(marker: "replaceable-feature-custom-override")
-        )
+        @Test("TestStore traps when a middleware type is explicitly subscribed twice in one batch")
+        func testStoreRejectsDuplicateMiddlewareInDebug() async throws {
+            let result = try await #require(
+                processExitsWith: .failure,
+                observing: [\.standardErrorContent]
+            ) {
+                let store = await TestStore(initial: RegistrationAppState())
+                await store.subscribe { _ -> [MiddlewareWrapper<RegistrationAppState>] in
+                    LegacyRegistrationMiddleware<RegistrationAppState>.self
+                    LegacyRegistrationMiddleware<RegistrationAppState>.self
+                }
+            }
 
-        let replacementRegistered = await waitForCondition(timeout: 2) {
-            store.state.replaceableFeature.form.marker == "replaceable-feature-custom-override"
+            let standardError = String(decoding: result.standardErrorContent, as: UTF8.self)
+            #expect(standardError.contains("LegacyRegistrationMiddleware"))
+            #expect(standardError.contains("is already registered"))
         }
-        #expect(replacementRegistered)
+    #endif
 
-        store.dispatch(Actions.ResetReplaceableMiddlewareRuns())
-        let recordsReset = await waitForCondition(timeout: 2) {
-            store.state.replaceableFeature.form.handledMarkers.isEmpty
-        }
-        #expect(recordsReset)
+    #if !DEBUG
+        @Test("EnvironmentStore retains both registrations of the same middleware type in release")
+        func environmentStoreAllowsDuplicateMiddlewareInRelease() async {
+            let store = EnvironmentStore(initial: RegistrationHostState(), loggers: [])
+            store.subscribe(
+                ReplaceableFeatureMiddleware<RegistrationHostState>.self,
+                environment: MarkerEnvironment(marker: "custom-test-environment")
+            )
 
-        store.dispatch(Actions.InvokeReplaceableFeatureMiddleware())
-        let replacementHandledAction = await waitForCondition(timeout: 2) {
-            !store.state.replaceableFeature.form.handledMarkers.isEmpty
-        }
-        #expect(replacementHandledAction)
+            let initiallyObserved = await waitForCondition(timeout: 2) {
+                store.state.replaceableFeature.form.handledMarkers.count == 2
+            }
+            #expect(initiallyObserved)
 
-        let duplicateHandledAction = await waitForCondition(timeout: 0.2) {
-            store.state.replaceableFeature.form.handledMarkers.count > 1
+            store.dispatch(Actions.ResetReplaceableMiddlewareRuns())
+            let recordsReset = await waitForCondition(timeout: 2) {
+                store.state.replaceableFeature.form.handledMarkers.isEmpty
+            }
+            #expect(recordsReset)
+
+            store.dispatch(Actions.InvokeReplaceableFeatureMiddleware())
+            let bothHandledAction = await waitForCondition(timeout: 2) {
+                store.state.replaceableFeature.form.handledMarkers.count == 2
+            }
+            #expect(bothHandledAction)
+            #expect(store.state.replaceableFeature.form.handledMarkers.sorted() == [
+                "custom-test-environment",
+                "replaceable-feature-test",
+            ])
         }
-        #expect(!duplicateHandledAction)
-        #expect(store.state.replaceableFeature.form.marker == "replaceable-feature-custom-override")
-        #expect(store.state.replaceableFeature.form.handledMarkers == ["replaceable-feature-custom-override"])
-        #expect(store.state.companionFeature.form.marker == "companion-feature-test")
-    }
+
+        @Test("TestStore retains both explicitly subscribed middleware instances in release")
+        func testStoreAllowsDuplicateMiddlewareInRelease() async {
+            let store = await TestStore(initial: RegistrationHostState())
+            await store.subscribe(
+                ReplaceableFeatureMiddleware<RegistrationHostState>.self,
+                environment: MarkerEnvironment(marker: "first-test-environment")
+            )
+            await store.subscribe(
+                ReplaceableFeatureMiddleware<RegistrationHostState>.self,
+                environment: MarkerEnvironment(marker: "second-test-environment")
+            )
+            let initiallyObserved = await waitForCondition(timeout: 2) {
+                await store.state.replaceableFeature.form.handledMarkers.count == 2
+            }
+            #expect(initiallyObserved)
+            await store.wait()
+
+            await store.dispatch(Actions.ResetReplaceableMiddlewareRuns())
+            await store.wait()
+            await store.dispatch(Actions.InvokeReplaceableFeatureMiddleware())
+            await store.wait()
+
+            let state = await store.state
+            #expect(state.replaceableFeature.form.handledMarkers.sorted() == [
+                "first-test-environment",
+                "second-test-environment",
+            ])
+        }
+    #endif
 
     @Test("Feature live environment builders forward to the app environment namespace")
     func liveEnvironmentBuildersForwardToAppEnvironments() {
@@ -377,6 +444,9 @@ private struct EmptyFeatureState<State: AppReducer>: FeatureState {
     typealias FeatureRouting = EmptyRouting
 
     var form = EmptyRegistrationForm()
+
+    static func registerMiddlewares(in store: any Store<State>) -> [MiddlewareWrapper<State>] {
+    }
 
     static func entryPoint(input: Void) -> some View {
         EmptyView()

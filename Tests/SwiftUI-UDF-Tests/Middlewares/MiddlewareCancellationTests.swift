@@ -149,11 +149,11 @@ import Foundation
     func testMiddlewareCancellationAll(action: CancellationAllAction) async throws {
         let store = await TestStore(initial: AppState())
         var observableMiddlewareToCancelAll: ObservableMiddlewareToCancelAll?
-        await store.subscribe(build: { store in
+        await store.subscribe { store in
             let middleware = ObservableMiddlewareToCancelAll(store: store, environment: ())
             observableMiddlewareToCancelAll = middleware
             return [MiddlewareWrapper(instance: middleware)]
-        })
+        }
 
         let tasks = 10
         for id in 0..<tasks {

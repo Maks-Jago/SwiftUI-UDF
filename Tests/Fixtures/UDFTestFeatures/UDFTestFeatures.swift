@@ -217,6 +217,9 @@ public struct TestSettingsFeatureState<AppState: TestSettingsFeature>:
 
     public init() {}
 
+    public static func registerMiddlewares(in store: any Store<AppState>) -> [MiddlewareWrapper<AppState>] {
+    }
+
     public static func entryPoint(
         input: TestSettingsInput
     ) -> TestSettingsDestination {

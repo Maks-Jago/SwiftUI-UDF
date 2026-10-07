@@ -17,6 +17,9 @@ import SwiftUI
 ///
 /// The `EnvironmentStore` class is responsible for handling application state, managing subscribers, and dispatching actions.
 /// It works in conjunction with the `AppReducer` to provide unidirectional data flow throughout the app.
+///
+/// - Important: Register each concrete middleware type only once per store. Duplicate registration
+///   traps in debug builds; release builds retain both instances without replacing either one.
 public final class EnvironmentStore<State: AppReducer>: @unchecked Sendable {
     @SourceOfTruth public private(set) var state: State
 
@@ -317,20 +320,9 @@ public extension EnvironmentStore {
 
 // MARK: - Feature Middleware Registration
 private extension EnvironmentStore {
-    /// Collects root-level feature middleware and subscribes the complete batch once.
     func subscribeFeatureMiddlewares(in state: State) {
-        var wrappers: [MiddlewareWrapper<State>] = []
-        RuntimeReducing.collectMiddlewareWrappers(reducer: state, store: store, into: &wrappers)
-
-        guard !wrappers.isEmpty else {
-            return
-        }
-
-        let middlewares = wrappers.map { wrapper in
-            wrapper.instance ?? middleware(store: store, type: wrapper.type)
-        }
-        executeSynchronously {
-            await self.store.subscribe(middlewares)
+        RuntimeReducing.subscribeFeatureMiddlewares(in: state, store: store) { wrapper in
+            middleware(store: store, type: wrapper.type)
         }
     }
 }
