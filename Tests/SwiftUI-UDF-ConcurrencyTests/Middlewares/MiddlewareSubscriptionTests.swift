@@ -13,10 +13,10 @@ private extension Actions {
 @Suite struct MiddlewareSubscriptionTests {
     @Test func middlewareSubscriptions() async {
         let store = await TestStore(initial: AppState())
-        await store.subscribe(build: { store in
+        await store.subscribe { store -> [MiddlewareWrapper<AppState>] in
             ObservableMiddleware.self
             ReducibleMiddleware(store: store)
-        })
+        }
 
         #expect(await store.state.testForm.type == nil)
 
