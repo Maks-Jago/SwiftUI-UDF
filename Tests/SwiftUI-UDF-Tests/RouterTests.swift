@@ -94,4 +94,15 @@ import Testing
         #expect(path1 == path2)
         #expect(path1 != path3)
     }
+    
+    @Test func mockedRoutingProducesEmptyView() {
+        enum TestRoute {
+            case destination
+        }
+
+        let routing = MockedRouting<TestRoute>()
+        let destination = routing.view(for: .destination)
+
+        #expect(destination is EmptyView)
+    }
 }

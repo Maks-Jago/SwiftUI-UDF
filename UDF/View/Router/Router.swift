@@ -118,3 +118,30 @@ public final class Router<R: Routing> {
         }
     }
 }
+
+/// A routing implementation that accepts a route type but always produces an empty destination.
+///
+/// Use this as a lightweight routing witness in tests and previews where navigation behavior is not
+/// under test. Production features that handle routes should provide their own concrete ``Routing``
+/// implementation instead.
+public class MockedRouting<Route>: Routing {
+    /// Creates an empty routing implementation.
+    public required init() {}
+
+    /// Ignores the supplied route and returns an empty destination.
+    public func view(for route: Route) -> some View {
+        EmptyView()
+    }
+}
+
+/// The routing witness for a feature that has no internal destinations.
+///
+/// Use this as a feature state's `FeatureRouting` when the feature does not perform navigation:
+///
+/// ```swift
+/// struct SettingsFeatureState<AppState: SettingsFeature>: FeatureState {
+///     typealias FeatureRouting = EmptyRouting
+///     // ...
+/// }
+/// ```
+public final class EmptyRouting: MockedRouting<Never> {}

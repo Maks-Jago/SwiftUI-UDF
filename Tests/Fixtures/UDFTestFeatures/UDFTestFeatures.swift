@@ -2,7 +2,6 @@ import SwiftUI
 import UDF
 
 // MARK: - Public feature integration surface
-
 public struct TestItem: StorageItem, Hashable {
     public let id: Int
     public let title: String
@@ -48,7 +47,7 @@ public protocol TestFeature: AppReducer {
     associatedtype TestItemsStorage: Storage<TestItem>
 
     var allTestItems: TestItemsStorage { get }
-    var testFeature: TestFeatureState<Self> { get }
+    var testFeatureState: TestFeatureState<Self> { get }
 }
 
 public struct TestFeatureInput: Equatable, Sendable {
@@ -72,6 +71,8 @@ public struct TestFeatureDestination: View {
 }
 
 public struct TestFeatureState<AppState: TestFeature>: FeatureState {
+    public typealias FeatureRouting = EmptyRouting
+
     public var form = TestForm()
     public var flow = TestFlow()
 
@@ -159,17 +160,17 @@ final class TestMiddleware<AppState: TestFeature>:
     }
 
     func scope(for state: AppState) -> Scope {
-        state.testFeature.flow
+        state.testFeatureState.flow
     }
 
     func observe(state: AppState) {
-        switch state.testFeature.flow {
+        switch state.testFeatureState.flow {
         case let .loading(page):
             execute(
                 flowId: TestFlow.id,
                 cancellation: TestMiddlewareCancellation.loadItems
             ) { [unowned self] flowID in
-                guard case let .loading(currentPage) = state.testFeature.flow, currentPage == page else {
+                guard case let .loading(currentPage) = state.testFeatureState.flow, currentPage == page else {
                     throw CancellationError()
                 }
 
@@ -212,6 +213,8 @@ public struct TestSettingsDestination: View {
 public struct TestSettingsFeatureState<AppState: TestSettingsFeature>:
     FeatureState
 {
+    public typealias FeatureRouting = EmptyRouting
+
     public init() {}
 
     public static func registerMiddlewares(in store: any Store<AppState>) -> [MiddlewareWrapper<AppState>] {
