@@ -63,21 +63,16 @@ extension DialogRegistryTests {
             Dialog.clearAll()
         }
         
-        @Test func legacyDialogRegistration_allowsPresentationById() async {
+        @Test func dslDialogRegistration_allowsPresentationById() async {
             #expect(store.state.form.dialog.status == .dismissed)
 
             Dialog.register(id: FormWithDialog.DialogId.dialogWithAction, store: store) { _ in
-                DialogCustomType.custom(
-                    content: .init(
-                        title: "Custom Title",
-                        message: "Custom Desciprion",
-                        actions: {
-                            DialogButton(title: "Cancel")
-                            DialogButton(title: "Primary", role: .destructive)
-                        }
-                    ),
-                    style: .alert
-                )
+                AlertDialog {
+                    DialogTitle("Custom Title")
+                    DialogMessage("Custom Desciprion")
+                    DialogButton(title: "Cancel")
+                    DialogButton(title: "Primary", role: .destructive)
+                }
             }
             await waitForCondition { Dialog.isRegistered(id: FormWithDialog.DialogId.dialogWithAction) }
             store.dispatch(Actions.PresentDialogWithAction())

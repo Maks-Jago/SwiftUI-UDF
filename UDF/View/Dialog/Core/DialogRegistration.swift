@@ -12,10 +12,6 @@
 import Foundation
 import SwiftUI
 
-/// Legacy typealias for the dialog component namespace.
-@available(*, deprecated, renamed: "Dialog")
-public typealias DialogRegistry = Dialog
-
 /// Registration system for reusable dialogs.
 ///
 /// The dialog registration system allows you to pre-define dialogs
@@ -48,7 +44,7 @@ enum _DialogRegistry {
     // MARK: - Private Storage
     
     /// Internal registry storage for dialog builders.
-    /// Protected by registrationQueue for thread safety.
+    /// Protected by queue for thread safety.
     nonisolated(unsafe) private static var registry: [AnyHashable: () -> any DialogTypeProtocol] = [:]
 
     /// Concurrent queue for thread-safe registry access.
@@ -60,37 +56,6 @@ enum _DialogRegistry {
     )
     
     // MARK: - Public Registration API
-    
-    /// Registers a dialog builder for a given identifier.
-    ///
-    /// The builder closure will be called each time the dialog is requested,
-    /// allowing for dynamic content based on current application state.
-    ///
-    /// - Parameters:
-    ///   - id: A unique identifier for the dialog. Can be any Hashable type.
-    ///   - builder: A closure that returns a dialogType when called.
-    ///
-    /// ## Example:
-    /// ```swift
-    /// Dialog.register(id: "deleteConfirmation") {
-    ///     DialogCustomType.custom(
-    ///         content: DialogContent("Delete Item", message: "This cannot be undone") {
-    ///             DialogButton.destructive("Delete") { performDelete() }
-    ///             DialogButton.cancel("Cancel")
-    ///         },
-    ///         style: .alert
-    ///     )
-    /// }
-    /// ```
-    @available(*, deprecated, message: "Use the new ResultBuilder-based register(id:dialog:) with AlertDialog, Toast, or ConfirmationDialog instead.")
-    public static func register<ID: Hashable & Sendable>(
-        id: ID,
-        builder: @escaping @Sendable () -> any DialogTypeProtocol
-    ) {
-        queue.async(flags: .barrier) {
-            registry[AnyHashable(id)] = builder
-        }
-    }
     
     /// Registers a convenient standard dialog factory for a given identifier.
     ///
@@ -109,14 +74,14 @@ enum _DialogRegistry {
         }
     }
     
-    /// Registers a type-safe ``Dialog`` (``AlertDialog``, ``Toast``, or ``ConfirmationDialog``)
+    /// Registers a type-safe ``DialogProtocol`` (``AlertDialog``, ``Toast``, or ``ConfirmationDialog``)
     /// for the given identifier.
     ///
     /// The builder closure is evaluated when the dialog is requested,
     /// allowing it to capture the latest state dynamically.
     ///
     /// ```swift
-    /// Dialog.register(id: MyDialogs.error) {
+    /// Dialog.register(id: MyDialogs.error, store: store) { _ in
     ///     AlertDialog {
     ///         DialogTitle("Error")
     ///         DialogMessage("Something went wrong.")
@@ -127,7 +92,7 @@ enum _DialogRegistry {
     ///
     /// - Parameters:
     ///   - id: A unique, hashable identifier for this dialog.
-    ///   - dialog: A closure that returns a ``Dialog`` conforming value.
+    ///   - dialog: A closure that returns a ``DialogProtocol`` conforming value.
     public static func register<ID: Hashable & Sendable, D: DialogProtocol>(
         id: ID,
         dialog: @escaping @Sendable () -> D
@@ -235,146 +200,4 @@ enum _DialogRegistry {
         }
     }
     
-    // MARK: - Convenience Registration
-    
-    /// Convenience function for registering simple message dialogs.
-    ///
-    /// - Parameters:
-    ///   - id: The identifier for the dialog.
-    ///   - category: The dialog category (success, error, warning, info).
-    ///   - message: The message to display.
-    ///   - style: The dialog style (defaults to .alert).
-    @available(*, deprecated, message: "Use the new ResultBuilder-based register(id:dialog:) with AlertDialog, Toast, or ConfirmationDialog instead.")
-    public static func register<ID: Hashable & Sendable>(
-        id: ID,
-        category: DialogCategory,
-        message: String,
-        style: DialogStyle = .alert
-    ) {
-        register(id: id) {
-            switch category {
-            case .success:
-                return DialogType.success(message: message, style: style)
-            case .error:
-                return DialogType.error(message: message, style: style)
-            case .warning:
-                return DialogType.warning(message: message, style: style)
-            case .info:
-                return DialogType.info(message: message, style: style)
-            case .custom:
-                let content = DialogContent(message)
-                return DialogCustomType.custom(content: content, style: style)
-            }
-        }
-    }
-}
-
-// MARK: - ToastRegistry Extension
-
-/// Toast-specific registration extensions for `_DialogRegistry`.
-///
-/// This extension provides convenient methods for registering toast dialogs
-/// with common configurations and patterns. Toasts are non-modal dialogs
-/// that appear as overlay notifications.
-extension _DialogRegistry {
-    
-    /// Registers a toast dialog with custom content and configuration.
-    ///
-    /// This method provides a convenient way to register toast dialogs with
-    /// rich content and custom styling. Unlike alerts, toasts support theming,
-    /// positioning, and non-modal presentation.
-    ///
-    /// - Parameters:
-    ///   - id: A unique identifier for the toast.
-    ///   - content: The dialog content with title, message, and actions.
-    ///   - configuration: Toast-specific configuration for styling and behavior.
-    ///   - onAutoDismiss: Optional callback executed when toast auto-dismisses due to timer.
-    ///
-    /// ## Example:
-    /// ```swift
-    /// Dialog.registerToast(id: "uploadProgress") {
-    ///     DialogContent(
-    ///         title: "Uploading File",
-    ///         actions: {
-    ///             DialogButton.cancel("Cancel") { cancelUpload() }
-    ///         }
-    ///     )
-    /// } configuration: {
-    ///     ToastConfiguration(
-    ///         theme: .vibrant,
-    ///         position: .bottom,
-    ///         defaultDuration: 5.0
-    ///     )
-    /// } onAutoDismiss: {
-    ///     print("Upload toast dismissed")
-    /// }
-    /// ```
-    @available(*, deprecated, message: "Use the new ResultBuilder-based register(id:dialog:) with Toast instead.")
-    static func registerToast<ID: Hashable & Sendable>(
-        id: ID,
-        content: @escaping @Sendable () -> DialogContent<EmptyView, EmptyView>,
-        configuration: @escaping @Sendable () -> ToastConfiguration = { .default },
-        onAutoDismiss: (@Sendable () -> Void)? = nil
-    ) {
-        register(id: id) {
-            let dialogContent = content()
-            var config = configuration()
-
-            // Set the onAutoDismiss callback in the configuration
-            if let onAutoDismiss = onAutoDismiss {
-                config.onAutoDismiss = onAutoDismiss
-            }
-
-            return DialogCustomType.custom(
-                content: dialogContent,
-                style: .toast(config)
-            )
-        }
-    }
-    
-    /// Registers a toast with custom SwiftUI content.
-    ///
-    /// This method allows registration of toasts with completely custom SwiftUI views,
-    /// providing maximum flexibility for rich notifications, progress indicators,
-    /// and interactive toast experiences.
-    ///
-    /// - Parameters:
-    ///   - id: A unique identifier for the toast.
-    ///   - title: The toast title.
-    ///   - customContent: A closure returning the custom SwiftUI content.
-    ///   - configuration: Toast configuration for styling and behavior.
-    ///   - onAutoDismiss: Optional callback executed when toast auto-dismisses due to timer.
-    ///
-    /// ## Example:
-    /// ```swift
-    /// Dialog.registerCustomToast(id: "downloadProgress", title: "Downloading") {
-    ///     VStack(spacing: 8) {
-    ///         ProgressView(value: downloadProgress)
-    ///         Text("\(Int(downloadProgress * 100))% complete")
-    ///             .font(.caption)
-    ///     }
-    /// } onAutoDismiss: {
-    ///     print("Download progress dismissed")
-    /// }
-    /// ```
-    @available(*, deprecated, message: "Use the new ResultBuilder-based register(id:dialog:) with Toast and DialogView instead.")
-    static func registerCustomToast<ID: Hashable & Sendable, CustomContent: View>(
-        id: ID,
-        title: String,
-        customContent: @escaping @Sendable () -> CustomContent,
-        configuration: @escaping @Sendable () -> ToastConfiguration = { .default },
-        onAutoDismiss: (@Sendable () -> Void)? = nil
-    ) {
-        register(id: id) {
-            let content = DialogContent(title: title, customContent: customContent)
-            var config = configuration()
-
-            // Set the onAutoDismiss callback in the configuration
-            if let onAutoDismiss = onAutoDismiss {
-                config.onAutoDismiss = onAutoDismiss
-            }
-
-            return DialogCustomType.custom(content: content, style: .toast(config))
-        }
-    }
 }

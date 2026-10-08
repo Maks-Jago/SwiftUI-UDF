@@ -15,18 +15,18 @@ import SwiftUI
 ///
 /// `ToastConfiguration` provides comprehensive control over how toast dialogs
 /// are displayed, animated, and behave. This includes theming, timing, user interaction,
-/// positioning, visual presentation options, and queue management.
+/// positioning, and visual presentation options. ``ToastQueueConfiguration`` controls the queue.
 ///
 /// ## Usage:
 /// ```swift
 /// // Default configuration
 /// let defaultConfig = ToastConfiguration()
 /// 
-/// // Custom configuration with queue settings
+/// // Custom appearance and duration
 /// let customConfig = ToastConfiguration(
 ///     theme: .vibrant,
-///     defaultDuration: 3.0,
-///     position: .bottom
+///     position: .bottom,
+///     defaultDuration: 3.0
 /// )
 /// 
 /// // Use with dialog
@@ -68,7 +68,7 @@ public struct ToastConfiguration: Hashable, Sendable {
     
     /// Whether users can dismiss toasts using swipe gestures.
     /// 
-    /// When enabled, swiping the toast in any direction will dismiss it.
+    /// When enabled, a sufficiently fast vertical swipe dismisses the toast.
     /// This follows platform conventions for dismissible UI elements.
     /// - Default: true
     public var swipeToDismiss: Bool
@@ -84,8 +84,8 @@ public struct ToastConfiguration: Hashable, Sendable {
     
     /// The transition effect used when toasts appear and disappear.
     /// 
-    /// Defines how toasts animate in and out of view. The transition automatically
-    /// adapts based on the toast position (slide from edges, scale for center).
+    /// Defines how toasts animate in and out of view. When no transition is supplied,
+    /// the initializer chooses one based on the position (slide from edges, scale for center).
     /// - Default: Slide from top edge combined with opacity fade
     public nonisolated(unsafe) var transition: AnyTransition
     
@@ -144,11 +144,11 @@ public struct ToastConfiguration: Hashable, Sendable {
     ///   - tapToDismiss: Enable tap-to-dismiss behavior. Defaults to true.
     ///   - swipeToDismiss: Enable swipe-to-dismiss behavior. Defaults to true.
     ///   - animation: Animation for presentation/dismissal. Defaults to spring animation.
-    ///   - transition: Transition effect for appearance. Defaults to slide from top.
-    ///   - maxWidth: Maximum toast width constraint. Defaults to 600.
+    ///   - transition: Transition effect for appearance. Defaults to a position-based transition when nil.
+    ///   - maxWidth: Maximum toast width constraint. Defaults to .infinity.
     ///   - horizontalPadding: Horizontal screen padding. Defaults to 16.
     ///   - textAlignment: Text alignment within toasts. Defaults to .leading.
-    ///   - onAutoDismiss: Callback for auto-dismiss events. Defaults to nil.
+    ///   - onAutoDismiss: Optional callback for timer-based dismissal. Defaults to nil.
     /// 
     /// ## Example:
     /// ```swift
@@ -302,7 +302,7 @@ public extension ToastConfiguration {
         defaultDuration: 3.0
     )
     
-    /// Configuration for medium-priority toasts with standard settings.
+    /// Configuration for low-priority toasts with a short duration.
     static let lowPriority = ToastConfiguration(
         priority: .low,
         defaultDuration: 1.0

@@ -12,8 +12,9 @@ import UDFSwiftTesting
 
     private func createCustomToastDialog(_ title: String, duration: TimeInterval = 2.0) -> any DialogTypeProtocol {
         let config = ToastConfiguration(defaultDuration: duration)
-        let content = DialogContent(title)
-        return DialogCustomType.custom(content: content, style: .toast(config))
+        return Toast(config: config) {
+            DialogMessage(title)
+        }
     }
 
     // MARK: - Queue Manager Basic Tests
@@ -419,8 +420,9 @@ import UDFSwiftTesting
                     onAutoDismissConfirmation()
                 }
             )
-            let content = DialogContent("Test Toast")
-            let toast = DialogCustomType.custom(content: content, style: .toast(config))
+            let toast = Toast(config: config) {
+                DialogMessage("Test Toast")
+            }
 
             queueManager.enqueue(toast)
 
@@ -445,8 +447,9 @@ import UDFSwiftTesting
                     onAutoDismissConfirmation()
                 }
             )
-            let content = DialogContent("Test Toast")
-            let toast = DialogCustomType.custom(content: content, style: .toast(config))
+            let toast = Toast(config: config) {
+                DialogMessage("Test Toast")
+            }
 
             queueManager.enqueue(toast)
 
@@ -480,8 +483,12 @@ import UDFSwiftTesting
                     }
                 )
 
-                let toast1 = DialogCustomType.custom(content: DialogContent("Toast 1"), style: .toast(toast1Config))
-                let toast2 = DialogCustomType.custom(content: DialogContent("Toast 2"), style: .toast(toast2Config))
+                let toast1 = Toast(config: toast1Config) {
+                    DialogMessage("Toast 1")
+                }
+                let toast2 = Toast(config: toast2Config) {
+                    DialogMessage("Toast 2")
+                }
 
                 queueManager.enqueue(toast1)
                 queueManager.enqueue(toast2)
@@ -526,8 +533,12 @@ import UDFSwiftTesting
                     }
                 )
 
-                let toast1 = DialogCustomType.custom(content: DialogContent("Toast 1"), style: .toast(toast1Config))
-                let toast2 = DialogCustomType.custom(content: DialogContent("Toast 2"), style: .toast(toast2Config))
+                let toast1 = Toast(config: toast1Config) {
+                    DialogMessage("Toast 1")
+                }
+                let toast2 = Toast(config: toast2Config) {
+                    DialogMessage("Toast 2")
+                }
 
                 queueManager.enqueue(toast1)
                 queueManager.enqueue(toast2)

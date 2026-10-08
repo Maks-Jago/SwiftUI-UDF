@@ -13,12 +13,12 @@ import SwiftUI
 
 /// A type-safe confirmation dialog built using ``ConfirmationDialogComponentBuilder``.
 ///
-/// `ConfirmationDialog` supports ``DialogTitle``, ``DialogMessage``, and ``DialogAction``
-/// components. Components like ``DialogIcon`` and ``DialogView`` are **not**
+/// `ConfirmationDialog` supports ``DialogTitle``, ``DialogMessage``, and ``DialogButton``
+/// components. Components like ``DialogIcon``, ``DialogView``, and ``DialogTextField`` are not
 /// supported and will produce a compile-time error if used.
 ///
 /// ```swift
-/// DialogRegistration.register(id: MyDialogs.logout) {
+/// Dialog.register(id: MyDialogs.logout, store: store) { _ in
 ///     ConfirmationDialog {
 ///         DialogTitle("Log Out")
 ///         DialogMessage("Are you sure you want to log out?")

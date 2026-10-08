@@ -75,60 +75,28 @@ public enum Actions {
         }
     }
     
-    /// `UpdateAlertStatus` is an action used to update the status of an alert within the UDF architecture.
-    /// It contains the alert's status and an identifier, enabling the management of alerts based on their unique IDs.
-    @available(*, deprecated, message: "Will be removed in future updates. Use UpdateDialogStatus instead.")
-    public struct UpdateAlertStatus: Action {
-        /// The status of the alert to be updated.
-        public var status: AlertBuilder.AlertStatus
-        
-        /// A unique identifier for the alert.
-        public var id: AnyHashable
-        
-        /// Initializes a new `UpdateAlertStatus` action.
-        ///
-        /// - Parameters:
-        ///   - status: The new status of the alert.
-        ///   - id: The unique identifier for the alert.
-        public init(status: AlertBuilder.AlertStatus, id: some Hashable) {
-            self.status = status
-            self.id = id
-        }
-        
-        /// Initializes a new `UpdateAlertStatus` action with a specific alert style.
-        ///
-        /// - Parameters:
-        ///   - style: The style of the alert to be used for creating the alert status.
-        ///   - id: The unique identifier for the alert.
-        public init(style: AlertBuilder.AlertStyle, id: some Hashable) {
-            self.status = .init(style: style)
-            self.id = id
-        }
-    }
-
     /// `UpdateDialogStatus` is an action used to update the state of a dialog within the UDF architecture.
     /// It contains the dialog's state and an identifier, enabling the management of dialogs based on their unique IDs.
-    ///
-    /// This is a direct migration from `UpdateAlertStatus` with the same functionality but updated to work
-    /// with the new Dialog System.
     ///
     /// ## Usage:
     /// ```swift
     /// // Update with a specific dialog state
-    /// let action = UpdateDialogStatus(
-    ///     state: .init(error: "Something went wrong"),
+    /// let errorAction = Actions.UpdateDialogStatus(
+    ///     status: .init(error: "Something went wrong"),
     ///     id: "errorDialog"
     /// )
     /// 
     /// // Update with a dialog type
-    /// let action = UpdateDialogStatus(
-    ///     dialog: .success("Operation completed"),
+    /// let successAction = Actions.UpdateDialogStatus(
+    ///     dialog: .success(message: "Operation completed", style: .alert),
     ///     id: "successdialog"
     /// )
     /// 
     /// // Update with custom content
-    /// let action = UpdateDialogStatus(
-    ///     content: DialogContent("Delete Item", message: "This cannot be undone") {
+    /// let deleteAction = Actions.UpdateDialogStatus(
+    ///     dialog: AlertDialog {
+    ///         DialogTitle("Delete Item")
+    ///         DialogMessage("This cannot be undone")
     ///         DialogButton.destructive("Delete") { performDelete() }
     ///         DialogButton.cancel("Cancel")
     ///     },
@@ -147,7 +115,7 @@ public enum Actions {
         /// Initializes a new `UpdateDialogStatus` action with a specific dialog state.
         ///
         /// - Parameters:
-        ///   - state: The new state of the dialog.
+        ///   - status: The new state of the dialog.
         ///   - id: The unique identifier for the dialog.
         public init(status: DialogStatus, id: some Hashable) {
             self.status = status
@@ -161,17 +129,6 @@ public enum Actions {
         ///   - id: The unique identifier for the dialog.
         public init(dialog: DialogType, id: some Hashable) {
             self.status = .init(dialog: dialog)
-            self.id = AnyHashable(id)
-        }
-        
-        /// Initializes a new `UpdateDialogStatus` action with custom dialog content.
-        ///
-        /// - Parameters:
-        ///   - content: The custom content for the dialog.
-        ///   - id: The unique identifier for the dialog.
-        ///   - style: The dialog style (defaults to .alert).
-        public init<Icon: View, Content: View>(content: DialogContent<Icon, Content>, id: some Hashable, style: DialogStyle = .alert) {
-            self.status = .init(dialog: DialogCustomType.custom(content: content, style: style))
             self.id = AnyHashable(id)
         }
         

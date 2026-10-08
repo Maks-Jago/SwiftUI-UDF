@@ -13,12 +13,12 @@ import SwiftUI
 
 /// A type-safe alert dialog built using ``AlertDialogComponentBuilder``.
 ///
-/// `AlertDialog` supports ``DialogTitle``, ``DialogMessage``, and ``DialogAction`` components.
+/// `AlertDialog` supports ``DialogTitle``, ``DialogMessage``, ``DialogButton``, and ``DialogTextField`` components.
 /// Components like ``DialogIcon`` and ``DialogView`` are **not** supported
 /// and will produce a compile-time error if used.
 ///
 /// ```swift
-/// DialogRegistration.register(id: MyDialogs.deleteConfirmation) {
+/// Dialog.register(id: MyDialogs.deleteConfirmation, store: store) { _ in
 ///     AlertDialog {
 ///         DialogTitle("Delete Item?")
 ///         DialogMessage("This action cannot be undone.")

@@ -23,7 +23,7 @@ import SwiftUI
 /// - **Flexible Layout**: Supports leading, center, and trailing text alignment
 /// - **Custom Content**: Can display arbitrary SwiftUI views
 /// - **Theming**: Full visual customization through ToastTheme
-/// - **Interactive Elements**: Support for action buttons with various roles
+/// - **Interactive Elements**: Action buttons execute their callbacks and dismiss the toast
 /// - **Accessibility**: Semantic colors and proper contrast handling
 ///
 /// ## Usage:
@@ -37,8 +37,7 @@ import SwiftUI
 /// )
 /// ```
 ///
-/// **Note**: This view is typically used internally by the dialog system
-/// and not directly instantiated by application code.
+/// This view is internal to the dialog system. Application code creates ``Toast`` values.
 struct ToastView: View {
 
     // MARK: - Properties
@@ -305,14 +304,13 @@ private extension ToastView {
     
     /// Horizontal row of action buttons with proper spacing and alignment.
     ///
-    /// Renders interactive buttons that allow users to take actions directly
-    /// from the toast dialog without dismissing it first.
+    /// Renders interactive buttons that execute their actions and then dismiss the toast.
     ///
     /// ## Button Behavior:
     /// - Uses plain button style for custom theming
     /// - Applies semantic colors based on toast type
     /// - Maintains consistent font styling from theme
-    /// - Supports all button roles (default, cancel, destructive)
+    /// - Uses the button title and action; role and disabled state are not forwarded
     ///
     /// ## Layout Alignment:
     /// - **Leading**: Buttons align left with trailing spacer

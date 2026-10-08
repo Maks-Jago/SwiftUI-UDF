@@ -14,12 +14,12 @@ import SwiftUI
 /// A type-safe toast dialog built using ``ToastComponentBuilder``.
 ///
 /// `Toast` supports ``DialogMessage``, ``DialogIcon``, ``DialogView``,
-/// and ``DialogAction`` components. ``DialogTitle`` is **not** supported and will
+/// and ``DialogButton`` components. ``DialogTitle`` and ``DialogTextField`` are not supported and will
 /// produce a compile-time error if used.
 ///
 /// ```swift
-/// DialogRegistration.register(id: MyDialogs.savedToast) {
-///     Toast(config: .init(hapticFeedback: .success)) {
+/// Dialog.register(id: MyDialogs.savedToast, store: store) { _ in
+///     Toast(config: .vibrant) {
 ///         DialogIcon { Image(systemName: "checkmark.circle.fill") }
 ///         DialogMessage("Changes saved.")
 ///     }

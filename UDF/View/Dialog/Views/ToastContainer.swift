@@ -43,8 +43,7 @@ struct ToastContainer: View {
     /// Creates a new toast container with the specified parameters.
     ///
     /// - Parameters:
-    ///   - initialToasts: Optional array of toast dialogs to display immediately.
-    ///   - configuration: The configuration controlling toast appearance and behavior.
+    ///   - initialToasts: Toast dialogs to enqueue when the container first appears. Defaults to an empty array.
     ///   - onDismiss: Callback executed when a toast is dismissed.
     init(
         initialToasts: [any DialogTypeProtocol] = [],
@@ -108,8 +107,7 @@ struct ToastContainer: View {
     
     /// Determines the effective configuration for a specific toast.
     ///
-    /// Combines the container's base configuration with any toast-specific
-    /// configuration overrides.
+    /// Returns the toast's configuration, or `.default` when its style is not `.toast`.
     ///
     /// - Parameter displayInfo: The toast display information.
     /// - Returns: The effective configuration to use for the toast.

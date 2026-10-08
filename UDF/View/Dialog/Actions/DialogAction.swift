@@ -16,7 +16,7 @@ import SwiftUI
 ///
 /// The `DialogAction` protocol defines interactive elements that can be used
 /// within dialogs, such as buttons or text fields. Since it conforms to `Hashable`,
-/// any types implementing this protocol can be uniquely identified and stored in
+/// types implementing this protocol can be compared and stored in
 /// collections like sets or used as dictionary keys.
 ///
 /// ## Conforming Types:
@@ -31,15 +31,6 @@ import SwiftUI
 /// ```
 public protocol DialogAction: Hashable, View, Sendable {}
 
-@available(*, deprecated, message: "Use `DialogAction` instead.")
-public typealias AlertAction = DialogAction
-
-@available(*, deprecated, message: "Use `DialogButton` instead.")
-public typealias AlertButton = DialogButton
-
-@available(*, deprecated, message: "Use `DialogTextField` instead.")
-public typealias AlertTextField = DialogTextField
-
 // MARK: - Default Implementation
 extension DialogAction {
     /// Creates a mutated copy of the conforming `DialogAction` object by applying the specified block.
@@ -52,7 +43,7 @@ extension DialogAction {
     ///
     /// ## Example:
     /// ```swift
-    /// let button = DialogAction(title: "Save", action: {})
+    /// let button = DialogButton(title: "Save", action: {})
     /// let disabledButton = button.mutate { button in
     ///     button.disabled = true
     /// }
@@ -62,56 +53,4 @@ extension DialogAction {
         block(&copy)
         return copy
     }
-}
-
-// MARK: - Action Type Classification
-
-/// Classifies the type of dialog action for presentation purposes.
-public enum DialogActionType: Equatable {
-    /// A button action that triggers behavior when tapped.
-    case button
-    
-    /// A text input field that captures user input.
-    case textField
-    
-    /// A custom action type for future extensibility.
-    case custom
-}
-
-// MARK: - Action Capability
-
-/// Describes the capabilities and requirements of a dialog action.
-public struct DialogActionCapability: OptionSet {
-    public let rawValue: Int
-    
-    public init(rawValue: Int) {
-        self.rawValue = rawValue
-    }
-    
-    /// Action requires user interaction (tapping, typing, etc.).
-    nonisolated(unsafe) public static let requiresInteraction =  DialogActionCapability(rawValue: 1 << 0)
-    
-    /// Action can be disabled/enabled.
-    nonisolated(unsafe) public static let canBeDisabled = DialogActionCapability(rawValue: 1 << 1)
-    
-    /// Action has a semantic role (cancel, destructive, etc.).
-    nonisolated(unsafe) public static let hasRole = DialogActionCapability(rawValue: 1 << 2)
-    
-    /// Action captures text input from the user.
-    nonisolated(unsafe) public static let capturesTextInput = DialogActionCapability(rawValue: 1 << 3)
-    
-    /// Action triggers immediate dialog dismissal.
-    nonisolated(unsafe) public static let dismissesDialog = DialogActionCapability(rawValue: 1 << 4)
-}
-
-// MARK: - Action Classification Protocol
-
-/// Protocol for classifying dialog action types and capabilities.
-/// This is used internally for presentation logic.
-protocol DialogActionClassification {
-    /// The type of this action.
-    var actionType: DialogActionType { get }
-    
-    /// The capabilities of this action.
-    var capabilities: DialogActionCapability { get }
 }
