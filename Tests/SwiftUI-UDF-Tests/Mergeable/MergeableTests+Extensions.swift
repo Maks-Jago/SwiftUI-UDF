@@ -90,40 +90,21 @@ extension MergeableTests {
         #expect(mergedStatic.tags == ["swift", "udf"])
         #expect(mergedStatic.description == "Hello")
 
-        // Test instance method (calls default forwarding implementation to static method)
-        let mergedInstance = old.merging(new)
-        #expect(mergedInstance.title == "title 2")
-        #expect(mergedInstance.text == "new text")
-        #expect(mergedInstance.number == 12.23)
-        #expect(mergedInstance.tags == ["swift", "udf"])
-        #expect(mergedInstance.description == "Hello")
-
-        #expect(mergedStatic == mergedInstance)
-
         // Test the custom rule in modern merging:
         // New title is "hi" (length 2 < 3) -> should keep "title 1"
         let newShortTitle = ModernItem(id: .init(value: 1), title: "hi", text: "new text", number: 0, tags: [], description: nil)
         let mergedShort = ModernItem.merging(new: newShortTitle, old: old)
         #expect(mergedShort.title == "title 1")
-
-        // Verifying it also works via instance method forwarding
-        let mergedShortInstance = old.merging(newShortTitle)
-        #expect(mergedShortInstance.title == "title 1")
     }
 
-    @Test func legacyItemBackwardsCompatibility() {
+    @Test func itemMergingPreservesOldNumber() {
         let old = Item(id: .init(value: 1), title: "title 1", text: "text", number: 12.23)
         let new = Item(id: .init(value: 1), title: "title 2", text: "new text", number: 0)
 
-        // Test static method (calls default forwarding implementation to legacy instance method)
         let mergedStatic = Item.merging(new: new, old: old)
         #expect(mergedStatic.title == "title 2")
         #expect(mergedStatic.text == "new text")
         #expect(mergedStatic.number == 12.23)
-
-        // Verify it matches direct instance merging
-        let mergedInstance = old.merging(new)
-        #expect(mergedStatic == mergedInstance)
     }
 
     struct TraceableItem: Mergeable, Identifiable, Equatable, Sendable {
@@ -196,4 +177,3 @@ extension MergeableTests {
         #expect(merged.description == "desc")
     }
 }
-

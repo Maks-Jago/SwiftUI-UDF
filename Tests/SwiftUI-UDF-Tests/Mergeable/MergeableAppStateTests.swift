@@ -12,8 +12,8 @@ struct MergeableAppStateTests {
         var id: Id
         var title: String
 
-        func merging(_ newValue: Item) -> Item {
-            self.filled(from: newValue) { filledValue, oldValue in
+        static func merging(new newValue: Item, old oldValue: Item) -> Item {
+            oldValue.filled(from: newValue) { filledValue, oldValue in
                 filledValue.title = newValue.title.isEmpty ? oldValue.title : newValue.title
             }
         }
