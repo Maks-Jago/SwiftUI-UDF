@@ -95,6 +95,9 @@ import SwiftUI
 ///
 /// - Note: `FeatureState` belongs to the modular protocol set. An app composed as a single module places
 ///   `Form`, `Flow` and `Storage` reducers in its app state directly and never adopts it.
+///
+/// - SeeAlso: ``NavigatingFeatureState``, for a feature with several screens of its own, and
+///   ``DeepLinkableFeatureState``, for a feature whose screens the app may open directly.
 public protocol FeatureState<AppState, FeatureRouting>: Reducible, MiddlewareRegistering {
     /// The routing implementation used by this feature's containers and components.
     ///
