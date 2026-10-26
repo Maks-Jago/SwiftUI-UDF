@@ -19,7 +19,8 @@ import SwiftUI
 /// store finds it there at launch and registers its middleware.
 ///
 /// Every feature explicitly implements middleware registration. A feature with no middleware leaves the
-/// registration method's body empty, making that choice visible at the conformance site.
+/// registration method's body empty, making that choice visible at the conformance site. The same holds for
+/// ``destinations``, the screens the feature pushes itself: a single-screen feature leaves the list empty.
 ///
 /// A feature states what it needs from its host in a single protocol and reaches the outside world only
 /// through it. `Environments` carries the same name in every feature, so Swift merges the requirements
@@ -55,6 +56,11 @@ import SwiftUI
 ///
 ///     public static func entryPoint(input: User.ID) -> some View {
 ///         ProfileContainer<AppState, FeatureRouting>(id: input)
+///     }
+///
+///     public static var destinations: some ViewModifier {
+///         ProfileDetailsRouting<AppState>.self
+///         EditProfileRouting<AppState>.self
 ///     }
 ///
 ///     public static func registerMiddlewares(in store: any Store<AppState>) -> [MiddlewareWrapper<AppState>] {
@@ -93,11 +99,17 @@ import SwiftUI
 /// }
 /// ```
 ///
+/// and registers the feature's destinations on every navigation stack the feature can appear on:
+///
+/// ```swift
+/// TabRoot()
+///     .navigationDestinations(for: ProfileFeatureState<AppState, AppProfileRouting>.self)
+/// ```
+///
 /// - Note: `FeatureState` belongs to the modular protocol set. An app composed as a single module places
 ///   `Form`, `Flow` and `Storage` reducers in its app state directly and never adopts it.
 ///
-/// - SeeAlso: ``NavigatingFeatureState``, for a feature with several screens of its own, and
-///   ``DeepLinkableFeatureState``, for a feature whose screens the app may open directly.
+/// - SeeAlso: ``DeepLinkableFeatureState``, for a feature whose screens the app may open directly.
 public protocol FeatureState<AppState, FeatureRouting>: Reducible, MiddlewareRegistering {
     /// The routing implementation used by this feature's containers and components.
     ///
@@ -126,4 +138,50 @@ public protocol FeatureState<AppState, FeatureRouting>: Reducible, MiddlewareReg
     /// - Parameter input: The values the feature needs in order to be entered.
     /// - Returns: The feature's entry view.
     static func entryPoint(input: Input) -> Destination
+
+    /// The modifier that registers the screens the feature pushes itself.
+    ///
+    /// Inferred from ``FeatureState/destinations``, so a conforming feature writes `some ViewModifier` and
+    /// never names this type.
+    associatedtype Destinations: ViewModifier
+
+    /// The routings of the screens the feature pushes itself, one per line.
+    ///
+    /// A navigation stack shows a pushed route only when a destination for the route's type is registered
+    /// on that stack. A feature's internal routes are private to its module, so the composing app cannot
+    /// register them; the feature lists their routings here and the app registers all of them with
+    /// `navigationDestinations(for:)`. Routes that leave the feature are not listed: the app resolves them
+    /// through ``FeatureRouting``.
+    ///
+    /// ```swift
+    /// public static var destinations: some ViewModifier {
+    ///     ProfileDetailsRouting<AppState>.self
+    ///     EditProfileRouting<AppState>.self
+    /// }
+    /// ```
+    ///
+    /// A feature that pushes nothing of its own leaves the list empty:
+    ///
+    /// ```swift
+    /// public static var destinations: some ViewModifier {}
+    /// ```
+    ///
+    /// - Important: There is no default implementation, and none should be added. In generic code a default
+    ///   would be used instead of the feature's own list, and its pushes would silently show nothing. Without
+    ///   a default, a feature that leaves out `destinations` does not compile.
+    @DestinationsBuilder
+    static var destinations: Destinations { get }
+}
+
+public extension View {
+    /// Lets the navigation stack this view is the root of show every screen a feature pushes itself.
+    ///
+    /// Apply it once per feature on each navigation stack the feature can appear on. The app does not need
+    /// to know which screens the feature registers.
+    ///
+    /// - Parameter feature: The feature whose ``FeatureState/destinations`` to register.
+    /// - Returns: A view whose navigation stack resolves the feature's internal routes.
+    func navigationDestinations<Feature: FeatureState>(for feature: Feature.Type) -> some View {
+        modifier(Feature.destinations)
+    }
 }

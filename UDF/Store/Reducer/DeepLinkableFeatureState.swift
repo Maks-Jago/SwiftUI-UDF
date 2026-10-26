@@ -57,9 +57,9 @@ import SwiftUI
 ///
 /// A linked screen can open with nothing loaded, so it loads what it shows from the link's values.
 ///
-/// Deep linking does not require internal navigation. A single-screen feature conforms to this protocol
-/// alone; a feature with several screens conforms to ``NavigatingFeatureState`` as well. Either way the app
-/// registers it with the same `navigationDestinations(for:)` call.
+/// Deep linking does not require internal navigation: a single-screen feature leaves its
+/// ``FeatureState/destinations`` empty and exposes its entry screen as a link. Either way the app registers
+/// the feature with the same `navigationDestinations(for:)` call.
 public protocol DeepLinkableFeatureState: FeatureState {
     /// The routing of the screens the app may open directly. Its routes are the feature's links.
     ///
@@ -69,25 +69,15 @@ public protocol DeepLinkableFeatureState: FeatureState {
 }
 
 public extension View {
-    /// Lets the navigation stack this view is the root of show every screen a feature exposes as a link.
-    ///
-    /// - Parameter feature: The feature whose ``DeepLinkableFeatureState/LinkRouting`` to register.
-    /// - Returns: A view whose navigation stack resolves the feature's links.
-    func navigationDestinations<Feature: DeepLinkableFeatureState>(for feature: Feature.Type) -> some View {
-        modifier(RoutingDestination<Feature.LinkRouting>())
-    }
-
-    /// Lets the navigation stack this view is the root of show every screen a feature pushes internally and
+    /// Lets the navigation stack this view is the root of show every screen a feature pushes itself and
     /// every screen it exposes as a link.
     ///
-    /// A feature that conforms to both protocols matches both single-protocol overloads. This overload is
-    /// more specific than either, so the compiler chooses it and the call stays unambiguous.
+    /// This overload is more specific than the one for any ``FeatureState``, so a deep-linkable feature
+    /// registers its link routing through the same call.
     ///
     /// - Parameter feature: The feature whose destinations and link routing to register.
     /// - Returns: A view whose navigation stack resolves the feature's internal routes and links.
-    func navigationDestinations<Feature: NavigatingFeatureState & DeepLinkableFeatureState>(
-        for feature: Feature.Type
-    ) -> some View {
+    func navigationDestinations<Feature: DeepLinkableFeatureState>(for feature: Feature.Type) -> some View {
         modifier(Feature.destinations)
             .modifier(RoutingDestination<Feature.LinkRouting>())
     }

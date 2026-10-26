@@ -13,7 +13,7 @@ import SwiftUI
 
 /// A modifier that registers the routes of one routing type as navigation destinations.
 ///
-/// ``DestinationsBuilder`` creates one for each routing listed in ``NavigatingFeatureState/destinations``,
+/// ``DestinationsBuilder`` creates one for each routing listed in ``FeatureState/destinations``,
 /// and ``DeepLinkableFeatureState`` registers its ``DeepLinkableFeatureState/LinkRouting`` with one.
 public struct RoutingDestination<R: Routing>: ViewModifier where R.Route: Hashable {
     nonisolated init() {}
