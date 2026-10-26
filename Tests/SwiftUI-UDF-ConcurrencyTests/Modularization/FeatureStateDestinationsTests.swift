@@ -1,4 +1,4 @@
-//===--- NavigatingFeatureStateTests.swift ------------------------===//
+//===--- FeatureStateDestinationsTests.swift ----------------------===//
 //
 // This source file is part of the UDF open source project
 //
@@ -13,8 +13,8 @@ import SwiftUI
 import Testing
 @testable import UDF
 
-@Suite("Navigating feature state")
-struct NavigatingFeatureStateTests {
+@Suite("Feature state destinations")
+struct FeatureStateDestinationsTests {
     @Test("Destinations register every listed routing in order")
     func destinationsRegisterListedRoutingsInOrder() {
         let destinations = FirstFeatureState<NavigationHostState>.destinations
@@ -41,7 +41,7 @@ struct NavigatingFeatureStateTests {
 
     @Test("Generic code reads each feature's own destinations")
     func genericCodeReadsEachFeaturesOwnDestinations() {
-        func destinationsType<Feature: NavigatingFeatureState>(of feature: Feature.Type) -> Any.Type {
+        func destinationsType<Feature: FeatureState>(of feature: Feature.Type) -> Any.Type {
             type(of: Feature.destinations)
         }
 
@@ -96,7 +96,7 @@ private struct SecondRouting: Routing {
     }
 }
 
-// MARK: - Navigating feature fixtures
+// MARK: - Feature fixtures
 
 private struct NavigationHostState: AppReducer {
     var first = FirstFeatureState<NavigationHostState>()
@@ -104,7 +104,7 @@ private struct NavigationHostState: AppReducer {
     var empty = EmptyFeatureState<NavigationHostState>()
 }
 
-private struct FirstFeatureState<Host: AppReducer>: NavigatingFeatureState {
+private struct FirstFeatureState<Host: AppReducer>: FeatureState {
     typealias AppState = Host
     typealias FeatureRouting = EmptyRouting
 
@@ -120,7 +120,7 @@ private struct FirstFeatureState<Host: AppReducer>: NavigatingFeatureState {
     }
 }
 
-private struct SecondFeatureState<Host: AppReducer>: NavigatingFeatureState {
+private struct SecondFeatureState<Host: AppReducer>: FeatureState {
     typealias AppState = Host
     typealias FeatureRouting = EmptyRouting
 
@@ -135,7 +135,7 @@ private struct SecondFeatureState<Host: AppReducer>: NavigatingFeatureState {
     }
 }
 
-private struct EmptyFeatureState<Host: AppReducer>: NavigatingFeatureState {
+private struct EmptyFeatureState<Host: AppReducer>: FeatureState {
     typealias AppState = Host
     typealias FeatureRouting = EmptyRouting
 

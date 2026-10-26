@@ -23,12 +23,12 @@ struct DeepLinkableFeatureStateTests {
 
         #expect(
             ObjectIdentifier(type(of: root))
-                == ObjectIdentifier(ModifiedContent<Text, RoutingDestination<FirstLinkRouting>>.self)
+                == ObjectIdentifier(ModifiedContent<ModifiedContent<Text, EmptyModifier>, RoutingDestination<FirstLinkRouting>>.self)
         )
     }
 
     @MainActor
-    @Test("A stack root registers both destinations and link routing of a navigating feature")
+    @Test("A stack root registers both destinations and link routing of a feature with several screens")
     func stackRootRegistersDestinationsAndLinkRouting() {
         let root = Text("Root")
             .navigationDestinations(for: SecondFeatureState<DeepLinkHostState>.self)
@@ -114,6 +114,8 @@ private struct FirstFeatureState<Host: AppReducer>: DeepLinkableFeatureState {
     typealias FeatureRouting = EmptyRouting
     typealias LinkRouting = FirstLinkRouting
 
+    static var destinations: some ViewModifier {}
+
     static func registerMiddlewares(in store: any Store<Host>) -> [MiddlewareWrapper<Host>] {}
 
     static func entryPoint(input: Void) -> EmptyView {
@@ -121,7 +123,7 @@ private struct FirstFeatureState<Host: AppReducer>: DeepLinkableFeatureState {
     }
 }
 
-private struct SecondFeatureState<Host: AppReducer>: NavigatingFeatureState, DeepLinkableFeatureState {
+private struct SecondFeatureState<Host: AppReducer>: DeepLinkableFeatureState {
     typealias AppState = Host
     typealias FeatureRouting = EmptyRouting
     typealias LinkRouting = SecondLinkRouting

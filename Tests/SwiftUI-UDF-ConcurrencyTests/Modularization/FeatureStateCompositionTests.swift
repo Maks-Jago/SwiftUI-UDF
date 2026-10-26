@@ -136,6 +136,8 @@ private struct EmptyFeatureState<Host: AppReducer>: FeatureState {
     typealias AppState = Host
     typealias FeatureRouting = EmptyRouting
 
+    static var destinations: some ViewModifier {}
+
     static func registerMiddlewares(in store: any Store<Host>) -> [MiddlewareWrapper<Host>] {
     }
 
@@ -172,6 +174,8 @@ private struct AutoRegisteredFeatureState<Host: AutoRegisteredFeatureHost>: Feat
     static func entryPoint(input: Void) -> EmptyView {
         EmptyView()
     }
+
+    static var destinations: some ViewModifier {}
 
     static func registerMiddlewares(
         in store: any Store<Host>
@@ -262,6 +266,8 @@ private struct NestedFeatureState<Host: AppReducer>: FeatureState {
     var form = NestedFeatureForm()
     var flow = NestedFeatureFlow()
 
+    static var destinations: some ViewModifier {}
+
     static func registerMiddlewares(in store: any Store<Host>) -> [MiddlewareWrapper<Host>] {}
 
     static func entryPoint(input: Void) -> EmptyView {
@@ -330,6 +336,8 @@ private struct SetupFeatureState<Host: SetupFeatureHost>: FeatureState {
 
     var form = SetupFeatureForm<Host>()
 
+    static var destinations: some ViewModifier {}
+
     static func registerMiddlewares(in store: any Store<Host>) -> [MiddlewareWrapper<Host>] {}
 
     static func entryPoint(input: Void) -> EmptyView {
@@ -367,6 +375,8 @@ private struct FirstCounterFeatureState<Host: AppReducer>: FeatureState {
 
     var value = 0
 
+    static var destinations: some ViewModifier {}
+
     static func registerMiddlewares(in store: any Store<Host>) -> [MiddlewareWrapper<Host>] {}
 
     mutating func reduce(_ action: some Action) {
@@ -385,6 +395,8 @@ private struct SecondCounterFeatureState<Host: AppReducer>: FeatureState {
     typealias FeatureRouting = EmptyRouting
 
     var value = 0
+
+    static var destinations: some ViewModifier {}
 
     static func registerMiddlewares(in store: any Store<Host>) -> [MiddlewareWrapper<Host>] {}
 
