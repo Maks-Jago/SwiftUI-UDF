@@ -527,7 +527,7 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
     /// cancellation, error mapping, and action mapping.
     ///
     /// - Parameters:
-    ///   - id: A unique identifier for the task, used for tracking and error mapping.
+    ///   - flowId: A unique identifier for the task, used for tracking and error mapping.
     ///   - cancellation: A unique identifier for tracking and potentially canceling the effect.
     ///   - mapAction: A closure that maps the result of the task to an action. Defaults to an identity mapping (`{ $0 }`).
     ///   - mapError: A closure that maps errors thrown by the task to an action. Defaults to creating an `Actions.Error` action using the
@@ -535,7 +535,7 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
     ///   - fileName: The name of the file from which the method is called. Defaults to the file where this method is used.
     ///   - functionName: The name of the function from which the method is called. Defaults to the function where this method is used.
     ///   - lineNumber: The line number from which the method is called. Defaults to the line where this method is used.
-    ///   - task: The asynchronous task to execute. It takes the task's `id` as a parameter and returns an action.
+    ///   - task: The asynchronous task to execute. It takes the task's `flowId` as a parameter and returns an action.
     ///
     /// This method:
     /// - Wraps the provided asynchronous task in a `ConcurrencyBlockEffect`.
@@ -554,63 +554,21 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
         lineNumber: Int = #line,
         _ task: @escaping @Sendable (AnyHashable) async throws -> any Action
     ) {
-        let anyCancellationId = AnyHashable(cancellation)
-
-        // Prevent running the effect if an effect with the same cancellation ID is already in progress
-        guard cancellations[anyCancellationId] == nil else {
-            return
-        }
-
-        // Capture file name, function name, and line number for debugging and logging purposes
-        let filePosition: FileFunctionLineDescription = (fileName: fileName, functionName: functionName, lineNumber: lineNumber)
-        TestGroup.instance(for: store).enter()
-
-        // Start the task and store the cancellation token
-        let task = Task { @Sendable [weak self] in
-            do {
-                // Execute the effect's task, passing flowId
-                let action = try await task(flowId)
-
-                // Check if the task was cancelled and dispatch appropriate actions
-                if Task.isCancelled {
-                    self?.dispatch(action: mapAction(Actions.DidCancelEffect(by: cancellation)), filePosition: filePosition)
-                } else {
-                    self?.dispatch(action: mapAction(action), filePosition: filePosition)
-                }
-
-            } catch {
-                // Handle errors and task cancellation
-                if error is CancellationError {
-                    self?.dispatch(action: mapAction(Actions.DidCancelEffect(by: cancellation)), filePosition: filePosition)
-                } else if !Task.isCancelled {
-                    self?.dispatch(action: mapError(flowId, error), filePosition: filePosition)
-                }
-            }
-
-            // Remove the task from the cancellations dictionary
-            self?.cancellationsBox.withLockUnchecked { box in
-                box.removeCancellation(forKey: anyCancellationId)
-            }
-        }
-
-        // Store the task in the cancellations dictionary for future cancellation
-        cancellationsBox.withLockUnchecked { box in
-            box.set(cancellable: task, forKey: anyCancellationId)
-        }
-    }
-
-    private func dispatch(action: any Action, filePosition: FileFunctionLineDescription) {
-        queue.async { [weak self] in
-            self?.store.dispatch(
-                action,
-                fileName: filePosition.fileName,
-                functionName: filePosition.functionName,
-                lineNumber: filePosition.lineNumber
-            )
-            if let self {
-                TestGroup.instance(for: self.store).leave()
-            }
-        }
+        execute(
+            effect: ConcurrencyBlockEffect(
+                block: task,
+                fileName: fileName,
+                functionName: functionName,
+                lineNumber: lineNumber
+            ),
+            flowId: flowId,
+            cancellation: cancellation,
+            mapAction: mapAction,
+            mapError: mapError,
+            fileName: fileName,
+            functionName: functionName,
+            lineNumber: lineNumber
+        )
     }
 
     /// Executes a `ConcurrencyEffect` with support for cancellation and error handling.
@@ -645,16 +603,48 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
         functionName: String = #function,
         lineNumber: Int = #line
     ) {
-        execute(
-            flowId: flowId,
-            cancellation: cancellation,
-            mapAction: mapAction,
-            mapError: mapError,
-            fileName: fileName,
-            functionName: functionName,
-            lineNumber: lineNumber
-        ) { flowID in
-            try await effect.task(flowId: flowId)
+        let anyCancellationId = AnyHashable(cancellation)
+
+        // Prevent running the effect if an effect with the same cancellation ID is already in progress
+        guard cancellations[anyCancellationId] == nil else {
+            return
+        }
+
+        // Capture file name, function name, and line number for debugging and logging purposes
+        let filePosition: FileFunctionLineDescription = (fileName: fileName, functionName: functionName, lineNumber: lineNumber)
+        TestGroup.instance(for: store).enter()
+
+        // Start the task and store the cancellation token
+        let task = Task { @Sendable [weak self] in
+            do {
+                // Execute the effect's task, passing flowId
+                let action = try await effect.task(flowId: flowId)
+
+                // Check if the task was cancelled and dispatch appropriate actions
+                if Task.isCancelled {
+                    self?.dispatch(action: mapAction(Actions.DidCancelEffect(by: cancellation)), filePosition: filePosition)
+                } else {
+                    self?.dispatch(action: mapAction(action), filePosition: filePosition)
+                }
+
+            } catch {
+                // Handle errors and task cancellation
+                if error is CancellationError {
+                    self?.dispatch(action: mapAction(Actions.DidCancelEffect(by: cancellation)), filePosition: filePosition)
+                } else if !Task.isCancelled {
+                    self?.dispatch(action: mapError(flowId, error), filePosition: filePosition)
+                }
+            }
+
+            // Remove the task from the cancellations dictionary
+            self?.cancellationsBox.withLockUnchecked { box in
+                box.removeCancellation(forKey: anyCancellationId)
+            }
+        }
+
+        // Store the task in the cancellations dictionary for future cancellation
+        cancellationsBox.withLockUnchecked { box in
+            box.set(cancellable: task, forKey: anyCancellationId)
         }
     }
     
@@ -701,7 +691,7 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
             fileName: fileName,
             functionName: functionName,
             lineNumber: lineNumber
-        ) { [weak store] flowID in
+        ) { [weak store] flowId in
             guard let store else {
                 throw CancellationError()
             }
@@ -730,6 +720,19 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
 
 
 private extension _BaseMiddleware {
+    func dispatch(action: any Action, filePosition: FileFunctionLineDescription) {
+        queue.async { [weak self] in
+            self?.store.dispatch(
+                action,
+                fileName: filePosition.fileName,
+                functionName: filePosition.functionName,
+                lineNumber: filePosition.lineNumber
+            )
+            if let self {
+                TestGroup.instance(for: self.store).leave()
+            }
+        }
+    }
     /// Returns a copy of a state-based Combine effect with the middleware environment injected when the types match.
     ///
     /// The middleware environment is stored behind `EnvironmentMiddleware`, so the cast happens at runtime.
