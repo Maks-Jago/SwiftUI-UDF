@@ -1,7 +1,7 @@
 import Testing
 import SwiftUI
 @testable import UDF
-@testable import UDFModularizationTestFeature
+@testable import UDFTestFeatures
 import UDFSwiftTesting
 
 
@@ -172,6 +172,8 @@ struct TestHomeFeatureState<AppState: TestHomeFeature, FeatureRouting: Routing<T
             routing: FeatureRouting()
         )
     }
+
+    static func registerMiddlewares(in store: any Store<AppState>) -> [MiddlewareWrapper<AppState>] {}
 }
 
 enum TestHomeRoute: Hashable {
