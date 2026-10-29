@@ -497,29 +497,6 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
         )
     }
 
-    private func stateEffectPublisher<Effect: StateEffectable>(
-        effect: Effect,
-        flowId: AnyHashable,
-        cancellation: some Hashable
-    ) -> AnyPublisher<any Action, Never> where Effect.AppState == State {
-        let effect = effectWithEnvironment(effect)
-
-        return Publishers
-            .IsolatedState(from: store)
-            .flatMap { state -> AnyPublisher<any Action, Never> in
-                do {
-                    return try effect.publisher(flowId: flowId, state: state)
-                } catch is CancellationError {
-                    return Just(Actions.DidCancelEffect(by: cancellation))
-                        .eraseToAnyPublisher()
-                } catch {
-                    return Just(Actions.Error(error: error.localizedDescription, id: flowId))
-                        .eraseToAnyPublisher()
-                }
-            }
-            .eraseToAnyPublisher()
-    }
-
     // MARK: - Concurrency
     /// Executes an asynchronous task with support for cancellation and error handling.
     ///
@@ -720,6 +697,29 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
 
 
 private extension _BaseMiddleware {
+    func stateEffectPublisher<Effect: StateEffectable>(
+        effect: Effect,
+        flowId: AnyHashable,
+        cancellation: some Hashable
+    ) -> AnyPublisher<any Action, Never> where Effect.AppState == State {
+        let effect = effectWithEnvironment(effect)
+
+        return Publishers
+            .IsolatedState(from: store)
+            .flatMap { state -> AnyPublisher<any Action, Never> in
+                do {
+                    return try effect.publisher(flowId: flowId, state: state)
+                } catch is CancellationError {
+                    return Just(Actions.DidCancelEffect(by: cancellation))
+                        .eraseToAnyPublisher()
+                } catch {
+                    return Just(Actions.Error(error: error.localizedDescription, id: flowId))
+                        .eraseToAnyPublisher()
+                }
+            }
+            .eraseToAnyPublisher()
+    }
+    
     func dispatch(action: any Action, filePosition: FileFunctionLineDescription) {
         queue.async { [weak self] in
             self?.store.dispatch(

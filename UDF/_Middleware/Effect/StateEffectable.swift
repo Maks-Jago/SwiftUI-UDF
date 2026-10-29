@@ -18,6 +18,31 @@ import Foundation
 ///
 /// `StateEffectable` is the Combine equivalent of `StateConcurrencyEffect`. It is useful when the effect needs both middleware
 /// dependencies and a snapshot of the current state in order to build a publisher that emits actions.
+///
+/// ## Example of a `StateEffectable`
+///
+/// This example demonstrates how to load a user profile using a token stored in the current state.
+/// The environment's `loadProfile(token:)` method returns a publisher with a `Never` failure type.
+///
+/// ```swift
+/// private extension ProfileMiddleware {
+///     struct LoadProfileEffect: StateEffectable, Sendable {
+///         var environment: ProfileMiddleware.Environment!
+///
+///         func publisher(flowId: AnyHashable, state: AppState) throws -> AnyPublisher<any Action, Never> {
+///             guard let token = state.userForm.currentUser?.token else {
+///                 throw CancellationError()
+///             }
+///
+///             return environment.loadProfile(token: token)
+///                 .map { profile in
+///                     Actions.DidLoadItem(item: profile, id: flowId) as any Action
+///                 }
+///                 .eraseToAnyPublisher()
+///         }
+///     }
+/// }
+/// ```
 public protocol StateEffectable: EnvironmentEffect {
     associatedtype AppState: AppReducer
 

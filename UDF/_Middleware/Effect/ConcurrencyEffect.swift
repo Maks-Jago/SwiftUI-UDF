@@ -64,7 +64,7 @@ public protocol ConcurrencyEffect: Sendable {
 /// ```swift
 /// private extension ProfileMiddleware {
 ///     struct LoadProfileEffect: StateConcurrencyEffect {
-///         var environment: ProfileMiddleware.Environment
+///         var environment: ProfileMiddleware.Environment!
 ///
 ///         func task(flowId: AnyHashable, state: AppState) async throws -> any Action {
 ///             guard let token = state.userForm.currentUser?.token else {
