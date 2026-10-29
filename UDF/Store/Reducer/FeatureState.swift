@@ -106,10 +106,52 @@ import SwiftUI
 ///     .navigationDestinations(for: ProfileFeatureState<AppState, AppProfileRouting>.self)
 /// ```
 ///
+/// ## Links
+///
+/// A feature whose screens the app may open directly, for example from a URL, makes their links public and
+/// keeps the routing that resolves them internal. The links are a `Hashable` and `Sendable` enum whose cases
+/// carry only what each screen needs to open with nothing loaded, usually identifiers. Their routing is
+/// listed in ``destinations`` like any other, so the app gets the values and never the screens:
+///
+/// ```swift
+/// public enum ProfileLink: Hashable, Sendable {
+///     case profile(User.ID)
+///     case followers(User.ID)
+/// }
+///
+/// struct ProfileLinkRouting<AppState: ProfileFeature>: Routing {
+///     func view(for link: ProfileLink) -> some View {
+///         switch link {
+///         case let .profile(id):
+///             ProfileContainer<AppState>(id: id)
+///         case let .followers(id):
+///             FollowersContainer<AppState>(userID: id)
+///         }
+///     }
+/// }
+///
+/// public static var destinations: some ViewModifier {
+///     ProfileDetailsRouting<AppState>.self
+///     ProfileLinkRouting<AppState>.self
+/// }
+/// ```
+///
+/// The feature pushes the same values itself, so every linkable screen has one address. The app turns an
+/// incoming URL into a path of links and puts it on a stack where the feature is registered:
+///
+/// ```swift
+/// // Inside the feature, a link pushes its screen:
+/// globalRouter.navigate(for: ProfileLinkRouting<AppState>.self, to: .followers(user.id))
+///
+/// // In the app, a link from a URL replaces the stack:
+/// store.dispatch(Actions.NavigateResetStack(path: [ProfileLink.profile(id), ProfileLink.followers(id)]))
+/// ```
+///
+/// A linked screen can open with nothing loaded, so it loads what it shows from the link's values. A
+/// single-screen feature that exposes its entry screen as a link lists only its link routing.
+///
 /// - Note: `FeatureState` belongs to the modular protocol set. An app composed as a single module places
 ///   `Form`, `Flow` and `Storage` reducers in its app state directly and never adopts it.
-///
-/// - SeeAlso: ``DeepLinkableFeatureState``, for a feature whose screens the app may open directly.
 public protocol FeatureState<AppState, FeatureRouting>: Reducible, MiddlewareRegistering {
     /// The routing implementation used by this feature's containers and components.
     ///

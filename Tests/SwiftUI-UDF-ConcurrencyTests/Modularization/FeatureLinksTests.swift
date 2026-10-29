@@ -1,4 +1,4 @@
-//===--- DeepLinkableFeatureStateTests.swift ----------------------===//
+//===--- FeatureLinksTests.swift ----------------------------------===//
 //
 // This source file is part of the UDF open source project
 //
@@ -13,30 +13,30 @@ import SwiftUI
 import Testing
 @testable import UDF
 
-@Suite("Deep-linkable feature state")
-struct DeepLinkableFeatureStateTests {
+@Suite("Feature links")
+struct FeatureLinksTests {
     @MainActor
     @Test("A stack root registers the link routing of a single-screen feature")
     func stackRootRegistersSingleScreenFeatureLinkRouting() {
         let root = Text("Root")
-            .navigationDestinations(for: FirstFeatureState<DeepLinkHostState>.self)
+            .navigationDestinations(for: FirstFeatureState<LinkHostState>.self)
 
         #expect(
             ObjectIdentifier(type(of: root))
-                == ObjectIdentifier(ModifiedContent<ModifiedContent<Text, EmptyModifier>, RoutingDestination<FirstLinkRouting>>.self)
+                == ObjectIdentifier(ModifiedContent<Text, RoutingDestination<FirstLinkRouting>>.self)
         )
     }
 
     @MainActor
-    @Test("A stack root registers both destinations and link routing of a feature with several screens")
-    func stackRootRegistersDestinationsAndLinkRouting() {
+    @Test("A stack root registers a link routing together with the feature's other routings")
+    func stackRootRegistersLinkRoutingWithOtherRoutings() {
         let root = Text("Root")
-            .navigationDestinations(for: SecondFeatureState<DeepLinkHostState>.self)
+            .navigationDestinations(for: SecondFeatureState<LinkHostState>.self)
 
         #expect(
             ObjectIdentifier(type(of: root))
                 == ObjectIdentifier(
-                    ModifiedContent<ModifiedContent<Text, RoutingDestination<SecondRouting>>, RoutingDestination<SecondLinkRouting>>.self
+                    ModifiedContent<Text, ModifiedContent<RoutingDestination<SecondRouting>, RoutingDestination<SecondLinkRouting>>>.self
                 )
         )
     }
@@ -47,14 +47,14 @@ struct DeepLinkableFeatureStateTests {
         var path = NavigationPath()
         let router = GlobalRouter(path: Binding(get: { path }, set: { path = $0 }))
 
-        router.navigate(for: FirstFeatureState<DeepLinkHostState>.LinkRouting.self, to: .details(id: 1))
+        router.navigate(for: FirstLinkRouting.self, to: .details(id: 1))
 
         #expect(path == NavigationPath([FirstLink.details(id: 1)]))
     }
 
     @Test("An app navigation action carries links of several features as one path")
     func appNavigationActionCarriesLinksOfSeveralFeatures() async {
-        let store = await TestStore(initial: DeepLinkHostState())
+        let store = await TestStore(initial: LinkHostState())
 
         await store.dispatch(
             Actions.NavigateResetStack(path: [SecondLink.section(id: 2), FirstLink.details(id: 1)])
@@ -101,20 +101,21 @@ private struct SecondRouting: Routing {
     }
 }
 
-// MARK: - Deep-linkable feature fixtures
+// MARK: - Feature fixtures
 
-private struct DeepLinkHostState: AppReducer {
-    var first = FirstFeatureState<DeepLinkHostState>()
-    var second = SecondFeatureState<DeepLinkHostState>()
+private struct LinkHostState: AppReducer {
+    var first = FirstFeatureState<LinkHostState>()
+    var second = SecondFeatureState<LinkHostState>()
     var navigation = NavigationForm()
 }
 
-private struct FirstFeatureState<Host: AppReducer>: DeepLinkableFeatureState {
+private struct FirstFeatureState<Host: AppReducer>: FeatureState {
     typealias AppState = Host
     typealias FeatureRouting = EmptyRouting
-    typealias LinkRouting = FirstLinkRouting
 
-    static var destinations: some ViewModifier {}
+    static var destinations: some ViewModifier {
+        FirstLinkRouting.self
+    }
 
     static func registerMiddlewares(in store: any Store<Host>) -> [MiddlewareWrapper<Host>] {}
 
@@ -123,13 +124,13 @@ private struct FirstFeatureState<Host: AppReducer>: DeepLinkableFeatureState {
     }
 }
 
-private struct SecondFeatureState<Host: AppReducer>: DeepLinkableFeatureState {
+private struct SecondFeatureState<Host: AppReducer>: FeatureState {
     typealias AppState = Host
     typealias FeatureRouting = EmptyRouting
-    typealias LinkRouting = SecondLinkRouting
 
     static var destinations: some ViewModifier {
         SecondRouting.self
+        SecondLinkRouting.self
     }
 
     static func registerMiddlewares(in store: any Store<Host>) -> [MiddlewareWrapper<Host>] {}
