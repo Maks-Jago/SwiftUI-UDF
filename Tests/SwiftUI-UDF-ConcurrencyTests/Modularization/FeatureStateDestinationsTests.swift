@@ -21,7 +21,7 @@ struct FeatureStateDestinationsTests {
 
         #expect(
             ObjectIdentifier(type(of: destinations))
-                == ObjectIdentifier(ModifiedContent<RoutingDestination<FirstRouting>, RoutingDestination<SecondRouting>>.self)
+                == ObjectIdentifier(ModifiedContent<GlobalRoutingModifier<FirstRouting>, GlobalRoutingModifier<SecondRouting>>.self)
         )
     }
 
@@ -29,7 +29,7 @@ struct FeatureStateDestinationsTests {
     func destinationsWithSingleRoutingRegisterOnlyThatRouting() {
         let destinations = SecondFeatureState<NavigationHostState>.destinations
 
-        #expect(ObjectIdentifier(type(of: destinations)) == ObjectIdentifier(RoutingDestination<SecondRouting>.self))
+        #expect(ObjectIdentifier(type(of: destinations)) == ObjectIdentifier(GlobalRoutingModifier<SecondRouting>.self))
     }
 
     @Test("Empty destinations register nothing")
@@ -47,11 +47,11 @@ struct FeatureStateDestinationsTests {
 
         #expect(
             ObjectIdentifier(destinationsType(of: FirstFeatureState<NavigationHostState>.self))
-                == ObjectIdentifier(ModifiedContent<RoutingDestination<FirstRouting>, RoutingDestination<SecondRouting>>.self)
+                == ObjectIdentifier(ModifiedContent<GlobalRoutingModifier<FirstRouting>, GlobalRoutingModifier<SecondRouting>>.self)
         )
         #expect(
             ObjectIdentifier(destinationsType(of: SecondFeatureState<NavigationHostState>.self))
-                == ObjectIdentifier(RoutingDestination<SecondRouting>.self)
+                == ObjectIdentifier(GlobalRoutingModifier<SecondRouting>.self)
         )
         #expect(
             ObjectIdentifier(destinationsType(of: EmptyFeatureState<NavigationHostState>.self))
@@ -68,7 +68,7 @@ struct FeatureStateDestinationsTests {
         #expect(
             ObjectIdentifier(type(of: root))
                 == ObjectIdentifier(
-                    ModifiedContent<Text, ModifiedContent<RoutingDestination<FirstRouting>, RoutingDestination<SecondRouting>>>.self
+                    ModifiedContent<Text, ModifiedContent<GlobalRoutingModifier<FirstRouting>, GlobalRoutingModifier<SecondRouting>>>.self
                 )
         )
     }

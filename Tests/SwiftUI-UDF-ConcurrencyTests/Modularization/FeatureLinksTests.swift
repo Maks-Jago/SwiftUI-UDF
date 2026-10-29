@@ -23,7 +23,7 @@ struct FeatureLinksTests {
 
         #expect(
             ObjectIdentifier(type(of: root))
-                == ObjectIdentifier(ModifiedContent<Text, RoutingDestination<FirstLinkRouting>>.self)
+                == ObjectIdentifier(ModifiedContent<Text, GlobalRoutingModifier<FirstLinkRouting>>.self)
         )
     }
 
@@ -36,7 +36,7 @@ struct FeatureLinksTests {
         #expect(
             ObjectIdentifier(type(of: root))
                 == ObjectIdentifier(
-                    ModifiedContent<Text, ModifiedContent<RoutingDestination<SecondRouting>, RoutingDestination<SecondLinkRouting>>>.self
+                    ModifiedContent<Text, ModifiedContent<GlobalRoutingModifier<SecondRouting>, GlobalRoutingModifier<SecondLinkRouting>>>.self
                 )
         )
     }

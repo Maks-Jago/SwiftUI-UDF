@@ -28,8 +28,8 @@ public enum DestinationsBuilder {
     ///
     /// - Parameter routing: A routing type whose routes the navigation stack should resolve.
     /// - Returns: A modifier registering the routing's routes.
-    public static func buildExpression<R: Routing>(_ routing: R.Type) -> RoutingDestination<R> where R.Route: Hashable {
-        RoutingDestination()
+    public static func buildExpression<R: Routing>(_ routing: R.Type) -> some ViewModifier where R.Route: Hashable {
+        GlobalRoutingModifier(routing: routing)
     }
 
     /// Registers nothing, for a block that lists no routings.
