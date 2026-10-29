@@ -1,4 +1,4 @@
-//===--- ConcurrencyEffect.swift ---------------------------------===//
+//===--- ConcurrencyEffect.swift ------------------------------------------===//
 //
 // This source file is part of the UDF open source project
 //
@@ -48,6 +48,47 @@ public protocol ConcurrencyEffect: Sendable {
     /// - Parameter flowId: The unique identifier for the flow.
     /// - Returns: An action produced by the asynchronous task.
     func task(flowId: AnyHashable) async throws -> any Action
+}
+
+/// A protocol that defines an asynchronous effect that receives both a unique flow identifier and the current application state,
+/// and produces an action.
+///
+/// `StateConcurrencyEffect` represents an effect that runs asynchronously and returns an action while having access to the current
+/// `AppState`. It is useful when the effect needs both middleware dependencies and a snapshot of the current state in order to
+/// produce the next action.
+///
+/// ## Example of a `StateConcurrencyEffect`
+///
+/// This example demonstrates how to create an asynchronous effect that loads a user profile using a token stored in the current state.
+///
+/// ```swift
+/// private extension ProfileMiddleware {
+///     struct LoadProfileEffect: StateConcurrencyEffect {
+///         var environment: ProfileMiddleware.Environment
+///
+///         func task(flowId: AnyHashable, state: AppState) async throws -> any Action {
+///             guard let token = state.userForm.currentUser?.token else {
+///                 throw CancellationError()
+///             }
+///
+///             let profile = try await environment.loadProfile(token: token)
+///
+///             return Actions.DidLoadItem(item: profile, id: flowId)
+///         }
+///     }
+/// }
+/// ```
+public protocol StateConcurrencyEffect: EnvironmentEffect {
+    associatedtype AppState: AppReducer
+
+    /// An asynchronous method that performs a task using both the provided flow identifier and the current application state,
+    /// and returns an action.
+    ///
+    /// - Parameters:
+    ///   - flowId: The unique identifier for the flow.
+    ///   - state: The current application state captured when the effect begins execution.
+    /// - Returns: An action produced by the asynchronous task.
+    func task(flowId: AnyHashable, state: AppState) async throws -> any Action
 }
 
 /// A concrete implementation of `ConcurrencyEffect` that runs an asynchronous block of code to produce an action.
