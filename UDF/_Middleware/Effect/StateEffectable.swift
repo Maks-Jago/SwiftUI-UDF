@@ -1,3 +1,14 @@
+//===--- StateEffectable.swift --------------------------------------------===//
+//
+// This source file is part of the UDF open source project
+//
+// Copyright (c) 2026 You are launched
+// Licensed under Apache License v2.0
+//
+// See https://opensource.org/licenses/Apache License v2.0 for license information
+//
+//===----------------------------------------------------------------------===//
+
 import Combine
 import Foundation
 
@@ -7,12 +18,8 @@ import Foundation
 ///
 /// `StateEffectable` is the Combine equivalent of `StateConcurrencyEffect`. It is useful when the effect needs both middleware
 /// dependencies and a snapshot of the current state in order to build a publisher that emits actions.
-public protocol StateEffectable {
-    associatedtype Environment: Sendable
+public protocol StateEffectable: EnvironmentEffect {
     associatedtype AppState: AppReducer
-
-    /// The environment used by the effect to access external dependencies.
-    var environment: Environment! { get set }
 
     /// Creates a publisher using both the provided flow identifier and the current application state.
     ///
@@ -21,11 +28,4 @@ public protocol StateEffectable {
     ///   - state: The current application state captured when the effect begins execution.
     /// - Returns: A publisher that emits actions produced by the effect.
     func publisher(flowId: AnyHashable, state: AppState) throws -> AnyPublisher<any Action, Never>
-}
-
-public extension StateEffectable {
-    var environment: Void! {
-        get { () }
-        set { }
-    }
 }

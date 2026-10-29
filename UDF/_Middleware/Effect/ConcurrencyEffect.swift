@@ -1,4 +1,4 @@
-//===--- ConcurrencyEffect.swift ---------------------------------===//
+//===--- ConcurrencyEffect.swift ------------------------------------------===//
 //
 // This source file is part of the UDF open source project
 //
@@ -78,12 +78,8 @@ public protocol ConcurrencyEffect: Sendable {
 ///     }
 /// }
 /// ```
-public protocol StateConcurrencyEffect {
-    associatedtype Environment: Sendable
+public protocol StateConcurrencyEffect: EnvironmentEffect {
     associatedtype AppState: AppReducer
-    
-    /// The environment used by the effect to access external dependencies.
-    var environment: Environment! { get set }
 
     /// An asynchronous method that performs a task using both the provided flow identifier and the current application state,
     /// and returns an action.
@@ -93,13 +89,6 @@ public protocol StateConcurrencyEffect {
     ///   - state: The current application state captured when the effect begins execution.
     /// - Returns: An action produced by the asynchronous task.
     func task(flowId: AnyHashable, state: AppState) async throws -> any Action
-}
-
-public extension StateConcurrencyEffect {
-    var environment: Void! {
-        get { () }
-        set { }
-    }
 }
 
 /// A concrete implementation of `ConcurrencyEffect` that runs an asynchronous block of code to produce an action.

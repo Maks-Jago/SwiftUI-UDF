@@ -733,23 +733,11 @@ private extension _BaseMiddleware {
             }
         }
     }
-    /// Returns a copy of a state-based Combine effect with the middleware environment injected when the types match.
+    /// Returns an effect with the middleware environment injected when the types match.
     ///
     /// The middleware environment is stored behind `EnvironmentMiddleware`, so the cast happens at runtime.
     /// If the middleware does not expose an environment of `Effect.Environment`, the original effect is returned unchanged.
-    func effectWithEnvironment<Effect: StateEffectable>(_ effect: Effect) -> Effect where Effect.AppState == State {
-        var effect = effect
-        if let middleware = self as? (any EnvironmentMiddleware<State>), let environment = middleware.environment as? Effect.Environment {
-            effect.environment = environment
-        }
-        return effect
-    }
-
-    /// Returns a copy of a state-based async effect with the middleware environment injected when the types match.
-    ///
-    /// This mirrors `effectWithEnvironment(_:)` for `StateEffectable`, ensuring concurrency effects receive the
-    /// middleware environment only when it can be safely cast to the effect's `Environment` type.
-    func effectWithEnvironment<Effect: StateConcurrencyEffect>(_ effect: Effect) -> Effect where Effect.AppState == State {
+    func effectWithEnvironment<Effect: EnvironmentEffect>(_ effect: Effect) -> Effect {
         var effect = effect
         if let middleware = self as? (any EnvironmentMiddleware<State>), let environment = middleware.environment as? Effect.Environment {
             effect.environment = environment
