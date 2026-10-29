@@ -1,7 +1,7 @@
 import Testing
 import SwiftUI
 @testable import UDF
-@testable import UDFModularizationTestFeature
+@testable import UDFTestFeatures
 import UDFSwiftTesting
 
 
@@ -127,6 +127,8 @@ struct TestListItemsFeatureState<AppState: TestFeature>: FeatureState {
         TestListItemsDestination<AppState>(items: [])
     }
 
+    static var destinations: some ViewModifier {}
+
     static func registerMiddlewares(in store: any Store<AppState>) -> [MiddlewareWrapper<AppState>] {
         TestMiddleware<AppState>.self
     }
@@ -172,6 +174,10 @@ struct TestHomeFeatureState<AppState: TestHomeFeature, FeatureRouting: Routing<T
             routing: FeatureRouting()
         )
     }
+
+    static var destinations: some ViewModifier {}
+
+    static func registerMiddlewares(in store: any Store<AppState>) -> [MiddlewareWrapper<AppState>] {}
 }
 
 enum TestHomeRoute: Hashable {
@@ -231,6 +237,8 @@ struct TestDetailsFeatureState<AppState: TestDetailsFeature>: FeatureState {
     static func entryPoint(input: TestItem.ID) -> some View {
         TestDetailsDestination(id: input)
     }
+
+    static var destinations: some ViewModifier {}
 
     static func registerMiddlewares(in store: any Store<AppState>) -> [MiddlewareWrapper<AppState>] {
         TestDetailsMiddleware<AppState>.self

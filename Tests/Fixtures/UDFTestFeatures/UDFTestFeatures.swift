@@ -84,6 +84,8 @@ public struct TestFeatureState<AppState: TestFeature>: FeatureState {
         .init(input: input)
     }
 
+    public static var destinations: some ViewModifier {}
+
     public static func registerMiddlewares(
         in store: any Store<AppState>
     ) -> [MiddlewareWrapper<AppState>] {
@@ -216,6 +218,8 @@ public struct TestSettingsFeatureState<AppState: TestSettingsFeature>:
     public typealias FeatureRouting = EmptyRouting
 
     public init() {}
+
+    public static var destinations: some ViewModifier {}
 
     public static func registerMiddlewares(in store: any Store<AppState>) -> [MiddlewareWrapper<AppState>] {
     }

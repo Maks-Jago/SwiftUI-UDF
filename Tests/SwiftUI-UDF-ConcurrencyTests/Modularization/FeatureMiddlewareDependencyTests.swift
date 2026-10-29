@@ -235,10 +235,12 @@ private extension FeatureMiddlewareDependencyTests {
         }
     }
 
-    struct FirstFeatureState: FeatureState<FeatureMiddlewareDependencyTests.AppState> {
+    struct FirstFeatureState: FeatureState<FeatureMiddlewareDependencyTests.AppState, EmptyRouting> {
         static func entryPoint(input: Void) -> some View {
             EmptyView()
         }
+
+        static var destinations: some ViewModifier {}
 
         static func registerMiddlewares(
             in store: any Store<FeatureMiddlewareDependencyTests.AppState>
@@ -252,10 +254,12 @@ private extension FeatureMiddlewareDependencyTests {
         }
     }
 
-    struct SecondFeatureState: FeatureState<FeatureMiddlewareDependencyTests.AppState> {
+    struct SecondFeatureState: FeatureState<FeatureMiddlewareDependencyTests.AppState, EmptyRouting> {
         static func entryPoint(input: Void) -> some View {
             EmptyView()
         }
+
+        static var destinations: some ViewModifier {}
 
         static func registerMiddlewares(
             in store: any Store<FeatureMiddlewareDependencyTests.AppState>
