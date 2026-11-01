@@ -13,44 +13,67 @@ import Combine
 import Foundation
 
 
-/// A protocol that defines a Combine-based effect that receives both a unique flow identifier and the current application state,
-/// and produces a publisher of actions.
+/// An action-producing Combine effect that can read fresh snapshots of application state.
 ///
-/// `StateEffectable` is the Combine equivalent of `StateConcurrencyEffect`. It is useful when the effect needs both middleware
-/// dependencies and a snapshot of the current state in order to build a publisher that emits actions.
+/// Implement `upstream` to build a publisher with `any Action` output and a `Never` failure type. Subscribe to `statePublisher`
+/// wherever the pipeline needs state, including inside a later `flatMap`. Each subscription asynchronously reads one snapshot
+/// from `store` and completes; it does not observe subsequent state changes.
 ///
-/// ## Example of a `StateEffectable`
+/// The middleware's `execute` overload injects a compatible environment before subscribing. Effects without external dependencies
+/// use the default `Void` environment. Convert failures and missing-input conditions into actions within `upstream`.
 ///
-/// This example demonstrates how to load a user profile using a token stored in the current state.
-/// The environment's `loadProfile(token:)` method returns a publisher with a `Never` failure type.
+/// ## Example
+///
+/// This effect reads the current user's token before loading a profile. The environment's `loadProfile(token:)` method returns
+/// a publisher with a `Never` failure type. A missing token emits a cancellation action so the flow can leave its loading state.
 ///
 /// ```swift
 /// private extension ProfileMiddleware {
 ///     struct LoadProfileEffect: StateEffectable, Sendable {
 ///         var environment: ProfileMiddleware.Environment!
+///         let store: any Store<AppState>
 ///
-///         func publisher(flowId: AnyHashable, state: AppState) throws -> AnyPublisher<any Action, Never> {
-///             guard let token = state.userForm.currentUser?.token else {
-///                 throw CancellationError()
-///             }
+///         init(store: some Store<AppState>) {
+///             self.store = store
+///         }
 ///
-///             return environment.loadProfile(token: token)
-///                 .map { profile in
-///                     Actions.DidLoadItem(item: profile, id: flowId) as any Action
+///         var upstream: AnyPublisher<any Action, Never> {
+///             statePublisher
+///                 .flatMap { state -> AnyPublisher<any Action, Never> in
+///                     guard let token = state.userForm.currentUser?.token else {
+///                         return Just(Actions.DidCancelEffect(by: Cancellation.loadProfile) as any Action)
+///                             .eraseToAnyPublisher()
+///                     }
+///
+///                     return environment.loadProfile(token: token)
+///                         .map { profile in
+///                             Actions.DidLoadItem(item: profile, id: ProfileFlow.id) as any Action
+///                         }
+///                         .eraseToAnyPublisher()
 ///                 }
 ///                 .eraseToAnyPublisher()
 ///         }
 ///     }
 /// }
 /// ```
-public protocol StateEffectable: EnvironmentEffect {
-    associatedtype AppState: AppReducer
 
-    /// Creates a publisher using both the provided flow identifier and the current application state.
-    ///
-    /// - Parameters:
-    ///   - flowId: The unique identifier for the flow.
-    ///   - state: The current application state captured when the effect begins execution.
-    /// - Returns: A publisher that emits actions produced by the effect.
-    func publisher(flowId: AnyHashable, state: AppState) throws -> AnyPublisher<any Action, Never>
+public protocol StateEffectable: Effectable, EnvironmentEffect {
+    /// The application state read by this effect.
+    associatedtype State: AppReducer
+
+    /// The store whose actor-isolated state is accessed through `statePublisher`.
+    var store: any Store<State> { get }
+    
+    /// A publisher that asynchronously emits one current state snapshot for each subscription, then completes.
+    /// Subscribe again to read updated state.
+    var statePublisher: AnyPublisher<State, Never> { get }
+}
+
+public extension StateEffectable {
+    /// Provides the default snapshot publisher using `Publishers.IsolatedState(from:)`.
+    var statePublisher: AnyPublisher<State, Never> {
+        Publishers
+            .IsolatedState(from: store)
+            .eraseToAnyPublisher()
+    }
 }

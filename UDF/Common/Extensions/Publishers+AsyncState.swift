@@ -14,14 +14,14 @@ import Foundation
 import os
 
 public extension Publishers {
-    /// Returns an `AnyPublisher` that publishes an isolated, immutable state from the given store.
+    /// Returns a publisher that asynchronously emits one state snapshot from the given store.
     ///
-    /// This method creates a publisher that captures the current state of the store in an isolated manner,
-    /// ensuring that the state is retrieved safely even in a concurrent environment. It uses `Task.detached`
-    /// with a high priority to obtain the store's state and provides it as a single value to the subscribers.
+    /// Each subscription reads the store's actor-isolated state when a subscriber requests a value, emits the snapshot, and completes.
+    /// Creating or retaining the publisher does not capture state. A later subscription performs a new read.
+    /// Cancellation cancels the pending fetch and releases the subscriber.
     ///
     /// - Parameter store: An instance conforming to `Store<State>` from which the state is retrieved.
-    /// - Returns: An `AnyPublisher` that emits the isolated state of the store once.
+    /// - Returns: A publisher with `State` output and a `Never` failure type.
     static func IsolatedState<State: AppReducer>(from store: any Store<State>) -> AnyPublisher<State, Never> {
         AsyncStatePublisher(store: store)
             .eraseToAnyPublisher()

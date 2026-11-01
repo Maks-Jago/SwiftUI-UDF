@@ -217,8 +217,7 @@ private extension StateEffectableTests {
             switch state.counterFlow {
             case .increment:
                 execute(
-                    effect: IncrementCounterStateEffectable(),
-                    flowId: CounterFlow.id,
+                    IncrementCounterStateEffectable(store: store),
                     cancellation: Cancellation.increment
                 )
 
@@ -228,11 +227,22 @@ private extension StateEffectableTests {
         }
 
         struct IncrementCounterStateEffectable: StateEffectable, Sendable {
-            func publisher(flowId: AnyHashable, state: AppState) -> AnyPublisher<any Action, Never> {
-                let value = state.counterForm.counter?.value ?? .zero
-                let counter = Counter(value: value + 1)
+            var store: any Store<State>
+            
+            init(store: some Store<State>) {
+                self.store = store
+            }
+            
+            var upstream: AnyPublisher<any Action, Never> {
+                self.statePublisher
+                    .flatMap { state in
+                        let value = state.counterForm.counter?.value ?? .zero
+                        let counter = Counter(value: value + 1)
 
-                return Just(Actions.DidLoadItem(item: counter, id: flowId) as any Action)
+                        return Just(Actions.DidLoadItem(item: counter, id: CounterFlow.id) as any Action)
+                            .delay(for: .milliseconds(500), scheduler: DispatchQueue.global())
+                            .eraseToAnyPublisher()
+                    }
                     .delay(for: .milliseconds(500), scheduler: DispatchQueue.global())
                     .eraseToAnyPublisher()
             }
@@ -263,8 +273,7 @@ private extension StateEffectableTests {
             switch state.messageFlow {
             case .loading:
                 execute(
-                    effect: MessageStateEffectable(),
-                    flowId: MessageFlow.id,
+                    MessageStateEffectable(store: store),
                     cancellation: Cancellation.message
                 )
                 
@@ -275,15 +284,24 @@ private extension StateEffectableTests {
 
         struct MessageStateEffectable: StateEffectable, Sendable {
             var environment: LoadMessageEnvironment!
+            var store: any Store<State>
+            
+            init(store: some Store<State>) {
+                self.store = store
+            }
 
-            func publisher(flowId: AnyHashable, state: AppState) throws -> AnyPublisher<any Action, Never> {
-                guard let token = state.userForm.currentUser?.token else {
-                    throw CancellationError()
-                }
-
-                return environment.loadMessage(token: token)
-                    .map { message in
-                        Actions.DidLoadItem(item: Message(content: message), id: flowId)
+            var upstream: AnyPublisher<any Action, Never> {
+                self.statePublisher
+                    .flatMap { state -> AnyPublisher<any Action, Never> in
+                        guard let token = state.userForm.currentUser?.token else {
+                            return Just(Actions.DidCancelEffect(by: Cancellation.message) as any Action)
+                                .eraseToAnyPublisher()
+                        }
+                        return environment.loadMessage(token: token)
+                            .map { message in
+                                Actions.DidLoadItem(item: Message(content: message), id: MessageFlow.id) as any Action
+                            }
+                            .eraseToAnyPublisher()
                     }
                     .eraseToAnyPublisher()
             }
