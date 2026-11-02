@@ -27,18 +27,11 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
 
     // MARK: - Initialization
 
-    /// Initializes the middleware with an application store and an execution queue.
-    ///
-    /// This method configures the store used to read application state and dispatch actions. The supplied queue schedules publisher
-    /// subscriptions and action dispatches.
-    ///
-    /// This method:
-    /// - Stores the application store used by the middleware.
-    /// - Stores the queue used to subscribe to publishers and dispatch actions.
+    /// Initializes the middleware with a store and a queue.
     ///
     /// - Parameters:
-    ///   - store: The store that holds application state and receives dispatched actions.
-    ///   - queue: The dispatch queue used for publisher subscriptions and action dispatches.
+    ///   - store: The store that holds the state of the application.
+    ///   - queue: The dispatch queue for running asynchronous tasks.
     public required init(store: some Store<State>, queue: DispatchQueue) {
         self.store = store
         self.queue = queue
@@ -46,17 +39,9 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
 
     // MARK: - Middleware Status
 
-    /// Returns the middleware's processing status for the current application state.
+    /// Returns the current status of the middleware. The default implementation always returns `.active`.
     ///
-    /// This method determines whether the middleware should process actions and observe state changes. Override it to suspend or
-    /// activate the middleware according to application state. The default implementation returns `.active`.
-    ///
-    /// This method:
-    /// - Receives the current application state.
-    /// - Returns the status used to enable or suspend middleware processing.
-    ///
-    /// - Parameters:
-    ///   - state: The current application state.
+    /// - Parameter state: The current application state.
     /// - Returns: A `MiddlewareStatus` indicating whether the middleware is active or suspended.
     open func status(for state: State) -> MiddlewareStatus { .active }
 
@@ -93,19 +78,10 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
 
     // MARK: - Cancellation
 
-    /// Cancels the effect registered under the specified cancellation identifier.
+    /// Cancels an ongoing task identified by the specified cancellation ID.
     ///
-    /// This method finds the corresponding task or publisher subscription, requests its cancellation, and removes its registration.
-    /// The return value indicates whether a matching registration was found.
-    ///
-    /// This method:
-    /// - Looks up the effect using the `cancellation` identifier.
-    /// - Requests cancellation of the registered task or subscription.
-    /// - Removes the effect from the tracked cancellations.
-    ///
-    /// - Parameters:
-    ///   - cancellation: The identifier of the effect to cancel.
-    /// - Returns: `true` when a matching effect was found and cancellation was requested; otherwise, `false`.
+    /// - Parameter cancellation: The unique identifier for the task to be canceled.
+    /// - Returns: A Boolean indicating whether the task was successfully canceled.
     @discardableResult
     open func cancel(by cancellation: some Hashable) -> Bool {
         let anyId = AnyHashable(cancellation)
@@ -121,15 +97,7 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
         return true
     }
 
-    /// Cancels all effects currently registered with the middleware.
-    ///
-    /// This method collects the registered cancellation identifiers and requests cancellation for each corresponding task or publisher
-    /// subscription. Each matching registration is removed as it is cancelled.
-    ///
-    /// This method:
-    /// - Collects the current cancellation identifiers.
-    /// - Cancels each registered effect using its identifier.
-    /// - Removes the cancelled effects from the tracked cancellations.
+    /// Cancels all ongoing tasks tracked in the `cancellations` dictionary.
     open func cancelAll() {
         let keys = Array(cancellations.keys)
         for key in keys {
@@ -182,10 +150,10 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
         )
     }
 
-    /// Executes an erasable effect and dispatches its converted actions to the store.
+    /// Executes an effect that conforms to both `PureEffect` and `ErasableToEffect` and dispatches actions to the store.
     ///
-    /// This method uses the effect's `asEffectable` conversion to obtain an action-producing publisher. The effect defines how its
-    /// output and failures become actions. The converted publisher emits `any Action` values and has a `Never` failure type.
+    /// This method serves as an overload of the `execute` method for effects that can be erased to a more generic effect type. It converts
+    /// the given effect to an `Effectable` using the `asEffectable` method before executing it.
     ///
     /// This method:
     /// - Obtains the action publisher from the effect's `asEffectable` property.
@@ -194,7 +162,7 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
     /// - Handles cancellation using the `cancellation` identifier.
     ///
     /// - Parameters:
-    ///   - effect: The effect to execute.
+    ///   - effect: The effect to execute, which conforms to both `PureEffect` and `ErasableToEffect`.
     ///   - cancellation: The identifier used to deduplicate and cancel the subscription.
     ///   - mapAction: Transforms emitted actions and cancellation actions before dispatch. Defaults to `{ $0 }`.
     ///   - fileName: The calling file recorded with dispatched actions. Defaults to `#file`.
