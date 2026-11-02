@@ -98,7 +98,6 @@ import UDFSwiftTesting
                 break
             }
         }
-        
     }
     
     struct CounterForm: Form {

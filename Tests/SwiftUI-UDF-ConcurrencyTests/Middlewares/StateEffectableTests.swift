@@ -79,9 +79,45 @@ import UDFSwiftTesting
         }
         #expect(success, "MessageFlow should return to the .none state when the token is missing")
     }
+    
+    @Test("Execute StateEffectable using the withState Combine operator")
+    func observeMiddlewareWithUsageCombineOperatorWithState() async throws {
+        var updatedUser = await store.state.userForm.currentUser
+        let editedFullName = "Angelina Klochay"
+        updatedUser?.fullName = editedFullName
+        let user = try #require(updatedUser, "updateUser should be not nil")
+        
+        let environment = ProfileEnvironment(
+            uploadAvatar: { _, _ in
+                Just(URL(string: "https://google.com")!)
+                    .setFailureType(to: Never.self)
+                    .eraseToAnyPublisher()
+            }, updateProfile: { _, _, _ in
+                Just(user)
+                    .setFailureType(to: Never.self)
+                    .eraseToAnyPublisher()
+            }
+        )
+        await store.subscribe(MyProfileMiddleware.self, environment: environment)
+        
+        await store.wait()
+        #expect(await store.state.userForm.currentUser != nil, "UserForm.currentUser should not be nil")
+        #expect(await store.state.userForm.currentUser?.fullName != editedFullName, "UserForm.currentUser.fullName should be not equal editedFullName")
+        #expect(await store.state.userFlow == .none, "UserFlow should start in the .none state")
+        
+       
+        await store.dispatch(Actions.UpdateProfile(fullName: editedFullName, avatarData: Data()))
+        let success = await waitForCondition {
+            let appState = await store.state
+            
+            return appState.userFlow == .none && appState.userForm.currentUser?.fullName == editedFullName
+        }
+        #expect(success, "StateEffectable should execute correctly using the withState Combine operator")
+    }
 
     struct AppState: AppReducer {
         var userForm = UserForm()
+        var userFlow = UserFlow()
 
         var counterForm = CounterForm()
         var counterFlow = CounterFlow()
@@ -98,6 +134,24 @@ import UDFSwiftTesting
             case let action as Actions.DidLoadItem<CurrentUser>:
                 self.currentUser = action.item
 
+            default:
+                break
+            }
+        }
+    }
+    
+    enum UserFlow: IdentifiableFlow {
+        case none
+        case update(fullName: String, avatarData: Data)
+        
+        init() { self = .none }
+        
+        mutating func reduce(_ action: some Action) {
+            switch action {
+            case let action as Actions.UpdateProfile:
+                self = .update(fullName: action.fullName, avatarData: action.avatarData)
+            case is Actions.DidLoadItem<CurrentUser>:
+                self = .none
             default:
                 break
             }
@@ -182,11 +236,18 @@ import UDFSwiftTesting
         }
     }
 }
+// MARK: - Actions
+extension Actions {
+    struct UpdateProfile: Action {
+        let fullName: String
+        let avatarData: Data
+    }
+}
 
 extension StateEffectableTests {
     struct CurrentUser: Equatable {
         let id: Int
-        let fullName: String
+        var fullName: String
         let token: String?
     }
 
@@ -307,6 +368,115 @@ private extension StateEffectableTests {
             }
         }
     }
+    
+    final class MyProfileMiddleware: Middleware<AppState>, @unchecked Sendable {
+        var environment: ProfileEnvironment!
+        
+        static func buildLiveEnvironment(for store: some Store<AppState>) -> ProfileEnvironment {
+            ProfileEnvironment(
+                uploadAvatar: { _, _ in
+                    Just(URL(string: "https://google.com")!)
+                        .setFailureType(to: Never.self)
+                        .eraseToAnyPublisher() },
+                updateProfile: { _, _, _ in
+                    Just(CurrentUser(id: 0, fullName: "", token: nil))
+                        .setFailureType(to: Never.self)
+                        .eraseToAnyPublisher()},
+            )
+        }
+
+        static func buildTestEnvironment(for store: some Store<AppState>) -> ProfileEnvironment {
+            ProfileEnvironment(
+                uploadAvatar: { _, _ in
+                    Just(URL(string: "https://google.com")!)
+                        .setFailureType(to: Never.self)
+                        .eraseToAnyPublisher() },
+                updateProfile: { _, _, _ in
+                    Just(CurrentUser(id: 0, fullName: "", token: nil))
+                        .setFailureType(to: Never.self)
+                        .eraseToAnyPublisher()},
+            )
+        }
+
+        
+        enum Cancellation: CaseIterable {
+            case update
+        }
+        
+        override func status(for state: StateEffectableTests.AppState) -> MiddlewareStatus {
+            .active
+        }
+        
+        func scope(for state: StateEffectableTests.AppState) -> any Scope {
+            state.userForm
+            state.userFlow
+        }
+        
+        func observe(state: AppState) {
+            switch state.userFlow {
+            case let .update(fullName, avatarData):
+                execute(
+                    UpdateMyProfileEffectable(store: store, fullName: fullName, avatarData: avatarData),
+                    cancellation: Cancellation.update
+                )
+            default:
+                break
+            }
+        }
+        
+        struct UpdateMyProfileEffectable: StateEffectable {
+            var environment: ProfileEnvironment!
+            var store: any Store<State>
+            let fullName: String
+            let avatarData: Data
+            
+            init(store: some Store<State>, fullName: String, avatarData: Data) {
+                self.store = store
+                self.fullName = fullName
+                self.avatarData = avatarData
+            }
+            
+            var upstream: AnyPublisher<any Action, Never> {
+                statePublisher
+                    .flatMap { appState -> AnyPublisher<any Action, Never> in
+                        guard
+                            let token = appState.userForm.currentUser?.token
+                        else {
+                            return Just(Actions.DidCancelEffect(by: Cancellation.update) as any Action)
+                                .eraseToAnyPublisher()
+                        }
+                        return environment.uploadAvatar(token, avatarData)
+                            .map { url in
+                                Actions.DidLoadItem(item: url, id: MessageFlow.id) as any Action
+                            }
+                            .eraseToAnyPublisher()
+                    }
+                    .compactMap { action -> URL? in
+                        guard let urlAction = action as? Actions.DidLoadItem<URL> else {
+                            return nil
+                        }
+                        return urlAction.item
+                    }
+                    .withState(from: store)
+                    .flatMap { url, appState -> AnyPublisher<any Action, Never> in
+                        guard
+                            let token = appState.userForm.currentUser?.token
+                        else {
+                            return Just(Actions.DidCancelEffect(by: Cancellation.update) as any Action)
+                                .eraseToAnyPublisher()
+                        }
+                        
+                        return environment.updateProfile(token, fullName, url)
+                            .map { currentUser in
+                                Actions.DidLoadItem(item: currentUser) as any Action
+                            }
+                            .eraseToAnyPublisher()
+                    }
+                    .eraseToAnyPublisher()
+            }
+        }
+        
+    }
 }
 
 extension StateEffectableTests {
@@ -324,5 +494,11 @@ extension StateEffectableTests {
                 .delay(for: .seconds(1), scheduler: DispatchQueue.global())
                 .eraseToAnyPublisher()
         }
+    }
+    
+    
+    struct ProfileEnvironment: @unchecked Sendable {
+        var uploadAvatar: (_ token: String, _ image: Data) -> AnyPublisher<URL, Never>
+        var updateProfile: (_ token: String, _ fullName: String, _ avatarPath: URL) -> AnyPublisher<CurrentUser, Never>
     }
 }
