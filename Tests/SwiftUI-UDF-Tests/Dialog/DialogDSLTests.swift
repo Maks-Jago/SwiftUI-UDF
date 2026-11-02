@@ -158,7 +158,7 @@ extension DialogRegistryTests.DialogTests {
     func dynamicDialogRegistrationUsesDSL() {
         let id = 123
         
-        Dialog.register(id: id) {
+        Dialog.register(id: id, store: store) { _ in
             AlertDialog {
                 DialogTitle("Dynamic Registry AlertDialog")
                 DialogButton(title: "Dismiss", action: {})
@@ -351,7 +351,7 @@ extension DialogRegistryTests.DialogTests {
     func dialogStatusIntegrationWithDSLAlertDialog() {
         let id = 999
         
-        Dialog.register(id: id) {
+        Dialog.register(id: id, store: store) { _ in
             AlertDialog {
                 DialogTitle("Status AlertDialog")
                 DialogMessage("Integration test")
@@ -380,7 +380,7 @@ extension DialogRegistryTests.DialogTests {
     func dialogStatusIntegrationWithDSLToast() {
         let id = 998
         
-        Dialog.register(id: id) {
+        Dialog.register(id: id, store: store) { _ in
             Toast(config: .init(theme: .vibrant, position: .bottom)) {
                 DialogMessage("Saved!")
                 DialogIcon { Image(systemName: "checkmark") }
@@ -409,7 +409,7 @@ extension DialogRegistryTests.DialogTests {
     func registryOverwritesBehavior() {
         let id = 777
         
-        Dialog.register(id: id) {
+        Dialog.register(id: id, store: store) { _ in
             AlertDialog {
                 DialogTitle("First")
             }
@@ -417,7 +417,7 @@ extension DialogRegistryTests.DialogTests {
         
         #expect(_DialogRegistry.get(id: id)?.title == "First")
         
-        Dialog.register(id: id) {
+        Dialog.register(id: id, store: store) { _ in
             AlertDialog {
                 DialogTitle("Second")
             }

@@ -59,19 +59,21 @@ public struct DialogTextField: DialogAction, AlertDialogComponent {
     private let initialValue: String
     
     // MARK: - Equatable Implementation
-    /// Checks if two `DialogTextField` instances are equal by comparing their titles.
+    /// Checks if two `DialogTextField` instances are equal by comparing their titles and initial values.
     ///
-    /// Note: Text bindings cannot be compared directly, so only the title is used for equality.
+    /// Note: Text bindings cannot be compared directly, so the title and initial value are used for equality.
     nonisolated public static func == (lhs: DialogTextField, rhs: DialogTextField) -> Bool {
-        lhs.title == rhs.title
+        lhs.title == rhs.title &&
+        lhs.initialValue == rhs.initialValue
     }
     
     // MARK: - Hashable Implementation
     /// Hashes the essential properties of the `DialogTextField`.
     ///
-    /// Note: Text bindings cannot be hashed, so only the title is used.
+    /// Note: Text bindings cannot be hashed, so the title and initial value are used.
     nonisolated public func hash(into hasher: inout Hasher) {
         hasher.combine(title)
+        hasher.combine(initialValue)
     }
     
     // MARK: - Initializers
@@ -150,12 +152,12 @@ private struct DialogTextFieldInternal: View {
 extension DialogTextField: View {}
 
 // MARK: - Action Classification
-extension DialogTextField: @preconcurrency DialogActionClassification {
-    var actionType: DialogActionType {
+extension DialogTextField: DialogActionClassification {
+    nonisolated var actionType: DialogActionType {
         .textField
     }
     
-    var capabilities: DialogActionCapability {
+    nonisolated var capabilities: DialogActionCapability {
         [.requiresInteraction, .capturesTextInput]
     }
 }

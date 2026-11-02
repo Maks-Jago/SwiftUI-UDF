@@ -10,10 +10,10 @@ private extension Actions {
     struct PresentCustomViewToast: Action {}
     struct PresentDynamicDialog: Action {}
     struct DismissDynamicDialog: Action {}
+    struct PresentDirectDynamicDialog: Action {}
 }
 
 extension DialogType {
-    @MainActor
     static func dialogWithAction(_ action: @Sendable @escaping () -> Void) -> AlertDialog {
         AlertDialog {
             DialogTitle("Custom dialog title with action")
@@ -23,7 +23,6 @@ extension DialogType {
         }
     }
 
-    @MainActor
     static func toastWithAction(_ action: @Sendable @escaping () -> Void) -> Toast {
         Toast {
             DialogMessage("Toast with action button")
@@ -31,7 +30,6 @@ extension DialogType {
         }
     }
 
-    @MainActor
     static func customToastWithIcon() -> Toast {
         Toast(config: .init(theme: .vibrant)) {
             DialogMessage("Toast with custom icon")
@@ -41,7 +39,6 @@ extension DialogType {
         }
     }
 
-    @MainActor
     static func customViewToast() -> Toast {
         Toast(config: .init(position: .center)) {
             DialogView {
@@ -60,63 +57,16 @@ extension DialogType {
 
 extension DialogRegistryTests {
     @Suite(.serialized) struct DialogTests {
-        struct AppState: AppReducer {
-            var form = FormWithDialog()
-        }
-        
-        struct FormWithDialog: UDF.Form {
-            enum DialogId: Hashable {
-                case dialogWithAction
-                case toastDialog
-                case customToastWithIcon
-                case customViewToast
-                case dynamicDialog
-            }
-            
-            enum ViewMode: Equatable {
-                case text(String)
-                case image
-            }
-            
-            var stringProperty: String = "Initial"
-            var viewMode: ViewMode = .text("Initial")
-            var dialog: DialogStatus = .dismissed
-            
-            nonisolated mutating func reduce(_ action: some Action) {
-                switch action {
-                case is Actions.PresentDialogWithAction:
-                    dialog = .init(id: DialogId.dialogWithAction)
-                    
-                case is Actions.PresentToastDialog:
-                    dialog = .init(id: DialogId.toastDialog)
-                    
-                case is Actions.PresentCustomToastWithIcon:
-                    dialog = .init(id: DialogId.customToastWithIcon)
-                    
-                case is Actions.PresentCustomViewToast:
-                    dialog = .init(id: DialogId.customViewToast)
-                    
-                case is Actions.PresentDynamicDialog:
-                    dialog = .init(id: DialogId.dynamicDialog)
-                    
-                case is Actions.DismissDynamicDialog:
-                    dialog = .dismissed
-                    
-                default:
-                    break
-                }
-            }
-        }
-        
+        let store = EnvironmentStore(initial: AppState(), loggers: [])
+
         init() {
             Dialog.clearAll()
         }
         
         @Test func legacyDialogRegistration_allowsPresentationById() async {
-            let store = await TestStore(initial: AppState())
-            #expect(await store.state.form.dialog.status == .dismissed)
-            
-            await Dialog.register(id: FormWithDialog.DialogId.dialogWithAction) {
+            #expect(store.state.form.dialog.status == .dismissed)
+
+            Dialog.register(id: FormWithDialog.DialogId.dialogWithAction, store: store) { _ in
                 DialogCustomType.custom(
                     content: .init(
                         title: "Custom Title",
@@ -130,27 +80,26 @@ extension DialogRegistryTests {
                 )
             }
             await waitForCondition { Dialog.isRegistered(id: FormWithDialog.DialogId.dialogWithAction) }
-            await store.dispatch(Actions.PresentDialogWithAction())
-            let success = await waitForCondition { await store.state.form.dialog.status != .dismissed }
+            store.dispatch(Actions.PresentDialogWithAction())
+            let success = await waitForCondition { store.state.form.dialog.status != .dismissed }
             #expect(success)
         }
         
         @Test func whendialogRegistered_dialogCanBePresentedById() async {
-            let store = await TestStore(initial: AppState())
-            #expect(await store.state.form.dialog.status == .dismissed)
-            
-            await Dialog.register(id: FormWithDialog.DialogId.dialogWithAction) {
+            #expect(store.state.form.dialog.status == .dismissed)
+
+            Dialog.register(id: FormWithDialog.DialogId.dialogWithAction, store: store) { _ in
                 DialogType.dialogWithAction {
                     print("Custom dialog action")
                 }
             }
             await waitForCondition { Dialog.isRegistered(id: FormWithDialog.DialogId.dialogWithAction) }
-            
-            await store.dispatch(Actions.PresentDialogWithAction())
-            let success = await waitForCondition { await store.state.form.dialog.status != .dismissed }
+
+            store.dispatch(Actions.PresentDialogWithAction())
+            let success = await waitForCondition { store.state.form.dialog.status != .dismissed }
             #expect(success)
-            
-            if case .presented(let dialogType) = await store.state.form.dialog.status {
+
+            if case .presented(let dialogType) = store.state.form.dialog.status {
                 #expect(dialogType.style == .alert)
             } else {
                 Issue.record("Expected presented dialog")
@@ -210,22 +159,21 @@ extension DialogRegistryTests {
         
         // MARK: - Toast-Specific Tests
         @Test func whenToastRegistered_ToastCanBePresentedById() async {
-            let store = await TestStore(initial: AppState())
-            #expect(await store.state.form.dialog.status == .dismissed)
-            
-            await Dialog.register(id: FormWithDialog.DialogId.toastDialog) {
+            #expect(store.state.form.dialog.status == .dismissed)
+
+            Dialog.register(id: FormWithDialog.DialogId.toastDialog, store: store) { _ in
                 DialogType.toastWithAction {
                     print("Toast action executed")
                 }
             }
             await waitForCondition { Dialog.isRegistered(id: FormWithDialog.DialogId.toastDialog) }
-            
-            await store.dispatch(Actions.PresentToastDialog())
-            let success = await waitForCondition { await store.state.form.dialog.status != .dismissed }
+
+            store.dispatch(Actions.PresentToastDialog())
+            let success = await waitForCondition { store.state.form.dialog.status != .dismissed }
             #expect(success)
             
             // Verify it's a toast style
-            if case .presented(let dialogType) = await store.state.form.dialog.status {
+            if case .presented(let dialogType) = store.state.form.dialog.status {
                 if case .toast = dialogType.style {
                     #expect(true, "Correct toast style")
                 } else {
@@ -237,19 +185,17 @@ extension DialogRegistryTests {
         }
         
         @Test func customToastWithIcon() async {
-            let store = await TestStore(initial: AppState())
-            
-            await Dialog.register(id: FormWithDialog.DialogId.customToastWithIcon) {
+            Dialog.register(id: FormWithDialog.DialogId.customToastWithIcon, store: store) { _ in
                 DialogType.customToastWithIcon()
             }
             await waitForCondition { Dialog.isRegistered(id: FormWithDialog.DialogId.customToastWithIcon) }
-            
-            await store.dispatch(Actions.PresentCustomToastWithIcon())
-            let success = await waitForCondition { await store.state.form.dialog.status != .dismissed }
+
+            store.dispatch(Actions.PresentCustomToastWithIcon())
+            let success = await waitForCondition { store.state.form.dialog.status != .dismissed }
             #expect(success)
             
             // Verify it's a toast with custom icon
-            if case .presented(let dialogProtocol) = await store.state.form.dialog.status,
+            if case .presented(let dialogProtocol) = store.state.form.dialog.status,
                let toast = dialogProtocol as? Toast {
                 
                 // Check style is toast
@@ -267,19 +213,17 @@ extension DialogRegistryTests {
         }
         
         @Test func customViewToast() async {
-            let store = await TestStore(initial: AppState())
-            
-            await Dialog.register(id: FormWithDialog.DialogId.customViewToast) {
+            Dialog.register(id: FormWithDialog.DialogId.customViewToast, store: store) { _ in
                 DialogType.customViewToast()
             }
             await waitForCondition { Dialog.isRegistered(id: FormWithDialog.DialogId.customViewToast) }
-            
-            await store.dispatch(Actions.PresentCustomViewToast())
-            let success = await waitForCondition { await store.state.form.dialog.status != .dismissed }
+
+            store.dispatch(Actions.PresentCustomViewToast())
+            let success = await waitForCondition { store.state.form.dialog.status != .dismissed }
             #expect(success)
             
             // Verify it's a toast with custom view
-            if case .presented(let dialogType) = await store.state.form.dialog.status {
+            if case .presented(let dialogType) = store.state.form.dialog.status {
                 // Check style is toast
                 if case .toast(let config) = dialogType.style {
                     #expect(config.position == .center)
@@ -320,7 +264,6 @@ extension DialogRegistryTests {
         }
         
         // MARK: - Complex Content Tests
-        @MainActor
         @Test func customDialogWithContent() {
             let dialog = DialogStatus(dialog: AlertDialog {
                 DialogTitle("Custom Title")
@@ -343,7 +286,6 @@ extension DialogRegistryTests {
             }
         }
         
-        @MainActor
         @Test func toastWithContentAndActions() {
             let dialog = DialogStatus(dialog: Toast {
                 DialogMessage("Toast message")
@@ -385,10 +327,8 @@ extension DialogRegistryTests {
         
         // MARK: - Auto-Dismiss Dialog Status Tests
         @Test func manualDismissUpdatesDialogStatus() async {
-            let store = await TestStore(initial: AppState())
-            
             // Register a toast with long duration (won't auto-dismiss during test)
-            await Dialog.register(id: FormWithDialog.DialogId.toastDialog) {
+            Dialog.register(id: FormWithDialog.DialogId.toastDialog, store: store) { _ in
                 Toast(config: .init(defaultDuration: 10.0)) {
                     DialogMessage("This toast should be manually dismissed")
                 }
@@ -396,8 +336,8 @@ extension DialogRegistryTests {
             await waitForCondition { Dialog.isRegistered(id: FormWithDialog.DialogId.toastDialog) }
             
             // Present the toast
-            await store.dispatch(Actions.PresentToastDialog())
-            let success = await waitForCondition { await store.state.form.dialog.status != .dismissed }
+            store.dispatch(Actions.PresentToastDialog())
+            let success = await waitForCondition { store.state.form.dialog.status != .dismissed }
             #expect(success)
             
             // For manual dismiss, we'll test by creating a dismissed dialog directly
@@ -410,10 +350,8 @@ extension DialogRegistryTests {
         }
         
         @Test func zeroDurationToastDoesNotAutoDismiss() async {
-            let store = await TestStore(initial: AppState())
-            
             // Register a toast with zero duration (manual dismiss only)
-            await Dialog.register(id: FormWithDialog.DialogId.toastDialog) {
+            Dialog.register(id: FormWithDialog.DialogId.toastDialog, store: store) { _ in
                 Toast(config: .init(defaultDuration: 0)) {
                     DialogMessage("This toast should not auto-dismiss")
                 }
@@ -421,19 +359,18 @@ extension DialogRegistryTests {
             await waitForCondition { Dialog.isRegistered(id: FormWithDialog.DialogId.toastDialog) }
             
             // Present the toast
-            await store.dispatch(Actions.PresentToastDialog())
-            let success = await waitForCondition { await store.state.form.dialog.status != .dismissed }
+            store.dispatch(Actions.PresentToastDialog())
+            let success = await waitForCondition { store.state.form.dialog.status != .dismissed }
             #expect(success)
             
             // Wait longer than typical auto-dismiss time
             await sleep()
             
             // Verify the dialog status is still presented (not auto-dismissed)
-            #expect(await store.state.form.dialog.status != .dismissed, "Toast with zero duration should not auto-dismiss")
+            #expect(store.state.form.dialog.status != .dismissed, "Toast with zero duration should not auto-dismiss")
         }
         
         // MARK: - Registry Tests
-        @MainActor
         @Test func registryBehavior() {
             let testId = "test-dialog"
             
@@ -455,16 +392,279 @@ extension DialogRegistryTests {
                 Issue.record("Expected presented dialog from registry")
             }
         }
+        
+        @MainActor
+        @Test func dynamicDialogCapturesLatestState() async throws {
+            Dialog.register(id: FormWithDialog.DialogId.dynamicDialog, store: store) { store in
+                AlertDialog {
+                    DialogTitle("Title \(store.state.form.stringProperty)")
+                    DialogMessage("Message \(store.state.form.stringProperty)")
+                    DialogButton(title: "OK \(store.state.form.stringProperty)")
+                }
+            }
+            
+            store.dispatch(Actions.PresentDynamicDialog())
+            await waitForMainActorCondition { store.state.form.dialog.status != .dismissed }
+            
+            if case .presented(let dialogType) = store.state.form.dialog.status {
+                #expect(dialogType.title == "Title Initial")
+                #expect(dialogType.message == "Message Initial")
+                let okButton = dialogType.actions.first as? DialogButton
+                #expect(okButton?.title == "OK Initial")
+            } else {
+                Issue.record("Expected presented dialog")
+            }
+            
+            store.dispatch(UDF.Actions.UpdateFormField(keyPath: \FormWithDialog.stringProperty, value: "Updated"))
+            await waitForMainActorCondition { store.state.form.stringProperty == "Updated" }
+            
+            #expect(store.state.form.stringProperty == "Updated")
+            
+            store.dispatch(Actions.DismissDynamicDialog())
+            await waitForMainActorCondition { store.state.form.dialog.status == .dismissed }
+            
+            store.dispatch(Actions.PresentDynamicDialog())
+            await waitForMainActorCondition { store.state.form.dialog.status != .dismissed }
+            
+            if case .presented(let dialogType) = store.state.form.dialog.status {
+                #expect(dialogType.title == "Title Updated")
+                #expect(dialogType.message == "Message Updated")
+                let okButton = dialogType.actions.first as? DialogButton
+                #expect(okButton?.title == "OK Updated")
+            } else {
+                Issue.record("Expected presented dialog")
+            }
+        }
+        
+        @MainActor
+        @Test func directDialogStatusCapturesLatestState() async throws {
+            store.dispatch(Actions.PresentDirectDynamicDialog())
+            await waitForMainActorCondition { store.state.form.dialog.status != .dismissed }
+            
+            if case .presented(let dialogType) = store.state.form.dialog.status {
+                #expect(dialogType.title == "Title Initial")
+                #expect(dialogType.message == "Message Initial")
+                let okButton = dialogType.actions.first as? DialogButton
+                #expect(okButton?.title == "OK Initial")
+            } else {
+                Issue.record("Expected presented dialog")
+            }
+
+            store.dispatch(Actions.UpdateFormField(keyPath: \FormWithDialog.stringProperty, value: "Updated"))
+            await waitForMainActorCondition { store.state.form.stringProperty == "Updated" }
+            
+            #expect(store.state.form.stringProperty == "Updated")
+            
+            store.dispatch(Actions.DismissDynamicDialog())
+            await waitForMainActorCondition { store.state.form.dialog.status == .dismissed }
+            
+            store.dispatch(Actions.PresentDirectDynamicDialog())
+            await waitForMainActorCondition { store.state.form.dialog.status != .dismissed }
+            
+            if case .presented(let dialogType) = store.state.form.dialog.status {
+                #expect(dialogType.title == "Title Updated")
+                #expect(dialogType.message == "Message Updated")
+                let okButton = dialogType.actions.first as? DialogButton
+                #expect(okButton?.title == "OK Updated")
+            } else {
+                Issue.record("Expected presented dialog")
+            }
+        }
+        
+        @MainActor
+        @Test func dynamicDialogButtonCapturesLatestState() async throws {
+            store.dispatch(UDF.Actions.UpdateFormField(keyPath: \FormWithDialog.stringProperty, value: "5"))
+            await waitForMainActorCondition { store.state.form.stringProperty == "5" }
+            
+            Dialog.register(id: FormWithDialog.DialogId.dynamicDialog, store: store) { store in
+                AlertDialog {
+                    DialogTitle("do you want to delete these items?")
+                    DialogButton(title: "Cancel", role: .cancel)
+                    DialogButton(title: "Delete \(store.state.form.stringProperty) items", role: .destructive)
+                }
+            }
+            
+            store.dispatch(Actions.PresentDynamicDialog())
+            await waitForMainActorCondition { store.state.form.dialog.status != .dismissed }
+            
+            if case .presented(let dialogType) = store.state.form.dialog.status {
+                let deleteButton = dialogType.actions[1] as? DialogButton
+                #expect(deleteButton?.title == "Delete 5 items")
+            } else {
+                Issue.record("Expected presented dialog")
+            }
+            
+            store.dispatch(UDF.Actions.UpdateFormField(keyPath: \FormWithDialog.stringProperty, value: "3"))
+            await waitForMainActorCondition { store.state.form.stringProperty == "3" }
+            
+            store.dispatch(Actions.PresentDynamicDialog())
+            
+            await waitForMainActorCondition {
+                if case .presented(let dialogType) = store.state.form.dialog.status {
+                    let deleteButton = dialogType.actions[1] as? DialogButton
+                    return deleteButton?.title == "Delete 3 items"
+                }
+                return false
+            }
+            
+            if case .presented(let dialogType) = store.state.form.dialog.status {
+                let deleteButton = dialogType.actions[1] as? DialogButton
+                #expect(deleteButton?.title == "Delete 3 items")
+            } else {
+                Issue.record("Expected presented dialog")
+            }
+        }
+        
+        @MainActor
+        @Test func dynamicDialogTextFieldCapturesLatestState() async throws {
+            store.dispatch(
+                Actions.UpdateFormField(
+                    keyPath: \FormWithDialog.stringProperty,
+                    value: "Initial Text"
+                )
+            )
+            
+            await waitForMainActorCondition { store.state.form.stringProperty == "Initial Text" }
+            
+            Dialog.register(id: FormWithDialog.DialogId.dynamicDialog, store: store) { store in
+                AlertDialog {
+                    DialogTitle("Edit Item")
+                    DialogTextField(
+                        title: "Name",
+                        text: Binding(
+                            get: { store.state.form.stringProperty },
+                            set: { _ in }
+                        )
+                    )
+                    DialogButton(title: "Cancel", role: .cancel)
+                }
+            }
+            
+            store.dispatch(Actions.PresentDynamicDialog())
+            await waitForMainActorCondition {
+                store.state.form.dialog.status != .dismissed
+            }
+            
+            if case .presented(let dialogType) = store.state.form.dialog.status {
+                if let textField = dialogType.actions[0] as? DialogTextField {
+                    let textValue = textField.text.wrappedValue
+                    #expect(textValue == "Initial Text")
+                } else {
+                    Issue.record("actions[0] is not a DialogTextField: \(dialogType.actions)")
+                }
+            } else {
+                Issue.record("Expected presented dialog")
+            }
+            
+            store.dispatch(
+                Actions.UpdateFormField(
+                    keyPath: \FormWithDialog.stringProperty,
+                    value: "Updated Text"
+                )
+            )
+            await waitForMainActorCondition {
+                store.state.form.stringProperty == "Updated Text"
+            }
+            
+            // Re-evaluate the binding after state updates
+            if case .presented(let dialogType) = store.state.form.dialog.status {
+                if let textField = dialogType.actions[0] as? DialogTextField {
+                    let textValue = textField.text.wrappedValue
+                    #expect(textValue == "Updated Text")
+                }
+            } else {
+                Issue.record("Expected presented dialog")
+            }
+        }
+        
+        @Test func dynamicDialogTitleCapturesLatestState() async throws {
+            store.dispatch(UDF.Actions.UpdateFormField(keyPath: \FormWithDialog.stringProperty, value: "Old Title"))
+            await waitForCondition { store.state.form.stringProperty == "Old Title" }
+            
+            Dialog.register(id: FormWithDialog.DialogId.dynamicDialog, store: store) { store in
+                AlertDialog {
+                    DialogTitle(store.state.form.stringProperty)
+                    DialogButton(title: "OK")
+                }
+            }
+            
+            store.dispatch(Actions.PresentDynamicDialog())
+            await waitForCondition { store.state.form.dialog.status != .dismissed }
+            
+            if case .presented(let dialogType) = store.state.form.dialog.status {
+                #expect(dialogType.title == "Old Title")
+            } else {
+                Issue.record("Expected presented dialog")
+            }
+            
+            store.dispatch(UDF.Actions.UpdateFormField(keyPath: \FormWithDialog.stringProperty, value: "New Title"))
+            await waitForCondition { store.state.form.stringProperty == "New Title" }
+            
+            store.dispatch(Actions.PresentDynamicDialog())
+            
+            await waitForCondition {
+                if case .presented(let dialogType) = store.state.form.dialog.status {
+                    return dialogType.title == "New Title"
+                }
+                return false
+            }
+            
+            if case .presented(let dialogType) = store.state.form.dialog.status {
+                #expect(dialogType.title == "New Title")
+            } else {
+                Issue.record("Expected presented dialog")
+            }
+        }
+        
+        @Test func dynamicDialogMessageCapturesLatestState() async throws {
+            store.dispatch(UDF.Actions.UpdateFormField(keyPath: \FormWithDialog.stringProperty, value: "Old Message"))
+            await waitForCondition { store.state.form.stringProperty == "Old Message" }
+            
+            Dialog.register(id: FormWithDialog.DialogId.dynamicDialog, store: store) { store in
+                AlertDialog {
+                    DialogTitle("Static Title")
+                    DialogMessage(store.state.form.stringProperty)
+                    DialogButton(title: "OK")
+                }
+            }
+            
+            store.dispatch(Actions.PresentDynamicDialog())
+            await waitForCondition { store.state.form.dialog.status != .dismissed }
+            
+            if case .presented(let dialogType) = store.state.form.dialog.status {
+                #expect(dialogType.message == "Old Message")
+            } else {
+                Issue.record("Expected presented dialog")
+            }
+            
+            store.dispatch(UDF.Actions.UpdateFormField(keyPath: \FormWithDialog.stringProperty, value: "New Message"))
+            await waitForCondition { store.state.form.stringProperty == "New Message" }
+            
+            store.dispatch(Actions.PresentDynamicDialog())
+            
+            await waitForCondition {
+                if case .presented(let dialogType) = store.state.form.dialog.status {
+                    return dialogType.message == "New Message"
+                }
+                return false
+            }
+            
+            if case .presented(let dialogType) = store.state.form.dialog.status {
+                #expect(dialogType.message == "New Message")
+            } else {
+                Issue.record("Expected presented dialog")
+            }
+        }
+
         @MainActor
         @Test func dynamicDialogCustomIconCapturesLatestState() async throws {
             ViewRenderTracker.renderHistory.removeAll()
-            let store = EnvironmentStore(initial: AppState(), loggers: [])
             store.dispatch(UDF.Actions.UpdateFormField(keyPath: \FormWithDialog.viewMode, value: .text("TextMode")))
             await waitForMainActorCondition { store.state.form.viewMode == .text("TextMode") }
             
-            Dialog.register(id: FormWithDialog.DialogId.dynamicDialog) {
+            Dialog.register(id: FormWithDialog.DialogId.dynamicDialog, store: store) { store in
                 Toast {
-                    DialogIcon { 
+                    DialogIcon {
                         switch store.state.form.viewMode {
                         case .image:
                             Image(systemName: "star")
@@ -492,18 +692,25 @@ extension DialogRegistryTests {
             
             store.dispatch(Actions.PresentDynamicDialog())
             
-            await waitForMainActorCondition { 
+            await waitForMainActorCondition {
                 if case .presented(let dialogType) = store.state.form.dialog.status {
                     let iconView = dialogType.getIconView(theme: .default)
-                    return String(describing: iconView!).contains("Image")
+                    if let iconView {
+                        return String(describing: iconView).contains("Image")
+                    }
+                    return false
                 }
                 return false
             }
             
             if case .presented(let dialogType) = store.state.form.dialog.status {
                 let iconView = dialogType.getIconView(theme: .default)
-                let description = String(describing: iconView!)
-                #expect(description.contains("Image"))
+                if let iconView {
+                    let description = String(describing: iconView)
+                    #expect(description.contains("Image"))
+                } else {
+                    Issue.record("iconView is nil")
+                }
             } else {
                 Issue.record("Expected presented dialog")
             }
@@ -513,10 +720,13 @@ extension DialogRegistryTests {
             
             store.dispatch(Actions.PresentDynamicDialog())
             
-            await waitForMainActorCondition { 
+            await waitForMainActorCondition {
                 if case .presented(let dialogType) = store.state.form.dialog.status {
                     let iconView = dialogType.getIconView(theme: .default)
-                    return String(describing: iconView!).contains("TrackerTestView")
+                    if let iconView {
+                        return String(describing: iconView).contains("TrackerTestView")
+                    }
+                    return false
                 }
                 return false
             }
@@ -533,14 +743,13 @@ extension DialogRegistryTests {
         @MainActor
         @Test func dynamicDialogCustomViewCapturesLatestState() async throws {
             ViewRenderTracker.renderHistory.removeAll()
-            let store = EnvironmentStore(initial: AppState(), loggers: [])
             store.dispatch(UDF.Actions.UpdateFormField(keyPath: \FormWithDialog.viewMode, value: .text("TextMode")))
             await waitForMainActorCondition { store.state.form.viewMode == .text("TextMode") }
             
-            Dialog.register(id: FormWithDialog.DialogId.dynamicDialog) {
+            Dialog.register(id: FormWithDialog.DialogId.dynamicDialog, store: store) { store in
                 Toast {
                     DialogMessage("Message")
-                    DialogView { 
+                    DialogView {
                         switch store.state.form.viewMode {
                         case .image:
                             Image(systemName: "circle")
@@ -567,18 +776,25 @@ extension DialogRegistryTests {
             
             store.dispatch(Actions.PresentDynamicDialog())
             
-            await waitForMainActorCondition { 
+            await waitForMainActorCondition {
                 if case .presented(let dialogType) = store.state.form.dialog.status {
                     let customView = dialogType.getCustomContentView()
-                    return String(describing: customView!).contains("Image")
+                    if let customView {
+                        return String(describing: customView).contains("Image")
+                    }
+                    return false
                 }
                 return false
             }
             
             if case .presented(let dialogType) = store.state.form.dialog.status {
                 let customView = dialogType.getCustomContentView()
-                let description = String(describing: customView!)
-                #expect(description.contains("Image"))
+                if let customView {
+                    let description = String(describing: customView)
+                    #expect(description.contains("Image"))
+                } else {
+                    Issue.record("customView is nil")
+                }
             } else {
                 Issue.record("Expected presented dialog")
             }
@@ -591,7 +807,10 @@ extension DialogRegistryTests {
             await waitForMainActorCondition { 
                 if case .presented(let dialogType) = store.state.form.dialog.status {
                     let customView = dialogType.getCustomContentView()
-                    return String(describing: customView!).contains("TrackerTestView")
+                    if let customView {
+                        return String(describing: customView).contains("TrackerTestView")
+                    }
+                    return false
                 }
                 return false
             }
@@ -609,6 +828,64 @@ extension DialogRegistryTests {
 }
 
 extension DialogRegistryTests.DialogTests {
+    // MARK: - Helpers
+    
+    struct AppState: AppReducer {
+        var form = FormWithDialog()
+    }
+    
+    struct FormWithDialog: UDF.Form {
+        enum DialogId: Hashable {
+            case dialogWithAction
+            case toastDialog
+            case customToastWithIcon
+            case customViewToast
+            case dynamicDialog
+        }
+        
+        enum ViewMode: Equatable {
+            case text(String)
+            case image
+        }
+        
+        var stringProperty: String = "Initial"
+        var viewMode: ViewMode = .text("Initial")
+        var dialog: DialogStatus = .dismissed
+        
+        nonisolated mutating func reduce(_ action: some Action) {
+            switch action {
+            case is Actions.PresentDialogWithAction:
+                dialog = .init(id: DialogId.dialogWithAction)
+                
+            case is Actions.PresentToastDialog:
+                dialog = .init(id: DialogId.toastDialog)
+                
+            case is Actions.PresentCustomToastWithIcon:
+                dialog = .init(id: DialogId.customToastWithIcon)
+                
+            case is Actions.PresentCustomViewToast:
+                dialog = .init(id: DialogId.customViewToast)
+                
+            case is Actions.PresentDynamicDialog:
+                dialog = .init(id: DialogId.dynamicDialog)
+                
+            case is Actions.PresentDirectDynamicDialog:
+                dialog = DialogStatus {
+                    AlertDialog {
+                        DialogTitle("Title \(stringProperty)")
+                        DialogMessage("Message \(stringProperty)")
+                        DialogButton(title: "OK \(stringProperty)")
+                    }
+                }
+                
+            case is Actions.DismissDynamicDialog:
+                dialog = .dismissed
+                
+            default:
+                break
+            }
+        }
+    }
     @MainActor
     class ViewRenderTracker {
         static var renderHistory: [String] = []

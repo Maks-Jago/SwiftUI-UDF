@@ -21,15 +21,21 @@ import SwiftUI
 #if canImport(UIKit)
     import UIKit.UIApplication
 
+    /// The platform's application type: `UIApplication` on UIKit platforms.
     public typealias PlatformApplication = UIApplication
+    /// The platform's launch-options type: `UIApplication`'s launch options dictionary on UIKit platforms.
     public typealias PlatformLaunchOptions = [UIApplication.LaunchOptionsKey: Any]?
 #else
     import AppKit.NSApplication
 
+    /// The platform's application type: `NSApplication` on AppKit platforms.
     public typealias PlatformApplication = NSApplication
+    /// The platform's launch-options type: the launch `Notification` on AppKit platforms.
     public typealias PlatformLaunchOptions = Notification
 #endif
 
+/// A namespace for the built-in actions shipped with the UDF architecture, covering forms,
+/// alerts, dialogs, pagination, navigation, and application lifecycle events.
 public enum Actions {
     /// `UpdateFormField` is an action used to update a specific field in a form within the UDF architecture.
     /// It captures the key path of the property to be updated along with its new value, and provides a way to
@@ -881,8 +887,12 @@ public extension Actions {
 
     /// `NavigateBack` is an action used to handle navigation back a specified number of steps.
     struct NavigateStepsBack: Action {
+        /// The number of screens to pop off the navigation stack.
         public let stepsCount: Int
 
+        /// Initializes a `NavigateStepsBack` action.
+        ///
+        /// - Parameter stepsCount: The number of screens to pop off the navigation stack.
         public init(stepsCount: Int) {
             self.stepsCount = stepsCount
         }
@@ -951,8 +961,12 @@ public extension Actions {
 
     /// `NavigateStepsBackTyped` is a generic action used to handle navigation back a specified number of steps.
     struct NavigateStepsBackTyped<Routing>: Action {
+        /// The number of screens to pop off the navigation stack.
         public let stepsCount: Int
 
+        /// Initializes a `NavigateStepsBackTyped` action.
+        ///
+        /// - Parameter stepsCount: The number of screens to pop off the navigation stack.
         public init(stepsCount: Int) {
             self.stepsCount = stepsCount
         }
@@ -965,56 +979,96 @@ extension Actions {
     ///
     /// This action is typically dispatched when a container of type `BindableContainer` is fully loaded and ready for interactions.
     ///
-    /// - Parameters:
-    ///   - BindedContainer: The container type conforming to `BindableContainer`.
-    struct _OnContainerDidLoad<BindedContainer: BindableContainer>: Action where BindedContainer.ID: Sendable {
-        static func == (lhs: Actions._OnContainerDidLoad<BindedContainer>, rhs: Actions._OnContainerDidLoad<BindedContainer>) -> Bool {
+    struct _OnContainerDidLoad<ID: Hashable & Sendable>: _AnyBindableContainerAction {
+        static func == (lhs: Actions._OnContainerDidLoad<ID>, rhs: Actions._OnContainerDidLoad<ID>) -> Bool {
             lhs.id == rhs.id && lhs.containerType == rhs.containerType
         }
 
         /// The type of the container that has loaded.
-        var containerType: BindedContainer.Type
+        var containerType: any BindableContainer.Type
 
         /// The unique identifier of the container.
-        var id: BindedContainer.ID
+        var id: ID
+
+        init(containerType: any BindableContainer.Type, id: ID) {
+            self.containerType = containerType
+            self.id = id
+        }
+
+        init<Container: BindableContainer>(
+            containerType: Container.Type,
+            id: Container.ID
+        ) where Container.ID == ID {
+            self.containerType = containerType
+            self.id = id
+        }
     }
 
     /// `_OnContainerDidUnLoad` is an internal action used to signal that a `BindableContainer` has unloaded.
     ///
     /// This action is typically dispatched when a container of type `BindableContainer` is unloaded, indicating the end of its lifecycle.
     ///
-    /// - Parameters:
-    ///   - BindedContainer: The container type conforming to `BindableContainer`.
-    struct _OnContainerDidUnLoad<BindedContainer: BindableContainer>: Action where BindedContainer.ID: Sendable {
-        static func == (lhs: Actions._OnContainerDidUnLoad<BindedContainer>, rhs: Actions._OnContainerDidUnLoad<BindedContainer>) -> Bool {
+    struct _OnContainerDidUnLoad<ID: Hashable & Sendable>: _AnyBindableContainerAction {
+        static func == (lhs: Actions._OnContainerDidUnLoad<ID>, rhs: Actions._OnContainerDidUnLoad<ID>) -> Bool {
             lhs.id == rhs.id && lhs.containerType == rhs.containerType
         }
 
         /// The type of the container that has unloaded.
-        var containerType: BindedContainer.Type
+        var containerType: any BindableContainer.Type
 
         /// The unique identifier of the container.
-        var id: BindedContainer.ID
+        var id: ID
+
+        init(containerType: any BindableContainer.Type, id: ID) {
+            self.containerType = containerType
+            self.id = id
+        }
+
+        init<Container: BindableContainer>(
+            containerType: Container.Type,
+            id: Container.ID
+        ) where Container.ID == ID {
+            self.containerType = containerType
+            self.id = id
+        }
     }
 
     /// `_BindableAction` is an internal action that wraps another action and associates it with a specific `BindableContainer`.
     ///
     /// This is useful for dispatching actions that need to be bound to a particular instance of a container.
     ///
-    /// - Parameters:
-    ///   - BindedContainer: The container type conforming to `BindableContainer`.
-    struct _BindableAction<BindedContainer: BindableContainer>: _AnyBindableAction where BindedContainer.ID: Sendable {
+    struct _BindableAction<ID: Hashable & Sendable>: _AnyBindableAction {
         /// The wrapped action that is being bound to the container.
         let value: any Action
 
         /// The type of the container that the action is bound to.
-        let containerType: BindedContainer.Type
+        let containerType: any BindableContainer.Type
 
         /// The unique identifier of the container.
-        let id: BindedContainer.ID
+        let id: ID
 
-        public static func == (lhs: _BindableAction<BindedContainer>, rhs: _BindableAction<BindedContainer>) -> Bool {
-            lhs.id == rhs.id && areEqual(lhs.value, rhs.value)
+        init(
+            value: any Action,
+            containerType: any BindableContainer.Type,
+            id: ID
+        ) {
+            self.value = value
+            self.containerType = containerType
+            self.id = id
+        }
+
+        init<Container: BindableContainer>(
+            value: any Action,
+            containerType: Container.Type,
+            id: Container.ID
+        ) where Container.ID == ID {
+            self.value = value
+            self.containerType = containerType
+            self.id = id
+        }
+
+        public static func == (lhs: _BindableAction, rhs: _BindableAction) -> Bool {
+            lhs.id == rhs.id && areEqual(lhs.value, rhs.value) && lhs.containerType == rhs.containerType
         }
 
         var description: String {

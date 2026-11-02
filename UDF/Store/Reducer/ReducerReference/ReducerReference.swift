@@ -5,7 +5,7 @@
 // Copyright (c) 2024 You are launched
 // Licensed under Apache License v2.0
 //
-// See https://opensource.org/licenses/Apache License v2.0 for license information
+// See https://opensource.org/licenses/Apache-2.0 for license information
 //
 //===----------------------------------------------------------------------===//
 
@@ -53,9 +53,9 @@ public class ReducerReference<AppState: AppReducer, Reducer: Reducible>: @unchec
     /// - Parameter keyPath: A writable key path to a `BindableReducer` within the referenced reducer.
     /// - Returns: A `BindableReducerReference` for the specified nested `BindableReducer`.
     public subscript<
-        C: BindableContainer,
+        ID: Hashable & Sendable,
         R: Reducible
-    >(dynamicMember keyPath: WritableKeyPath<Reducer, BindableReducer<C, R>>) -> BindableReducerReference<AppState, C, R> {
+    >(dynamicMember keyPath: WritableKeyPath<Reducer, BindableReducer<ID, R>>) -> BindableReducerReference<AppState, ID, R> {
         BindableReducerReference(reducer: reducer[keyPath: keyPath], dispatcher: dispatcher)
     }
 
