@@ -264,15 +264,15 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
         )
     }
 
-    /// Runs a pure effect and dispatches its actions to the store, allowing for state-based filtering and cancellation.
+    /// Runs a pure effect and dispatches the actions accepted by a state-based filter, allowing for cancellation and action mapping.
     ///
-    /// This method listens to the effect and optionally checks each output against a fresh application state snapshot before dispatch.
-    /// The filter receives the original action before `mapAction` runs. With no filter, actions proceed without a state read.
+    /// This method checks each output against a fresh application state snapshot before dispatch. The required `dispatchFilter`
+    /// receives the state and original action, and returns whether that action should proceed to `mapAction` and the store.
     /// The subscription remains active until the publisher completes or is cancelled.
     ///
     /// This method:
     /// - Subscribes to the effect on the specified `queue`.
-    /// - Reads a fresh state snapshot for each output when `dispatchFilter` is provided.
+    /// - Reads a fresh state snapshot for each output and evaluates `dispatchFilter` before mapping the action.
     /// - Maps accepted actions before dispatching them to the store.
     /// - Handles cancellation using the `cancellation` identifier.
     /// - Maps cancellation actions before dispatching them, bypassing `dispatchFilter`.
@@ -281,20 +281,20 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
     ///   - effect: The effect whose output is `any Action` and whose failure type is `Never`.
     ///   - cancellation: The identifier used to deduplicate and cancel the subscription.
     ///   - mapAction: Transforms accepted outputs and cancellation actions before dispatch. Defaults to `{ $0 }`.
-    ///   - dispatchFilter: An optional predicate receiving a fresh state snapshot and the original output action.
-    ///     Defaults to `nil`, which skips state reads and accepts every output.
+    ///   - dispatchFilter: A required predicate receiving a fresh state snapshot and the original output action.
+    ///     Return `true` to map and dispatch the action, or `false` to discard it.
     ///   - fileName: The calling file recorded with dispatched actions. Defaults to `#file`.
     ///   - functionName: The calling function recorded with dispatched actions. Defaults to `#function`.
     ///   - lineNumber: The calling line recorded with dispatched actions. Defaults to `#line`.
-    ///   
-    /// - Note: This method uses Combine's `sink` and `handleEvents` to manage the effect's lifecycle, including cancellation and
-    /// completion.
+    ///
+    /// - Note: A trailing closure with `(state, action)` parameters supplies `dispatchFilter`. When supplying both closures,
+    ///   use the explicit `mapAction:` and `dispatchFilter:` argument labels.
     /// - Important: An active subscription with the same cancellation identifier prevents a second subscription.
     open func run<E>(
         _ effect: E,
         cancellation: some Hashable,
         mapAction: @escaping (any Action) -> any Action = { $0 },
-        dispatchFilter: DispatchFilter<any Action>? = nil,
+        dispatchFilter: @escaping DispatchFilter<any Action>,
         fileName: String = #file,
         functionName: String = #function,
         lineNumber: Int = #line
@@ -305,6 +305,46 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
             waitBehavior: .onDispatchAction,
             mapAction: mapAction,
             dispatchFilter: dispatchFilter,
+            fileName: fileName,
+            functionName: functionName,
+            lineNumber: lineNumber
+        )
+    }
+
+    /// Runs a pure effect and dispatches its emitted actions to the store, allowing for cancellation and action mapping.
+    ///
+    /// This method forwards each output through `mapAction`.
+    ///
+    /// This method:
+    /// - Subscribes to the effect on the specified `queue`.
+    /// - Maps each emitted action before dispatching it to the store.
+    /// - Handles cancellation using the `cancellation` identifier.
+    /// - Maps cancellation actions before dispatching them to the store.
+    ///
+    /// - Parameters:
+    ///   - effect: The effect whose output is `any Action` and whose failure type is `Never`.
+    ///   - cancellation: The identifier used to deduplicate and cancel the subscription.
+    ///   - mapAction: Transforms emitted actions and cancellation actions before dispatch. Defaults to `{ $0 }`.
+    ///   - fileName: The calling file recorded with dispatched actions. Defaults to `#file`.
+    ///   - functionName: The calling function recorded with dispatched actions. Defaults to `#function`.
+    ///   - lineNumber: The calling line recorded with dispatched actions. Defaults to `#line`.
+    ///
+    /// - Note: A trailing closure receiving one action supplies `mapAction` and must return the action to dispatch.
+    /// - Important: An active subscription with the same cancellation identifier prevents a second subscription.
+    open func run<E>(
+        _ effect: E,
+        cancellation: some Hashable,
+        mapAction: @escaping (any Action) -> any Action = { $0 },
+        fileName: String = #file,
+        functionName: String = #function,
+        lineNumber: Int = #line
+    ) where E: PureEffect, E.Output == any Action, E.Failure == Never {
+        execute(
+            effect,
+            cancellation: cancellation,
+            waitBehavior: .onDispatchAction,
+            mapAction: mapAction,
+            dispatchFilter: nil,
             fileName: fileName,
             functionName: functionName,
             lineNumber: lineNumber
