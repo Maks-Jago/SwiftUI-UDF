@@ -13,10 +13,10 @@ import SwiftUI
 
 /// The reducer a feature module mounts into a host app state.
 ///
-/// A `FeatureState` groups everything a feature owns, its forms and its flows, names the middleware and
-/// routing implementation that belong to it, and exposes the single view the composing app presents to
-/// enter the feature. Mounting it as a property of the app state is the only step that app performs: the
-/// store finds it there at launch and registers its middleware.
+/// A `FeatureState` groups everything a feature owns, its forms and its flows, names the middleware that
+/// belongs to it, and exposes the single view the composing app presents to enter the feature. Mounting it
+/// as a property of the app state is the only step that app performs: the store finds it there at launch and
+/// registers its middleware.
 ///
 /// Every feature explicitly implements middleware registration. A feature with no middleware leaves the
 /// registration method's body empty, making that choice visible at the conformance site. The same holds for
@@ -29,9 +29,8 @@ import SwiftUI
 /// ```swift
 /// public protocol ProfileFeature: AppReducer {
 ///     associatedtype Environments: ProfileEnvironmentProviding
-///     associatedtype ProfileRouting: Routing<ProfileRoute>
 ///
-///     var profile: ProfileFeatureState<Self, ProfileRouting> { get }
+///     var profile: ProfileFeatureState<Self> { get }
 /// }
 ///
 /// public protocol ProfileEnvironmentProviding {
@@ -39,23 +38,39 @@ import SwiftUI
 /// }
 /// ```
 ///
-/// Requiring the reducer as `ProfileFeatureState<Self, ProfileRouting>` is what keeps the feature's
-/// `AppState`, routing implementation and the store's root reducer connected at compile time.
+/// Requiring the reducer as `ProfileFeatureState<Self>` is what keeps the feature's `AppState` and the
+/// store's root reducer connected at compile time.
+///
+/// ## Entry points of other features
+///
+/// A feature that leads to a screen of another feature does not import that feature. It lists the screens it
+/// leads to as a public enum and requires a ``FeatureEntryPointProviding`` for them, named after itself:
+///
+/// ```swift
+/// public protocol ProfileFeature: AppReducer {
+///     associatedtype Environments: ProfileEnvironmentProviding
+///     associatedtype ProfileEntryPoints: FeatureEntryPointProviding<ProfileRoute>
+///
+///     var profile: ProfileFeatureState<Self> { get }
+/// }
+/// ```
+///
+/// The app provides it. ``FeatureEntryPointProviding`` shows the whole pattern, from the feature's routing to
+/// the app's provider.
+///
+/// ## Feature module
 ///
 /// The module then owns its state, its entry point and its registration, and never names a concrete app:
 ///
 /// ```swift
-/// public struct ProfileFeatureState<
-///     AppState: ProfileFeature,
-///     FeatureRouting: Routing<ProfileRoute>
-/// >: FeatureState {
+/// public struct ProfileFeatureState<AppState: ProfileFeature>: FeatureState {
 ///     var form = ProfileForm()
 ///     var flow = ProfileFlow()
 ///
 ///     public init() {}
 ///
 ///     public static func entryPoint(input: User.ID) -> some View {
-///         ProfileContainer<AppState, FeatureRouting>(id: input)
+///         ProfileContainer<AppState>(id: input)
 ///     }
 ///
 ///     public static var destinations: some ViewModifier {
@@ -95,7 +110,7 @@ import SwiftUI
 ///
 /// struct AppState: AppReducer {
 ///     typealias Environments = AppEnvironments
-///     var profile = ProfileFeatureState<AppState, AppProfileRouting>()
+///     var profile = ProfileFeatureState<AppState>()
 /// }
 /// ```
 ///
@@ -103,7 +118,7 @@ import SwiftUI
 ///
 /// ```swift
 /// TabRoot()
-///     .navigationDestinations(for: ProfileFeatureState<AppState, AppProfileRouting>.self)
+///     .navigationDestinations(for: ProfileFeatureState<AppState>.self)
 /// ```
 ///
 /// ## Links
@@ -152,14 +167,7 @@ import SwiftUI
 ///
 /// - Note: `FeatureState` belongs to the modular protocol set. An app composed as a single module places
 ///   `Form`, `Flow` and `Storage` reducers in its app state directly and never adopts it.
-public protocol FeatureState<AppState, FeatureRouting>: Reducible, MiddlewareRegistering {
-    /// The routing implementation used by this feature's containers and components.
-    ///
-    /// Keeping routing as part of the feature state contract lets a composing app provide the concrete
-    /// navigation implementation without the feature module depending on the app target. A feature
-    /// with no internal destinations uses ``EmptyRouting``.
-    associatedtype FeatureRouting: Routing
-
+public protocol FeatureState<AppState>: Reducible, MiddlewareRegistering {
     /// The view the composing app presents to enter this feature.
     ///
     /// Inferred from the return type of ``FeatureState/entryPoint(input:)``, so a conforming feature
@@ -192,8 +200,8 @@ public protocol FeatureState<AppState, FeatureRouting>: Reducible, MiddlewareReg
     /// A navigation stack shows a pushed route only when a destination for the route's type is registered
     /// on that stack. A feature's internal routes are private to its module, so the composing app cannot
     /// register them; the feature lists their routings here and the app registers all of them with
-    /// `navigationDestinations(for:)`. Routes that leave the feature are not listed: the app resolves them
-    /// through ``FeatureRouting``.
+    /// `navigationDestinations(for:)`. The feature's ``FeatureEntryPointProviding`` requirement is not
+    /// listed: it is not a ``Routing``, so it cannot be.
     ///
     /// ```swift
     /// public static var destinations: some ViewModifier {

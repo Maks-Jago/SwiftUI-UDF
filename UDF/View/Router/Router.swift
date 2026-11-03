@@ -133,15 +133,3 @@ public class MockedRouting<Route>: Routing {
         EmptyView()
     }
 }
-
-/// The routing witness for a feature that has no internal destinations.
-///
-/// Use this as a feature state's `FeatureRouting` when the feature does not perform navigation:
-///
-/// ```swift
-/// struct SettingsFeatureState<AppState: SettingsFeature>: FeatureState {
-///     typealias FeatureRouting = EmptyRouting
-///     // ...
-/// }
-/// ```
-public final class EmptyRouting: MockedRouting<Never> {}
