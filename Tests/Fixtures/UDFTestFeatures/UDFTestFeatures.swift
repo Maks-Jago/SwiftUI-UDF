@@ -79,7 +79,7 @@ public struct TestFeatureState<AppState: TestFeature>: FeatureState {
     public static func entryPoint(
         input: TestFeatureInput
     ) -> TestFeatureDestination {
-        .init(input: input)
+        TestFeatureDestination(input: input)
     }
 
     public static var destinations: some ViewModifier {}
@@ -223,6 +223,6 @@ public struct TestSettingsFeatureState<AppState: TestSettingsFeature>:
     public static func entryPoint(
         input: TestSettingsInput
     ) -> TestSettingsDestination {
-        .init(input: input)
+        TestSettingsDestination(input: input)
     }
 }

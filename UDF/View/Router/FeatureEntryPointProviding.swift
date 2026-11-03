@@ -33,7 +33,6 @@ import SwiftUI
 /// // In the app, one provider covers the entry points of the feature:
 /// extension AppState {
 ///     struct ProfileEntryPoints: FeatureEntryPointProviding {
-///         @ViewBuilder
 ///         func view(for entryPoint: ProfileRoute) -> some View {
 ///             switch entryPoint {
 ///             case let .itemDetails(item):
@@ -61,7 +60,11 @@ public protocol FeatureEntryPointProviding<EntryPoint>: Initable {
 
     /// Builds the entry view of the feature that an entry point leads to.
     ///
+    /// The requirement is a view builder, so a conforming type's implementation is one too without writing
+    /// `@ViewBuilder`.
+    ///
     /// - Parameter entryPoint: The screen of another feature to build.
     /// - Returns: The entry view of that feature.
+    @ViewBuilder
     func view(for entryPoint: EntryPoint) -> Destination
 }

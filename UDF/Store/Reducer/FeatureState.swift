@@ -183,10 +183,12 @@ public protocol FeatureState<AppState>: Reducible, MiddlewareRegistering {
     /// Builds the feature's entry point.
     ///
     /// This is the only view the composing app is expected to present directly. Everything the feature
-    /// shows beyond it is reached through the feature's own navigation.
+    /// shows beyond it is reached through the feature's own navigation. The requirement is a view builder,
+    /// so a conforming feature's implementation is one too without writing `@ViewBuilder`.
     ///
     /// - Parameter input: The values the feature needs in order to be entered.
     /// - Returns: The feature's entry view.
+    @ViewBuilder
     static func entryPoint(input: Input) -> Destination
 
     /// The modifier that registers the screens the feature pushes itself.
