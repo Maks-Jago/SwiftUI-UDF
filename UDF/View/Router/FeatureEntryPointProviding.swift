@@ -18,13 +18,13 @@ import SwiftUI
 /// and builds each entry point with the other feature's ``FeatureState/entryPoint(input:)``:
 ///
 /// ```swift
-/// // In the Profile feature module, the entry points into other features:
-/// public enum ProfileRoute {
+/// // In the Profile feature module, the screens of other features it depends on:
+/// public enum ProfileRouteDependency {
 ///     case itemDetails(any Item)
 /// }
 ///
 /// public protocol ProfileFeature: AppReducer {
-///     associatedtype ProfileEntryPoints: FeatureEntryPointProviding<ProfileRoute>
+///     associatedtype ProfileEntryPoints: FeatureEntryPointProviding<ProfileRouteDependency>
 /// }
 ///
 /// // Inside a routing of the feature, a case shows the other feature:
@@ -33,7 +33,7 @@ import SwiftUI
 /// // In the app, one provider covers the entry points of the feature:
 /// extension AppState {
 ///     struct ProfileEntryPoints: FeatureEntryPointProviding {
-///         func view(for entryPoint: ProfileRoute) -> some View {
+///         func view(for entryPoint: ProfileRouteDependency) -> some View {
 ///             switch entryPoint {
 ///             case let .itemDetails(item):
 ///                 ItemDetailsFeatureState<AppState>.entryPoint(input: item.id)

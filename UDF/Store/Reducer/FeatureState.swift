@@ -49,7 +49,7 @@ import SwiftUI
 /// ```swift
 /// public protocol ProfileFeature: AppReducer {
 ///     associatedtype Environments: ProfileEnvironmentProviding
-///     associatedtype ProfileEntryPoints: FeatureEntryPointProviding<ProfileRoute>
+///     associatedtype ProfileEntryPoints: FeatureEntryPointProviding<ProfileRouteDependency>
 ///
 ///     var profile: ProfileFeatureState<Self> { get }
 /// }
