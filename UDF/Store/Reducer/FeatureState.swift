@@ -233,7 +233,7 @@ public extension View {
     ///
     /// - Parameter feature: The feature whose ``FeatureState/destinations`` to register.
     /// - Returns: A view whose navigation stack resolves the feature's internal routes.
-    func navigationDestinations<Feature: FeatureState>(for feature: Feature.Type) -> some View {
+    nonisolated func navigationDestinations<Feature: FeatureState>(for feature: Feature.Type) -> some View {
         modifier(Feature.destinations)
     }
 }
