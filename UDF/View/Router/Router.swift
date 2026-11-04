@@ -31,7 +31,6 @@ import SwiftUI
 ///         case details
 ///     }
 ///
-///     @ViewBuilder
 ///     func view(for route: Route) -> some View {
 ///         switch route {
 ///         case .details:
@@ -46,8 +45,12 @@ public protocol Routing<Route>: Initable {
 
     /// Returns a view for the given route.
     ///
+    /// The requirement is a view builder, so a conforming type's implementation is one too without writing
+    /// `@ViewBuilder`, the same way a view's `body` is.
+    ///
     /// - Parameter route: The route that defines the destination view to navigate to.
     /// - Returns: A view that corresponds to the specified route.
+    @ViewBuilder
     func view(for route: Route) -> Self.Destination
 }
 
@@ -133,15 +136,3 @@ public class MockedRouting<Route>: Routing {
         EmptyView()
     }
 }
-
-/// The routing witness for a feature that has no internal destinations.
-///
-/// Use this as a feature state's `FeatureRouting` when the feature does not perform navigation:
-///
-/// ```swift
-/// struct SettingsFeatureState<AppState: SettingsFeature>: FeatureState {
-///     typealias FeatureRouting = EmptyRouting
-///     // ...
-/// }
-/// ```
-public final class EmptyRouting: MockedRouting<Never> {}

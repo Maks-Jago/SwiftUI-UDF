@@ -12,41 +12,26 @@
 import Foundation
 import SwiftUI
 
-/// A view modifier that integrates a router into the global navigation system.
+/// A view modifier that registers the routes of one routing type as navigation destinations.
 ///
-/// The `GlobalRoutingModifier` adds the given router to the `GlobalRouter` environment,
-/// allowing for the navigation to routes defined within the router. It also sets up
-/// a `navigationDestination` to present the appropriate view for each route using SwiftUI's
-/// navigation system.
+/// Each pushed route is resolved by a new instance of the routing. `View/navigationDestination(for:)` applies
+/// it, and ``DestinationsBuilder`` creates one for each routing listed in ``FeatureState/destinations``.
 ///
 /// ## Generic Parameters:
 /// - `R`: A type conforming to `Routing` that defines the navigation routes.
-///
-/// ## Properties:
-/// - `globalRouter`: The global router accessed from the environment.
-/// - `router`: The router to be added to the global navigation system.
-///
-/// ## Initializer:
-/// - `init(router:)`: Initializes the modifier with the specified router.
-///
-/// ## Methods:
-/// - `body(content:)`: Modifies the content view to add the router to the global router and
-///   set up navigation destinations for the specified routes.
 struct GlobalRoutingModifier<R: Routing>: ViewModifier where R.Route: Hashable {
-    @Environment(\.globalRouter) var globalRouter
-
-    var routing: R.Type
-    /// Initializes the modifier with the specified router.
+    /// Creates the modifier for a routing type.
     ///
-    /// - Parameter router: The router to be added to the global navigation system.
-    init(routing: R.Type) {
-        self.routing = routing
-    }
+    /// The initializer is nonisolated so a feature's ``FeatureState/destinations`` can create the modifier
+    /// outside the main actor.
+    ///
+    /// - Parameter routing: The routing type whose routes to register.
+    nonisolated init(routing: R.Type) {}
 
-    /// Modifies the content view to add the router to the global router and set up navigation destinations.
+    /// Registers the routing's routes on the navigation stack the content belongs to.
     ///
     /// - Parameter content: The content view to be modified.
-    /// - Returns: A view that adds the router to the global navigation system and sets up navigation destinations.
+    /// - Returns: A view whose navigation stack resolves the routing's routes.
     func body(content: Content) -> some View {
         content
             .navigationDestination(
