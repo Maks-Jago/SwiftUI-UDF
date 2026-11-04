@@ -102,7 +102,6 @@ enum RuntimeReducing {
 
         if var reducing = rootReducer as? Reducing {
             reducing.reduce(action)
-            _ = reduce(action, reducer: &reducing, type: R.self)
             rootReducer = reducing as! R
         }
 
