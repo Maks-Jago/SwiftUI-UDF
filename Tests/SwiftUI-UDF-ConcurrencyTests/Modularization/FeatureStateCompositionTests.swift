@@ -134,7 +134,6 @@ private struct EntryDestination: View {
 
 private struct EmptyFeatureState<Host: AppReducer>: FeatureState {
     typealias AppState = Host
-    typealias FeatureRouting = EmptyRouting
 
     static var destinations: some ViewModifier {}
 
@@ -169,7 +168,6 @@ private enum AutoRegisteredEnvironments: AutoRegisteredFeatureEnvironmentProvidi
 }
 
 private struct AutoRegisteredFeatureState<Host: AutoRegisteredFeatureHost>: FeatureState {
-    typealias FeatureRouting = EmptyRouting
 
     static func entryPoint(input: Void) -> EmptyView {
         EmptyView()
@@ -261,7 +259,6 @@ private struct RootCounter: UDF.Form {
 
 private struct NestedFeatureState<Host: AppReducer>: FeatureState {
     typealias AppState = Host
-    typealias FeatureRouting = EmptyRouting
 
     var form = NestedFeatureForm()
     var flow = NestedFeatureFlow()
@@ -332,7 +329,6 @@ private struct SeedForm: UDF.Form {
 
 private struct SetupFeatureState<Host: SetupFeatureHost>: FeatureState {
     typealias AppState = Host
-    typealias FeatureRouting = EmptyRouting
 
     var form = SetupFeatureForm<Host>()
 
@@ -371,7 +367,6 @@ private struct CounterFeaturesHostState: AppReducer {
 
 private struct FirstCounterFeatureState<Host: AppReducer>: FeatureState {
     typealias AppState = Host
-    typealias FeatureRouting = EmptyRouting
 
     var value = 0
 
@@ -392,7 +387,6 @@ private struct FirstCounterFeatureState<Host: AppReducer>: FeatureState {
 
 private struct SecondCounterFeatureState<Host: AppReducer>: FeatureState {
     typealias AppState = Host
-    typealias FeatureRouting = EmptyRouting
 
     var value = 0
 

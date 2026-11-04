@@ -111,7 +111,6 @@ private struct LinkHostState: AppReducer {
 
 private struct FirstFeatureState<Host: AppReducer>: FeatureState {
     typealias AppState = Host
-    typealias FeatureRouting = EmptyRouting
 
     static var destinations: some ViewModifier {
         FirstLinkRouting.self
@@ -126,7 +125,6 @@ private struct FirstFeatureState<Host: AppReducer>: FeatureState {
 
 private struct SecondFeatureState<Host: AppReducer>: FeatureState {
     typealias AppState = Host
-    typealias FeatureRouting = EmptyRouting
 
     static var destinations: some ViewModifier {
         SecondRouting.self

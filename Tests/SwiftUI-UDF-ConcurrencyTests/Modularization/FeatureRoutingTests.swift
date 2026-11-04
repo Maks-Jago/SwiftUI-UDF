@@ -28,12 +28,12 @@ struct FeatureRoutingTests {
     }
     
     @MainActor
-    @Test("Test home view inject list view throught Feature routing & list view dispatches Actions.LoadPage")
+    @Test("Test home view inject list view through feature entry points & list view dispatches Actions.LoadPage")
     func testHomeRoutingExecutesLoadActions() async {
         let store = EnvironmentStore(initial: AppState(), logger: .consoleDebug)
         let testAppContext = TestAppContext(store: store)
         
-        let rootView = TestHomeFeatureState<AppState, TestHomeRouting>.entryPoint(input: ()).environment(testAppContext)
+        let rootView = TestHomeFeatureState<AppState, TestHomeEntryPoints>.entryPoint(input: ()).environment(testAppContext)
         
         let window: PlatformWindow? = await PlatformWindow.render(view: rootView)
         window?.redraw()
@@ -53,7 +53,7 @@ struct FeatureRoutingTests {
         let testItemID: TestItem.ID = 1
         let path = NavigationPath([TestHomeRoute.datails(testItemID)])
         let rootView = NavigationStackBound(path: .constant(path)) {
-            TestHomeFeatureState<AppState, TestHomeRouting>.entryPoint(input: ())
+            TestHomeFeatureState<AppState, TestHomeEntryPoints>.entryPoint(input: ())
                 .modifier(GlobalRoutingModifier(routing: TestHomeRouting.self))
         }
         .environment(testAppContext)
@@ -78,15 +78,22 @@ struct FeatureRoutingTests {
     }
 }
 
-private struct TestHomeRouting: Routing {
+private struct TestHomeEntryPoints: FeatureEntryPointProviding {
     @ViewBuilder
-    func view(for route: TestHomeRoute) -> some View {
-        switch route {
+    func view(for entryPoint: TestHomeRoute) -> some View {
+        switch entryPoint {
         case .list:
             TestListItemsFeatureState<AppState>.entryPoint(input: ())
         case .datails(let detailsID):
             TestDetailsFeatureState<AppState>.entryPoint(input: detailsID)
         }
+    }
+}
+
+/// The route registered on the stack: it is pushed, and resolves to the same screens the entry points show.
+private struct TestHomeRouting: Routing {
+    func view(for route: TestHomeRoute) -> some View {
+        TestHomeEntryPoints().view(for: route)
     }
 }
 
@@ -99,7 +106,7 @@ private struct AppState: AppReducer, TestFeature, TestDetailsFeature, TestHomeFe
     // MARK: - Feature States
     var testFeatureState = TestFeatureState<Self>()
     var testDetailsFeatureState = TestDetailsFeatureState<Self>()
-    var testHomeFeatureState = TestHomeFeatureState<Self, TestHomeRouting>()
+    var testHomeFeatureState = TestHomeFeatureState<Self, TestHomeEntryPoints>()
 }
 
 struct AllTestItemsStorage: Storage<TestItem> {
@@ -115,7 +122,6 @@ private enum GlobalEnvironments: TestEnvironmentProviding, TestDetailsEnvironmen
 // MARK: - ListItems Feature Space
 
 struct TestListItemsFeatureState<AppState: TestFeature>: FeatureState {
-    typealias FeatureRouting = EmptyRouting
     typealias Input = Void
 
     var form = TestForm()
@@ -160,18 +166,18 @@ struct TestListItemsDestination<AppState: TestFeature>: View {
 // MARK: - TestHome Feature Space
 
 protocol TestHomeFeature: AppReducer {
-    associatedtype TestHomeFeatureRouting: Routing<TestHomeRoute>
+    associatedtype TestHomeFeatureEntryPoints: FeatureEntryPointProviding<TestHomeRoute>
     
-    var testHomeFeatureState: TestHomeFeatureState<Self, TestHomeFeatureRouting> { get }
+    var testHomeFeatureState: TestHomeFeatureState<Self, TestHomeFeatureEntryPoints> { get }
 }
 
-struct TestHomeFeatureState<AppState: TestHomeFeature, FeatureRouting: Routing<TestHomeRoute>>: @preconcurrency FeatureState {
+struct TestHomeFeatureState<AppState: TestHomeFeature, FeatureEntryPoints: FeatureEntryPointProviding<TestHomeRoute>>: @preconcurrency FeatureState {
     typealias Input = Void
     init() {}
     
     @MainActor static func entryPoint(input: Input) -> some View {
-        TestHomeFeatureDestination<AppState, FeatureRouting>(
-            routing: FeatureRouting()
+        TestHomeFeatureDestination<AppState, FeatureEntryPoints>(
+            entryPoints: FeatureEntryPoints()
         )
     }
 
@@ -185,12 +191,12 @@ enum TestHomeRoute: Hashable {
     case datails(TestItem.ID)
 }
 
-struct TestHomeFeatureDestination<AppState: TestHomeFeature, R: Routing<TestHomeRoute>>: View {
+struct TestHomeFeatureDestination<AppState: TestHomeFeature, E: FeatureEntryPointProviding<TestHomeRoute>>: View {
     @Environment(TestAppContext.self) fileprivate var context
-    var routing: R
+    var entryPoints: E
     
     var body: some View {
-        routing.view(for: .list)
+        entryPoints.view(for: .list)
     }
 }
 
@@ -227,7 +233,6 @@ protocol TestDetailsFeature: AppReducer {
 }
 
 struct TestDetailsFeatureState<AppState: TestDetailsFeature>: FeatureState {
-    typealias FeatureRouting = EmptyRouting
     
     var form = TestDetailsForm()
     var flow = TestDetailsFlow()

@@ -232,7 +232,6 @@ private protocol SwitchControlFeature: AppReducer {
 }
 
 private struct SwitchControlFeatureState<State: SwitchControlFeature>: FeatureState {
-    typealias FeatureRouting = EmptyRouting
 
     var form = SwitchControlForm()
 
@@ -312,7 +311,6 @@ private protocol SwitchStatusFeature: AppReducer {
 }
 
 private struct SwitchStatusFeatureState<State: SwitchStatusFeature>: FeatureState {
-    typealias FeatureRouting = EmptyRouting
 
     var form = SwitchStatusForm()
 

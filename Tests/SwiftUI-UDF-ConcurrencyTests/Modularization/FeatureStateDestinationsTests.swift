@@ -15,30 +15,6 @@ import Testing
 
 @Suite("Feature state destinations")
 struct FeatureStateDestinationsTests {
-    @Test("Destinations register every listed routing in order")
-    func destinationsRegisterListedRoutingsInOrder() {
-        let destinations = FirstFeatureState<NavigationHostState>.destinations
-
-        #expect(
-            ObjectIdentifier(type(of: destinations))
-                == ObjectIdentifier(ModifiedContent<GlobalRoutingModifier<FirstRouting>, GlobalRoutingModifier<SecondRouting>>.self)
-        )
-    }
-
-    @Test("Destinations with a single routing register only that routing")
-    func destinationsWithSingleRoutingRegisterOnlyThatRouting() {
-        let destinations = SecondFeatureState<NavigationHostState>.destinations
-
-        #expect(ObjectIdentifier(type(of: destinations)) == ObjectIdentifier(GlobalRoutingModifier<SecondRouting>.self))
-    }
-
-    @Test("Empty destinations register nothing")
-    func emptyDestinationsRegisterNothing() {
-        let destinations = EmptyFeatureState<NavigationHostState>.destinations
-
-        #expect(ObjectIdentifier(type(of: destinations)) == ObjectIdentifier(EmptyModifier.self))
-    }
-
     @Test("Generic code reads each feature's own destinations")
     func genericCodeReadsEachFeaturesOwnDestinations() {
         func destinationsType<Feature: FeatureState>(of feature: Feature.Type) -> Any.Type {
@@ -47,15 +23,18 @@ struct FeatureStateDestinationsTests {
 
         #expect(
             ObjectIdentifier(destinationsType(of: FirstFeatureState<NavigationHostState>.self))
-                == ObjectIdentifier(ModifiedContent<GlobalRoutingModifier<FirstRouting>, GlobalRoutingModifier<SecondRouting>>.self)
+                == ObjectIdentifier(ModifiedContent<GlobalRoutingModifier<FirstRouting>, GlobalRoutingModifier<SecondRouting>>.self),
+            "A feature with two routings registers both, in order"
         )
         #expect(
             ObjectIdentifier(destinationsType(of: SecondFeatureState<NavigationHostState>.self))
-                == ObjectIdentifier(GlobalRoutingModifier<SecondRouting>.self)
+                == ObjectIdentifier(GlobalRoutingModifier<SecondRouting>.self),
+            "A feature with one routing registers only that routing"
         )
         #expect(
             ObjectIdentifier(destinationsType(of: EmptyFeatureState<NavigationHostState>.self))
-                == ObjectIdentifier(EmptyModifier.self)
+                == ObjectIdentifier(EmptyModifier.self),
+            "A feature with no routings registers nothing"
         )
     }
 
@@ -64,6 +43,19 @@ struct FeatureStateDestinationsTests {
     func stackRootRegistersFeatureDestinations() {
         let root = Text("Root")
             .navigationDestinations(for: FirstFeatureState<NavigationHostState>.self)
+
+        #expect(
+            ObjectIdentifier(type(of: root))
+                == ObjectIdentifier(
+                    ModifiedContent<Text, ModifiedContent<GlobalRoutingModifier<FirstRouting>, GlobalRoutingModifier<SecondRouting>>>.self
+                )
+        )
+    }
+
+    @MainActor
+    @Test("A nonisolated entry point provider registers a feature's destinations")
+    func nonisolatedContextRegistersFeatureDestinations() {
+        let root = nonisolatedStackRoot()
 
         #expect(
             ObjectIdentifier(type(of: root))
@@ -106,7 +98,6 @@ private struct NavigationHostState: AppReducer {
 
 private struct FirstFeatureState<Host: AppReducer>: FeatureState {
     typealias AppState = Host
-    typealias FeatureRouting = EmptyRouting
 
     static var destinations: some ViewModifier {
         FirstRouting.self
@@ -122,7 +113,6 @@ private struct FirstFeatureState<Host: AppReducer>: FeatureState {
 
 private struct SecondFeatureState<Host: AppReducer>: FeatureState {
     typealias AppState = Host
-    typealias FeatureRouting = EmptyRouting
 
     static var destinations: some ViewModifier {
         SecondRouting.self
@@ -137,7 +127,6 @@ private struct SecondFeatureState<Host: AppReducer>: FeatureState {
 
 private struct EmptyFeatureState<Host: AppReducer>: FeatureState {
     typealias AppState = Host
-    typealias FeatureRouting = EmptyRouting
 
     static var destinations: some ViewModifier {}
 
@@ -146,4 +135,10 @@ private struct EmptyFeatureState<Host: AppReducer>: FeatureState {
     static func entryPoint(input: Void) -> EmptyView {
         EmptyView()
     }
+}
+
+// The app's entry point providers are nonisolated, so they must be able to register destinations too.
+private nonisolated func nonisolatedStackRoot() -> some View {
+    Text("Root")
+        .navigationDestinations(for: FirstFeatureState<NavigationHostState>.self)
 }
