@@ -31,9 +31,7 @@ struct FeatureStateNestedBindableLookupTests {
 
         #expect(await waitForMainActorCondition { store.state.feature.outer.inner.deeper.form.reducers[1] != nil })
 
-        await withKnownIssue("onBindableReducerDidLoad never fires for bindable reducers inside a FeatureState") {
-            #expect(await waitForMainActorCondition(timeout: 1) { events.didLoadCount == 1 })
-        }
+        #expect(await waitForMainActorCondition { events.didLoadCount == 1 })
 
         window?.release()
         window = nil
@@ -59,12 +57,8 @@ struct FeatureStateNestedBindableLookupTests {
         #expect(await waitForMainActorCondition { store.state.featureA.form.reducers[1] != nil })
         #expect(await waitForMainActorCondition { store.state.featureB.form.reducers[1] != nil })
 
-        await withKnownIssue("onBindableReducerDidLoad never fires for bindable reducers inside a FeatureState") {
-            #expect(await waitForMainActorCondition(timeout: 1) { eventsA.didLoadCount == 1 })
-        }
-        await withKnownIssue("onBindableReducerDidLoad never fires for bindable reducers inside a FeatureState") {
-            #expect(await waitForMainActorCondition(timeout: 1) { eventsB.didLoadCount == 1 })
-        }
+        #expect(await waitForMainActorCondition { eventsA.didLoadCount == 1 })
+        #expect(await waitForMainActorCondition { eventsB.didLoadCount == 1 })
 
         window?.release()
         window = nil
@@ -84,21 +78,15 @@ struct FeatureStateNestedBindableLookupTests {
         )
         window?.redraw()
 
-        await withKnownIssue("onBindableReducerDidLoad never fires for bindable reducers inside a FeatureState") {
-            #expect(await waitForMainActorCondition(timeout: 1) { first.didLoadCount == 1 })
-        }
+        #expect(await waitForMainActorCondition { first.didLoadCount == 1 })
 
         var other: PlatformWindow? = await PlatformWindow.render(
             view: DeepContainer(id: 2, events: second).with(store: store)
         )
         other?.redraw()
 
-        await withKnownIssue("onBindableReducerDidLoad never fires for bindable reducers inside a FeatureState") {
-            #expect(await waitForMainActorCondition(timeout: 1) { second.didLoadCount == 1 })
-        }
-        await withKnownIssue("onBindableReducerDidLoad never fires for bindable reducers inside a FeatureState") {
-            #expect(first.didLoadCount == 1, "The first container must not report load again")
-        }
+        #expect(await waitForMainActorCondition { second.didLoadCount == 1 })
+        #expect(first.didLoadCount == 1, "The first container must not report load again")
 
         window?.release()
         window = nil

@@ -112,12 +112,8 @@ struct BindableFeatureStateTests {
         let feature = try #require(store.state.article.reducers[id])
         #expect(feature.openedCount == 1)
 
-        // `RuntimeReducing.bindableReduce` walks the bound reducer's properties twice, so every reducer
-        // nested in it reduces a binded action twice. Remove the wrapper once that is fixed.
-        withKnownIssue("Reducers nested in a bindable reducer reduce each binded action twice") {
-            #expect(feature.form.openedCount == 1)
-            #expect(feature.form.stats.openedCount == 1)
-        }
+        #expect(feature.form.openedCount == 1)
+        #expect(feature.form.stats.openedCount == 1)
     }
 
     @Test("A binded action reaches root storage unwrapped and the bound feature instance wrapped")

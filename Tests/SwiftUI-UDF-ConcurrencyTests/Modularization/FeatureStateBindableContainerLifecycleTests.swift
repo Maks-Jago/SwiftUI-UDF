@@ -36,11 +36,7 @@ struct FeatureStateBindableContainerLifecycleTests {
         }
         #expect(created)
 
-        // `ConnectedContainer.getBoundReducer` only searches the app state's own properties, so it never finds
-        // a bindable reducer inside a feature and the did-load hook is never created.
-        await withKnownIssue("onBindableReducerDidLoad never fires for bindable reducers inside a FeatureState") {
-            #expect(await waitForMainActorCondition(timeout: 1) { events.didLoadCount == 1 })
-        }
+        #expect(await waitForMainActorCondition { events.didLoadCount == 1 })
 
         window?.release()
         window = nil
@@ -68,9 +64,7 @@ struct FeatureStateBindableContainerLifecycleTests {
         }
         #expect(created)
 
-        await withKnownIssue("onBindableReducerDidLoad never fires for bindable reducers inside a FeatureState") {
-            #expect(await waitForMainActorCondition(timeout: 1) { events.didLoadCount == 1 })
-        }
+        #expect(await waitForMainActorCondition { events.didLoadCount == 1 })
 
         window?.release()
         window = nil

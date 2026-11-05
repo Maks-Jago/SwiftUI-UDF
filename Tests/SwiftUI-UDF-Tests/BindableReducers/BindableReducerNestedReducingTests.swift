@@ -73,11 +73,7 @@ import Testing
         let outer = try #require(store.state.outer[1])
         #expect(outer.count == 1)
 
-        // `RuntimeReducing.bindableReduce` walks the bound reducer's properties twice, so a `@Cached` reducer
-        // nested in it reduces a binded action twice. Remove the wrapper once that is fixed.
-        withKnownIssue("Reducers nested in a bindable reducer reduce each binded action twice") {
-            #expect(outer.counter.count == 1)
-        }
+        #expect(outer.counter.count == 1)
     }
 
     @Test func whenSameActionsDispatchedBindedAndUnbinded_ReducedStateShouldBeTheSame() async throws {
@@ -99,11 +95,7 @@ import Testing
         let boundOuter = try #require(bound.state.outer[1])
         #expect(unbound.state.outer.leaf.count == 3)
 
-        // Nested reducers reduce a binded action twice, so the bound state drifts from the unbound one.
-        // Remove the wrapper once that is fixed.
-        withKnownIssue("Reducers nested in a bindable reducer reduce each binded action twice") {
-            #expect(boundOuter == unbound.state.outer, "Binding an action must not change how it is reduced")
-        }
+        #expect(boundOuter == unbound.state.outer, "Binding an action must not change how it is reduced")
     }
 }
 

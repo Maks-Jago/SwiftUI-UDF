@@ -120,12 +120,8 @@ import Testing
         let plain = try #require(store.state.plain[1])
         #expect(plain.bumps == 1)
 
-        // `RuntimeReducing.bindableReduce` walks the bound reducer's properties twice, so reducers nested in it
-        // reduce a binded action twice. Remove the wrapper once that is fixed.
-        withKnownIssue("Reducers nested in a bindable reducer reduce each binded action twice") {
-            #expect(plain.flow.bumps == 1)
-            #expect(plain.form.bumps == 1)
-        }
+        #expect(plain.flow.bumps == 1)
+        #expect(plain.form.bumps == 1)
     }
 
     struct SiblingState: AppReducer {
