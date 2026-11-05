@@ -196,8 +196,10 @@ struct ConnectedContainer<C: Component, State: AppReducer>: View {
 extension ConnectedContainer {
     /// Resolves and returns the bound reducer associated with a container type.
     ///
-    /// Uses cached property metadata inside the `SourceOfTruth` wrapper to avoid repeatedly reflecting over
-    /// the entire `AppState` properties list.
+    /// The bindable reducer can sit at any depth below the app state, for example inside a `FeatureState`
+    /// or a `Reducible` grouped in one. The search follows the same rule as action reducing: it descends
+    /// only into properties that are `Reducing`. The property path to each bindable reducer it passes is
+    /// cached inside the `SourceOfTruth` wrapper, so later lookups skip the reflection walk.
     ///
     /// - Parameters:
     ///   - state: The copy of the store's state.
@@ -209,24 +211,70 @@ extension ConnectedContainer {
         with store: EnvironmentStore<State>,
         for type: T.Type
     ) -> (any AnyBindableReducer)? {
-        if let property = store.$state.getPropertyMetadata(for: T.self) {
-            return try? property.get(from: state) as? AnyBindableReducer
+        if let cachedPath = store.$state.cachedPropertyPath(for: T.self) {
+            return value(at: cachedPath, in: state) as? AnyBindableReducer
         }
-        
-        guard let info = try? typeInfo(of: State.self) else {
+
+        return findBoundReducer(for: T.self, in: state, ofType: State.self, path: [], store: store)
+    }
+
+    /// Walks the properties of `value` depth first and returns the first bindable reducer bound to
+    /// `containerType`, caching the path to every bindable reducer it passes on the way.
+    ///
+    /// - Parameters:
+    ///   - containerType: The type of the bindable container to look for.
+    ///   - value: The value whose properties are inspected.
+    ///   - valueType: The declared type of `value`, used to read its property layout.
+    ///   - path: The properties walked from the app state to `value`.
+    ///   - store: The environment store holding the path cache.
+    /// - Returns: The matched bindable reducer existential, or `nil` if not found.
+    private static func findBoundReducer(
+        for containerType: any BindableContainer.Type,
+        in value: Any,
+        ofType valueType: Any.Type,
+        path: [PropertyInfo],
+        store: EnvironmentStore<State>
+    ) -> (any AnyBindableReducer)? {
+        guard let info = try? typeInfo(of: valueType) else {
             return nil
         }
-        
+
         for property in info.properties {
-            if let bindableReducer = try? property.get(from: state) as? AnyBindableReducer {
-                store.$state.setPropertyMetadata(property, for: bindableReducer.boundContainerType)
-                if bindableReducer.boundContainerType == T.self {
+            guard let child = try? property.get(from: value) else {
+                continue
+            }
+
+            let childPath = path + [property]
+
+            if let bindableReducer = child as? AnyBindableReducer {
+                store.$state.storeCachedPropertyPath(childPath, for: bindableReducer.boundContainerType)
+                if bindableReducer.boundContainerType == containerType {
                     return bindableReducer
                 }
+            } else if child is Reducing, let bindableReducer = findBoundReducer(
+                for: containerType,
+                in: child,
+                ofType: property.type,
+                path: childPath,
+                store: store
+            ) {
+                return bindableReducer
             }
         }
-        
+
         return nil
+    }
+
+    /// Reads the value found by following `path` from the app state.
+    private static func value(at path: [PropertyInfo], in state: State) -> Any? {
+        var value: Any = state
+        for property in path {
+            guard let next = try? property.get(from: value) else {
+                return nil
+            }
+            value = next
+        }
+        return value
     }
 
     /// Builds a synthetic hook that monitors the online state of a bindable reducer
