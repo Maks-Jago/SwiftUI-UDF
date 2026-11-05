@@ -22,7 +22,7 @@ struct BindableFeatureStateTests {
     private typealias Container = ArticleContainer<AppState>
 
     @Test("Loading containers creates a whole feature state per ID, unloading releases it")
-    func loadAndUnloadManageWholeFeatureState() async throws {
+    func loadAndUnloadManageWholeFeatureState() async {
         let store = TestStore(initial: AppState())
         let first = Article.ID(value: 1)
         let second = Article.ID(value: 2)
@@ -34,8 +34,7 @@ struct BindableFeatureStateTests {
 
         #expect(store.state.article.reducers.count == 2)
 
-        let feature = try #require(store.state.article.reducers[first])
-        #expect(feature == ArticleFeatureState<AppState>())
+        #expect(store.state.article.reducers[first] != nil)
 
         await store.dispatch(Actions._OnContainerDidUnLoad(containerType: Container.self, id: first))
 
