@@ -150,6 +150,30 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
         )
     }
 
+    /// Executes a pure effect after assigning compatible middleware dependencies.
+    ///
+    /// The effect opts into dependency injection by also conforming to `EnvironmentEffect`. If the middleware has no compatible
+    /// environment, the effect retains its existing environment. Action mapping, cancellation, and source metadata behave as in
+    /// the pure-effect overload of `execute`.
+    open func execute<E>(
+        _ effect: E,
+        cancellation: some Hashable,
+        mapAction: @escaping (any Action) -> any Action = { $0 },
+        fileName: String = #file,
+        functionName: String = #function,
+        lineNumber: Int = #line
+    ) where E: PureEffect & EnvironmentEffect, E.Output == any Action, E.Failure == Never {
+        execute(
+            effect.withEnvironment(from: self),
+            cancellation: cancellation,
+            waitBehavior: .onStart,
+            mapAction: mapAction,
+            fileName: fileName,
+            functionName: functionName,
+            lineNumber: lineNumber
+        )
+    }
+
     /// Executes an effect that conforms to both `PureEffect` and `ErasableToEffect` and dispatches actions to the store.
     ///
     /// This method serves as an overload of the `execute` method for effects that can be erased to a more generic effect type. It converts
@@ -182,6 +206,28 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
     ) {
         execute(
             effect.asEffectable,
+            cancellation: cancellation,
+            mapAction: mapAction,
+            fileName: fileName,
+            functionName: functionName,
+            lineNumber: lineNumber
+        )
+    }
+
+    /// Assigns compatible middleware dependencies before converting an effect to its action publisher.
+    ///
+    /// The effect opts into dependency injection by also conforming to `EnvironmentEffect`. If the middleware has no compatible
+    /// environment, the effect retains its existing environment. Dependencies are configured before evaluating `asEffectable`.
+    open func execute(
+        _ effect: some PureEffect & ErasableToEffect & EnvironmentEffect,
+        cancellation: some Hashable,
+        mapAction: @escaping (any Action) -> any Action = { $0 },
+        fileName: String = #file,
+        functionName: String = #function,
+        lineNumber: Int = #line
+    ) {
+        execute(
+            effect.withEnvironment(from: self).asEffectable,
             cancellation: cancellation,
             mapAction: mapAction,
             fileName: fileName,
@@ -279,6 +325,32 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
         )
     }
 
+    /// Runs a pure effect with compatible middleware dependencies and a state-based dispatch filter.
+    ///
+    /// The effect opts into dependency injection by also conforming to `EnvironmentEffect`. If the middleware has no compatible
+    /// environment, the effect retains its existing environment. The filter receives each original action and a fresh state
+    /// snapshot before action mapping, as in the pure-effect overload of `run`.
+    open func run<E>(
+        _ effect: E,
+        cancellation: some Hashable,
+        mapAction: @escaping (any Action) -> any Action = { $0 },
+        dispatchFilter: @escaping DispatchFilter<any Action>,
+        fileName: String = #file,
+        functionName: String = #function,
+        lineNumber: Int = #line
+    ) where E: PureEffect & EnvironmentEffect, E.Output == any Action, E.Failure == Never {
+        execute(
+            effect.withEnvironment(from: self),
+            cancellation: cancellation,
+            waitBehavior: .onDispatchAction,
+            mapAction: mapAction,
+            dispatchFilter: dispatchFilter,
+            fileName: fileName,
+            functionName: functionName,
+            lineNumber: lineNumber
+        )
+    }
+
     /// Runs a pure effect and dispatches its emitted actions to the store, allowing for cancellation and action mapping.
     ///
     /// This method forwards each output through `mapAction`.
@@ -309,6 +381,31 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
     ) where E: PureEffect, E.Output == any Action, E.Failure == Never {
         execute(
             effect,
+            cancellation: cancellation,
+            waitBehavior: .onDispatchAction,
+            mapAction: mapAction,
+            dispatchFilter: nil,
+            fileName: fileName,
+            functionName: functionName,
+            lineNumber: lineNumber
+        )
+    }
+    
+    /// Runs a pure effect after assigning compatible middleware dependencies.
+    ///
+    /// The effect opts into dependency injection by also conforming to `EnvironmentEffect`. If the middleware has no compatible
+    /// environment, the effect retains its existing environment. Action mapping, cancellation, and source metadata behave as in
+    /// the pure-effect overload of `run`.
+    open func run<E>(
+        _ effect: E,
+        cancellation: some Hashable,
+        mapAction: @escaping (any Action) -> any Action = { $0 },
+        fileName: String = #file,
+        functionName: String = #function,
+        lineNumber: Int = #line
+    ) where E: PureEffect & EnvironmentEffect, E.Output == any Action, E.Failure == Never {
+        execute(
+            effect.withEnvironment(from: self),
             cancellation: cancellation,
             waitBehavior: .onDispatchAction,
             mapAction: mapAction,
@@ -449,6 +546,34 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
         }
     }
     
+    /// Executes a concurrency effect after assigning compatible middleware dependencies.
+    ///
+    /// The effect opts into dependency injection by also conforming to `EnvironmentEffect`. If the middleware has no compatible
+    /// environment, the effect retains its existing environment. Action mapping, error mapping, cancellation, and source metadata
+    /// behave as in the concurrency-effect overload of `execute`.
+    open func execute(
+        effect: some ConcurrencyEffect & EnvironmentEffect,
+        flowId: AnyHashable,
+        cancellation: some Hashable & Sendable,
+        mapAction: @escaping @Sendable (any Action) -> any Action = { $0 },
+        mapError: @escaping ErrorMapper<AnyHashable> = { flowId, error in Actions.Error(error: error.localizedDescription, id: flowId) },
+        fileName: String = #file,
+        functionName: String = #function,
+        lineNumber: Int = #line
+    ) {
+        execute(
+            flowId: flowId,
+            cancellation: cancellation,
+            mapAction: mapAction,
+            mapError: mapError,
+            fileName: fileName,
+            functionName: functionName,
+            lineNumber: lineNumber
+        ) { flowId in
+            try await  effect.withEnvironment(from: self).task(flowId: flowId)
+        }
+    }
+
     /// Executes a state concurrency effect with middleware dependencies and a current application state snapshot.
     ///
     /// This method assigns a compatible middleware environment, reads the current state, and passes that snapshot and the flow
