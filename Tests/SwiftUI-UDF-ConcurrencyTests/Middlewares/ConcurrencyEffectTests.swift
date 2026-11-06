@@ -76,6 +76,19 @@ import UDFSwiftTesting
         #expect(success, "MessageFlow should return to the .none state after receiving a new message")
     }
     
+    @Test("Middleware injects its environment into ConcurrencyEffect")
+    func middlewareInjectsEnvironmentIntoConcurrencyEffect() async throws {
+        await store.subscribe(LoadPopularMessageMiddleware.self, environment: LoadPopularMessage())
+        
+        await store.dispatch(Actions.LoadingPopularMessageWithConcurrencyEffect())
+
+        let success = await waitForCondition { [store] in
+            await store.state.messageForm.message == ConcurrencyEffectTests.fullMessage
+        }
+        #expect(success, "ConcurrencyEffect should load the message using the injected middleware environment")
+        await store.wait()
+    }
+
     struct AppState: AppReducer {
         var userForm = UserForm()
         
@@ -156,6 +169,7 @@ import UDFSwiftTesting
     enum MessageFlow: IdentifiableFlow {
         case none
         case loadingPopularMessage
+        case loadingPopularMessageWithConcurrencyEffect
         case loadingPreviewMessage
 
         init() {
@@ -167,13 +181,19 @@ import UDFSwiftTesting
             case is Actions.LoadingPopularMessage:
                 self = .loadingPopularMessage
                 
+            case is Actions.LoadingPopularMessageWithConcurrencyEffect:
+                self = .loadingPopularMessageWithConcurrencyEffect
+                
             case is Actions.LoadingPreviewMessage:
                 self = .loadingPreviewMessage
                 
             case is Actions.DidLoadItem<Message>:
                 self = .none
                 
-            case let action as Actions.DidCancelEffect where action.cancellation == LoadPopularMessageMiddleware.Сancellation.message:
+            case let action as Actions.DidCancelEffect where action.cancellation == LoadPopularMessageMiddleware.Сancellation.messageWithStateConcurrencyEffect:
+                self = .none
+                
+            case let action as Actions.DidCancelEffect where action.cancellation == LoadPopularMessageMiddleware.Сancellation.messageWithConcurrencyEffect:
                 self = .none
                 
             case let action as Actions.DidCancelEffect where action.cancellation == LoadPreviewMessageMiddleware.Сancellation.message:
@@ -189,6 +209,7 @@ import UDFSwiftTesting
 // MARK: - Actions
 extension Actions {
     struct LoadingPopularMessage: Action {}
+    struct LoadingPopularMessageWithConcurrencyEffect: Action {}
     struct LoadingPreviewMessage: Action {}
     struct CancelLoading: Action {}
     struct IncrementCounter: Action {}
@@ -226,7 +247,8 @@ private extension ConcurrencyEffectTests {
         }
 
         enum Сancellation: CaseIterable {
-            case message
+            case messageWithStateConcurrencyEffect
+            case messageWithConcurrencyEffect
         }
 
         func scope(for state: AppState) -> Scope {
@@ -239,8 +261,15 @@ private extension ConcurrencyEffectTests {
                 execute(
                     effect: MessageStateConcurrencyEffect(),
                     flowId: MessageFlow.id,
-                    cancellation: Сancellation.message
+                    cancellation: Сancellation.messageWithStateConcurrencyEffect
                 )
+            case .loadingPopularMessageWithConcurrencyEffect:
+                execute(
+                    effect: MessageConcurrencyEffect(token: state.userForm.currentUser?.token),
+                    flowId: MessageFlow.id,
+                    cancellation: Сancellation.messageWithConcurrencyEffect
+                )
+                        
             default:
                 break
             }
@@ -281,6 +310,19 @@ private extension ConcurrencyEffectTests {
         }
     }
     
+    struct MessageConcurrencyEffect: ConcurrencyEffect, EnvironmentEffect {
+        var environment: LoadMessageEnvironment!
+        let token: String?
+
+        func task(flowId: AnyHashable) async throws -> any Action {
+            guard let token else {
+                throw CancellationError()
+            }
+            let message = try await environment.loadMessage(token: token)
+            return Actions.DidLoadItem(item: Message(content: message), id: flowId)
+        }
+    }
+
     struct MessageStateConcurrencyEffect: StateConcurrencyEffect {
         var environment: LoadMessageEnvironment!
         

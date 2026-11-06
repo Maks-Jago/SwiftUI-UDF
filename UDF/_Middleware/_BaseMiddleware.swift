@@ -155,14 +155,14 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
     /// The effect opts into dependency injection by also conforming to `EnvironmentEffect`. If the middleware has no compatible
     /// environment, the effect retains its existing environment. Action mapping, cancellation, and source metadata behave as in
     /// the pure-effect overload of `execute`.
-    open func execute<E>(
+    open func execute<E: PureEffect & EnvironmentEffect>(
         _ effect: E,
         cancellation: some Hashable,
         mapAction: @escaping (any Action) -> any Action = { $0 },
         fileName: String = #file,
         functionName: String = #function,
         lineNumber: Int = #line
-    ) where E: PureEffect & EnvironmentEffect, E.Output == any Action, E.Failure == Never {
+    ) where E.Output == any Action, E.Failure == Never {
         execute(
             effect.withEnvironment(from: self),
             cancellation: cancellation,

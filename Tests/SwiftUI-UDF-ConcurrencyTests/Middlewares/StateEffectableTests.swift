@@ -63,6 +63,19 @@ import UDFSwiftTesting
         #expect(await store.state.messageFlow == .none, "MessageFlow should return to the .none state after receiving a new message")
     }
     
+    @Test("Middleware injects its environment into Effectable")
+    func middlewareInjectsEnvironmentIntoPureEffect() async throws {
+        await store.subscribe(MessageMiddleware.self, environment: LoadLastMessage())
+
+        await store.dispatch(Actions.LoadingMessageWithPureEffect())
+
+        let success = await waitForCondition { [store] in
+            await store.state.messageForm.message == StateEffectableTests.fullMessage
+        }
+        #expect(success, "PureEffect should load the message using the injected middleware environment")
+        await store.wait()
+    }
+
     @Test("Middleware cancels StateEffectable when the token is missing")
     func observeMiddlewareWithMissingStateEffectableArguments() async throws {
         let environment = LoadLastMessage()
@@ -214,6 +227,7 @@ import UDFSwiftTesting
     enum MessageFlow: IdentifiableFlow {
         case none
         case loading
+        case loadingWithPureEffect
 
         init() {
             self = .none
@@ -224,10 +238,16 @@ import UDFSwiftTesting
             case is Actions.LoadPage:
                 self = .loading
 
+            case is Actions.LoadingMessageWithPureEffect:
+                self = .loadingWithPureEffect
+
             case is Actions.DidLoadItem<Message>:
                 self = .none
 
             case let action as Actions.DidCancelEffect where action.cancellation == MessageMiddleware.Cancellation.message:
+                self = .none
+
+            case let action as Actions.DidCancelEffect where action.cancellation == MessageMiddleware.Cancellation.messageWithPureEffect:
                 self = .none
 
             default:
@@ -238,6 +258,8 @@ import UDFSwiftTesting
 }
 // MARK: - Actions
 extension Actions {
+    struct LoadingMessageWithPureEffect: Action {}
+
     struct UpdateProfile: Action {
         let fullName: String
         let avatarData: Data
@@ -324,6 +346,7 @@ private extension StateEffectableTests {
 
         enum Cancellation: CaseIterable {
             case message
+            case messageWithPureEffect
         }
 
         func scope(for state: AppState) -> Scope {
@@ -337,9 +360,33 @@ private extension StateEffectableTests {
                     MessageStateEffectable(store: store),
                     cancellation: Cancellation.message
                 )
-                
+
+            case .loadingWithPureEffect:
+                execute(
+                    MessagePureEffect(token: state.userForm.currentUser?.token),
+                    cancellation: Cancellation.messageWithPureEffect
+                )
+
             default:
                 break
+            }
+        }
+
+        struct MessagePureEffect: Effectable, EnvironmentEffect {
+            var environment: LoadMessageEnvironment!
+            let token: String?
+
+            var upstream: AnyPublisher<Output, Failure> {
+                guard let token else {
+                    return Just(Actions.DidCancelEffect(by: Cancellation.messageWithPureEffect) as any Action)
+                        .eraseToAnyPublisher()
+                }
+                return environment
+                    .loadMessage(token: token)
+                    .map { message in
+                        Actions.DidLoadItem(item: Message(content: message), id: MessageFlow.id) as any Action
+                    }
+                    .eraseToAnyPublisher()
             }
         }
 
