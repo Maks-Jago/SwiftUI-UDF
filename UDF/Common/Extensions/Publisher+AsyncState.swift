@@ -24,9 +24,14 @@ public extension Publisher {
     /// - Parameter store: The store from which to read state for each upstream output.
     /// - Returns: A publisher of `(output: Output, state: State)` pairs with the upstream failure type.
     func withState<State: AppReducer>(from store: any Store<State>) -> AnyPublisher<(output: Output, state: State), Failure> {
+        withState(from: StatePublisher(store: store))
+    }
+
+    /// Pairs each upstream output with a fresh snapshot from a read-only state publisher.
+    /// Each output creates a new subscription to the state publisher; reads may overlap.
+    func withState<State: AppReducer>(from statePublisher: StatePublisher<State>) -> AnyPublisher<(output: Output, state: State), Failure> {
         flatMap { output in
-            Publishers.IsolatedState(from: store)
-                .setFailureType(to: Failure.self)
+            statePublisher
                 .map { state in
                     (output: output, state: state)
                 }

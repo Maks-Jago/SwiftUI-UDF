@@ -309,12 +309,8 @@ private extension StateEffectableTests {
             }
         }
 
-        struct IncrementCounterStateEffectable: StateEffectable, Sendable {
-            var store: any Store<State>
-            
-            init(store: some Store<State>) {
-                self.store = store
-            }
+        struct IncrementCounterStateEffectable: StateEffectInitializable, Sendable {
+            let statePublisher: StatePublisher<AppState>
             
             var upstream: AnyPublisher<any Action, Never> {
                 self.statePublisher
@@ -390,12 +386,12 @@ private extension StateEffectableTests {
             }
         }
 
-        struct MessageStateEffectable: StateEffectable, Sendable {
+        struct MessageStateEffectable: StateEffectInitializable, Sendable {
             var environment: LoadMessageEnvironment!
-            var store: any Store<State>
-            
-            init(store: some Store<State>) {
-                self.store = store
+            let statePublisher: StatePublisher<AppState>
+
+            init(statePublisher: StatePublisher<AppState>) {
+                self.statePublisher = statePublisher
             }
 
             var upstream: AnyPublisher<any Action, Never> {
@@ -473,14 +469,20 @@ private extension StateEffectableTests {
         
         struct UpdateMyProfileEffectable: StateEffectable {
             var environment: ProfileEnvironment!
-            var store: any Store<State>
+            let statePublisher: StatePublisher<AppState>
             let fullName: String
             let avatarData: Data
             
-            init(store: some Store<State>, fullName: String, avatarData: Data) {
-                self.store = store
+            init(store: any Store<State>, fullName: String, avatarData: Data) {
                 self.fullName = fullName
                 self.avatarData = avatarData
+                self.statePublisher = .init(store: store)
+            }
+            
+            init(statePublisher: StatePublisher<State>) {
+                self.fullName = ""
+                self.avatarData = Data()
+                self.statePublisher = statePublisher
             }
             
             var upstream: AnyPublisher<any Action, Never> {
@@ -504,7 +506,7 @@ private extension StateEffectableTests {
                         }
                         return urlAction.item
                     }
-                    .withState(from: store)
+                    .withState(from: statePublisher)
                     .flatMap { url, appState -> AnyPublisher<any Action, Never> in
                         guard
                             let token = appState.userForm.currentUser?.token
