@@ -76,6 +76,20 @@ import UDFSwiftTesting
         await store.wait()
     }
 
+    @Test("Middleware injects its environment into a delayed Effectable")
+    func middlewareInjectsEnvironmentIntoDelayedPureEffect() async throws {
+        await store.subscribe(MessageMiddleware.self, environment: LoadLastMessage())
+
+        await store.dispatch(Actions.LoadingMessageWithDelayedPureEffect())
+
+        let success = await waitForCondition { [store] in
+            let state = await store.state
+            return state.messageForm.message == StateEffectableTests.fullMessage && state.messageFlow == .none
+        }
+        #expect(success, "Delayed PureEffect should load the message using the injected middleware environment and reset the flow")
+        await store.wait()
+    }
+
     @Test("Middleware cancels StateEffectable when the token is missing")
     func observeMiddlewareWithMissingStateEffectableArguments() async throws {
         let environment = LoadLastMessage()
@@ -228,6 +242,7 @@ import UDFSwiftTesting
         case none
         case loading
         case loadingWithPureEffect
+        case loadingWithDelayedPureEffect
 
         init() {
             self = .none
@@ -241,6 +256,9 @@ import UDFSwiftTesting
             case is Actions.LoadingMessageWithPureEffect:
                 self = .loadingWithPureEffect
 
+            case is Actions.LoadingMessageWithDelayedPureEffect:
+                self = .loadingWithDelayedPureEffect
+
             case is Actions.DidLoadItem<Message>:
                 self = .none
 
@@ -248,6 +266,9 @@ import UDFSwiftTesting
                 self = .none
 
             case let action as Actions.DidCancelEffect where action.cancellation == MessageMiddleware.Cancellation.messageWithPureEffect:
+                self = .none
+
+            case let action as Actions.DidCancelEffect where action.cancellation == MessageMiddleware.Cancellation.messageWithDelayedPureEffect:
                 self = .none
 
             default:
@@ -259,6 +280,7 @@ import UDFSwiftTesting
 // MARK: - Actions
 extension Actions {
     struct LoadingMessageWithPureEffect: Action {}
+    struct LoadingMessageWithDelayedPureEffect: Action {}
 
     struct UpdateProfile: Action {
         let fullName: String
@@ -343,6 +365,7 @@ private extension StateEffectableTests {
         enum Cancellation: CaseIterable {
             case message
             case messageWithPureEffect
+            case messageWithDelayedPureEffect
         }
 
         func scope(for state: AppState) -> Scope {
@@ -361,6 +384,13 @@ private extension StateEffectableTests {
                 execute(
                     MessagePureEffect(token: state.userForm.currentUser?.token),
                     cancellation: Cancellation.messageWithPureEffect
+                )
+
+            case .loadingWithDelayedPureEffect:
+                execute(
+                    MessagePureEffect(token: state.userForm.currentUser?.token)
+                        .delay(duration: 0.1, queue: queue),
+                    cancellation: Cancellation.messageWithDelayedPureEffect
                 )
 
             default:
