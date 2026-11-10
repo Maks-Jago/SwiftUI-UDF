@@ -79,7 +79,7 @@ public protocol ConcurrencyEffect: Sendable {
 /// }
 /// ```
 public protocol StateConcurrencyEffect: EnvironmentEffect {
-    associatedtype AppState: AppReducer
+    associatedtype State: AppReducer
 
     /// An asynchronous method that performs a task using both the provided flow identifier and the current application state,
     /// and returns an action.
@@ -88,7 +88,7 @@ public protocol StateConcurrencyEffect: EnvironmentEffect {
     ///   - flowId: The unique identifier for the flow.
     ///   - state: The current application state captured when the effect begins execution.
     /// - Returns: An action produced by the asynchronous task.
-    func task(flowId: AnyHashable, state: AppState) async throws -> any Action
+    func task(flowId: AnyHashable, state: State) async throws -> any Action
 }
 
 /// A concrete implementation of `ConcurrencyEffect` that runs an asynchronous block of code to produce an action.

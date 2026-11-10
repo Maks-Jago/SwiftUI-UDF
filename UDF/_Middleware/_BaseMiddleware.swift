@@ -608,7 +608,7 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
         fileName: String = #file,
         functionName: String = #function,
         lineNumber: Int = #line
-    ) where Effect.AppState == State {
+    ) where Effect.State == State {
         execute(
             flowId: flowId,
             cancellation: cancellation,
