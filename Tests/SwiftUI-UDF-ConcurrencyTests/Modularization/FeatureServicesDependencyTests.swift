@@ -232,13 +232,14 @@ private protocol SwitchControlFeature: AppReducer {
 }
 
 private struct SwitchControlFeatureState<State: SwitchControlFeature>: FeatureState {
-    typealias FeatureRouting = EmptyRouting
 
     var form = SwitchControlForm()
 
     static func entryPoint(input: Void) -> some View {
         EmptyView()
     }
+
+    static var destinations: some ViewModifier {}
 
     static func registerMiddlewares(in store: any Store<State>) -> [MiddlewareWrapper<State>] {
         SwitchControlMiddleware<State>(
@@ -310,13 +311,14 @@ private protocol SwitchStatusFeature: AppReducer {
 }
 
 private struct SwitchStatusFeatureState<State: SwitchStatusFeature>: FeatureState {
-    typealias FeatureRouting = EmptyRouting
 
     var form = SwitchStatusForm()
 
     static func entryPoint(input: Void) -> some View {
         EmptyView()
     }
+
+    static var destinations: some ViewModifier {}
 
     static func registerMiddlewares(in store: any Store<State>) -> [MiddlewareWrapper<State>] {
         SwitchStatusMiddleware<State>(

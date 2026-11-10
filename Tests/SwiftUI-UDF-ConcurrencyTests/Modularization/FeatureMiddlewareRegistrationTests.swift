@@ -323,13 +323,14 @@ private struct RegistrationAppState: AppReducer, RegistrationFeatureHost {
 }
 
 private struct RegistrationFeatureState<State: RegistrationFeatureHost>: FeatureState {
-    typealias FeatureRouting = EmptyRouting
 
     var form = RegistrationForm()
 
     static func entryPoint(input: Void) -> some View {
         EmptyView()
     }
+
+    static var destinations: some ViewModifier {}
 
     static func registerMiddlewares(in store: any Store<State>) -> [MiddlewareWrapper<State>] {
         ExplicitRegistrationMiddleware<State>(
@@ -426,13 +427,14 @@ private struct RegistrationHostState: AppReducer {
 }
 
 private struct ReplaceableFeatureState<State: AppReducer>: FeatureState {
-    typealias FeatureRouting = EmptyRouting
 
     var form = ReplaceableFeatureForm()
 
     static func entryPoint(input: Void) -> some View {
         EmptyView()
     }
+
+    static var destinations: some ViewModifier {}
 
     static func registerMiddlewares(in store: any Store<State>) -> [MiddlewareWrapper<State>] {
         ReplaceableFeatureMiddleware<State>.self
@@ -441,9 +443,10 @@ private struct ReplaceableFeatureState<State: AppReducer>: FeatureState {
 
 private struct EmptyFeatureState<State: AppReducer>: FeatureState {
     typealias AppState = State
-    typealias FeatureRouting = EmptyRouting
 
     var form = EmptyRegistrationForm()
+
+    static var destinations: some ViewModifier {}
 
     static func registerMiddlewares(in store: any Store<State>) -> [MiddlewareWrapper<State>] {
     }
@@ -454,13 +457,14 @@ private struct EmptyFeatureState<State: AppReducer>: FeatureState {
 }
 
 private struct CompanionFeatureState<State: AppReducer>: FeatureState {
-    typealias FeatureRouting = EmptyRouting
 
     var form = CompanionFeatureForm()
 
     static func entryPoint(input: Void) -> some View {
         EmptyView()
     }
+
+    static var destinations: some ViewModifier {}
 
     static func registerMiddlewares(in store: any Store<State>) -> [MiddlewareWrapper<State>] {
         CompanionFeatureMiddleware<State>.self

@@ -13,13 +13,14 @@ import SwiftUI
 
 /// The reducer a feature module mounts into a host app state.
 ///
-/// A `FeatureState` groups everything a feature owns, its forms and its flows, names the middleware and
-/// routing implementation that belong to it, and exposes the single view the composing app presents to
-/// enter the feature. Mounting it as a property of the app state is the only step that app performs: the
-/// store finds it there at launch and registers its middleware.
+/// A `FeatureState` groups everything a feature owns, its forms and its flows, names the middleware that
+/// belongs to it, and exposes the single view the composing app presents to enter the feature. Mounting it
+/// as a property of the app state is the only step that app performs: the store finds it there at launch and
+/// registers its middleware.
 ///
 /// Every feature explicitly implements middleware registration. A feature with no middleware leaves the
-/// registration method's body empty, making that choice visible at the conformance site.
+/// registration method's body empty, making that choice visible at the conformance site. The same holds for
+/// ``destinations``, the screens the feature pushes itself: a single-screen feature leaves the list empty.
 ///
 /// A feature states what it needs from its host in a single protocol and reaches the outside world only
 /// through it. `Environments` carries the same name in every feature, so Swift merges the requirements
@@ -28,9 +29,8 @@ import SwiftUI
 /// ```swift
 /// public protocol ProfileFeature: AppReducer {
 ///     associatedtype Environments: ProfileEnvironmentProviding
-///     associatedtype ProfileRouting: Routing<ProfileRoute>
 ///
-///     var profile: ProfileFeatureState<Self, ProfileRouting> { get }
+///     var profile: ProfileFeatureState<Self> { get }
 /// }
 ///
 /// public protocol ProfileEnvironmentProviding {
@@ -38,23 +38,44 @@ import SwiftUI
 /// }
 /// ```
 ///
-/// Requiring the reducer as `ProfileFeatureState<Self, ProfileRouting>` is what keeps the feature's
-/// `AppState`, routing implementation and the store's root reducer connected at compile time.
+/// Requiring the reducer as `ProfileFeatureState<Self>` is what keeps the feature's `AppState` and the
+/// store's root reducer connected at compile time.
+///
+/// ## Entry points of other features
+///
+/// A feature that leads to a screen of another feature does not import that feature. It lists the screens it
+/// leads to as a public enum and requires a ``FeatureEntryPointProviding`` for them, named after itself:
+///
+/// ```swift
+/// public protocol ProfileFeature: AppReducer {
+///     associatedtype Environments: ProfileEnvironmentProviding
+///     associatedtype ProfileEntryPoints: FeatureEntryPointProviding<ProfileRouteDependency>
+///
+///     var profile: ProfileFeatureState<Self> { get }
+/// }
+/// ```
+///
+/// The app provides it. ``FeatureEntryPointProviding`` shows the whole pattern, from the feature's routing to
+/// the app's provider.
+///
+/// ## Feature module
 ///
 /// The module then owns its state, its entry point and its registration, and never names a concrete app:
 ///
 /// ```swift
-/// public struct ProfileFeatureState<
-///     AppState: ProfileFeature,
-///     FeatureRouting: Routing<ProfileRoute>
-/// >: FeatureState {
+/// public struct ProfileFeatureState<AppState: ProfileFeature>: FeatureState {
 ///     var form = ProfileForm()
 ///     var flow = ProfileFlow()
 ///
 ///     public init() {}
 ///
 ///     public static func entryPoint(input: User.ID) -> some View {
-///         ProfileContainer<AppState, FeatureRouting>(id: input)
+///         ProfileContainer<AppState>(id: input)
+///     }
+///
+///     public static var destinations: some ViewModifier {
+///         ProfileDetailsRouting<AppState>.self
+///         EditProfileRouting<AppState>.self
 ///     }
 ///
 ///     public static func registerMiddlewares(in store: any Store<AppState>) -> [MiddlewareWrapper<AppState>] {
@@ -89,20 +110,64 @@ import SwiftUI
 ///
 /// struct AppState: AppReducer {
 ///     typealias Environments = AppEnvironments
-///     var profile = ProfileFeatureState<AppState, AppProfileRouting>()
+///     var profile = ProfileFeatureState<AppState>()
 /// }
 /// ```
 ///
+/// and registers the feature's destinations on every navigation stack the feature can appear on:
+///
+/// ```swift
+/// TabRoot()
+///     .navigationDestinations(for: ProfileFeatureState<AppState>.self)
+/// ```
+///
+/// ## Links
+///
+/// A feature whose screens the app may open directly, for example from a URL, makes their links public and
+/// keeps the routing that resolves them internal. The links are a `Hashable` and `Sendable` enum whose cases
+/// carry only what each screen needs to open with nothing loaded, usually identifiers. Their routing is
+/// listed in ``destinations`` like any other, so the app gets the values and never the screens:
+///
+/// ```swift
+/// public enum ProfileLink: Hashable, Sendable {
+///     case profile(User.ID)
+///     case followers(User.ID)
+/// }
+///
+/// struct ProfileLinkRouting<AppState: ProfileFeature>: Routing {
+///     func view(for link: ProfileLink) -> some View {
+///         switch link {
+///         case let .profile(id):
+///             ProfileContainer<AppState>(id: id)
+///         case let .followers(id):
+///             FollowersContainer<AppState>(userID: id)
+///         }
+///     }
+/// }
+///
+/// public static var destinations: some ViewModifier {
+///     ProfileDetailsRouting<AppState>.self
+///     ProfileLinkRouting<AppState>.self
+/// }
+/// ```
+///
+/// The feature pushes the same values itself, so every linkable screen has one address. The app turns an
+/// incoming URL into a path of links and puts it on a stack where the feature is registered:
+///
+/// ```swift
+/// // Inside the feature, a link pushes its screen:
+/// globalRouter.navigate(for: ProfileLinkRouting<AppState>.self, to: .followers(user.id))
+///
+/// // In the app, a link from a URL replaces the stack:
+/// store.dispatch(Actions.NavigateResetStack(path: [ProfileLink.profile(id), ProfileLink.followers(id)]))
+/// ```
+///
+/// A linked screen can open with nothing loaded, so it loads what it shows from the link's values. A
+/// single-screen feature that exposes its entry screen as a link lists only its link routing.
+///
 /// - Note: `FeatureState` belongs to the modular protocol set. An app composed as a single module places
 ///   `Form`, `Flow` and `Storage` reducers in its app state directly and never adopts it.
-public protocol FeatureState<AppState, FeatureRouting>: Reducible, MiddlewareRegistering {
-    /// The routing implementation used by this feature's containers and components.
-    ///
-    /// Keeping routing as part of the feature state contract lets a composing app provide the concrete
-    /// navigation implementation without the feature module depending on the app target. A feature
-    /// with no internal destinations uses ``EmptyRouting``.
-    associatedtype FeatureRouting: Routing
-
+public protocol FeatureState<AppState>: Reducible, MiddlewareRegistering {
     /// The view the composing app presents to enter this feature.
     ///
     /// Inferred from the return type of ``FeatureState/entryPoint(input:)``, so a conforming feature
@@ -118,9 +183,57 @@ public protocol FeatureState<AppState, FeatureRouting>: Reducible, MiddlewareReg
     /// Builds the feature's entry point.
     ///
     /// This is the only view the composing app is expected to present directly. Everything the feature
-    /// shows beyond it is reached through the feature's own navigation.
+    /// shows beyond it is reached through the feature's own navigation. The requirement is a view builder,
+    /// so a conforming feature's implementation is one too without writing `@ViewBuilder`.
     ///
     /// - Parameter input: The values the feature needs in order to be entered.
     /// - Returns: The feature's entry view.
+    @ViewBuilder
     static func entryPoint(input: Input) -> Destination
+
+    /// The modifier that registers the screens the feature pushes itself.
+    ///
+    /// Inferred from ``FeatureState/destinations``, so a conforming feature writes `some ViewModifier` and
+    /// never names this type.
+    associatedtype Destinations: ViewModifier
+
+    /// The routings of the screens the feature pushes itself, one per line.
+    ///
+    /// A navigation stack shows a pushed route only when a destination for the route's type is registered
+    /// on that stack. A feature's internal routes are private to its module, so the composing app cannot
+    /// register them; the feature lists their routings here and the app registers all of them with
+    /// `navigationDestinations(for:)`. The feature's ``FeatureEntryPointProviding`` requirement is not
+    /// listed: it is not a ``Routing``, so it cannot be.
+    ///
+    /// ```swift
+    /// public static var destinations: some ViewModifier {
+    ///     ProfileDetailsRouting<AppState>.self
+    ///     EditProfileRouting<AppState>.self
+    /// }
+    /// ```
+    ///
+    /// A feature that pushes nothing of its own leaves the list empty:
+    ///
+    /// ```swift
+    /// public static var destinations: some ViewModifier {}
+    /// ```
+    ///
+    /// - Important: There is no default implementation, and none should be added. In generic code a default
+    ///   would be used instead of the feature's own list, and its pushes would silently show nothing. Without
+    ///   a default, a feature that leaves out `destinations` does not compile.
+    @DestinationsBuilder
+    static var destinations: Destinations { get }
+}
+
+public extension View {
+    /// Lets the navigation stack this view is the root of show every screen a feature pushes itself.
+    ///
+    /// Apply it once per feature on each navigation stack the feature can appear on. The app does not need
+    /// to know which screens the feature registers.
+    ///
+    /// - Parameter feature: The feature whose ``FeatureState/destinations`` to register.
+    /// - Returns: A view whose navigation stack resolves the feature's internal routes.
+    nonisolated func navigationDestinations<Feature: FeatureState>(for feature: Feature.Type) -> some View {
+        modifier(Feature.destinations)
+    }
 }

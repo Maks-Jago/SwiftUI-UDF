@@ -71,8 +71,6 @@ public struct TestFeatureDestination: View {
 }
 
 public struct TestFeatureState<AppState: TestFeature>: FeatureState {
-    public typealias FeatureRouting = EmptyRouting
-
     public var form = TestForm()
     public var flow = TestFlow()
 
@@ -81,8 +79,10 @@ public struct TestFeatureState<AppState: TestFeature>: FeatureState {
     public static func entryPoint(
         input: TestFeatureInput
     ) -> TestFeatureDestination {
-        .init(input: input)
+        TestFeatureDestination(input: input)
     }
+
+    public static var destinations: some ViewModifier {}
 
     public static func registerMiddlewares(
         in store: any Store<AppState>
@@ -213,9 +213,9 @@ public struct TestSettingsDestination: View {
 public struct TestSettingsFeatureState<AppState: TestSettingsFeature>:
     FeatureState
 {
-    public typealias FeatureRouting = EmptyRouting
-
     public init() {}
+
+    public static var destinations: some ViewModifier {}
 
     public static func registerMiddlewares(in store: any Store<AppState>) -> [MiddlewareWrapper<AppState>] {
     }
@@ -223,6 +223,6 @@ public struct TestSettingsFeatureState<AppState: TestSettingsFeature>:
     public static func entryPoint(
         input: TestSettingsInput
     ) -> TestSettingsDestination {
-        .init(input: input)
+        TestSettingsDestination(input: input)
     }
 }
