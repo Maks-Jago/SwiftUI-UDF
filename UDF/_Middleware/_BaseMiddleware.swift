@@ -239,7 +239,7 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
     /// Executes a state effect using compatible middleware dependencies and dispatches its actions to the store.
     ///
     /// This method assigns a compatible middleware environment before subscribing to the effect. The effect chooses when to read
-    /// application state by subscribing to `statePublisher` within `upstream`. If the environments are incompatible, the effect retains
+    /// application state by calling its `state()` reader within `upstream`. If the environments are incompatible, the effect retains
     /// its existing environment.
     ///
     /// This method:
@@ -266,7 +266,7 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
         fileName: String = #file,
         functionName: String = #function,
         lineNumber: Int = #line
-    ) where Effect.Output == any Action, Effect.Failure == Never {
+    ) where Effect.State == State {
         execute(
             effect.withEnvironment(from: self),
             cancellation: cancellation,

@@ -12,44 +12,39 @@
 import Combine
 import Foundation
 
-
 /// An action-producing Combine effect that can read fresh snapshots of application state.
 ///
-/// Implement `upstream` to build a publisher with `any Action` output and a `Never` failure type. Subscribe to `statePublisher`
-/// wherever the pipeline needs state, including inside a later `flatMap`. Each subscription asynchronously reads one snapshot
-/// and completes; it does not observe subsequent state changes. The publisher does not expose the store or its dispatch methods.
+/// Implement `upstream` to build a publisher with `any Action` output and a `Never` failure type. Call `state()` wherever the
+/// pipeline needs fresh state, including inside a later `flatMap`. Each call synchronously reads the latest committed snapshot;
+/// it does not observe state changes or wait for queued actions to finish. The reader does not expose the store or dispatch.
 ///
 /// The middleware's `execute` overload injects a compatible environment before subscribing. Effects without external dependencies
 /// use the default `Void` environment. Convert failures and missing-input conditions into actions within `upstream`.
 ///
 /// ## Example
 ///
-/// This effect reads the current user's token before loading a profile. The environment's `loadProfile(token:)` method returns
-/// a publisher with a `Never` failure type. A missing token emits a cancellation action so the flow can leave its loading state.
+/// Read the token directly in `upstream`, then build the request publisher using the injected environment.
+/// A missing token produces a cancellation action so the flow can leave its loading state.
 ///
 /// ```swift
-/// private extension ProfileMiddleware {
-///     struct LoadProfileEffect: StateEffectInitializable, Sendable {
-///         var environment: ProfileMiddleware.Environment!
-///         let statePublisher: StatePublisher<AppState>
+/// private extension MessageMiddleware {
+///     struct MessageStateEffectable: StateEffectInitializable, Sendable {
+///         var environment: LoadMessageEnvironment!
+///         var state: @Sendable () -> AppState
 ///
-///         init(statePublisher: StatePublisher<AppState>) {
-///             self.statePublisher = statePublisher
+///         init(state: @escaping @Sendable () -> AppState) {
+///             self.state = state
 ///         }
 ///
 ///         var upstream: AnyPublisher<any Action, Never> {
-///             statePublisher
-///                 .flatMap { state -> AnyPublisher<any Action, Never> in
-///                     guard let token = state.userForm.currentUser?.token else {
-///                         return Just(Actions.DidCancelEffect(by: Cancellation.loadProfile) as any Action)
-///                             .eraseToAnyPublisher()
-///                     }
+///             guard let token = state().userForm.currentUser?.token else {
+///                 return Just(Actions.DidCancelEffect(by: Cancellation.message) as any Action)
+///                     .eraseToAnyPublisher()
+///             }
 ///
-///                     return environment.loadProfile(token: token)
-///                         .map { profile in
-///                             Actions.DidLoadItem(item: profile, id: ProfileFlow.id) as any Action
-///                         }
-///                         .eraseToAnyPublisher()
+///             return environment.loadMessage(token: token)
+///                 .map { message in
+///                     Actions.DidLoadItem(item: Message(content: message), id: MessageFlow.id) as any Action
 ///                 }
 ///                 .eraseToAnyPublisher()
 ///         }
@@ -60,26 +55,29 @@ import Foundation
 public protocol StateEffectable: Effectable, EnvironmentEffect {
     /// The application state read by this effect.
     associatedtype State: AppReducer
-    
-    /// Reads fresh state snapshots without exposing the store
-    var statePublisher: StatePublisher<State> { get }
+
+    /// Reads a fresh snapshot without exposing the store. Call again when a later pipeline step needs updated state.
+    var state: @Sendable () -> State { get }
 }
 
 public extension StateEffectInitializable {
-    /// Creates an effect with a read-only state publisher for the supplied store.
+    /// Creates an effect with a synchronous state reader for the supplied store.
     ///
-    /// Wraps the store in a ``StatePublisher`` and delegates to ``init(statePublisher:)``. This initializer does not read state,
-    /// subscribe to the effect, or configure its environment. Compatible middleware dependencies are assigned during execution.
+    /// Captures the store and delegates to ``init(state:)``. Each reader call accesses `store.currentState` without caching it.
+    /// Initialization does not read state, subscribe to the effect, or configure its environment.
+    /// Compatible middleware dependencies are assigned during execution.
     ///
-    /// - Parameter store: The store from which the effect's publisher will retrieve fresh state snapshots.
+    /// - Parameter store: Any store implementation providing synchronized, synchronous state snapshots.
     init(store: any Store<State>) {
-        self.init(statePublisher: StatePublisher(store: store))
+        self.init(state: { [store] in
+            store.currentState
+        })
     }
 }
 
-/// A state effect that can be initialized using only a read-only state publisher.
+/// A state effect that can be initialized using only a synchronous state reader.
 ///
-/// Adopt this protocol to receive the default ``init(store:)`` initializer. Implement ``init(statePublisher:)`` to store the publisher
+/// Adopt this protocol to receive the default ``init(store:)`` initializer. Implement ``init(state:)`` to store the reader
 /// and initialize the effect's other properties. Effects with an environment property may need an explicit implementation because
 /// a synthesized memberwise initializer that also accepts an environment does not satisfy this initializer requirement.
 ///
@@ -87,12 +85,12 @@ public extension StateEffectInitializable {
 /// not configure its middleware dependencies or subscribe to its publisher.
 ///
 /// Effects with additional required inputs, such as a profile name and avatar data, should conform directly to ``StateEffectable``
-/// and provide their own initializer accepting a publisher and those inputs. This protocol cannot supply values for those inputs.
+/// and provide their own initializer accepting a reader and those inputs. This protocol cannot supply values for those inputs.
 public protocol StateEffectInitializable: StateEffectable {
-    /// Creates an effect using the supplied publisher as its source of application state.
+    /// Creates an effect using the supplied closure as its source of application state.
     ///
-    /// Store the publisher for use by `upstream`. Reading state and producing actions happen when the effect is subscribed to.
+    /// Store the reader for use by `upstream`. Call it wherever the effect needs current state.
     ///
-    /// - Parameter statePublisher: The publisher used to retrieve fresh state snapshots without exposing the store.
-    init(statePublisher: StatePublisher<State>)
+    /// - Parameter state: The reader used to retrieve fresh state snapshots without exposing the store.
+    init(state: @escaping @Sendable () -> State)
 }

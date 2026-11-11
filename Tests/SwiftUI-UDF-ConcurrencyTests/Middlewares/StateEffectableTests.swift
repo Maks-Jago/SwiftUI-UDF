@@ -332,18 +332,12 @@ private extension StateEffectableTests {
         }
 
         struct IncrementCounterStateEffectable: StateEffectInitializable, Sendable {
-            let statePublisher: StatePublisher<AppState>
+            var state: @Sendable () -> AppState
             
             var upstream: AnyPublisher<any Action, Never> {
-                self.statePublisher
-                    .flatMap { state in
-                        let value = state.counterForm.counter?.value ?? .zero
-                        let counter = Counter(value: value + 1)
-
-                        return Just(Actions.DidLoadItem(item: counter, id: CounterFlow.id) as any Action)
-                            .delay(for: .milliseconds(500), scheduler: DispatchQueue.global())
-                            .eraseToAnyPublisher()
-                    }
+                let value = self.state().counterForm.counter?.value ?? .zero
+                let counter = Counter(value: value + 1)
+                return Just(Actions.DidLoadItem(item: counter, id: CounterFlow.id) as any Action)
                     .delay(for: .milliseconds(500), scheduler: DispatchQueue.global())
                     .eraseToAnyPublisher()
             }
@@ -418,24 +412,21 @@ private extension StateEffectableTests {
 
         struct MessageStateEffectable: StateEffectInitializable, Sendable {
             var environment: LoadMessageEnvironment!
-            let statePublisher: StatePublisher<AppState>
-
-            init(statePublisher: StatePublisher<AppState>) {
-                self.statePublisher = statePublisher
+            var state: @Sendable () -> AppState
+            
+            init(state: @escaping @Sendable () -> AppState) {
+                self.state = state
             }
-
+            
             var upstream: AnyPublisher<any Action, Never> {
-                self.statePublisher
-                    .flatMap { state -> AnyPublisher<any Action, Never> in
-                        guard let token = state.userForm.currentUser?.token else {
-                            return Just(Actions.DidCancelEffect(by: Cancellation.message) as any Action)
-                                .eraseToAnyPublisher()
-                        }
-                        return environment.loadMessage(token: token)
-                            .map { message in
-                                Actions.DidLoadItem(item: Message(content: message), id: MessageFlow.id) as any Action
-                            }
-                            .eraseToAnyPublisher()
+                guard let token = state().userForm.currentUser?.token else {
+                    return Just(Actions.DidCancelEffect(by: Cancellation.message) as any Action)
+                        .eraseToAnyPublisher()
+                }
+                
+                return environment.loadMessage(token: token)
+                    .map { message in
+                        Actions.DidLoadItem(item: Message(content: message), id: MessageFlow.id) as any Action
                     }
                     .eraseToAnyPublisher()
             }
@@ -499,27 +490,38 @@ private extension StateEffectableTests {
         
         struct UpdateMyProfileEffectable: StateEffectable {
             var environment: ProfileEnvironment!
-            let statePublisher: StatePublisher<AppState>
+            let state: @Sendable () -> State
             let fullName: String
             let avatarData: Data
             
             init(store: any Store<State>, fullName: String, avatarData: Data) {
                 self.fullName = fullName
                 self.avatarData = avatarData
-                self.statePublisher = .init(store: store)
-            }
-            
-            init(statePublisher: StatePublisher<State>) {
-                self.fullName = ""
-                self.avatarData = Data()
-                self.statePublisher = statePublisher
+                self.state = { [store] in store.currentState }
             }
             
             var upstream: AnyPublisher<any Action, Never> {
-                statePublisher
-                    .flatMap { appState -> AnyPublisher<any Action, Never> in
+                guard
+                    let token = state().userForm.currentUser?.token
+                else {
+                    return Just(Actions.DidCancelEffect(by: Cancellation.update) as any Action)
+                        .eraseToAnyPublisher()
+                }
+                
+                return environment.uploadAvatar(token, avatarData)
+                    .map { url in
+                        Actions.DidLoadItem(item: url, id: MessageFlow.id) as any Action
+                    }
+                    .eraseToAnyPublisher()
+                    .compactMap { action -> URL? in
+                        guard let urlAction = action as? Actions.DidLoadItem<URL> else {
+                            return nil
+                        }
+                        return urlAction.item
+                    }
+                    .flatMap { url -> AnyPublisher<any Action, Never> in
                         guard
-                            let token = appState.userForm.currentUser?.token
+                            let token = state().userForm.currentUser?.token
                         else {
                             return Just(Actions.DidCancelEffect(by: Cancellation.update) as any Action)
                                 .eraseToAnyPublisher()
@@ -527,27 +529,6 @@ private extension StateEffectableTests {
                         return environment.uploadAvatar(token, avatarData)
                             .map { url in
                                 Actions.DidLoadItem(item: url, id: MessageFlow.id) as any Action
-                            }
-                            .eraseToAnyPublisher()
-                    }
-                    .compactMap { action -> URL? in
-                        guard let urlAction = action as? Actions.DidLoadItem<URL> else {
-                            return nil
-                        }
-                        return urlAction.item
-                    }
-                    .withState(from: statePublisher)
-                    .flatMap { url, appState -> AnyPublisher<any Action, Never> in
-                        guard
-                            let token = appState.userForm.currentUser?.token
-                        else {
-                            return Just(Actions.DidCancelEffect(by: Cancellation.update) as any Action)
-                                .eraseToAnyPublisher()
-                        }
-                        
-                        return environment.updateProfile(token, fullName, url)
-                            .map { currentUser in
-                                Actions.DidLoadItem(item: currentUser) as any Action
                             }
                             .eraseToAnyPublisher()
                     }
