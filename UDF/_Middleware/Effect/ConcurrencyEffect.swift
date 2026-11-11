@@ -53,7 +53,7 @@ public protocol ConcurrencyEffect: Sendable {
 /// A protocol that defines an asynchronous effect with a synchronous state reader that produces an action.
 ///
 /// `StateConcurrencyEffect` represents an effect that runs asynchronously and returns an action while having access to the current
-/// `AppState`. Call `state()` wherever the task needs a fresh snapshot, including after an `await`. Each call synchronously reads
+/// `AppState`. Call `state()` wherever the task needs a fresh snapshot. Each call synchronously reads
 /// the latest committed state without waiting for queued actions to finish. Middleware dependencies are injected before execution.
 /// Supply the reader when initializing the effect. Adopt `StateConcurrencyEffectInitializable` to use `init(store:)`.
 ///
@@ -83,17 +83,11 @@ public protocol ConcurrencyEffect: Sendable {
 ///     }
 /// }
 /// ```
-public protocol StateConcurrencyEffect: EnvironmentEffect {
+public protocol StateConcurrencyEffect: ConcurrencyEffect {
     associatedtype State: AppReducer
 
-    /// Reads a fresh snapshot without exposing the store. Call again after an asynchronous step when updated state is needed.
+    /// Reads a fresh snapshot state. Call again after an asynchronous step when updated state is needed.
     var state: @Sendable () -> State { get }
-
-    /// Performs an asynchronous task using the flow identifier and the effect's state reader, and returns an action.
-    ///
-    /// - Parameter flowId: The unique identifier for the flow.
-    /// - Returns: An action produced by the asynchronous task.
-    func task(flowId: AnyHashable) async throws -> any Action
 }
 
 /// A state concurrency effect that can be initialized using only a synchronous state reader.
@@ -106,7 +100,7 @@ public protocol StateConcurrencyEffectInitializable: StateConcurrencyEffect {
     ///
     /// Store the reader and call it wherever the task needs current state.
     ///
-    /// - Parameter state: The reader used to retrieve fresh state snapshots without exposing the store.
+    /// - Parameter state: The reader used to retrieve fresh state snapshots.
     init(state: @escaping @Sendable () -> State)
 }
 

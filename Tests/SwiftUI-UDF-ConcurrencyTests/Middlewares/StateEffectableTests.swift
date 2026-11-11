@@ -410,7 +410,7 @@ private extension StateEffectableTests {
             }
         }
 
-        struct MessageStateEffectable: StateEffectInitializable, Sendable {
+        struct MessageStateEffectable: StateEffectInitializable, EnvironmentEffect, Sendable {
             var environment: LoadMessageEnvironment!
             var state: @Sendable () -> AppState
             
@@ -488,7 +488,7 @@ private extension StateEffectableTests {
             }
         }
         
-        struct UpdateMyProfileEffectable: StateEffectable {
+        struct UpdateMyProfileEffectable: StateEffectable, EnvironmentEffect {
             var environment: ProfileEnvironment!
             let state: @Sendable () -> State
             let fullName: String

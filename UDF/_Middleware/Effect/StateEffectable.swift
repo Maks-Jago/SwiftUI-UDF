@@ -52,11 +52,11 @@ import Foundation
 /// }
 /// ```
 
-public protocol StateEffectable: Effectable, EnvironmentEffect {
+public protocol StateEffectable: Effectable {
     /// The application state read by this effect.
     associatedtype State: AppReducer
 
-    /// Reads a fresh snapshot without exposing the store. Call again when a later pipeline step needs updated state.
+    /// Reads a fresh snapshot. Call again when a later pipeline step needs updated state.
     var state: @Sendable () -> State { get }
 }
 

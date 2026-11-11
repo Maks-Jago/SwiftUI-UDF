@@ -323,7 +323,7 @@ private extension ConcurrencyEffectTests {
         }
     }
 
-    struct MessageStateConcurrencyEffect: StateConcurrencyEffectInitializable {
+    struct MessageStateConcurrencyEffect: StateConcurrencyEffectInitializable, EnvironmentEffect {
         var environment: LoadMessageEnvironment!
         let state: @Sendable () -> AppState
 

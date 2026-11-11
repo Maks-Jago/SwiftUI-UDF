@@ -236,48 +236,6 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
         )
     }
 
-    /// Executes a state effect using compatible middleware dependencies and dispatches its actions to the store.
-    ///
-    /// This method assigns a compatible middleware environment before subscribing to the effect. The effect chooses when to read
-    /// application state by calling its `state()` reader within `upstream`. If the environments are incompatible, the effect retains
-    /// its existing environment.
-    ///
-    /// This method:
-    /// - Assigns compatible middleware dependencies to the effect.
-    /// - Allows the effect to read fresh state snapshots at the required points in its publisher pipeline.
-    /// - Subscribes to the effect on the specified `queue`.
-    /// - Maps emitted actions and handles cancellation using the `cancellation` identifier.
-    ///
-    /// - Parameters:
-    ///   - effect: The effect to execute.
-    ///   - cancellation: The identifier used to deduplicate and cancel the subscription.
-    ///   - mapAction: Transforms emitted actions and cancellation actions before dispatch. Defaults to `{ $0 }`.
-    ///   - fileName: The calling file recorded with dispatched actions. Defaults to `#file`.
-    ///   - functionName: The calling function recorded with dispatched actions. Defaults to `#function`.
-    ///   - lineNumber: The calling line recorded with dispatched actions. Defaults to `#line`.
-    ///
-    /// - Note: This method uses Combine's `sink` and `handleEvents` to manage the effect's lifecycle, including cancellation and
-    /// completion.
-    /// - Important: An active subscription with the same cancellation identifier prevents a second subscription.
-    open func execute<Effect: StateEffectable>(
-        _ effect: Effect,
-        cancellation: some Hashable,
-        mapAction: @escaping (any Action) -> any Action = { $0 },
-        fileName: String = #file,
-        functionName: String = #function,
-        lineNumber: Int = #line
-    ) where Effect.State == State {
-        execute(
-            effect.withEnvironment(from: self),
-            cancellation: cancellation,
-            waitBehavior: .onStart,
-            mapAction: mapAction,
-            fileName: fileName,
-            functionName: functionName,
-            lineNumber: lineNumber
-        )
-    }
-
     /// Runs a pure effect and dispatches the actions accepted by a state-based filter, allowing for cancellation and action mapping.
     ///
     /// This method checks each output against a fresh application state snapshot before dispatch. The required `dispatchFilter`
@@ -561,54 +519,6 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
         functionName: String = #function,
         lineNumber: Int = #line
     ) {
-        execute(
-            flowId: flowId,
-            cancellation: cancellation,
-            mapAction: mapAction,
-            mapError: mapError,
-            fileName: fileName,
-            functionName: functionName,
-            lineNumber: lineNumber
-        ) { flowId in
-            try await  effect.withEnvironment(from: self).task(flowId: flowId)
-        }
-    }
-
-    /// Executes a state concurrency effect using compatible middleware dependencies and its synchronous state reader.
-    ///
-    /// This method assigns a compatible middleware environment and passes the flow identifier to `task(flowId:)`.
-    /// The effect receives its reader during initialization and calls `state()` when it needs fresh state, including after
-    /// asynchronous steps. The resulting action is mapped before dispatch.
-    ///
-    /// This method:
-    /// - Assigns compatible middleware dependencies to the effect.
-    /// - Preserves the effect's state reader.
-    /// - Invokes the effect's asynchronous `task(flowId:)` method.
-    /// - Maps result and cancellation actions using `mapAction`, and task errors using `mapError`.
-    /// - Handles cancellation using the `cancellation` identifier.
-    ///
-    /// - Parameters:
-    ///   - effect: The state concurrency effect to execute.
-    ///   - flowId: The flow identifier passed to the task and used when mapping errors.
-    ///   - cancellation: The identifier used to deduplicate and cancel the task.
-    ///   - mapAction: Transforms result actions and cancellation actions before dispatch. Defaults to `{ $0 }`.
-    ///   - mapError: Converts an error and the flow identifier into an action. Defaults to `Actions.Error` using the error's
-    ///     localized description and the flow identifier.
-    ///   - fileName: The calling file recorded with dispatched actions. Defaults to `#file`.
-    ///   - functionName: The calling function recorded with dispatched actions. Defaults to `#function`.
-    ///   - lineNumber: The calling line recorded with dispatched actions. Defaults to `#line`.
-    ///
-    /// - Important: An active task with the same cancellation identifier prevents a second task.
-    open func execute<Effect: StateConcurrencyEffect & Sendable>(
-        effect: Effect,
-        flowId: AnyHashable,
-        cancellation: some Hashable & Sendable,
-        mapAction: @escaping @Sendable (any Action) -> any Action = { $0 },
-        mapError: @escaping ErrorMapper<AnyHashable> = { flowId, error in Actions.Error(error: error.localizedDescription, id: flowId) },
-        fileName: String = #file,
-        functionName: String = #function,
-        lineNumber: Int = #line
-    ) where Effect.State == State {
         execute(
             flowId: flowId,
             cancellation: cancellation,
