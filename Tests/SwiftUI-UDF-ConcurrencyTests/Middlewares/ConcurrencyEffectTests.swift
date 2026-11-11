@@ -259,7 +259,7 @@ private extension ConcurrencyEffectTests {
             switch state.messageFlow {
             case .loadingPopularMessage:
                 execute(
-                    effect: MessageStateConcurrencyEffect(),
+                    effect: MessageStateConcurrencyEffect(store: store),
                     flowId: MessageFlow.id,
                     cancellation: Сancellation.messageWithStateConcurrencyEffect
                 )
@@ -300,7 +300,7 @@ private extension ConcurrencyEffectTests {
             switch state.messageFlow {
             case .loadingPreviewMessage:
                 execute(
-                    effect: MessageStateConcurrencyEffect(),
+                    effect: MessageStateConcurrencyEffect(store: store),
                     flowId: MessageFlow.id,
                     cancellation: Сancellation.message
                 )
@@ -323,11 +323,16 @@ private extension ConcurrencyEffectTests {
         }
     }
 
-    struct MessageStateConcurrencyEffect: StateConcurrencyEffect {
+    struct MessageStateConcurrencyEffect: StateConcurrencyEffectInitializable {
         var environment: LoadMessageEnvironment!
-        
-        func task(flowId: AnyHashable, state: AppState) async throws -> any Action {
-            guard let token = state.userForm.currentUser?.token else {
+        let state: @Sendable () -> AppState
+
+        init(state: @escaping @Sendable () -> AppState) {
+            self.state = state
+        }
+
+        func task(flowId: AnyHashable) async throws -> any Action {
+            guard let token = state().userForm.currentUser?.token else {
                 throw CancellationError()
             }
             let message = try await environment.loadMessage(token: token)
@@ -353,7 +358,7 @@ private extension ConcurrencyEffectTests {
             switch state.counterFlow {
             case .increment:
                 execute(
-                    effect: IncrementCounterStateConcurrencyEffect(),
+                    effect: IncrementCounterStateConcurrencyEffect(store: store),
                     flowId: MessageFlow.id,
                     cancellation: Сancellation.increment
                 )
@@ -362,10 +367,12 @@ private extension ConcurrencyEffectTests {
             }
         }
         
-        struct IncrementCounterStateConcurrencyEffect: StateConcurrencyEffect {
-            func task(flowId: AnyHashable, state: AppState) async throws -> any Action {
+        struct IncrementCounterStateConcurrencyEffect: StateConcurrencyEffectInitializable {
+            let state: @Sendable () -> AppState
+
+            func task(flowId: AnyHashable) async throws -> any Action {
                 try await Task.sleep(for: .milliseconds(500))
-                let value = state.counterForm.counter?.value ?? .zero
+                let value = state().counterForm.counter?.value ?? .zero
                 let counter = Counter(value: value + 1)
                 
                 return Actions.DidLoadItem(item: counter, id: flowId)

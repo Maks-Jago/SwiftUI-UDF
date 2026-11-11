@@ -574,16 +574,16 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
         }
     }
 
-    /// Executes a state concurrency effect with middleware dependencies and a current application state snapshot.
+    /// Executes a state concurrency effect using compatible middleware dependencies and its synchronous state reader.
     ///
-    /// This method assigns a compatible middleware environment, reads the current state, and passes that snapshot and the flow
-    /// identifier to `task(flowId:state:)`. The resulting action is mapped before dispatch. If the store is unavailable when the task
-    /// starts, the effect produces a cancellation action.
+    /// This method assigns a compatible middleware environment and passes the flow identifier to `task(flowId:)`.
+    /// The effect receives its reader during initialization and calls `state()` when it needs fresh state, including after
+    /// asynchronous steps. The resulting action is mapped before dispatch.
     ///
     /// This method:
     /// - Assigns compatible middleware dependencies to the effect.
-    /// - Reads the current application state when the task starts.
-    /// - Invokes the effect's asynchronous `task(flowId:state:)` method.
+    /// - Preserves the effect's state reader.
+    /// - Invokes the effect's asynchronous `task(flowId:)` method.
     /// - Maps result and cancellation actions using `mapAction`, and task errors using `mapError`.
     /// - Handles cancellation using the `cancellation` identifier.
     ///
@@ -617,12 +617,8 @@ open class _BaseMiddleware<State: AppReducer>: _Middleware, @unchecked Sendable 
             fileName: fileName,
             functionName: functionName,
             lineNumber: lineNumber
-        ) { [weak store] flowId in
-            guard let store else {
-                throw CancellationError()
-            }
-            
-            return try await effect.withEnvironment(from: self).task(flowId: flowId, state: store.state)
+        ) { flowId in
+            try await effect.withEnvironment(from: self).task(flowId: flowId)
         }
     }
     

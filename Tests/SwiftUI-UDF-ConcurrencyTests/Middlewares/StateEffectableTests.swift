@@ -107,8 +107,8 @@ import UDFSwiftTesting
         #expect(success, "MessageFlow should return to the .none state when the token is missing")
     }
     
-    @Test("Execute StateEffectable using the withState Combine operator")
-    func observeMiddlewareWithUsageCombineOperatorWithState() async throws {
+    @Test("Execute StateEffectable using the fresh State")
+    func observeMiddlewareWithUsageFreshAppState() async throws {
         var updatedUser = await store.state.userForm.currentUser
         let editedFullName = "Angelina Klochay"
         updatedUser?.fullName = editedFullName
@@ -526,9 +526,9 @@ private extension StateEffectableTests {
                             return Just(Actions.DidCancelEffect(by: Cancellation.update) as any Action)
                                 .eraseToAnyPublisher()
                         }
-                        return environment.uploadAvatar(token, avatarData)
-                            .map { url in
-                                Actions.DidLoadItem(item: url, id: MessageFlow.id) as any Action
+                        return environment.updateProfile(token, fullName, url)
+                            .map { user in
+                                Actions.DidLoadItem(item: user) as any Action
                             }
                             .eraseToAnyPublisher()
                     }

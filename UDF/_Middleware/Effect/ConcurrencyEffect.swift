@@ -50,12 +50,12 @@ public protocol ConcurrencyEffect: Sendable {
     func task(flowId: AnyHashable) async throws -> any Action
 }
 
-/// A protocol that defines an asynchronous effect that receives both a unique flow identifier and the current application state,
-/// and produces an action.
+/// A protocol that defines an asynchronous effect with a synchronous state reader that produces an action.
 ///
 /// `StateConcurrencyEffect` represents an effect that runs asynchronously and returns an action while having access to the current
-/// `AppState`. It is useful when the effect needs both middleware dependencies and a snapshot of the current state in order to
-/// produce the next action.
+/// `AppState`. Call `state()` wherever the task needs a fresh snapshot, including after an `await`. Each call synchronously reads
+/// the latest committed state without waiting for queued actions to finish. Middleware dependencies are injected before execution.
+/// Supply the reader when initializing the effect. Adopt `StateConcurrencyEffectInitializable` to use `init(store:)`.
 ///
 /// ## Example of a `StateConcurrencyEffect`
 ///
@@ -63,11 +63,16 @@ public protocol ConcurrencyEffect: Sendable {
 ///
 /// ```swift
 /// private extension ProfileMiddleware {
-///     struct LoadProfileEffect: StateConcurrencyEffect {
+///     struct LoadProfileEffect: StateConcurrencyEffectInitializable {
 ///         var environment: ProfileMiddleware.Environment!
+///         let state: @Sendable () -> AppState
 ///
-///         func task(flowId: AnyHashable, state: AppState) async throws -> any Action {
-///             guard let token = state.userForm.currentUser?.token else {
+///         init(state: @escaping @Sendable () -> AppState) {
+///             self.state = state
+///         }
+///
+///         func task(flowId: AnyHashable) async throws -> any Action {
+///             guard let token = state().userForm.currentUser?.token else {
 ///                 throw CancellationError()
 ///             }
 ///
@@ -81,14 +86,42 @@ public protocol ConcurrencyEffect: Sendable {
 public protocol StateConcurrencyEffect: EnvironmentEffect {
     associatedtype State: AppReducer
 
-    /// An asynchronous method that performs a task using both the provided flow identifier and the current application state,
-    /// and returns an action.
+    /// Reads a fresh snapshot without exposing the store. Call again after an asynchronous step when updated state is needed.
+    var state: @Sendable () -> State { get }
+
+    /// Performs an asynchronous task using the flow identifier and the effect's state reader, and returns an action.
     ///
-    /// - Parameters:
-    ///   - flowId: The unique identifier for the flow.
-    ///   - state: The current application state captured when the effect begins execution.
+    /// - Parameter flowId: The unique identifier for the flow.
     /// - Returns: An action produced by the asynchronous task.
-    func task(flowId: AnyHashable, state: State) async throws -> any Action
+    func task(flowId: AnyHashable) async throws -> any Action
+}
+
+/// A state concurrency effect that can be initialized using only a synchronous state reader.
+///
+/// Implement `init(state:)` to receive the default `init(store:)` initializer, as with `StateEffectInitializable`.
+/// Effects with additional required inputs can conform directly to `StateConcurrencyEffect` and provide their own initializer
+/// accepting a reader and those inputs.
+public protocol StateConcurrencyEffectInitializable: StateConcurrencyEffect {
+    /// Creates an effect using the supplied closure as its source of application state.
+    ///
+    /// Store the reader and call it wherever the task needs current state.
+    ///
+    /// - Parameter state: The reader used to retrieve fresh state snapshots without exposing the store.
+    init(state: @escaping @Sendable () -> State)
+}
+
+public extension StateConcurrencyEffectInitializable {
+    /// Creates an effect with a synchronous reader backed by the supplied store's `currentState` property.
+    ///
+    /// Initialization captures the store without reading state, executing the task, or configuring its environment.
+    /// Compatible middleware dependencies are assigned during execution.
+    ///
+    /// - Parameter store: Any store implementation providing synchronized, synchronous state snapshots.
+    init(store: any Store<State>) {
+        self.init(state: { [store] in
+            store.currentState
+        })
+    }
 }
 
 /// A concrete implementation of `ConcurrencyEffect` that runs an asynchronous block of code to produce an action.
