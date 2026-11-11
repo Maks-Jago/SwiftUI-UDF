@@ -79,7 +79,7 @@ import Testing
 
         await store.dispatch(
             Actions.UpdateFormField(keyPath: \ItemsForm.item, value: .init(value: 2))
-                .binded(to: ItemsContainer.self, by: .init(value: 2))
+                .binded(to: ItemsContainer.self, by: Item.ID(value: 2))
         )
         success = store.state.itemsForm[Item.ID(value: 2)]?.item != nil
         #expect(success)
@@ -89,7 +89,7 @@ import Testing
                 items: [Item(id: .init(value: 4)), Item(id: .init(value: 5))],
                 id: ItemsFlow.id
             )
-            .binded(to: ItemsContainer.self, by: .init(value: 2))
+            .binded(to: ItemsContainer.self, by: Item.ID(value: 2))
         )
         success = store.state.itemsForm[Item.ID(value: 2)]?.paginator.items.count == 2
         #expect(success)

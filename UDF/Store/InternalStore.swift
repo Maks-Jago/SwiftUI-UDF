@@ -8,9 +8,20 @@
 import Combine
 import Foundation
 import SwiftUI
+import os
 
 actor InternalStore<State: AppReducer>: Store {
-    var state: State
+    private nonisolated let stateStorage: OSAllocatedUnfairLock<State>
+
+    var state: State {
+        get { currentState }
+        set { stateStorage.withLock { $0 = newValue } }
+    }
+
+    /// Reads the same storage used by actor-isolated state writes.
+    nonisolated var currentState: State {
+        stateStorage.withLock { $0 }
+    }
 
     nonisolated let subject = SendableSubject<(State, State, Animation?), Never>()
 
@@ -20,7 +31,7 @@ actor InternalStore<State: AppReducer>: Store {
     private let logDistributor: LogDistributor
 
     init(initial state: State, loggers: [ActionLogger]) {
-        self.state = state
+        self.stateStorage = OSAllocatedUnfairLock(initialState: state)
         self.logDistributor = LogDistributor(loggers: loggers)
     }
 
