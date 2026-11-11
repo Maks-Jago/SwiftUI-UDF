@@ -22,6 +22,12 @@ public protocol Store<State>: Actor {
     /// The current state of the store.
     var state: State { get }
 
+    /// A synchronous snapshot of the latest committed state.
+    ///
+    /// Implementations must synchronize this read with state writes so it is safe to call from any thread.
+    /// Reading this property does not wait for queued actions to finish reducing.
+    nonisolated var currentState: State { get }
+
     /// Dispatches an action to the store with optional priority and additional debug information.
     ///
     /// - Parameters:

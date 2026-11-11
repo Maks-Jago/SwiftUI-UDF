@@ -29,23 +29,25 @@ public extension Effectable {
     ///
     /// This operator allows filtering of the effect's output, ensuring only actions that meet the specified condition
     /// are passed downstream.
+    /// The returned wrapper preserves environment injection when this effect conforms to `EnvironmentEffect`.
     ///
     /// - Parameter isIncluded: A closure that takes an action of type `A` and returns a Boolean indicating whether the action should be
     /// included.
     /// - Returns: An effect that emits only actions that satisfy the given condition.
-    func filterAction<A: Action>(_ isIncluded: @escaping (A) -> Bool) -> some Effectable {
-        Effects.Filter<A>(self, isIncluded)
+    func filterAction<A: Action>(_ isIncluded: @escaping (A) -> Bool) -> Effects.Filter<A, Self> {
+        Effects.Filter<A, Self>(self, isIncluded)
     }
 
     /// Delays the emission of actions by a specified duration.
     ///
     /// This operator introduces a delay for actions emitted by the effect, allowing you to control when actions are processed.
+    /// The returned wrapper preserves environment injection when this effect conforms to `EnvironmentEffect`.
     ///
     /// - Parameters:
     ///   - duration: The time interval to delay each action.
     ///   - queue: The dispatch queue on which to delay the action.
     /// - Returns: An effect that emits actions after the specified delay.
-    func delay(duration: TimeInterval, queue: DispatchQueue) -> some Effectable {
+    func delay(duration: TimeInterval, queue: DispatchQueue) -> Effects.Delay<Self> {
         Effects.Delay(self, duration, queue: queue)
     }
 }
