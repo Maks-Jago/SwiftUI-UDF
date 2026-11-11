@@ -11,10 +11,11 @@
 
 import Foundation
 
-/// A protocol that defines an asynchronous effect with a unique identifier, capable of producing an action.
+/// A protocol that defines an asynchronous effect capable of producing an action for a flow.
 ///
-/// `ConcurrencyEffect` represents an effect that runs asynchronously and returns an action. The effect is identified
-/// by an associated `Id` type, allowing for the management and tracking of concurrent tasks in the UDF architecture.
+/// Implement `task(flowId:)` to perform asynchronous work and return an action. Middleware passes the flow identifier when executing
+/// the effect and tracks cancellation separately using the identifier supplied to `execute`.
+/// To receive compatible middleware dependencies, also conform to `EnvironmentEffect`.
 ///
 /// ## Example of a `ConcurrencyEffect`
 ///
@@ -22,20 +23,19 @@ import Foundation
 ///
 /// ```swift
 /// private extension SomeMiddleware {
-///     struct RevolutInfoSavingEffect<Id: Hashable>: ConcurrencyEffect {
-///         var id: Id
+///     struct RevolutInfoSavingEffect: ConcurrencyEffect, EnvironmentEffect {
+///         var environment: SomeMiddleware.Environment!
 ///         let token: String
 ///         let userId: Int
 ///         let firstName: String
 ///         let lastName: String
 ///         let revolutTag: String
-///         let environment: SomeMiddleware.Environment
 ///
-///         func task() async throws -> any Action {
+///         func task(flowId: AnyHashable) async throws -> any Action {
 ///             let bankInfo = try await environment.saveRevolutInfo(token, userId, firstName, lastName, revolutTag)
 ///
 ///             return ActionGroup {
-///                 Actions.DidLoadItem(item: bankInfo, id: id)
+///                 Actions.DidLoadItem(item: bankInfo, id: flowId)
 ///                 Actions.LoadPage(id: CashOutMethodsFlow.id)
 ///             }
 ///         }
@@ -50,12 +50,13 @@ public protocol ConcurrencyEffect: Sendable {
     func task(flowId: AnyHashable) async throws -> any Action
 }
 
-/// A protocol that defines an asynchronous effect with a synchronous state reader that produces an action.
+/// A `ConcurrencyEffect` that can read fresh application state through a synchronous closure.
 ///
-/// `StateConcurrencyEffect` represents an effect that runs asynchronously and returns an action while having access to the current
-/// `AppState`. Call `state()` wherever the task needs a fresh snapshot. Each call synchronously reads
-/// the latest committed state without waiting for queued actions to finish. Middleware dependencies are injected before execution.
+/// Implement the inherited `task(flowId:)` method and call `state()` wherever the task needs a fresh snapshot, including after an
+/// asynchronous step. Each call synchronously reads the latest committed state without waiting for queued actions to finish.
 /// Supply the reader when initializing the effect. Adopt `StateConcurrencyEffectInitializable` to use `init(store:)`.
+/// State concurrency effects use the standard concurrency `execute` overloads. To receive compatible middleware dependencies,
+/// also conform to `EnvironmentEffect`.
 ///
 /// ## Example of a `StateConcurrencyEffect`
 ///
@@ -63,7 +64,7 @@ public protocol ConcurrencyEffect: Sendable {
 ///
 /// ```swift
 /// private extension ProfileMiddleware {
-///     struct LoadProfileEffect: StateConcurrencyEffectInitializable {
+///     struct LoadProfileEffect: StateConcurrencyEffectInitializable, EnvironmentEffect {
 ///         var environment: ProfileMiddleware.Environment!
 ///         let state: @Sendable () -> AppState
 ///
@@ -86,13 +87,14 @@ public protocol ConcurrencyEffect: Sendable {
 public protocol StateConcurrencyEffect: ConcurrencyEffect {
     associatedtype State: AppReducer
 
-    /// Reads a fresh snapshot state. Call again after an asynchronous step when updated state is needed.
+    /// Reads a fresh state snapshot. Call again after an asynchronous step when updated state is needed.
     var state: @Sendable () -> State { get }
 }
 
 /// A state concurrency effect that can be initialized using only a synchronous state reader.
 ///
 /// Implement `init(state:)` to receive the default `init(store:)` initializer, as with `StateEffectInitializable`.
+/// To receive middleware dependencies, also conform to `EnvironmentEffect`.
 /// Effects with additional required inputs can conform directly to `StateConcurrencyEffect` and provide their own initializer
 /// accepting a reader and those inputs.
 public protocol StateConcurrencyEffectInitializable: StateConcurrencyEffect {
@@ -108,7 +110,7 @@ public extension StateConcurrencyEffectInitializable {
     /// Creates an effect with a synchronous reader backed by the supplied store's `currentState` property.
     ///
     /// Initialization captures the store without reading state, executing the task, or configuring its environment.
-    /// Compatible middleware dependencies are assigned during execution.
+    /// For effects that also conform to `EnvironmentEffect`, compatible middleware dependencies are assigned during execution.
     ///
     /// - Parameter store: Any store implementation providing synchronized, synchronous state snapshots.
     init(store: any Store<State>) {

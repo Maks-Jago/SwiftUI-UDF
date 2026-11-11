@@ -11,9 +11,13 @@
 
 /// An effect that receives external dependencies from its middleware.
 ///
-/// `PureEffect` and `ConcurrencyEffect` can optionally conform to this protocol to receive compatible middleware dependencies
-/// when passed to `execute` or `run`. `StateEffectable` and `StateConcurrencyEffect` inherit this protocol.
-/// Conforming effects that do not require external dependencies use the default `Void` environment.
+/// Combine effects opt in by conforming to both `PureEffect` and `EnvironmentEffect`; asynchronous effects conform to both
+/// `ConcurrencyEffect` and `EnvironmentEffect`. Middleware assigns compatible dependencies through the standard `execute`,
+/// `run` methods.
+///
+/// State-aware effects must also declare this conformance explicitly. `StateEffectable` and `StateConcurrencyEffect` provide
+/// state access independently of environment injection. Conforming effects without external dependencies can use the default
+/// `Void` environment.
 public protocol EnvironmentEffect {
     /// The dependency type required by the effect.
     associatedtype Environment: Sendable

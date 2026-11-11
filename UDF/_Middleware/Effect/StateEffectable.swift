@@ -18,8 +18,9 @@ import Foundation
 /// pipeline needs fresh state, including inside a later `flatMap`. Each call synchronously reads the latest committed snapshot;
 /// it does not observe state changes or wait for queued actions to finish. The reader does not expose the store or dispatch.
 ///
-/// The middleware's `execute` overload injects a compatible environment before subscribing. Effects without external dependencies
-/// use the default `Void` environment. Convert failures and missing-input conditions into actions within `upstream`.
+/// State effects use the standard Combine `execute` and `run` overloads. To receive compatible middleware dependencies,
+/// also conform to `EnvironmentEffect`; the state reader is supplied during initialization. Convert failures and missing-input
+/// conditions into actions within `upstream`.
 ///
 /// ## Example
 ///
@@ -28,7 +29,7 @@ import Foundation
 ///
 /// ```swift
 /// private extension MessageMiddleware {
-///     struct MessageStateEffectable: StateEffectInitializable, Sendable {
+///     struct MessageStateEffectable: StateEffectInitializable, EnvironmentEffect, Sendable {
 ///         var environment: LoadMessageEnvironment!
 ///         var state: @Sendable () -> AppState
 ///
@@ -65,7 +66,7 @@ public extension StateEffectInitializable {
     ///
     /// Captures the store and delegates to ``init(state:)``. Each reader call accesses `store.currentState` without caching it.
     /// Initialization does not read state, subscribe to the effect, or configure its environment.
-    /// Compatible middleware dependencies are assigned during execution.
+    /// For effects that also conform to `EnvironmentEffect`, compatible middleware dependencies are assigned during execution.
     ///
     /// - Parameter store: Any store implementation providing synchronized, synchronous state snapshots.
     init(store: any Store<State>) {
@@ -81,8 +82,8 @@ public extension StateEffectInitializable {
 /// and initialize the effect's other properties. Effects with an environment property may need an explicit implementation because
 /// a synthesized memberwise initializer that also accepts an environment does not satisfy this initializer requirement.
 ///
-/// Environment injection follows the same rules as ``StateEffectable``. Initializing an effect through either initializer does
-/// not configure its middleware dependencies or subscribe to its publisher.
+/// To receive middleware dependencies, also conform to `EnvironmentEffect`. Initializing an effect through either initializer
+/// does not configure its dependencies or subscribe to its publisher.
 ///
 /// Effects with additional required inputs, such as a profile name and avatar data, should conform directly to ``StateEffectable``
 /// and provide their own initializer accepting a reader and those inputs. This protocol cannot supply values for those inputs.
