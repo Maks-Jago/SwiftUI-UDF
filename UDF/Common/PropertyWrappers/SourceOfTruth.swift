@@ -23,9 +23,9 @@ public final class SourceOfTruth<AppState: AppReducer> {
     /// The current value of the application state.
     public var wrappedValue: AppState
 
-    /// A thread-safe lock protecting the cache of resolved property metadata info.
+    /// A thread-safe lock protecting the cache of resolved property paths, keyed by container type.
     /// Used by `ConnectedContainer` to optimize bindable reducer state lookups.
-    private let propertyCacheLock = OSAllocatedUnfairLock(initialState: [ObjectIdentifier: PropertyInfo]())
+    private let propertyCacheLock = OSAllocatedUnfairLock(initialState: [ObjectIdentifier: [PropertyInfo]]())
 
     /// A reference to the store that holds and manages the application state.
     private weak var store: Optional<any Store<AppState>>
@@ -83,15 +83,15 @@ extension SourceOfTruth: Equatable {
 }
 
 extension SourceOfTruth {
-    /// Returns the cached property metadata for a given container type.
+    /// Returns the cached property path from the app state to the bindable reducer bound to a container type.
     ///
-    /// This is used by `ConnectedContainer` to optimize state reflection lookups from O(N^2) to O(N) at scale.
-    func getPropertyMetadata(for containerType: Any.Type) -> PropertyInfo? {
+    /// This is used by `ConnectedContainer` to skip the reflection walk over the app state on repeated lookups.
+    func cachedPropertyPath(for containerType: Any.Type) -> [PropertyInfo]? {
         propertyCacheLock.withLock { $0[ObjectIdentifier(containerType)] }
     }
-    
-    /// Caches the property metadata for a given container type.
-    func setPropertyMetadata(_ property: PropertyInfo, for containerType: Any.Type) {
-        propertyCacheLock.withLock { $0[ObjectIdentifier(containerType)] = property }
+
+    /// Caches the property path from the app state to the bindable reducer bound to a container type.
+    func storeCachedPropertyPath(_ path: [PropertyInfo], for containerType: Any.Type) {
+        propertyCacheLock.withLock { $0[ObjectIdentifier(containerType)] = path }
     }
 }
