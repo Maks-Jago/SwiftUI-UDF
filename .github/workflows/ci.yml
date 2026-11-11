@@ -10,6 +10,9 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  UDFMACROS_REF: release/2.0.0
+
 jobs:
   testing:
     name: Run all tests
@@ -49,3 +52,54 @@ jobs:
       run: |
         swift test \
           --build-path .build
+
+  macros-compat:
+    name: UDFMacros compatibility
+    runs-on: xcode-27
+    timeout-minutes: 30
+    if: >-
+      (github.event_name == 'pull_request' && startsWith(github.base_ref, '2.')) ||
+      (github.event_name == 'push' && startsWith(github.ref_name, '2.'))
+
+    strategy:
+      matrix:
+        xcode: ['27.2']
+
+    steps:
+    - name: Checkout SwiftUI-UDF
+      uses: actions/checkout@v4
+
+    - name: Select Xcode ${{ matrix.xcode }}
+      run: sudo xcode-select -switch /Applications/Xcode_${{ matrix.xcode }}.app/Contents/Developer
+
+    - name: Clone UDFMacros
+      run: |
+        ln -sfn "$GITHUB_WORKSPACE" "$RUNNER_TEMP/SwiftUI-UDF"
+        git clone --branch "$UDFMACROS_REF" --depth 1 https://github.com/urlaunched-com/UDFMacros.git "$RUNNER_TEMP/UDFMacros"
+        echo "UDFMACROS_RESOLVED_HASH=$(shasum -a 256 "$RUNNER_TEMP/UDFMacros/Package.resolved" | awk '{print $1}')" >> "$GITHUB_ENV"
+
+    - name: Override SwiftUI-UDF dependency
+      working-directory: ${{ runner.temp }}/UDFMacros
+      run: |
+        ruby -e '
+          src = File.read("Package.swift")
+          abort("Failed to override SwiftUI-UDF dependency in Package.swift") unless src.sub!(/\.package\(\s*url:\s*"https:\/\/github\.com\/[^"\n]*\/SwiftUI-UDF(?:\.git)?"[^\n)]*\)/, %(.package(path: "../SwiftUI-UDF")))
+          File.write("Package.swift", src)
+        '
+
+    - name: Cache Swift PM
+      uses: actions/cache@v4
+      with:
+        path: ${{ runner.temp }}/UDFMacros/.build
+        key: ${{ runner.os }}-xcode${{ matrix.xcode }}-udfmacros-spm-${{ env.UDFMACROS_RESOLVED_HASH }}
+        restore-keys: |
+          ${{ runner.os }}-xcode${{ matrix.xcode }}-udfmacros-spm-
+
+    - name: Build UDFMacros
+      working-directory: ${{ runner.temp }}/UDFMacros
+      run: swift build --build-path .build
+
+    - name: Test UDFMacros
+      working-directory: ${{ runner.temp }}/UDFMacros
+      run: swift test --build-path .build
+
