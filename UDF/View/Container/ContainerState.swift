@@ -54,7 +54,7 @@ final class ContainerState<State: AppReducer>: ObservableObject, @unchecked Send
     ///   - scope: A closure that extracts a `Scope` from the global state.
     init(store: EnvironmentStore<State>, scope: @escaping @Sendable (_ state: State) -> Scope) {
         self.store = store
-        self.currentScope = nil
+        self.currentScope = scope(store.state)
 
         // Subscribe to state changes in the store
         self.subscriptionKey = store.add { [weak self] oldState, newState, animation in
