@@ -57,9 +57,7 @@ jobs:
     name: UDFMacros compatibility
     runs-on: xcode-27
     timeout-minutes: 30
-    if: >-
-      (github.event_name == 'pull_request' && startsWith(github.base_ref, '2.')) ||
-      (github.event_name == 'push' && startsWith(github.ref_name, '2.'))
+    if: github.event_name == 'pull_request' && startsWith(github.base_ref, '2.')
 
     strategy:
       matrix:
