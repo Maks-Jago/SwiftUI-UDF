@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [ 1.*.*, 2.*.*, 'release/**' ]
+    branches: [ '[0-9]+.[0-9]+.[0-9x]+', 'release/**' ]
   pull_request:
-    branches: [ 1.*.*, 2.*.* ]
+    branches: [ '[0-9]+.[0-9]+.[0-9x]+' ]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
