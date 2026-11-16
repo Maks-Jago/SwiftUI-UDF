@@ -21,9 +21,8 @@ struct MergeableTests {
         var number: Double
 
         static func merging(new newValue: Item, old oldValue: Item) -> Item {
-            oldValue.filled(from: newValue) { filledValue, oldValue in
-                filledValue.number = newValue.number == 0 ? oldValue.number : newValue.number
-            }
+            newValue
+                .keeping(\.number, from: oldValue, where: newValue.number == 0)
         }
     }
 
