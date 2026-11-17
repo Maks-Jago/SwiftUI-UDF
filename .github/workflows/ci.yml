@@ -27,7 +27,7 @@ jobs:
         
     steps:
     - name: Checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
       
     - name: Select Xcode ${{ matrix.xcode }}
       run: sudo xcode-select -switch /Applications/Xcode_${{ matrix.xcode }}.app/Contents/Developer
@@ -38,7 +38,7 @@ jobs:
         swift --version
         
     - name: Cache Swift PM
-      uses: actions/cache@v4
+      uses: actions/cache@v6
       with:
         path: .build
         key: ${{ runner.os }}-xcode${{ matrix.xcode }}-spm-${{ hashFiles('**/Package.resolved') }}
@@ -65,7 +65,7 @@ jobs:
 
     steps:
     - name: Checkout SwiftUI-UDF
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
 
     - name: Select Xcode ${{ matrix.xcode }}
       run: sudo xcode-select -switch /Applications/Xcode_${{ matrix.xcode }}.app/Contents/Developer
@@ -86,7 +86,7 @@ jobs:
         '
 
     - name: Cache Swift PM
-      uses: actions/cache@v4
+      uses: actions/cache@v6
       with:
         path: ${{ runner.temp }}/UDFMacros/.build
         key: ${{ runner.os }}-xcode${{ matrix.xcode }}-udfmacros-spm-${{ env.UDFMACROS_RESOLVED_HASH }}
