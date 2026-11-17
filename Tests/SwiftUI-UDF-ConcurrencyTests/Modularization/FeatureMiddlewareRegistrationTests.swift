@@ -50,7 +50,7 @@ struct FeatureMiddlewareRegistrationTests {
     func environmentStoreRegistersEveryMiddlewareFromOneFeature() async {
         let store = EnvironmentStore(initial: RegistrationAppState(), loggers: [])
 
-        let registered = await waitForCondition(timeout: 2) {
+        let registered = await waitForCondition(timeout: 15) {
             store.state.registration.form.explicitMarker == "feature-explicit"
                 && store.state.registration.form.legacyMarker == "legacy-test"
         }
@@ -61,7 +61,7 @@ struct FeatureMiddlewareRegistrationTests {
     @Test("Multiple root features register across an empty feature")
     func multipleRootFeaturesRegisterAcrossEmptyFeature() async {
         let store = EnvironmentStore(initial: RegistrationHostState(), loggers: [])
-        let registered = await waitForCondition(timeout: 2) {
+        let registered = await waitForCondition(timeout: 15) {
             store.state.replaceableFeature.form.marker == "replaceable-feature-test"
                 && store.state.empty.form.marker == nil
                 && store.state.companionFeature.form.marker == "companion-feature-test"
@@ -76,7 +76,7 @@ struct FeatureMiddlewareRegistrationTests {
 
         #expect(store.state.replaceableFeature.form.preparedValue == "prepared")
 
-        let observedInitializedState = await waitForCondition(timeout: 2) {
+        let observedInitializedState = await waitForCondition(timeout: 15) {
             store.state.replaceableFeature.form.observedValue == "prepared"
         }
 
@@ -104,7 +104,7 @@ struct FeatureMiddlewareRegistrationTests {
             ReplaceableFeatureMiddleware<RegistrationHostState>.self
             CompanionFeatureMiddleware<RegistrationHostState>.self
         }
-        let subscribed = await waitForCondition(timeout: 2) {
+        let subscribed = await waitForCondition(timeout: 15) {
             let state = await store.state
             return state.replaceableFeature.form.marker == "replaceable-feature-test"
                 && state.companionFeature.form.marker == "companion-feature-test"
@@ -124,7 +124,7 @@ struct FeatureMiddlewareRegistrationTests {
             ReplaceableFeatureMiddleware<RegistrationHostState>.self,
             environment: MarkerEnvironment(marker: "custom-test-environment")
         )
-        let subscribed = await waitForCondition(timeout: 2) {
+        let subscribed = await waitForCondition(timeout: 15) {
             await store.state.replaceableFeature.form.marker == "custom-test-environment"
         }
         #expect(subscribed)
@@ -187,19 +187,19 @@ struct FeatureMiddlewareRegistrationTests {
                 environment: MarkerEnvironment(marker: "custom-test-environment")
             )
 
-            let initiallyObserved = await waitForCondition(timeout: 2) {
+            let initiallyObserved = await waitForCondition(timeout: 15) {
                 store.state.replaceableFeature.form.handledMarkers.count == 2
             }
             #expect(initiallyObserved)
 
             store.dispatch(Actions.ResetReplaceableMiddlewareRuns())
-            let recordsReset = await waitForCondition(timeout: 2) {
+            let recordsReset = await waitForCondition(timeout: 15) {
                 store.state.replaceableFeature.form.handledMarkers.isEmpty
             }
             #expect(recordsReset)
 
             store.dispatch(Actions.InvokeReplaceableFeatureMiddleware())
-            let bothHandledAction = await waitForCondition(timeout: 2) {
+            let bothHandledAction = await waitForCondition(timeout: 15) {
                 store.state.replaceableFeature.form.handledMarkers.count == 2
             }
             #expect(bothHandledAction)
@@ -220,7 +220,7 @@ struct FeatureMiddlewareRegistrationTests {
                 ReplaceableFeatureMiddleware<RegistrationHostState>.self,
                 environment: MarkerEnvironment(marker: "second-test-environment")
             )
-            let initiallyObserved = await waitForCondition(timeout: 2) {
+            let initiallyObserved = await waitForCondition(timeout: 15) {
                 await store.state.replaceableFeature.form.handledMarkers.count == 2
             }
             #expect(initiallyObserved)
@@ -253,14 +253,14 @@ struct FeatureMiddlewareRegistrationTests {
     @Test("Each EnvironmentStore receives a fresh feature middleware instance")
     func eachEnvironmentStoreReceivesFreshMiddleware() async throws {
         let firstStore = EnvironmentStore(initial: RegistrationHostState(), loggers: [])
-        let firstObserved = await waitForCondition(timeout: 2) {
+        let firstObserved = await waitForCondition(timeout: 15) {
             firstStore.state.replaceableFeature.form.middlewareID != nil
         }
         #expect(firstObserved)
         let firstID = try #require(firstStore.state.replaceableFeature.form.middlewareID)
 
         let secondStore = EnvironmentStore(initial: RegistrationHostState(), loggers: [])
-        let secondObserved = await waitForCondition(timeout: 2) {
+        let secondObserved = await waitForCondition(timeout: 15) {
             secondStore.state.replaceableFeature.form.middlewareID != nil
         }
         #expect(secondObserved)

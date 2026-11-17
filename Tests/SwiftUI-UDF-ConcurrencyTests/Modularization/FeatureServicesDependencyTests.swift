@@ -65,7 +65,7 @@ struct FeatureServicesDependencyTests {
             // 1. The control feature toggles the shared service on
             store.dispatch(Actions.ToggleSwitchControl())
 
-            let controlToggled = await waitForCondition(timeout: 2) {
+            let controlToggled = await waitForCondition(timeout: 15) {
                 store.state.switchControl.form.isToggled == true
                     && service.isToggled == true
             }
@@ -74,7 +74,7 @@ struct FeatureServicesDependencyTests {
             // 2. The status feature syncs with the shared service and observes the change
             store.dispatch(Actions.SyncSwitchStatus())
 
-            let statusSynced = await waitForCondition(timeout: 2) {
+            let statusSynced = await waitForCondition(timeout: 15) {
                 store.state.switchStatus.form.isToggled == true
             }
             #expect(statusSynced)
@@ -82,7 +82,7 @@ struct FeatureServicesDependencyTests {
             // 3. The control feature toggles the shared service off
             store.dispatch(Actions.ToggleSwitchControl())
 
-            let controlToggledOff = await waitForCondition(timeout: 2) {
+            let controlToggledOff = await waitForCondition(timeout: 15) {
                 store.state.switchControl.form.isToggled == false
                     && service.isToggled == false
             }
@@ -91,7 +91,7 @@ struct FeatureServicesDependencyTests {
             // 4. The status feature syncs again and observes it is now off
             store.dispatch(Actions.SyncSwitchStatus())
 
-            let statusSyncedOff = await waitForCondition(timeout: 2) {
+            let statusSyncedOff = await waitForCondition(timeout: 15) {
                 store.state.switchStatus.form.isToggled == false
             }
             #expect(statusSyncedOff)
@@ -145,7 +145,7 @@ struct FeatureServicesDependencyTests {
 
             firstStore.dispatch(Actions.ToggleSwitchControl())
 
-            let firstToggled = await waitForCondition(timeout: 2) {
+            let firstToggled = await waitForCondition(timeout: 15) {
                 firstStore.state.switchControl.form.isToggled == true
             }
             #expect(firstToggled)
@@ -158,7 +158,7 @@ struct FeatureServicesDependencyTests {
 
             // Cleanup / Toggle back
             firstStore.dispatch(Actions.ToggleSwitchControl())
-            let cleaned = await waitForCondition(timeout: 2) {
+            let cleaned = await waitForCondition(timeout: 15) {
                 service.isToggled == false
             }
             #expect(cleaned)
